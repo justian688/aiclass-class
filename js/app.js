@@ -890,6 +890,23 @@ function home() {
     </div>
   </div></section>`);
 
+  // 人氣講師
+  if (window.INSTRUCTORS) {
+    const topInstr = window.INSTRUCTORS.slice().sort((a, b) => b.students - a.students).slice(0, 6);
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="top-instructors"><div class="wrap"><div class="sec-head rv-up"><div><h2>人氣講師</h2><div class="sub">業界頂尖職人，帶你從零到專業</div></div><a href="instructor.html" class="more">查看全部 →</a></div>
+      <div class="instr-grid">${topInstr.map(t => {
+        const tCourses = C.filter(x => x.teacher === t.name);
+        const avgRating = tCourses.length ? (tCourses.reduce((s, x) => s + x.rating, 0) / tCourses.length).toFixed(1) : '5.0';
+        return `<a class="instr-card rv-up" href="instructor.html?id=${t.id}">
+          <div class="instr-avatar">${t.avatar}</div>
+          <h3 class="instr-name">${t.name}</h3>
+          <p class="instr-role">${t.role}</p>
+          <p class="instr-bio">${t.bio}</p>
+          <div class="instr-meta"><span>⭐ ${avgRating}</span><span>📚 ${tCourses.length} 堂</span><span>👥 ${t.students.toLocaleString()}</span></div>
+        </a>`;
+      }).join('')}</div></div></section>`);
+  }
+
   // FAQ
   main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap faq"><div class="sec-head rv-up"><div><h2>常見問題</h2></div></div>
     ${window.FAQ.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
@@ -1260,6 +1277,14 @@ function course() {
       </div>
     </section>
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</section>
+    <section class="c-sec c-changelog rv-up" id="changelog"><h2>📋 課程更新日誌</h2>
+      <div class="cl-timeline">
+        <div class="cl-item"><div class="cl-dot new"></div><div class="cl-body"><span class="cl-date">2026/10/20</span><h4>v3.2 新增第五章「實戰專案」</h4><p>新增 5 堂實戰課程，包含完整專案從零到部署的流程教學。</p></div></div>
+        <div class="cl-item"><div class="cl-dot"></div><div class="cl-body"><span class="cl-date">2026/09/15</span><h4>v3.1 更新素材包</h4><p>全部素材更新至最新版本，修正第三章範例檔的相容性問題。</p></div></div>
+        <div class="cl-item"><div class="cl-dot"></div><div class="cl-body"><span class="cl-date">2026/08/01</span><h4>v3.0 全課程重新錄製</h4><p>使用最新工具版本重新錄製，畫質提升至 1080p，新增字幕。</p></div></div>
+      </div>
+      <p class="cl-note">已購買的學員自動享有所有更新內容</p>
+    </section>
     <div class="c-guarantee rv-up">
       <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">購買後 7 天內，覺得不適合可全額退費，零風險。</div></div>
       <div class="c-guarantee-item"><div class="c-guarantee-icon">♾️</div><div class="c-guarantee-title">無限期觀看</div><div class="c-guarantee-desc">一次購買，終身觀看，隨時隨地複習。</div></div>
@@ -2090,7 +2115,10 @@ function trainingPage() {
 function blogPage() {
   const main = $('main');
   seo({ title: '學習專欄｜AI Class', desc: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://aiclass.tw/blog.html',
-    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學習專欄', description: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://aiclass.tw/blog.html', publisher: { '@type': 'Organization', name: 'AI Class' }, mainEntity: { '@type': 'ItemList', itemListElement: window.POSTS.slice(0, 10).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://aiclass.tw/article.html?id=${p.id}` })) } }
+    jsonLd: [
+      { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學習專欄', description: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://aiclass.tw/blog.html', publisher: { '@type': 'Organization', name: 'AI Class' }, mainEntity: { '@type': 'ItemList', itemListElement: window.POSTS.slice(0, 10).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://aiclass.tw/article.html?id=${p.id}` })) } },
+      { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: '學習專欄' }] }
+    ]
   });
   const posts = window.POSTS;
   const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
@@ -2100,6 +2128,7 @@ function blogPage() {
 
   main.innerHTML = `
   <section class="blog-hero"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 學習專欄</div>
     <h1 class="blog-title rv-up">學習專欄</h1>
     <p class="blog-sub rv-up">深度好文，幫你掌握學習方法與產業趨勢</p>
     <div class="blog-search rv-up">

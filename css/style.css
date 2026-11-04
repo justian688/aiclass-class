@@ -3433,6 +3433,38 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 @media(max-width:480px){.usp-grid{grid-template-columns:1fr}.usp-section{padding:56px 0}}
 @media(prefers-reduced-motion:reduce){.usp-card{transition:none}.usp-card:hover{transform:none}}
 
+/* ===== 課程更新日誌 ===== */
+.c-changelog h2{margin-bottom:24px}
+.cl-timeline{position:relative;padding-left:24px}
+.cl-timeline::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.cl-item{position:relative;padding-bottom:24px;display:flex;gap:16px}
+.cl-item:last-child{padding-bottom:0}
+.cl-dot{width:14px;height:14px;border-radius:50%;background:var(--tx3);border:2px solid var(--bg);position:absolute;left:-24px;top:4px;z-index:1}
+.cl-dot.new{background:var(--pri);box-shadow:0 0 0 4px rgba(124,92,255,.2)}
+.cl-body{flex:1}
+.cl-date{font-size:.8rem;color:var(--tx3);font-weight:500}
+.cl-body h4{font-size:.95rem;font-weight:700;margin:4px 0 6px}
+.cl-body p{font-size:.85rem;color:var(--tx2);line-height:1.6;margin:0}
+.cl-note{font-size:.82rem;color:var(--pri);margin-top:16px;font-weight:500}
+[data-theme="dark"] .cl-dot{border-color:var(--card)}
+[data-theme="dark"] .cl-dot.new{box-shadow:0 0 0 4px rgba(124,92,255,.3)}
+
+/* ===== 人氣講師 ===== */
+.instr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.instr-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px 24px;background:var(--bg2);border-radius:16px;border:1px solid var(--line);text-decoration:none;color:inherit;transition:transform .3s,box-shadow .3s}
+.instr-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(124,92,255,.12)}
+.instr-avatar{font-size:3rem;width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:50%;margin-bottom:16px;border:2px solid var(--line)}
+.instr-name{font-size:1.1rem;font-weight:700;margin:0 0 4px}
+.instr-role{font-size:.85rem;color:var(--pri);font-weight:600;margin:0 0 10px}
+.instr-bio{font-size:.82rem;color:var(--tx2);line-height:1.6;margin:0 0 16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.instr-meta{display:flex;gap:12px;font-size:.8rem;color:var(--tx3)}
+[data-theme="dark"] .instr-card{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .instr-card:hover{box-shadow:0 12px 36px rgba(124,92,255,.2)}
+[data-theme="dark"] .instr-avatar{background:var(--bg3);border-color:var(--line)}
+@media(max-width:760px){.instr-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
+@media(max-width:480px){.instr-grid{grid-template-columns:1fr}.instr-card{padding:24px 20px}}
+@media(prefers-reduced-motion:reduce){.instr-card{transition:none}.instr-card:hover{transform:none}}
+
 /* ===== 平台數據 ===== */
 .stats-section{padding:80px 0;background:var(--bg2)}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center}
