@@ -2249,6 +2249,68 @@ function instructorPage() {
     return t;
   }).sort((a, b) => b.students - a.students);
 
+  const nameParam = new URLSearchParams(location.search).get('name');
+  if (nameParam) {
+    const t = teachers.find(x => x.name === decodeURIComponent(nameParam));
+    if (!t) { notFoundPage(); return; }
+    const totalHrs = t.courses.reduce((s, c) => s + c.hours, 0);
+    const bios = [
+      '擁有超過十年業界實戰經驗，專注於將複雜的專業知識轉化為易懂的教學內容。曾任多家知名企業顧問，培訓超過上千名學員。',
+      '在業界深耕多年，致力於推廣實用的技術與知識。教學風格注重實作，強調「做中學」的學習理念。',
+      '從入門到精通的系統化教學方法備受好評，學員完課率高達 95%。相信每個人都有無限的學習潛力。'
+    ];
+    const bio = bios[teachers.indexOf(t) % bios.length];
+    seo({ title: `${t.name}｜AI Class 講師`, desc: `${t.name} — ${t.role}，${t.courses.length} 門課程，${t.students.toLocaleString()} 位學員`, url: `https://aiclass.tw/instructor.html?name=${encodeURIComponent(t.name)}`, ogType: 'profile',
+      jsonLd: { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { '@type': 'Person', name: t.name, jobTitle: t.role, description: bio } }
+    });
+    document.title = `${t.name}｜AI Class 講師`;
+    main.innerHTML = `
+    <section class="insd-hero"><div class="wrap">
+      <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="instructor.html">講師</a> › ${t.name}</div>
+      <div class="insd-profile rv-up">
+        <div class="insd-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}"></div>
+        <div class="insd-info">
+          <h1>${t.name}</h1>
+          <span class="insd-role">${t.role}</span>
+          <p class="insd-bio">${bio}</p>
+          <div class="insd-stats">
+            <div class="insd-stat"><b>${t.courses.length}</b><span>門課程</span></div>
+            <div class="insd-stat"><b>${t.students.toLocaleString()}</b><span>位學員</span></div>
+            <div class="insd-stat"><b>⭐ ${t.avgRating}</b><span>平均評分</span></div>
+            <div class="insd-stat"><b>${totalHrs}</b><span>小時內容</span></div>
+          </div>
+        </div>
+      </div>
+    </div></section>
+    <section class="sec"><div class="wrap">
+      <h2 class="insd-sec-title rv-up">開設課程（${t.courses.length}）</h2>
+      <div class="insd-courses">${t.courses.map(c => `<a class="insd-course rv-up" href="course.html?id=${c.id}">
+        <div class="insd-course-img"><img src="assets/img/v${c.v}.jpg" alt="" loading="lazy">${c.tag ? `<span class="tag">${c.tag}</span>` : ''}</div>
+        <div class="insd-course-body">
+          <h3>${c.title}</h3>
+          <div class="insd-course-meta">★ ${c.rating}（${c.students.toLocaleString()}）・${c.hours} 小時${window.CHAPTERS && window.CHAPTERS[c.id] ? '・' + window.CHAPTERS[c.id].length + ' 個章節' : ''}</div>
+          <div class="insd-course-price"><b>${fmt(c.price)}</b><del>${fmt(c.origin)}</del><span class="off">-${pct(c)}%</span></div>
+        </div>
+      </a>`).join('')}</div>
+    </div></section>
+    <section class="sec"><div class="wrap">
+      <h2 class="insd-sec-title rv-up">學員好評</h2>
+      <div class="insd-reviews">${t.courses.slice(0, 3).map((c, i) => {
+        const names = ['小明','Emily','阿豪','志偉','雅婷','佳穎'];
+        const texts = ['講解非常清楚，跟著做就能學會！推薦給所有想入門的朋友。','內容紮實，每一章節都有實作練習，學完馬上能應用在工作上。','老師的教學節奏很好，不會太快也不會太慢，新手也能跟得上。'];
+        return `<div class="insd-review rv-up">
+          <div class="insd-review-head"><div class="insd-review-avatar" style="background:hsl(${i*80},60%,60%)">${names[i][0]}</div><div><b>${names[i]}</b><span>★★★★★</span></div></div>
+          <p>${texts[i]}</p>
+          <small>課程：${c.title}</small>
+        </div>`;
+      }).join('')}</div>
+    </div></section>
+    ${railSec('insd-rec', '', '你可能也會喜歡', C.filter(x => !t.courses.includes(x)).slice(0, 8))}`;
+    bindCards(main); bindRail($('#insd-rec'));
+    reveal(main);
+    return;
+  }
+
   const roles = [...new Set(teachers.map(t => t.role))];
 
   seo({ title: '所有講師｜AI Class', desc: `${teachers.length} 位業界職人講師陣容`, url: 'https://aiclass.tw/instructor.html',
@@ -2267,7 +2329,7 @@ function instructorPage() {
   </div></section>
   <section class="sec"><div class="wrap">
     <div class="ins-grid" id="ins-grid">
-      ${teachers.map(t => `<div class="ins-card rv-up" data-name="${t.name}" data-role="${t.role}">
+      ${teachers.map(t => `<a class="ins-card rv-up" href="instructor.html?name=${encodeURIComponent(t.name)}" data-name="${t.name}" data-role="${t.role}" style="text-decoration:none;color:inherit">
         <div class="ins-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}" loading="lazy"></div>
         <h3 class="ins-name">${t.name}</h3>
         <p class="ins-role">${t.role}</p>
@@ -2276,8 +2338,8 @@ function instructorPage() {
           <div><b>${(t.students / 1000).toFixed(1)}K</b><span>學生</span></div>
           <div><b>⭐ ${t.avgRating}</b><span>評分</span></div>
         </div>
-        <div class="ins-courses">${t.courses.slice(0, 2).map(c => `<a href="course.html?id=${c.id}" class="ins-course-link">${c.title}</a>`).join('')}</div>
-      </div>`).join('')}
+        <div class="ins-courses">${t.courses.slice(0, 2).map(c => `<span class="ins-course-link">${c.title}</span>`).join('')}</div>
+      </a>`).join('')}
     </div>
     <div class="blog-empty" id="ins-empty" style="display:none"><p>找不到符合的講師</p></div>
   </div></section>`;
@@ -2895,6 +2957,25 @@ function aboutPage() {
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🤝</div><h3>社群共學</h3><p>每堂課設有討論區，讓你和講師、同學交流，學習路上不孤單。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🌏</div><h3>多元包容</h3><p>涵蓋 10 大領域、超過 ${C.length} 堂課程，從技術到創作、從入門到進階，每個人都能找到適合的學習路徑。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🚀</div><h3>持續創新</h3><p>緊跟 AI 時代的腳步，不斷推出最新技術課程，幫助學員保持市場競爭力。</p></div>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <h2 class="ent-sec-title rv-up">核心團隊</h2>
+    <div class="abt-team">
+      ${[
+        { init: '林', name: '林宗翰', title: '創辦人暨執行長', bio: '連續創業者，曾任 KKBOX 產品總監，致力於讓每個人都能享有頂級學習資源。', grad: 'linear-gradient(135deg,#7c5cff,#5c8aff)' },
+        { init: '陳', name: '陳雅婷', title: '技術長', bio: '前 Google 資深工程師，專精 AI 與大規模系統架構，打造流暢的學習體驗。', grad: 'linear-gradient(135deg,#ff5c8a,#ff8a5c)' },
+        { init: '王', name: '王建宏', title: '內容總監', bio: '資深媒體人，曾任商業周刊主編，把關每一堂課的品質與學習成效。', grad: 'linear-gradient(135deg,#34c759,#5ccf8a)' },
+        { init: '張', name: '張淑華', title: '設計總監', bio: 'Red Dot 設計獎得主，前 LINE 設計主管，打造直覺且美觀的使用體驗。', grad: 'linear-gradient(135deg,#ff9500,#ffc107)' },
+        { init: '劉', name: '劉志偉', title: '社群經理', bio: '社群行銷專家，經營超過 50 萬粉絲社群，建立學員之間的學習連結。', grad: 'linear-gradient(135deg,#5856d6,#af52de)' },
+        { init: '許', name: '許佳穎', title: '講師發展經理', bio: '前 Hahow 課程企劃，協助 ' + teacherCount + '+ 位講師打造最佳教學內容。', grad: 'linear-gradient(135deg,#00c7be,#30d5c8)' },
+      ].map(m => `<div class="abt-member rv-up">
+        <div class="abt-member-avatar" style="background:${m.grad}">${m.init}</div>
+        <h3>${m.name}</h3>
+        <span class="abt-member-title">${m.title}</span>
+        <p class="abt-member-bio">${m.bio}</p>
+      </div>`).join('')}
     </div>
   </div></section>
 
@@ -4100,6 +4181,16 @@ function orderHistoryPage() {
             <span class="oh-item-price">${fmt(c.price)}</span>
           </div>`).join('')}
         </div>
+        <div class="oh-timeline">${(() => {
+            const steps = [
+              { label: '建立訂單', icon: '📋' },
+              { label: '付款完成', icon: '💳' },
+              { label: '課程開通', icon: '🎓' },
+              { label: '學習中', icon: '▶' },
+            ];
+            const active = o.status === 'completed' ? 4 : o.status === 'pending' ? 1 : 0;
+            return steps.map((s, i) => `<div class="oh-tl-step${i < active ? ' done' : ''}${i === active - 1 ? ' current' : ''}"><div class="oh-tl-dot">${s.icon}</div><span>${s.label}</span></div>`).join('<div class="oh-tl-line"></div>');
+          })()}</div>
         <div class="oh-card-detail">
           <div class="oh-detail-row"><span>付款方式</span><span>${o.pay}</span></div>
           <div class="oh-detail-row"><span>發票資訊</span><span>${o.inv}</span></div>
