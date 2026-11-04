@@ -76,37 +76,37 @@ window.COURSES = [
   { id: 'c37', v: '26676', cat: 'creative', sub: '寫作', title: '故事寫作：小說與劇本的敘事結構', teacher: '林筱涵', role: '小說家・編劇', price: 3680, origin: 6600, rating: 4.7, students: 1870, tag: '', hours: 14, desc: '三幕劇結構、角色弧線、對白技巧，從短篇到長篇的創作方法論。' },
 
   // ── 遊戲製作 ──
-  { id: 'c38', v: '18432', cat: 'game', sub: '遊戲程式', title: 'Unity 2D 遊戲開發：從零做出一款平台跳躍遊戲', teacher: '陳威宏', role: '獨立遊戲開發者', price: 4980, origin: 8800, rating: 4.8, students: 2870, tag: 'NEW', hours: 24, desc: '角色控制、關卡設計、敵人 AI、音效整合到上架 Steam，做出可以賣的遊戲。' },
-  { id: 'c39', v: '22145', cat: 'game', sub: '角色製作', title: '遊戲角色 3D 建模：ZBrush 到 Substance Painter', teacher: '何俊廷', role: '資深 3D 角色美術', price: 5680, origin: 10200, rating: 4.9, students: 2140, tag: 'HOT', hours: 28, desc: '從高模雕刻、拓撲、UV 到手繪風貼圖，完成一個遊戲級角色的完整製程。' },
-  { id: 'c40', v: '15678', cat: 'game', sub: '像素藝術', title: '像素藝術入門：用 Aseprite 畫出復古遊戲風格', teacher: '林奕辰', role: '像素藝術家', price: 2480, origin: 4400, rating: 4.7, students: 3210, tag: '', hours: 10, desc: '從單色剪影到動畫精靈圖，學會像素風角色、場景和 UI 的繪製技巧。' },
+  { id: 'c38', v: '42648', cat: 'game', sub: '遊戲程式', title: 'Unity 2D 遊戲開發：從零做出一款平台跳躍遊戲', teacher: '陳威宏', role: '獨立遊戲開發者', price: 4980, origin: 8800, rating: 4.8, students: 2870, tag: 'NEW', hours: 24, desc: '角色控制、關卡設計、敵人 AI、音效整合到上架 Steam，做出可以賣的遊戲。' },
+  { id: 'c39', v: '33853', cat: 'game', sub: '角色製作', title: '遊戲角色 3D 建模：ZBrush 到 Substance Painter', teacher: '何俊廷', role: '資深 3D 角色美術', price: 5680, origin: 10200, rating: 4.9, students: 2140, tag: 'HOT', hours: 28, desc: '從高模雕刻、拓撲、UV 到手繪風貼圖，完成一個遊戲級角色的完整製程。' },
+  { id: 'c40', v: '99786', cat: 'game', sub: '像素藝術', title: '像素藝術入門：用 Aseprite 畫出復古遊戲風格', teacher: '林奕辰', role: '像素藝術家', price: 2480, origin: 4400, rating: 4.7, students: 3210, tag: '', hours: 10, desc: '從單色剪影到動畫精靈圖，學會像素風角色、場景和 UI 的繪製技巧。' },
 
   // ── 副業/理財 ──
-  { id: 'c41', v: '37821', cat: 'finance', sub: '理財投資', title: '小資族理財課：ETF 定期定額與資產配置', teacher: '郭書瑜', role: '理財規劃師・CFP', price: 2980, origin: 5400, rating: 4.8, students: 8240, tag: 'BEST', hours: 10, desc: '不看盤、不選股，用 ETF 建立被動收入，從第一筆 3000 元開始你的投資旅程。', ai: '用 ETF 建立被動收入，從 3000 元開始你的理財旅程' },
-  { id: 'c42', v: '29054', cat: 'finance', sub: '副業', title: '接案生存術：自由工作者的定價與客戶管理', teacher: '劉怡君', role: '自由工作者教練', price: 3280, origin: 5800, rating: 4.7, students: 3560, tag: '', hours: 9, desc: '如何定出專業的報價、簽訂合約、催款不尷尬、建立穩定的案源。' },
+  { id: 'c41', v: '26676', cat: 'finance', sub: '理財投資', title: '小資族理財課：ETF 定期定額與資產配置', teacher: '郭書瑜', role: '理財規劃師・CFP', price: 2980, origin: 5400, rating: 4.8, students: 8240, tag: 'BEST', hours: 10, desc: '不看盤、不選股，用 ETF 建立被動收入，從第一筆 3000 元開始你的投資旅程。', ai: '用 ETF 建立被動收入，從 3000 元開始你的理財旅程' },
+  { id: 'c42', v: '16139', cat: 'finance', sub: '副業', title: '接案生存術：自由工作者的定價與客戶管理', teacher: '劉怡君', role: '自由工作者教練', price: 3280, origin: 5800, rating: 4.7, students: 3560, tag: '', hours: 9, desc: '如何定出專業的報價、簽訂合約、催款不尷尬、建立穩定的案源。' },
 
   // ── 美髮/美容 ──
-  { id: 'c43', v: '41230', cat: 'beauty', sub: '美甲', title: '日式凝膠美甲：從基礎到進階設計', teacher: '蘇詩涵', role: '美甲講師・JNA 一級', price: 3980, origin: 7200, rating: 4.9, students: 2890, tag: 'NEW', hours: 16, desc: '前置處理、塗膠技巧、暈染、漸層到立體浮雕，學會開店等級的美甲技術。' },
-  { id: 'c44', v: '18765', cat: 'beauty', sub: '美容', title: '韓系清透妝容：日常到約會的完整教學', teacher: '金敏雅', role: '韓系彩妝師', price: 2680, origin: 4800, rating: 4.8, students: 4120, tag: 'HOT', hours: 8, desc: '底妝、眉毛、眼影配色到唇彩，不同場合的妝容切換技巧。' },
+  { id: 'c43', v: '23056', cat: 'beauty', sub: '美甲', title: '日式凝膠美甲：從基礎到進階設計', teacher: '蘇詩涵', role: '美甲講師・JNA 一級', price: 3980, origin: 7200, rating: 4.9, students: 2890, tag: 'NEW', hours: 16, desc: '前置處理、塗膠技巧、暈染、漸層到立體浮雕，學會開店等級的美甲技術。' },
+  { id: 'c44', v: '33066', cat: 'beauty', sub: '美容', title: '韓系清透妝容：日常到約會的完整教學', teacher: '金敏雅', role: '韓系彩妝師', price: 2680, origin: 4800, rating: 4.8, students: 4120, tag: 'HOT', hours: 8, desc: '底妝、眉毛、眼影配色到唇彩，不同場合的妝容切換技巧。' },
 
   // ── 烘焙/料理 ──
-  { id: 'c45', v: '35612', cat: 'baking', sub: '西點', title: '法式甜點全書：從泡芙到歌劇院蛋糕', teacher: '張馨予', role: '甜點主廚・Le Cordon Bleu', price: 4580, origin: 8200, rating: 4.9, students: 3470, tag: 'BEST', hours: 20, desc: '千層酥皮、閃電泡芙、焦糖布蕾到歌劇院蛋糕，12 款經典法式甜點完整教學。', ai: '12 款經典法式甜點從零教學，在家做出甜點店等級' },
-  { id: 'c46', v: '27893', cat: 'baking', sub: '咖啡輕食', title: '手沖咖啡與拉花：在家開一間迷你咖啡館', teacher: '陳柏元', role: 'SCA 認證咖啡師', price: 2980, origin: 5400, rating: 4.8, students: 4560, tag: 'HOT', hours: 10, desc: '豆子挑選、手沖萃取、義式濃縮到拉花技巧，在家泡出咖啡廳等級的好咖啡。' },
+  { id: 'c45', v: '49557', cat: 'baking', sub: '西點', title: '法式甜點全書：從泡芙到歌劇院蛋糕', teacher: '張馨予', role: '甜點主廚・Le Cordon Bleu', price: 4580, origin: 8200, rating: 4.9, students: 3470, tag: 'BEST', hours: 20, desc: '千層酥皮、閃電泡芙、焦糖布蕾到歌劇院蛋糕，12 款經典法式甜點完整教學。', ai: '12 款經典法式甜點從零教學，在家做出甜點店等級' },
+  { id: 'c46', v: '13241', cat: 'baking', sub: '咖啡輕食', title: '手沖咖啡與拉花：在家開一間迷你咖啡館', teacher: '陳柏元', role: 'SCA 認證咖啡師', price: 2980, origin: 5400, rating: 4.8, students: 4560, tag: 'HOT', hours: 10, desc: '豆子挑選、手沖萃取、義式濃縮到拉花技巧，在家泡出咖啡廳等級的好咖啡。' },
 
   // ── AI/科技 ──
-  { id: 'c47', v: '52341', cat: 'ai', sub: 'AI 影像設計', title: 'AI 繪圖實戰：Midjourney + Stable Diffusion 完全攻略', teacher: '黃士誠', role: 'AI 工程師・創作者', price: 3980, origin: 7200, rating: 4.9, students: 7890, tag: 'HOT', hours: 16, desc: '從 Prompt 技巧、ControlNet 到 LoRA 訓練，用 AI 產出商用級插畫與設計素材。', ai: '用 AI 產出商用級插畫與設計，省下 80% 設計時間' },
-  { id: 'c48', v: '44123', cat: 'ai', sub: 'AI 生產力', title: 'ChatGPT 職場應用：10 倍提升工作效率', teacher: '羅志偉', role: '科技作家・效率專家', price: 2480, origin: 4400, rating: 4.8, students: 9130, tag: 'BEST', hours: 8, desc: '簡報生成、會議紀錄、信件撰寫、數據分析到自動化流程，用 AI 重新定義你的工作方式。' },
+  { id: 'c47', v: '46353', cat: 'ai', sub: 'AI 影像設計', title: 'AI 繪圖實戰：Midjourney + Stable Diffusion 完全攻略', teacher: '黃士誠', role: 'AI 工程師・創作者', price: 3980, origin: 7200, rating: 4.9, students: 7890, tag: 'HOT', hours: 16, desc: '從 Prompt 技巧、ControlNet 到 LoRA 訓練，用 AI 產出商用級插畫與設計素材。', ai: '用 AI 產出商用級插畫與設計，省下 80% 設計時間' },
+  { id: 'c48', v: '30232', cat: 'ai', sub: 'AI 生產力', title: 'ChatGPT 職場應用：10 倍提升工作效率', teacher: '羅志偉', role: '科技作家・效率專家', price: 2480, origin: 4400, rating: 4.8, students: 9130, tag: 'BEST', hours: 8, desc: '簡報生成、會議紀錄、信件撰寫、數據分析到自動化流程，用 AI 重新定義你的工作方式。' },
 
   // ── 設計 ──
-  { id: 'c49', v: '19876', cat: 'design', sub: '平面設計', title: 'Illustrator 完全攻略：向量設計從入門到接案', teacher: '蘇敏慧', role: '平面設計師', price: 3980, origin: 7200, rating: 4.8, students: 3240, tag: '', hours: 18, desc: '鋼筆工具、文字排版、Logo 設計到印刷輸出，一套課程學完 AI 的核心功能。' },
-  { id: 'c50', v: '31245', cat: 'design', sub: '品牌設計', title: '品牌識別設計：從策略到視覺系統落地', teacher: '林予安', role: '品牌設計總監', price: 5480, origin: 9800, rating: 4.9, students: 2670, tag: 'NEW', hours: 22, desc: '品牌定位、命名策略、Logo 設計、色彩系統到品牌手冊，完整的品牌建構方法論。' },
+  { id: 'c49', v: '2858', cat: 'design', sub: '平面設計', title: 'Illustrator 完全攻略：向量設計從入門到接案', teacher: '蘇敏慧', role: '平面設計師', price: 3980, origin: 7200, rating: 4.8, students: 3240, tag: '', hours: 18, desc: '鋼筆工具、文字排版、Logo 設計到印刷輸出，一套課程學完 AI 的核心功能。' },
+  { id: 'c50', v: '785', cat: 'design', sub: '品牌設計', title: '品牌識別設計：從策略到視覺系統落地', teacher: '林予安', role: '品牌設計總監', price: 5480, origin: 9800, rating: 4.9, students: 2670, tag: 'NEW', hours: 22, desc: '品牌定位、命名策略、Logo 設計、色彩系統到品牌手冊，完整的品牌建構方法論。' },
 
   // ── 創作/生活 ──
-  { id: 'c51', v: '28934', cat: 'creative', sub: '花藝設計', title: '花藝設計入門：韓式自然風花束到桌花', teacher: '陳玟希', role: '花藝設計師・KFDA', price: 3480, origin: 6200, rating: 4.8, students: 2340, tag: '', hours: 12, desc: '花材辨識、色彩搭配、螺旋手綁花束到婚禮桌花，10 個作品從零開始實作。' },
-  { id: 'c52', v: '15432', cat: 'creative', sub: '室內設計', title: '居家空間改造：小坪數也能住出質感', teacher: '何明軒', role: '室內設計師', price: 3280, origin: 5800, rating: 4.7, students: 2910, tag: '', hours: 11, desc: '動線規劃、收納系統、燈光設計到軟裝佈置，不需要大翻修也能讓空間煥然一新。' },
+  { id: 'c51', v: '9339', cat: 'creative', sub: '花藝設計', title: '花藝設計入門：韓式自然風花束到桌花', teacher: '陳玟希', role: '花藝設計師・KFDA', price: 3480, origin: 6200, rating: 4.8, students: 2340, tag: '', hours: 12, desc: '花材辨識、色彩搭配、螺旋手綁花束到婚禮桌花，10 個作品從零開始實作。' },
+  { id: 'c52', v: '17521', cat: 'creative', sub: '室內設計', title: '居家空間改造：小坪數也能住出質感', teacher: '何明軒', role: '室內設計師', price: 3280, origin: 5800, rating: 4.7, students: 2910, tag: '', hours: 11, desc: '動線規劃、收納系統、燈光設計到軟裝佈置，不需要大翻修也能讓空間煥然一新。' },
 
   // ── 創業/職涯 ──
-  { id: 'c53', v: '36721', cat: 'career', sub: '創業/電商經營', title: '電商創業全攻略：從選品到月入十萬', teacher: '邱冠宇', role: '電商顧問・蝦皮百萬賣家', price: 4280, origin: 7600, rating: 4.8, students: 5320, tag: 'HOT', hours: 16, desc: '選品策略、商品攝影、文案撰寫、廣告投放到客服流程，建立完整的電商獲利系統。', ai: '從選品到月入十萬，建立完整的電商獲利系統' },
-  { id: 'c54', v: '24567', cat: 'career', sub: '內容/行銷', title: 'SEO 完全攻略：讓 Google 幫你帶流量', teacher: '劉怡君', role: '數位行銷顧問', price: 3680, origin: 6600, rating: 4.8, students: 3780, tag: 'NEW', hours: 13, desc: '關鍵字研究、網站架構、內容策略到技術 SEO，讓你的網站排名穩定在第一頁。' },
+  { id: 'c53', v: '23327', cat: 'career', sub: '創業/電商經營', title: '電商創業全攻略：從選品到月入十萬', teacher: '邱冠宇', role: '電商顧問・蝦皮百萬賣家', price: 4280, origin: 7600, rating: 4.8, students: 5320, tag: 'HOT', hours: 16, desc: '選品策略、商品攝影、文案撰寫、廣告投放到客服流程，建立完整的電商獲利系統。', ai: '從選品到月入十萬，建立完整的電商獲利系統' },
+  { id: 'c54', v: '34408', cat: 'career', sub: '內容/行銷', title: 'SEO 完全攻略：讓 Google 幫你帶流量', teacher: '劉怡君', role: '數位行銷顧問', price: 3680, origin: 6600, rating: 4.8, students: 3780, tag: 'NEW', hours: 13, desc: '關鍵字研究、網站架構、內容策略到技術 SEO，讓你的網站排名穩定在第一頁。' },
 
   // ── 新增課程 c55–c72 ──
   { id: 'c55', v: '46635', cat: 'ai', sub: 'AI 訓練營', title: 'LLM 微調實戰：用自己的資料訓練專屬模型', teacher: '黃士誠', role: 'AI 工程師・前 Google', price: 6480, origin: 11600, rating: 4.9, students: 2340, tag: 'NEW', hours: 22, desc: 'LoRA、QLoRA、資料清洗到部署推論，用企業資料微調出專屬的大型語言模型。', ai: '用 LoRA 微調 LLM，打造企業專屬 AI 模型' },
@@ -257,16 +257,16 @@ window.POSTS = [
   { id:'p13', title:'遠端工作必備的 10 款效率工具', excerpt:'從專案管理到團隊溝通，精選 10 款讓遠端工作更順暢的數位工具與使用技巧。', cat:'career', author:'邱冠宇', date:'2026-09-22', readTime:7, v:'42648', tags:['遠端工作','工具','效率'] },
   { id:'p14', title:'給新手的水彩畫材選購指南', excerpt:'水彩紙、顏料、畫筆怎麼選？從平價到專業級，幫你找到最適合的入門組合。', cat:'drawing', author:'曾翠蓮', date:'2026-09-18', readTime:5, v:'32085', tags:['水彩','畫材','入門'] },
   { id:'p15', title:'如何寫出讓人想點擊的標題', excerpt:'文案標題是決定點擊率的關鍵，學會 5 個公式讓你的內容不再被淹沒在資訊海裡。', cat:'creative', author:'林筱涵', date:'2026-09-15', readTime:6, v:'16139', tags:['文案','標題','行銷'] },
-  { id:'p16', title:'AI 繪圖 vs 手繪：設計師該如何定位自己？', excerpt:'AI 工具席捲設計圈，手繪還有競爭力嗎？從產業觀點分析設計師的不可取代性與轉型方向。', cat:'ai', author:'張雨萱', date:'2026-09-12', readTime:9, v:'38120', tags:['AI','設計','職涯'] },
-  { id:'p17', title:'新手必看：第一次剪片就上手的 5 個技巧', excerpt:'不需要看完整堂課，掌握這五個核心概念，第一支影片就能剪得有節奏感。', cat:'video', author:'趙宥翔', date:'2026-09-08', readTime:7, v:'22340', tags:['剪輯','影片','入門'] },
-  { id:'p18', title:'從零開始學投資：給完全新手的理財入門指南', excerpt:'別讓通膨吃掉你的存款。從記帳、存錢到第一筆 ETF 投資，最簡單的理財起步方式。', cat:'finance', author:'郭書瑜', date:'2026-09-05', readTime:8, v:'51230', tags:['理財','投資','ETF'] },
-  { id:'p19', title:'遊戲開發入門：選 Unity 還是 Unreal？', excerpt:'兩大遊戲引擎的完整比較，從學習成本、適用類型到就業前景，幫你選對第一步。', cat:'game', author:'陳威宏', date:'2026-09-01', readTime:10, v:'18900', tags:['遊戲','Unity','Unreal'] },
-  { id:'p20', title:'Midjourney 進階：10 個讓出圖品質翻倍的 Prompt 技巧', excerpt:'不只是打字讓 AI 畫圖，學會參數控制、風格指定和負面提示，讓 AI 繪圖成為你的生產力工具。', cat:'ai', author:'黃士誠', date:'2026-08-28', readTime:8, v:'45670', tags:['Midjourney','AI','Prompt'] },
-  { id:'p21', title:'法式甜點在家做：五款零失敗入門食譜', excerpt:'瑪德蓮、費南雪、可麗露、焦糖布蕾和檸檬塔，簡化版食譜讓你在家輕鬆完成。', cat:'baking', author:'張馨予', date:'2026-08-25', readTime:7, v:'33450', tags:['烘焙','法式甜點','食譜'] },
-  { id:'p22', title:'個人接案網站怎麼做？設計師作品集指南', excerpt:'從內容規劃、版型選擇到 SEO 設定，做出能幫你帶來案子的線上作品集。', cat:'design', author:'蘇敏慧', date:'2026-08-22', readTime:9, v:'27890', tags:['作品集','接案','設計'] },
-  { id:'p23', title:'手沖咖啡新手常犯的 8 個錯誤', excerpt:'水溫太高、研磨度不對、注水太快？這些小細節決定了你的咖啡好不好喝。', cat:'baking', author:'陳柏元', date:'2026-08-18', readTime:6, v:'19870', tags:['咖啡','手沖','入門'] },
-  { id:'p24', title:'2026 年值得關注的 10 個設計趨勢', excerpt:'從 3D 互動到 AI 輔助設計，盤點今年最值得設計師關注的視覺與體驗趨勢。', cat:'design', author:'陳柏睿', date:'2026-08-15', readTime:8, v:'31240', tags:['設計','趨勢','UI'] },
-  { id:'p25', title:'居家運動計畫：適合忙碌上班族的 15 分鐘訓練', excerpt:'不用早起、不用去健身房，利用午休或下班後 15 分鐘，維持基本體能和線條。', cat:'beauty', author:'陳冠宏', date:'2026-08-12', readTime:5, v:'28760', tags:['健身','居家運動','上班族'] }
+  { id:'p16', title:'AI 繪圖 vs 手繪：設計師該如何定位自己？', excerpt:'AI 工具席捲設計圈，手繪還有競爭力嗎？從產業觀點分析設計師的不可取代性與轉型方向。', cat:'ai', author:'張雨萱', date:'2026-09-12', readTime:9, v:'46353', tags:['AI','設計','職涯'] },
+  { id:'p17', title:'新手必看：第一次剪片就上手的 5 個技巧', excerpt:'不需要看完整堂課，掌握這五個核心概念，第一支影片就能剪得有節奏感。', cat:'video', author:'趙宥翔', date:'2026-09-08', readTime:7, v:'29997', tags:['剪輯','影片','入門'] },
+  { id:'p18', title:'從零開始學投資：給完全新手的理財入門指南', excerpt:'別讓通膨吃掉你的存款。從記帳、存錢到第一筆 ETF 投資，最簡單的理財起步方式。', cat:'finance', author:'郭書瑜', date:'2026-09-05', readTime:8, v:'26676', tags:['理財','投資','ETF'] },
+  { id:'p19', title:'遊戲開發入門：選 Unity 還是 Unreal？', excerpt:'兩大遊戲引擎的完整比較，從學習成本、適用類型到就業前景，幫你選對第一步。', cat:'game', author:'陳威宏', date:'2026-09-01', readTime:10, v:'42648', tags:['遊戲','Unity','Unreal'] },
+  { id:'p20', title:'Midjourney 進階：10 個讓出圖品質翻倍的 Prompt 技巧', excerpt:'不只是打字讓 AI 畫圖，學會參數控制、風格指定和負面提示，讓 AI 繪圖成為你的生產力工具。', cat:'ai', author:'黃士誠', date:'2026-08-28', readTime:8, v:'40534', tags:['Midjourney','AI','Prompt'] },
+  { id:'p21', title:'法式甜點在家做：五款零失敗入門食譜', excerpt:'瑪德蓮、費南雪、可麗露、焦糖布蕾和檸檬塔，簡化版食譜讓你在家輕鬆完成。', cat:'baking', author:'張馨予', date:'2026-08-25', readTime:7, v:'49557', tags:['烘焙','法式甜點','食譜'] },
+  { id:'p22', title:'個人接案網站怎麼做？設計師作品集指南', excerpt:'從內容規劃、版型選擇到 SEO 設定，做出能幫你帶來案子的線上作品集。', cat:'design', author:'蘇敏慧', date:'2026-08-22', readTime:9, v:'2858', tags:['作品集','接案','設計'] },
+  { id:'p23', title:'手沖咖啡新手常犯的 8 個錯誤', excerpt:'水溫太高、研磨度不對、注水太快？這些小細節決定了你的咖啡好不好喝。', cat:'baking', author:'陳柏元', date:'2026-08-18', readTime:6, v:'13241', tags:['咖啡','手沖','入門'] },
+  { id:'p24', title:'2026 年值得關注的 10 個設計趨勢', excerpt:'從 3D 互動到 AI 輔助設計，盤點今年最值得設計師關注的視覺與體驗趨勢。', cat:'design', author:'陳柏睿', date:'2026-08-15', readTime:8, v:'9757', tags:['設計','趨勢','UI'] },
+  { id:'p25', title:'居家運動計畫：適合忙碌上班族的 15 分鐘訓練', excerpt:'不用早起、不用去健身房，利用午休或下班後 15 分鐘，維持基本體能和線條。', cat:'beauty', author:'陳冠宏', date:'2026-08-12', readTime:5, v:'33066', tags:['健身','居家運動','上班族'] }
 ];
 
 // ── 講師陣容 ──
