@@ -236,7 +236,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -5486,6 +5486,108 @@ function videoPage() {
   reveal(main);
 }
 
+/* ---------- 課程組合包頁面 ---------- */
+function bundlePage() {
+  seo({ title: '課程組合包', desc: '精選課程組合包，多堂課程一起購買享超值折扣，省下更多學習經費。', ogType: 'website' });
+  const bundles = window.BUNDLES || [];
+  const main = $('#main');
+  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+    <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>課程組合包</span></nav>
+    <div class="bdl-hero rv-up">
+      <div class="bdl-hero-content">
+        <span class="bdl-eyebrow">Bundle Deals</span>
+        <h1>課程組合包</h1>
+        <p>精選主題組合，多堂課程一起購買最高省 NT$5,620<br>一次學會完整技能，比單買更划算</p>
+        <div class="bdl-hero-stats">
+          <div><b>${bundles.length}</b><span>個組合</span></div>
+          <div><b>${bundles.reduce((s, b) => s + b.courses.length, 0)}</b><span>堂課程</span></div>
+          <div><b>${Math.round(bundles.reduce((s, b) => s + (1 - b.price / b.original), 0) / bundles.length * 100)}%</b><span>平均折扣</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="bdl-grid">
+      ${bundles.map((b, i) => {
+        const courses = b.courses.map(id => byId[id]).filter(Boolean);
+        const disc = Math.round((1 - b.price / b.original) * 100);
+        const totalHours = courses.reduce((s, c) => s + c.hours, 0);
+        const totalStudents = courses.reduce((s, c) => s + c.students, 0);
+        const avgRating = (courses.reduce((s, c) => s + c.rating, 0) / courses.length).toFixed(1);
+        const allOwned = courses.every(c => owned.has(c.id));
+        const someOwned = courses.some(c => owned.has(c.id));
+        return `<div class="bdl-card rv-up" style="transition-delay:${(i % 3) * 80}ms">
+          ${b.tag ? `<span class="bdl-tag">${b.tag}</span>` : ''}
+          <div class="bdl-card-head">
+            <h2>${b.name}</h2>
+            <p>${b.desc}</p>
+          </div>
+          <div class="bdl-courses">
+            ${courses.map(c => `<a href="course.html?id=${c.id}" class="bdl-course">
+              <img src="${img(c)}" alt="${c.title}" loading="lazy">
+              <div class="bdl-course-info">
+                <b>${c.title}</b>
+                <span>${c.teacher} ・ ★ ${c.rating}</span>
+              </div>
+              ${owned.has(c.id) ? '<span class="bdl-owned">已購買</span>' : ''}
+            </a>`).join('')}
+          </div>
+          <div class="bdl-meta">
+            <span>📚 ${courses.length} 堂課</span>
+            <span>⏱ ${totalHours} 小時</span>
+            <span>★ ${avgRating} 平均</span>
+            <span>👥 ${totalStudents.toLocaleString()} 位學員</span>
+          </div>
+          <div class="bdl-price">
+            <div class="bdl-price-row">
+              <span class="bdl-origin">${fmt(b.original)}</span>
+              <span class="bdl-disc">-${disc}%</span>
+            </div>
+            <div class="bdl-final">${fmt(b.price)}</div>
+            <div class="bdl-save">省下 ${fmt(b.save)}</div>
+          </div>
+          <div class="bdl-actions">
+            ${allOwned ? '<button class="btn btn-ghost" disabled>已全部購買</button>' : `<button class="btn btn-pri bdl-buy" data-bdl="${b.id}">整組加入購物車</button>`}
+            ${someOwned && !allOwned ? '<small class="bdl-note">已購買的課程不會重複收費</small>' : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <section class="bdl-faq rv-up" style="margin-top:60px">
+      <h2 style="font-size:24px;font-weight:900;text-align:center;margin-bottom:32px">常見問題</h2>
+      <div class="qa">
+        <div class="qa-item"><button>組合包可以退費嗎？</button><div class="qa-ans" hidden><p>可以。購買後 7 天內可全額退費，若已觀看超過 30% 的課程內容則不適用。</p></div></div>
+        <div class="qa-item"><button>已經買過其中一堂，還能買組合包嗎？</button><div class="qa-ans" hidden><p>可以購買，系統會自動扣除已購買的課程金額，您只需支付差額。</p></div></div>
+        <div class="qa-item"><button>組合包的課程可以分開觀看嗎？</button><div class="qa-ans" hidden><p>可以。購買組合包後，每堂課都會獨立出現在您的「我的課程」中，可依自己的步調學習。</p></div></div>
+        <div class="qa-item"><button>組合包有時間限制嗎？</button><div class="qa-ans" hidden><p>沒有。所有課程皆為無限期觀看，且享有免費更新保證。</p></div></div>
+      </div>
+    </section>
+  </div>`;
+
+  $$('.bdl-buy', main).forEach(btn => {
+    btn.addEventListener('click', () => {
+      const b = bundles.find(x => x.id === btn.dataset.bdl);
+      if (!b) return;
+      let added = 0;
+      b.courses.forEach(id => { if (!owned.has(id) && !cart.has(id)) { cart.add(id); added++; } });
+      saveCart(); updateCartBadge();
+      if (added) toast('已將 ' + added + ' 堂課程加入購物車');
+      else toast('這些課程已在購物車中');
+      btn.textContent = '✓ 已加入'; btn.style.background = 'var(--pri)';
+    });
+  });
+
+  $$('.qa-item button', main).forEach(b => {
+    b.addEventListener('click', () => {
+      const ans = b.nextElementSibling;
+      const open = !ans.hidden;
+      $$('.qa-ans', main).forEach(a => a.hidden = true);
+      $$('.qa-item button', main).forEach(x => x.classList.remove('on'));
+      if (!open) { ans.hidden = false; b.classList.add('on'); }
+    });
+  });
+
+  reveal(main);
+}
+
 /* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
@@ -5531,6 +5633,7 @@ else if (page === 'quiz') quizPage();
 else if (page === 'leaderboard') leaderboardPage();
 else if (page === 'achievement') achievementPage();
 else if (page === 'video') videoPage();
+else if (page === 'bundle') bundlePage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
