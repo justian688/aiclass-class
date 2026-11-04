@@ -3943,79 +3943,72 @@ function searchPage() {
 /* ---------- 學習社群 ---------- */
 function communityPage() {
   const main = $('main');
-  const cats = ['全部','作品分享','課程討論','接案經驗','求職面試','學習心得'];
-  const catColors = {'作品分享':'#7c5cff','課程討論':'#ff5c8a','接案經驗':'#34c759','求職面試':'#ff9500','學習心得':'#00b4d8'};
-  const threads = [
-    {id:1,cat:'作品分享',user:'林予安',init:'林',title:'分享我的 UI 作品集，請大家給點建議！',preview:'花了兩個月完成的作品集，主要是 App 介面設計和響應式網頁，想請社群的前輩們幫忙看看有沒有可以改進的地方…',views:2834,replies:47,likes:182,time:'30 分鐘前',hot:true,pinned:false},
-    {id:2,cat:'課程討論',user:'陳柏睿',init:'陳',title:'Python 自動化課程第五章的作業卡關了',preview:'請問有人做到自動爬取資料那段嗎？我的程式一直出現 timeout 的錯誤，已經調整過等待時間了還是不行…',views:1256,replies:23,likes:45,time:'1 小時前',hot:false,pinned:true},
-    {id:3,cat:'接案經驗',user:'蘇敏慧',init:'蘇',title:'第一次接到設計案，報價該怎麼算？',preview:'最近在社群接到第一個商業案，對方要做品牌識別全套（Logo、名片、信封），想請問大家初接案的報價經驗…',views:4521,replies:89,likes:324,time:'2 小時前',hot:true,pinned:false},
-    {id:4,cat:'求職面試',user:'方鈺倫',init:'方',title:'UI/UX 面試常見問題整理（持續更新）',preview:'整理了我最近面試五家公司的經驗，包含作品集報告、白板設計挑戰、行為面試題等，希望對準備面試的同學有幫助…',views:6732,replies:156,likes:891,time:'3 小時前',hot:true,pinned:true},
-    {id:5,cat:'學習心得',user:'許志豪',init:'許',title:'零基礎三個月轉職前端工程師心路歷程',preview:'從完全不會寫程式到拿到 offer，想分享一下我的學習路線和踩過的坑。先說結論：AI Class 的課程真的幫了很大的忙…',views:8923,replies:201,likes:1247,time:'5 小時前',hot:true,pinned:false},
-    {id:6,cat:'作品分享',user:'張雅琪',init:'張',title:'用 Blender 做了一組低多邊形場景，附源檔',preview:'跟著 Blender 3D 建模課做完後自己延伸的作品，做了一個日式庭院場景。附上 .blend 源檔給大家參考學習…',views:3102,replies:58,likes:267,time:'6 小時前',hot:false,pinned:false},
-    {id:7,cat:'課程討論',user:'王建宏',init:'王',title:'攝影課的色彩管理章節有人能解釋一下嗎？',preview:'關於 sRGB 和 Adobe RGB 的差異，課程裡有提到但我還是不太理解在實際工作中該怎麼選擇色彩空間…',views:876,replies:15,likes:32,time:'8 小時前',hot:false,pinned:false},
-    {id:8,cat:'接案經驗',user:'李美玲',init:'李',title:'接案平台比較：104外包 vs Freelancer vs 直接接',preview:'做了兩年自由接案，用過不同平台也有直接從社群接案的經驗，整理一下各管道的優缺點給剛起步的同學參考…',views:5678,replies:112,likes:534,time:'10 小時前',hot:true,pinned:false},
-    {id:9,cat:'學習心得',user:'鄭凱文',init:'鄭',title:'AI 生成圖片用在商業設計可行嗎？實測分享',preview:'最近嘗試把 AI 生成的素材融入商業設計專案中，跟大家分享我的工作流程以及客戶的反饋，結果出乎意料…',views:4230,replies:76,likes:389,time:'12 小時前',hot:false,pinned:false},
-    {id:10,cat:'求職面試',user:'吳佳蓉',init:'吳',title:'非本科轉 UX 研究員，需要什麼技能？',preview:'我是社會學系畢業，對使用者研究很有興趣，想請問有沒有從非相關科系轉職成功的前輩可以分享經驗和建議…',views:2145,replies:34,likes:98,time:'14 小時前',hot:false,pinned:false},
-    {id:11,cat:'作品分享',user:'黃俊傑',init:'黃',title:'我的第一個完整網站上線了！來看看',preview:'從零開始學 HTML/CSS/JS，花了四個月完成了一個餐廳官網。雖然還有很多可以改進的地方，但真的很有成就感…',views:1890,replies:42,likes:156,time:'16 小時前',hot:false,pinned:false},
-    {id:12,cat:'課程討論',user:'趙怡君',init:'趙',title:'Figma 進階功能：Auto Layout 的使用技巧分享',preview:'上完 UI/UX 課程後自己整理了一份 Auto Layout 的完整筆記，包含嵌套用法和 Component 設計模式，分享給大家…',views:3456,replies:67,likes:278,time:'1 天前',hot:false,pinned:false},
-  ];
-  const topMembers = [
-    {name:'方鈺倫',init:'方',posts:156,color:'#7c5cff'},
-    {name:'李美玲',init:'李',posts:134,color:'#ff5c8a'},
-    {name:'許志豪',init:'許',posts:98,color:'#34c759'},
-    {name:'蘇敏慧',init:'蘇',posts:87,color:'#ff9500'},
-    {name:'張雅琪',init:'張',posts:76,color:'#00b4d8'},
-  ];
-  const trending = ['AI 繪圖商用','Figma 設計系統','接案報價指南','前端面試準備','Blender 場景'];
+  const posts = (window.COMMUNITY_POSTS || []).slice();
+  const tagSet = new Set(); posts.forEach(p => (p.tags||[]).forEach(t => tagSet.add(t)));
+  const cats = ['全部', ...tagSet];
+  const catColors = {'作品分享':'#7c5cff','心得分享':'#34c759','發問':'#ff9500','筆記分享':'#00b4d8','求回饋':'#ff5c8a','資源':'#a855f7','成果':'#f59e0b'};
+  const topMembers = posts.reduce((map, p) => { map[p.author] = (map[p.author]||0) + 1; return map; }, {});
+  const topList = Object.entries(topMembers).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const memberColors = ['#7c5cff','#ff5c8a','#34c759','#ff9500','#00b4d8'];
 
-  let activeCat = '全部';
+  let activeCat = '全部', sortMode = 'new';
 
-  function renderThreads(cat) {
-    const list = cat === '全部' ? threads : threads.filter(t => t.cat === cat);
-    return list.map(t => `<div class="cmy-thread rv-up">
-      ${t.pinned ? '<span class="cmy-pin">📌 置頂</span>' : ''}
-      ${t.hot ? '<span class="cmy-hot">🔥 熱門</span>' : ''}
+  function getSorted() {
+    let list = activeCat === '全部' ? posts : posts.filter(p => (p.tags||[]).includes(activeCat));
+    if (sortMode === 'hot') list = [...list].sort((a,b) => b.likes - a.likes);
+    return list;
+  }
+
+  function renderThreads() {
+    const list = getSorted();
+    if (!list.length) return '<div style="text-align:center;padding:48px 0;color:var(--tx2)">目前還沒有相關討論</div>';
+    return list.map(p => {
+      const c = byId[p.course];
+      const tagColor = catColors[(p.tags||[])[0]] || 'var(--pri)';
+      return `<div class="cmy-thread rv-up">
+      ${p.likes > 100 ? '<span class="cmy-hot">🔥 熱門</span>' : ''}
       <div class="cmy-thread-body">
-        <div class="cmy-avatar" style="--av-c:${catColors[t.cat]||'var(--pri)'}">${t.init}</div>
+        <div class="cmy-avatar" style="--av-c:${tagColor}">${p.avatar}</div>
         <div class="cmy-thread-main">
-          <div class="cmy-thread-meta"><span class="cmy-user">${t.user}</span><span class="cmy-tag" style="--tag-c:${catColors[t.cat]||'var(--pri)'}">${t.cat}</span><span class="cmy-time">${t.time}</span></div>
-          <h3 class="cmy-thread-title" style="cursor:pointer" onclick="this.closest('.cmy-thread').classList.toggle('expanded');toast(this.closest('.cmy-thread').classList.contains('expanded')?'展開討論':'收合討論')">${t.title}</h3>
-          <p class="cmy-thread-preview">${t.preview}</p>
-          <div class="cmy-thread-stats"><span>👁 ${t.views.toLocaleString()}</span><span>💬 ${t.replies}</span><span>♡ ${t.likes}</span></div>
+          <div class="cmy-thread-meta"><span class="cmy-user">${p.author}</span>${(p.tags||[]).map(t => `<span class="cmy-tag" style="--tag-c:${catColors[t]||'var(--pri)'}">${t}</span>`).join('')}<span class="cmy-time">${p.time}</span></div>
+          <h3 class="cmy-thread-title" style="cursor:pointer" onclick="this.closest('.cmy-thread').classList.toggle('expanded')">${p.title}</h3>
+          <p class="cmy-thread-preview">${p.content}</p>
+          ${c ? `<div class="cmy-course-link">📚 ${c.title}</div>` : ''}
+          <div class="cmy-thread-stats"><span>❤️ ${p.likes}</span><span>💬 ${p.replies}</span></div>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+    }).join('');
   }
+
+  const totalLikes = posts.reduce((s,p) => s+p.likes, 0);
+  const totalReplies = posts.reduce((s,p) => s+p.replies, 0);
 
   main.innerHTML = `
   <section class="cmy-hero rv-up"><div class="wrap">
     <h1>學習社群</h1>
     <p>分享作品、討論課程、交流經驗，與超過 60,000 名學員一起成長</p>
-    <div class="cmy-hero-stats"><span><b>12,450</b> 篇討論</span><span><b>4,892</b> 位活躍成員</span><span><b>38,120</b> 則回覆</span></div>
+    <div class="cmy-hero-stats"><span><b>${posts.length}</b> 篇討論</span><span><b>${totalLikes.toLocaleString()}</b> 個讚</span><span><b>${totalReplies}</b> 則回覆</span></div>
   </div></section>
   <div class="wrap cmy-layout">
     <div class="cmy-main">
-      <div class="cmy-tabs">${cats.map(c => `<button class="chip ${c === '全部' ? 'on' : ''}" data-cmycat="${c}">${c}</button>`).join('')}</div>
-      <div class="cmy-list" id="cmy-list">${renderThreads('全部')}</div>
-      <div class="cmy-pagination">
-        <button class="cmy-pg on">1</button><button class="cmy-pg">2</button><button class="cmy-pg">3</button><button class="cmy-pg">4</button><span>...</span><button class="cmy-pg">12</button><button class="cmy-pg">下一頁 →</button>
+      <div class="cmy-toolbar">
+        <div class="cmy-tabs">${cats.map(c => `<button class="chip ${c === '全部' ? 'on' : ''}" data-cmycat="${c}">${c}</button>`).join('')}</div>
+        <div class="cmy-sort"><button class="chip on" data-sort="new">最新</button><button class="chip" data-sort="hot">最熱</button></div>
       </div>
+      <div class="cmy-list" id="cmy-list">${renderThreads()}</div>
     </div>
     <aside class="cmy-sidebar">
       <div class="cmy-sb-card rv-up">
-        <h4>🔥 熱門話題</h4>
-        <ol class="cmy-trending">${trending.map((t, i) => `<li><span class="cmy-rank">${i + 1}</span><a href="#">${t}</a></li>`).join('')}</ol>
-      </div>
-      <div class="cmy-sb-card rv-up">
         <h4>⭐ 活躍成員</h4>
-        <div class="cmy-members">${topMembers.map(m => `<div class="cmy-member"><div class="cmy-avatar sm" style="--av-c:${m.color}">${m.init}</div><div class="cmy-member-info"><b>${m.name}</b><span>${m.posts} 篇發文</span></div></div>`).join('')}</div>
+        <div class="cmy-members">${topList.map(([name, count], i) => `<div class="cmy-member"><div class="cmy-avatar sm" style="--av-c:${memberColors[i%5]}">${posts.find(p=>p.author===name)?.avatar||name[0]}</div><div class="cmy-member-info"><b>${name}</b><span>${count} 篇發文</span></div></div>`).join('')}</div>
       </div>
       <div class="cmy-sb-card rv-up">
         <h4>📊 本週統計</h4>
         <div class="cmy-week-stats">
-          <div><b>328</b><span>新討論</span></div>
-          <div><b>1,456</b><span>回覆數</span></div>
-          <div><b>892</b><span>活躍成員</span></div>
+          <div><b>${posts.length}</b><span>討論</span></div>
+          <div><b>${totalReplies}</b><span>回覆數</span></div>
+          <div><b>${totalLikes.toLocaleString()}</b><span>按讚數</span></div>
         </div>
       </div>
     </aside>
@@ -4037,98 +4030,90 @@ function communityPage() {
     </div>
   </div>`;
 
+  function refreshList() { $('#cmy-list').innerHTML = renderThreads(); reveal($('#cmy-list')); }
+
   $$('.cmy-tabs .chip', main).forEach(btn => btn.onclick = () => {
     $$('.cmy-tabs .chip', main).forEach(b => b.classList.toggle('on', b === btn));
     activeCat = btn.dataset.cmycat;
-    $('#cmy-list').innerHTML = renderThreads(activeCat);
-    reveal($('#cmy-list'));
+    refreshList();
+  });
+  $$('.cmy-sort .chip', main).forEach(btn => btn.onclick = () => {
+    $$('.cmy-sort .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    sortMode = btn.dataset.sort;
+    refreshList();
   });
   const modal = $('#cmy-modal');
   $('#cmy-fab').onclick = () => { modal.hidden = false; };
   $('#cmy-close').onclick = () => { modal.hidden = true; };
   $('#cmy-cancel').onclick = () => { modal.hidden = true; };
   $('.cmy-modal-bg', modal).onclick = () => { modal.hidden = true; };
-  $$('.cmy-pg').forEach(b => b.onclick = () => { $$('.cmy-pg').forEach(x => x.classList.remove('on')); b.classList.add('on'); toast('示範網站：分頁功能開發中'); });
   reveal(main);
 }
 
 /* ---------- 直播教室 ---------- */
 function livePage() {
   const main = $('main');
-  const liveNow = [
-    {title:'Figma 元件系統實戰教學',teacher:'陳柏睿',role:'UI/UX 設計師',viewers:342,course:'c05',started:'45 分鐘前'},
-    {title:'Python 資料分析快速上手',teacher:'許志豪',role:'資料科學家',viewers:218,course:'c10',started:'1 小時前'},
-  ];
-  const upcoming = [
-    {title:'AI 繪圖在商業設計的應用',teacher:'林予安',date:'11/06（三）',time:'20:00',spots:500,registered:387},
-    {title:'從零開始的 3D 建模之路',teacher:'蘇敏慧',date:'11/07（四）',time:'19:30',spots:300,registered:245},
-    {title:'接案人生：自由工作者的日常',teacher:'李美玲',date:'11/08（五）',time:'21:00',spots:400,registered:312},
-    {title:'前端面試攻略與實戰演練',teacher:'方鈺倫',date:'11/10（日）',time:'14:00',spots:600,registered:489},
-    {title:'攝影後製：調色的藝術',teacher:'張雅琪',date:'11/12（二）',time:'20:00',spots:350,registered:178},
-    {title:'Blender 場景燈光設計密技',teacher:'黃俊傑',date:'11/14（四）',time:'19:00',spots:250,registered:134},
-  ];
-  const recordings = C.slice(0, 8);
+  const events = (window.LIVE_EVENTS || []).slice();
+  const upcoming = events.filter(e => e.status === 'upcoming').sort((a,b) => new Date(a.date) - new Date(b.date));
+  const ended = events.filter(e => e.status === 'ended');
+  const fmtDate = d => { const dt = new Date(d); const wd = '日一二三四五六'[dt.getDay()]; return `${dt.getMonth()+1}/${String(dt.getDate()).padStart(2,'0')}（${wd}）`; };
+  const fmtTime = d => { const dt = new Date(d); return `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`; };
+  const nextEv = upcoming[0];
 
   main.innerHTML = `
   <section class="live-hero rv-up"><div class="wrap">
     <h1>直播教室</h1>
     <p>即時互動教學，業界講師線上開講，與講師和學員即時交流</p>
-    <div class="live-hero-stats"><span><b>128</b> 場已播出</span><span><b>45,000+</b> 累計觀看</span><span><b>4.9</b> 平均評分</span></div>
+    <div class="live-hero-stats"><span><b>${events.length}</b> 場已排程</span><span><b>${events.reduce((s,e)=>s+e.enrolled,0).toLocaleString()}</b> 累計報名</span><span><b>${upcoming.length}</b> 場即將開播</span></div>
   </div></section>
 
   <div class="wrap">
+    ${nextEv ? `<section class="live-sec rv-up">
+      <div class="live-next-banner rv-up">
+        <div class="live-next-info"><span class="live-next-label">🔜 下一場直播</span><h3>${nextEv.title}</h3><span>${nextEv.host}・${fmtDate(nextEv.date)} ${fmtTime(nextEv.date)}</span></div>
+        <div class="live-next-cd" id="liveNextCd"></div>
+        <button class="btn btn-pri" onclick="toast('已預約提醒：${nextEv.title.replace(/'/g,"\\'")}','success')">🔔 預約</button>
+      </div>
+    </section>` : ''}
+
     <section class="live-sec rv-up">
-      <div class="sec-head"><div><h2><span class="live-dot"></span> 正在直播</h2><div class="sub">點擊加入即時互動</div></div></div>
-      <div class="live-now-grid">${liveNow.map(l => {
-        const c = byId[l.course];
-        return `<div class="live-card now">
-          <div class="live-thumb"><img src="${c ? img(c) : ''}" alt="" loading="lazy"><div class="live-badge">● LIVE</div><div class="live-viewers">👁 ${l.viewers} 人觀看</div></div>
-          <div class="live-info">
-            <h3>${l.title}</h3>
-            <div class="live-teacher"><b>${l.teacher}</b><span>${l.role}</span></div>
-            <div class="live-meta">已開始 ${l.started}</div>
-            <button class="btn btn-pri" onclick="toast('示範網站：直播功能開發中')">加入直播 →</button>
-          </div>
-        </div>`;
+      <div class="sec-head"><div><h2>📅 即將開播</h2><div class="sub">預約提醒，準時參加</div></div></div>
+      <div class="live-schedule">${upcoming.map(u => {
+        const c = byId[u.course];
+        const pct = Math.round(u.enrolled / u.max * 100);
+        return `<div class="live-sched-item rv-up">
+        <div class="live-sched-date"><span class="live-sched-day">${fmtDate(u.date)}</span><span class="live-sched-time">${fmtTime(u.date)}</span></div>
+        <div class="live-sched-info">
+          <h4>${u.title}</h4>
+          <span class="live-sched-teacher">${u.host}・${u.duration} 分鐘</span>
+          <div class="live-sched-bar"><div class="live-sched-fill" style="width:${pct}%"></div></div>
+          <span class="live-sched-seats">${u.enrolled}/${u.max} 已預約</span>
+        </div>
+        <button class="btn btn-ghost" onclick="toast('已預約提醒：${u.title.replace(/'/g,"\\'")}','success')">🔔 預約提醒</button>
+      </div>`;
       }).join('')}</div>
     </section>
 
-    <section class="live-sec rv-up">
-      <div class="live-next-banner rv-up">
-        <div class="live-next-info"><span class="live-next-label">🔜 下一場直播</span><h3>${upcoming[0].title}</h3><span>${upcoming[0].teacher}・${upcoming[0].date} ${upcoming[0].time}</span></div>
-        <div class="live-next-cd" id="liveNextCd"></div>
-        <button class="btn btn-pri" onclick="toast('已預約提醒：${upcoming[0].title}')">🔔 預約</button>
-      </div>
-      <div class="sec-head"><div><h2>📅 即將開播</h2><div class="sub">預約提醒，準時參加</div></div></div>
-      <div class="live-schedule">${upcoming.map(u => `<div class="live-sched-item rv-up">
-        <div class="live-sched-date"><span class="live-sched-day">${u.date}</span><span class="live-sched-time">${u.time}</span></div>
-        <div class="live-sched-info">
-          <h4>${u.title}</h4>
-          <span class="live-sched-teacher">${u.teacher}</span>
-          <div class="live-sched-bar"><div class="live-sched-fill" style="width:${Math.round(u.registered/u.spots*100)}%"></div></div>
-          <span class="live-sched-seats">${u.registered}/${u.spots} 已預約</span>
-        </div>
-        <button class="btn btn-ghost" onclick="toast('已預約提醒：' + '${u.title}')">🔔 預約提醒</button>
-      </div>`).join('')}</div>
-    </section>
-
-    <section class="live-sec rv-up">
+    ${ended.length ? `<section class="live-sec rv-up">
       <div class="sec-head"><div><h2>🎬 精選回放</h2><div class="sub">錯過直播也能補看</div></div></div>
-      <div class="live-rec-grid">${recordings.map(c => `<div class="live-rec-card rv-up">
-        <div class="live-rec-thumb"><img src="${img(c)}" alt="" loading="lazy"><div class="live-rec-dur">${c.hours} 小時</div></div>
-        <div class="live-rec-info"><h4>${c.title}</h4><span>${c.teacher}・${(c.students * 0.3).toFixed(0)} 次觀看</span></div>
-      </div>`).join('')}</div>
-    </section>
+      <div class="live-rec-grid">${ended.map(e => {
+        const c = byId[e.course];
+        return `<div class="live-rec-card rv-up">
+        <div class="live-rec-thumb"><img src="${c ? img(c) : ''}" alt="" loading="lazy"><div class="live-rec-dur">${e.duration} 分</div>${e.replay ? '<div class="live-replay-badge">可回放</div>' : ''}</div>
+        <div class="live-rec-info"><h4>${e.title}</h4><span>${e.host}・${e.enrolled} 人參與</span></div>
+      </div>`;
+      }).join('')}</div>
+    </section>` : ''}
   </div>`;
-  // 下一場直播倒數
+
   const cdEl = $('#liveNextCd');
-  if (cdEl) {
-    const nextDate = new Date(); nextDate.setDate(nextDate.getDate() + 1); nextDate.setHours(20, 0, 0, 0);
+  if (cdEl && nextEv) {
+    const nextDate = new Date(nextEv.date);
     const tick = () => {
       const diff = nextDate - Date.now();
       if (diff <= 0) { cdEl.textContent = '即將開始'; return; }
-      const h = Math.floor(diff / 36e5), m = Math.floor((diff % 36e5) / 6e4), s = Math.floor((diff % 6e4) / 1e3);
-      cdEl.innerHTML = `<span>${h}<small>時</small></span><span>${m}<small>分</small></span><span>${s}<small>秒</small></span>`;
+      const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5), m = Math.floor((diff % 36e5) / 6e4), s = Math.floor((diff % 6e4) / 1e3);
+      cdEl.innerHTML = (d ? `<span>${d}<small>天</small></span>` : '') + `<span>${h}<small>時</small></span><span>${m}<small>分</small></span><span>${s}<small>秒</small></span>`;
     };
     tick(); setInterval(tick, 1000);
   }
@@ -4138,65 +4123,24 @@ function livePage() {
 /* ---------- 技能測驗 ---------- */
 function quizPage() {
   const main = $('main');
-  const quizData = {
-    ai: {name:'AI 人工智慧',icon:'🤖',questions:[
-      {q:'Transformer 架構中 Self-Attention 的時間複雜度為？',o:['O(n²d)','O(nd²)','O(n²)','O(nd)'],a:0},
-      {q:'GPT 是哪種類型的模型？',o:['自回歸語言模型','雙向編碼器','生成對抗網路','擴散模型'],a:0},
-      {q:'CNN 中池化層的主要作用？',o:['降維與平移不變性','增加參數量','提高解析度','生成新特徵'],a:0},
-      {q:'哪個不是常用的正規化技術？',o:['Max Normalization','Batch Normalization','Layer Normalization','Dropout'],a:0},
-      {q:'遷移學習的核心概念是？',o:['利用預訓練模型的知識','從零訓練新模型','增加訓練數據量','改變模型架構'],a:0}
-    ]},
-    design: {name:'UI/UX 設計',icon:'🎨',questions:[
-      {q:'設計系統中 8px grid 的主要好處？',o:['統一間距保持視覺一致','減少檔案大小','加速渲染','降低開發難度'],a:0},
-      {q:'Nielsen 的可用性啟發法共有幾項？',o:['10 項','8 項','12 項','7 項'],a:0},
-      {q:'哪個不是 Gestalt 視覺法則？',o:['對比法則','接近法則','相似法則','封閉法則'],a:0},
-      {q:'色彩無障礙設計要求對比度至少？',o:['4.5:1','3:1','2:1','7:1'],a:0},
-      {q:'A/B 測試的樣本量通常建議至少？',o:['1000 以上','100','500','50'],a:0}
-    ]},
-    '3d': {name:'3D 建模',icon:'🧊',questions:[
-      {q:'Blender 中 Subdivision Surface 的快捷鍵？',o:['Ctrl+1/2/3','Alt+S','Shift+A','Tab'],a:0},
-      {q:'PBR 材質中 Roughness 值為 0 代表？',o:['完全光滑鏡面','完全粗糙','半透明','金屬質感'],a:0},
-      {q:'法線貼圖（Normal Map）的主要用途？',o:['模擬表面細節不增加面數','改變顏色','增加多邊形','控制透明度'],a:0},
-      {q:'三角面 vs 四角面，角色動畫推薦用？',o:['四角面','三角面','五角面','混用'],a:0},
-      {q:'HDRI 在 3D 場景中的作用是？',o:['提供環境光照和反射','增加多邊形','優化渲染速度','控制動畫'],a:0}
-    ]},
-    photo: {name:'攝影',icon:'📸',questions:[
-      {q:'光圈 f/1.4 與 f/8 相比，景深？',o:['f/1.4 景深更淺','f/8 景深更淺','兩者相同','無法比較'],a:0},
-      {q:'黃金時刻（Golden Hour）是指？',o:['日出/日落前後的柔和光線','正午陽光','陰天光線','人工燈光'],a:0},
-      {q:'RAW 格式相比 JPEG 的優勢？',o:['保留更多後製空間','檔案更小','分享更方便','色彩更鮮豔'],a:0},
-      {q:'構圖中的三分法建議將主體放在？',o:['九宮格交叉點','正中心','角落','邊緣'],a:0},
-      {q:'ISO 越高，影像品質？',o:['雜訊增加品質下降','品質上升','色彩更準確','無影響'],a:0}
-    ]},
-    cook: {name:'料理',icon:'🍳',questions:[
-      {q:'梅納反應（Maillard Reaction）發生在？',o:['高溫下胺基酸與糖反應','低溫慢煮','水煮過程','冷凍過程'],a:0},
-      {q:'法式料理五大母醬不包含？',o:['味噌醬','白醬','褐醬','荷蘭醬'],a:0},
-      {q:'舒肥法（Sous Vide）的溫度通常在？',o:['50-70°C','100°C以上','0-10°C','80-90°C'],a:0},
-      {q:'麵包發酵的主要微生物？',o:['酵母菌','乳酸菌','醋酸菌','麴菌'],a:0},
-      {q:'刀工中「julienne」是指？',o:['細絲切法','骰子切法','薄片切法','碎末切法'],a:0}
-    ]},
-    music: {name:'音樂製作',icon:'🎵',questions:[
-      {q:'DAW 代表什麼？',o:['Digital Audio Workstation','Digital Analog Waveform','Dynamic Audio Writer','Digital Audio Widget'],a:0},
-      {q:'MIDI 訊號傳遞的是？',o:['演奏指令（音符、力度等）','音訊波形','壓縮音檔','影像數據'],a:0},
-      {q:'混音中 EQ 的主要功能？',o:['調整頻率平衡','增加音量','加入回音','改變速度'],a:0},
-      {q:'壓縮器（Compressor）的作用是？',o:['縮小動態範圍','增加動態範圍','改變音高','增加失真'],a:0},
-      {q:'取樣率 44.1kHz 理論上能再現的最高頻率？',o:['22.05kHz','44.1kHz','20kHz','48kHz'],a:0}
-    ]}
-  };
-  const cats = Object.entries(quizData);
+  const quizzes = window.QUIZZES || [];
   const saved = JSON.parse(localStorage.getItem('aic-quiz-results') || '{}');
+  const totalQ = quizzes.reduce((s, q) => s + q.questions.length, 0);
 
   main.innerHTML = `<div class="qz-hero rv-up">
     <div class="wrap"><h1>🎯 技能測驗</h1><p>測試你的專業能力，獲得技能認證徽章</p>
-    <div class="qz-hero-stats"><div><b>${cats.length}</b>測驗分類</div><div><b>${cats.reduce((s,c)=>s+c[1].questions.length,0)}</b>題目總數</div><div><b>${Object.keys(saved).length}</b>已完成</div></div></div>
+    <div class="qz-hero-stats"><div><b>${quizzes.length}</b>測驗分類</div><div><b>${totalQ}</b>題目總數</div><div><b>${Object.keys(saved).length}</b>已完成</div></div></div>
   </div>
   <div class="wrap" style="padding-bottom:80px">
-    <div class="qz-grid rv-up">${cats.map(([k,v]) => {
-      const done = saved[k];
-      return `<div class="qz-card" data-qk="${k}">
-        <div class="qz-card-icon">${v.icon}</div>
-        <h3>${v.name}</h3>
-        <div class="qz-card-info"><span>📝 ${v.questions.length} 題</span><span>⏱ 約 ${v.questions.length} 分鐘</span></div>
-        <div class="qz-card-diff"><span class="qz-diff-dot"></span>${v.questions.length >= 5 ? '中等' : '入門'}</div>
+    <div class="qz-grid rv-up">${quizzes.map(qz => {
+      const done = saved[qz.id];
+      const c = byId[qz.course];
+      return `<div class="qz-card" data-qk="${qz.id}">
+        <div class="qz-card-icon">${c ? '📚' : '🎯'}</div>
+        <h3>${qz.title}</h3>
+        ${c ? `<div class="qz-card-course">${c.title}</div>` : ''}
+        <div class="qz-card-info"><span>📝 ${qz.questions.length} 題</span><span>⏱ 約 ${qz.questions.length} 分鐘</span></div>
+        <div class="qz-card-diff"><span class="qz-diff-dot"></span>${qz.questions.length >= 5 ? '中等' : '入門'}</div>
         ${done ? `<div class="qz-card-score">最高分：${done.score}/${done.total}</div>` : ''}
         <button class="btn btn-pri qz-start">${done ? '再次挑戰' : '開始測驗'}</button>
       </div>`;
@@ -4216,19 +4160,20 @@ function quizPage() {
       <div class="qz-result-icon"></div>
       <h2 class="qz-result-title"></h2>
       <div class="qz-result-score"></div>
+      <div class="qz-result-details"></div>
       <div class="qz-result-stats"></div>
       <div class="qz-result-actions"><button class="btn btn-pri qz-retry">再試一次</button><button class="btn btn-ghost qz-share-btn">📤 分享成績</button><button class="btn btn-ghost qz-back-btn">返回列表</button></div>
     </div>
   </div>`;
 
   let currentQuiz = null, currentQ = 0, answers = [], timerInt = null, elapsed = 0;
-
   const modal = $('.qz-modal', main), result = $('.qz-result', main);
 
-  function startQuiz(key) {
-    const data = quizData[key];
-    currentQuiz = {key, data, shuffled: data.questions.map((q,i)=>({...q,idx:i})).sort(()=>Math.random()-.5)};
-    currentQ = 0; answers = new Array(data.questions.length).fill(-1); elapsed = 0;
+  function startQuiz(id) {
+    const qz = quizzes.find(q => q.id === id); if (!qz) return;
+    const shuffled = qz.questions.map((q,i) => ({...q, idx:i})).sort(() => Math.random() - .5);
+    currentQuiz = { id, title: qz.title, questions: shuffled };
+    currentQ = 0; answers = new Array(shuffled.length).fill(-1); elapsed = 0;
     modal.hidden = false; document.body.style.overflow = 'hidden';
     if (timerInt) clearInterval(timerInt);
     timerInt = setInterval(() => { elapsed++; $('.qz-timer', modal).textContent = '⏱ ' + String(Math.floor(elapsed/60)).padStart(2,'0') + ':' + String(elapsed%60).padStart(2,'0'); }, 1000);
@@ -4236,11 +4181,11 @@ function quizPage() {
   }
 
   function renderQuestion() {
-    const q = currentQuiz.shuffled[currentQ], total = currentQuiz.shuffled.length;
+    const q = currentQuiz.questions[currentQ], total = currentQuiz.questions.length;
     $('.qz-progress-fill', modal).style.width = ((currentQ+1)/total*100)+'%';
     $('.qz-q-num', modal).textContent = `第 ${currentQ+1}/${total} 題`;
     $('.qz-question', modal).textContent = q.q;
-    $('.qz-options', modal).innerHTML = q.o.map((o,i) => `<label class="qz-opt${answers[currentQ]===i?' on':''}"><input type="radio" name="qopt" value="${i}"${answers[currentQ]===i?' checked':''}><span>${o}</span></label>`).join('');
+    $('.qz-options', modal).innerHTML = q.opts.map((o,i) => `<label class="qz-opt${answers[currentQ]===i?' on':''}"><input type="radio" name="qopt" value="${i}"${answers[currentQ]===i?' checked':''}><span>${o}</span></label>`).join('');
     $$('.qz-opt input', modal).forEach(r => r.onchange = () => { answers[currentQ] = +r.value; $$('.qz-opt', modal).forEach((el,j) => el.classList.toggle('on', j===+r.value)); });
     $('.qz-prev', modal).disabled = currentQ === 0;
     $('.qz-next', modal).textContent = currentQ === total - 1 ? '送出答案 ✓' : '下一題 →';
@@ -4248,11 +4193,12 @@ function quizPage() {
 
   function finishQuiz() {
     clearInterval(timerInt); modal.hidden = true;
-    const correct = currentQuiz.shuffled.reduce((s,q,i) => s + (answers[i] === q.a ? 1 : 0), 0);
-    const total = currentQuiz.shuffled.length;
+    const qs = currentQuiz.questions;
+    const correct = qs.reduce((s,q,i) => s + (answers[i] === q.ans ? 1 : 0), 0);
+    const total = qs.length;
     const pctVal = Math.round(correct/total*100);
     const res = {score:correct, total, time:elapsed, pct:pctVal, date:Date.now()};
-    saved[currentQuiz.key] = !saved[currentQuiz.key] || correct > saved[currentQuiz.key].score ? res : saved[currentQuiz.key];
+    saved[currentQuiz.id] = !saved[currentQuiz.id] || correct > saved[currentQuiz.id].score ? res : saved[currentQuiz.id];
     localStorage.setItem('aic-quiz-results', JSON.stringify(saved));
     const icon = pctVal >= 80 ? '🏆' : pctVal >= 60 ? '👍' : '💪';
     const title = pctVal >= 80 ? '太厲害了！' : pctVal >= 60 ? '表現不錯！' : '繼續加油！';
@@ -4260,6 +4206,10 @@ function quizPage() {
     $('.qz-result-icon', result).textContent = icon;
     $('.qz-result-title', result).textContent = title;
     $('.qz-result-score', result).innerHTML = `<span class="qz-big-score">${correct}<small>/${total}</small></span><div class="qz-pct">${pctVal}%</div>`;
+    $('.qz-result-details', result).innerHTML = qs.map((q,i) => {
+      const isCorrect = answers[i] === q.ans;
+      return `<div class="qz-detail-item ${isCorrect ? 'correct' : 'wrong'}"><span class="qz-detail-num">${i+1}</span><span class="qz-detail-q">${q.q}</span><span class="qz-detail-icon">${isCorrect ? '✅' : '❌'}</span>${!isCorrect ? `<span class="qz-detail-ans">正確答案：${q.opts[q.ans]}</span>` : ''}</div>`;
+    }).join('');
     const mins = Math.floor(elapsed/60), secs = elapsed%60;
     $('.qz-result-stats', result).innerHTML = `<div><b>✅ ${correct}</b>答對</div><div><b>❌ ${total-correct}</b>答錯</div><div><b>⏱ ${mins}:${String(secs).padStart(2,'0')}</b>用時</div>`;
   }
@@ -4269,14 +4219,14 @@ function quizPage() {
   const closeResult = () => { result.hidden = true; document.body.style.overflow = ''; };
   modal.onclick = e => { e.stopPropagation();
     if (e.target.classList.contains('qz-modal-bg') || e.target.closest('.qz-close')) closeModal();
-    if (e.target.closest('.qz-next')) { if (currentQ < currentQuiz.shuffled.length - 1) { currentQ++; renderQuestion(); } else finishQuiz(); }
+    if (e.target.closest('.qz-next')) { if (currentQ < currentQuiz.questions.length - 1) { currentQ++; renderQuestion(); } else finishQuiz(); }
     if (e.target.closest('.qz-prev') && currentQ > 0) { currentQ--; renderQuestion(); }
   };
   result.onclick = e => { e.stopPropagation();
     if (e.target.classList.contains('qz-modal-bg') || e.target.closest('.qz-close')) closeResult();
-    if (e.target.closest('.qz-retry')) { closeResult(); startQuiz(currentQuiz.key); }
+    if (e.target.closest('.qz-retry')) { closeResult(); startQuiz(currentQuiz.id); }
     if (e.target.closest('.qz-back-btn')) closeResult();
-    if (e.target.closest('.qz-share-btn') && currentQuiz) { const txt = `我在 AI Class 的「${currentQuiz.data.name}」測驗中答對了 ${saved[currentQuiz.key].score}/${saved[currentQuiz.key].total} 題！`; if (navigator.share) navigator.share({title:'AI Class 測驗成績',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt).then(()=>toast('成績已複製')).catch(()=>{}); } }
+    if (e.target.closest('.qz-share-btn') && currentQuiz) { const txt = `我在 AI Class 的「${currentQuiz.title}」測驗中答對了 ${saved[currentQuiz.id].score}/${saved[currentQuiz.id].total} 題！`; if (navigator.share) navigator.share({title:'AI Class 測驗成績',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt).then(()=>toast('成績已複製')).catch(()=>{}); } }
   };
   reveal(main);
 }
@@ -4285,21 +4235,31 @@ function quizPage() {
 /* ---------- 成就系統 ---------- */
 function achievementPage() {
   const main = $('main');
-  const achievements = [
-    { id:'a1', icon:'🔥', name:'熱血學員', desc:'連續學習 7 天', req:'連續登入 7 天', earned:true, date:'2026-10-28', rarity:85 },
-    { id:'a2', icon:'⭐', name:'初體驗', desc:'完成第一堂課', req:'完成任一堂課的所有章節', earned:true, date:'2026-10-25', rarity:72 },
-    { id:'a3', icon:'📝', name:'分享家', desc:'撰寫第一則評價', req:'在任一課程留下評價', earned:true, date:'2026-10-30', rarity:45 },
-    { id:'a4', icon:'🎯', name:'測驗達人', desc:'通過 3 項測驗', req:'任意 3 項測驗達到 60 分以上', earned:false, progress:1, total:3, rarity:28 },
-    { id:'a5', icon:'💎', name:'收藏家', desc:'購買 5 堂課程', req:'累計購買 5 堂以上課程', earned:false, progress:2, total:5, rarity:35 },
-    { id:'a6', icon:'🏆', name:'學習百時', desc:'累計學習 100 小時', req:'總學習時數達 100 小時', earned:false, progress:24, total:100, rarity:12 },
-    { id:'a7', icon:'🎓', name:'結業生', desc:'取得第一張證書', req:'完成任一課程並下載證書', earned:false, progress:0, total:1, rarity:38 },
-    { id:'a8', icon:'💬', name:'社群之星', desc:'發表 10 篇社群貼文', req:'在學習社群發表 10 篇討論', earned:false, progress:3, total:10, rarity:15 },
-    { id:'a9', icon:'🌟', name:'全勤獎', desc:'連續學習 30 天', req:'連續 30 天每天至少學習 10 分鐘', earned:false, progress:7, total:30, rarity:8 },
-    { id:'a10', icon:'📚', name:'博學者', desc:'瀏覽 50 堂課程', req:'查看 50 堂不同課程的詳情頁', earned:false, progress:18, total:50, rarity:22 },
-    { id:'a11', icon:'🤝', name:'伯樂', desc:'邀請 3 位好友加入', req:'透過邀請連結帶來 3 位新會員', earned:false, progress:0, total:3, rarity:10 },
-    { id:'a12', icon:'🎪', name:'直播常客', desc:'參加 5 場直播', req:'加入 5 場不同的直播教室', earned:false, progress:1, total:5, rarity:18 },
-  ];
+  const badges = window.BADGES || [];
+  const owned = JSON.parse(localStorage.getItem('aic-owned') || '[]');
+  const quizResults = JSON.parse(localStorage.getItem('aic-quiz-results') || '{}');
+  const notes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
+  const progress = JSON.parse(localStorage.getItem('aic-progress') || '{}');
+
+  const achievements = badges.map(b => {
+    let earned = false, prog = 0, total = 1;
+    if (b.id === 'bg1') { earned = !!localStorage.getItem('aic-user'); }
+    else if (b.id === 'bg2') { const pVals = Object.values(progress); earned = pVals.some(p => p > 0); prog = pVals.filter(p => p > 0).length; }
+    else if (b.id === 'bg3') { const hrs = Object.values(progress).reduce((s,v) => s+v, 0) * 0.5; earned = hrs >= 10; prog = Math.min(Math.round(hrs), 10); total = 10; }
+    else if (b.id === 'bg4') { const done = Object.values(progress).filter(v => v >= 100).length; earned = done >= 1; prog = done; }
+    else if (b.id === 'bg5') { earned = owned.length >= 5; prog = owned.length; total = 5; }
+    else if (b.id === 'bg6') { prog = 7; total = 30; }
+    else if (b.id === 'bg7') { prog = 12; total = 50; }
+    else if (b.id === 'bg8') { const nc = Object.values(notes).reduce((s,v) => s + (Array.isArray(v) ? v.length : 0), 0); earned = nc >= 100; prog = Math.min(nc, 100); total = 100; }
+    else if (b.id === 'bg9') { const perfect = Object.values(quizResults).some(r => r.pct === 100); earned = perfect; prog = perfect ? 1 : 0; }
+    else if (b.id === 'bg10') { prog = 0; total = 3; }
+    else if (b.id === 'bg11') { prog = 2; total = 7; }
+    else if (b.id === 'bg12') { const catsDone = new Set(); owned.forEach(id => { const c = byId[id]; if (c) catsDone.add(c.cat); }); earned = catsDone.size >= 3; prog = catsDone.size; total = 3; }
+    return { ...b, earned, prog, total };
+  });
+
   const earnedCount = achievements.filter(a => a.earned).length;
+  const totalXp = achievements.filter(a => a.earned).reduce((s,a) => s + a.xp, 0);
 
   main.innerHTML = `
   <section class="ach-hero rv-up"><div class="wrap">
@@ -4307,16 +4267,21 @@ function achievementPage() {
     <p>解鎖徽章、追蹤里程碑，見證你的學習旅程</p>
     <div class="ach-hero-stats">
       <div><b>${earnedCount}</b><span>已解鎖</span></div>
-      <div><b>${achievements.length}</b><span>總成就數</span></div>
-      <div><b>${Math.round(earnedCount / achievements.length * 100)}%</b><span>完成率</span></div>
+      <div><b>${badges.length}</b><span>總成就數</span></div>
+      <div><b>${totalXp}</b><span>獲得 XP</span></div>
     </div>
   </div></section>
   <div class="wrap ach-wrap">
     <div class="ach-progress-ring rv-up">
       <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/>
-      <circle cx="60" cy="60" r="52" fill="none" stroke="url(#achGrad)" stroke-width="8" stroke-dasharray="${2*Math.PI*52}" stroke-dashoffset="${2*Math.PI*52*(1 - earnedCount/achievements.length)}" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="url(#achGrad)" stroke-width="8" stroke-dasharray="${2*Math.PI*52}" stroke-dashoffset="${2*Math.PI*52*(1 - earnedCount/badges.length)}" stroke-linecap="round" transform="rotate(-90 60 60)"/>
       <defs><linearGradient id="achGrad"><stop offset="0%" stop-color="var(--pri)"/><stop offset="100%" stop-color="var(--pink)"/></linearGradient></defs></svg>
-      <div class="ach-ring-text"><b>${earnedCount}/${achievements.length}</b><span>已解鎖</span></div>
+      <div class="ach-ring-text"><b>${earnedCount}/${badges.length}</b><span>已解鎖</span></div>
+    </div>
+    <div class="ach-xp-bar rv-up">
+      <div class="ach-xp-label"><span>總 XP</span><b>${totalXp}</b></div>
+      <div class="ach-xp-track"><div class="ach-xp-fill" style="width:${Math.min(totalXp / 1500 * 100, 100)}%"></div></div>
+      <div class="ach-xp-next">下一等級：${1500 - totalXp > 0 ? `還需 ${1500 - totalXp} XP` : '已達成！'}</div>
     </div>
     <div class="ach-grid">
       ${achievements.map(a => `<div class="ach-card rv-up ${a.earned ? 'earned' : 'locked'}">
@@ -4324,8 +4289,8 @@ function achievementPage() {
         <div class="ach-card-body">
           <h3>${a.name}</h3>
           <p>${a.desc}</p>
-          ${a.earned ? `<div class="ach-earned-date">✓ ${a.date} 解鎖</div>` : `<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round((a.progress||0)/(a.total||1)*100)}%"></div></div><div class="ach-prog-txt">${a.progress||0} / ${a.total}</div>`}
-          <div class="ach-rarity">${a.rarity}% 學員已解鎖</div>
+          <div class="ach-xp-badge">+${a.xp} XP</div>
+          ${a.earned ? `<div class="ach-earned-date">✓ 已解鎖</div>` : `<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round(a.prog/a.total*100)}%"></div></div><div class="ach-prog-txt">${a.prog} / ${a.total}</div>`}
         </div>
       </div>`).join('')}
     </div>
@@ -4335,69 +4300,69 @@ function achievementPage() {
 
 function leaderboardPage() {
   const main = $('main');
-  const names = ['方鈺倫','許志豪','李美玲','蘇敏慧','張雅琪','陳柏睿','黃俊傑','王建宏','林予安','趙怡君','鄭凱文','吳佳蓉','劉心怡','何承翰','呂芷涵','楊博文','蔡宜臻','謝明哲','周彥廷','馮雅慧'];
+  const lb = window.LEADERBOARD || [];
   const medals = ['🥇','🥈','🥉'];
-  const tabs = ['學習時數','測驗成績','社群貢獻'];
-  const genData = (tab) => names.map((n, i) => {
-    const seed = n.charCodeAt(0) * 7 + i * 13 + tab * 31;
-    return {
-      name: n, init: n[0], rank: i + 1,
-      hours: Math.max(200 - i * 8 - (seed % 5), 10),
-      courses: Math.max(20 - i, 3),
-      score: Math.max(98 - i * 2 - (seed % 3), 40),
-      quizzes: Math.max(30 - i, 2),
-      posts: Math.max(156 - i * 7 - (seed % 4), 5),
-      likes: Math.max(891 - i * 40 - (seed % 20), 10),
-      streak: Math.max(90 - i * 4, 3),
-      badge: i < 3 ? medals[i] : '',
-      color: `hsl(${(seed * 37) % 360}, 60%, 55%)`
-    };
-  });
+  const podiumColors = ['#ffd700','#c0c0c0','#cd7f32'];
+  const tabs = ['XP 積分','完課數','連續天數'];
 
   let activeTab = 0;
-  const myRank = 42;
+
+  function getSorted(tab) {
+    const sorted = [...lb];
+    if (tab === 0) sorted.sort((a,b) => b.xp - a.xp);
+    else if (tab === 1) sorted.sort((a,b) => b.courses - a.courses);
+    else sorted.sort((a,b) => b.streak - a.streak);
+    return sorted.map((d,i) => ({...d, rank: i+1}));
+  }
 
   function renderBoard(tab) {
-    const data = genData(tab);
-    const valCol = tab === 0 ? (d => `<b>${d.hours}</b> 小時・${d.courses} 門課程`) : tab === 1 ? (d => `<b>${d.score}</b> 分・${d.quizzes} 項測驗`) : (d => `<b>${d.posts}</b> 篇發文・${d.likes} 讚`);
+    const data = getSorted(tab);
+    const valCol = tab === 0
+      ? (d => `<b>${d.xp.toLocaleString()}</b> XP・${d.courses} 門課程`)
+      : tab === 1
+      ? (d => `<b>${d.courses}</b> 門完課・${d.xp.toLocaleString()} XP`)
+      : (d => `<b>${d.streak}</b> 天連續・${d.courses} 門課程`);
     return data.map(d => `<div class="lb-row ${d.rank <= 3 ? 'top' : ''} rv-up">
-      <span class="lb-rank">${d.badge || d.rank}</span>
-      <div class="lb-avatar" style="background:${d.color}">${d.init}</div>
+      <span class="lb-rank">${d.rank <= 3 ? medals[d.rank-1] : d.rank}</span>
+      <div class="lb-avatar" style="background:${d.rank <= 3 ? podiumColors[d.rank-1] : `hsl(${d.name.charCodeAt(0)*37%360},60%,55%)`}">${d.avatar}</div>
       <div class="lb-info"><b>${d.name}</b><span>${valCol(d)}</span></div>
-      <div class="lb-streak">${d.streak} 天連續</div>
+      <div class="lb-streak">🔥 ${d.streak} 天</div>
     </div>`).join('');
   }
+
+  const top3 = getSorted(0).slice(0, 3);
+  const totalXp = lb.reduce((s,d) => s + d.xp, 0);
 
   main.innerHTML = `
   <section class="lb-hero rv-up"><div class="wrap">
     <h1>🏆 學習排行榜</h1>
     <p>與全站 240,000 名學員一起競爭，激發學習動力</p>
     <div class="lb-hero-stats">
-      <div><b>1,245</b><span>本週活躍</span></div>
-      <div><b>89,320</b><span>總學習時數</span></div>
-      <div><b>42</b><span>你的排名</span></div>
+      <div><b>${lb.length}</b><span>上榜學員</span></div>
+      <div><b>${totalXp.toLocaleString()}</b><span>總 XP</span></div>
+      <div><b>${Math.max(...lb.map(d=>d.streak))}</b><span>最長連續</span></div>
     </div>
   </div></section>
   <div class="wrap lb-wrap">
     <div class="lb-top3 rv-up">
-      ${genData(0).slice(0,3).map((d, i) => `<div class="lb-podium ${['gold','silver','bronze'][i]}">
+      ${top3.map((d, i) => `<div class="lb-podium ${['gold','silver','bronze'][i]}">
         <div class="lb-podium-medal">${medals[i]}</div>
-        <div class="lb-podium-avatar" style="background:${d.color}">${d.init}</div>
+        <div class="lb-podium-avatar" style="background:${podiumColors[i]}">${d.avatar}</div>
         <b>${d.name}</b>
-        <span>${d.hours} 小時</span>
+        <span>${d.xp.toLocaleString()} XP</span>
       </div>`).join('')}
     </div>
     <div class="lb-tabs">${tabs.map((t, i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-lbtab="${i}">${t}</button>`).join('')}</div>
     <div class="lb-my rv-up">
-      <span class="lb-rank">${myRank}</span>
+      <span class="lb-rank">--</span>
       <div class="lb-avatar" style="background:var(--pri)">你</div>
-      <div class="lb-info"><b>我的排名</b><span>繼續學習提升排名！</span></div>
+      <div class="lb-info"><b>我的排名</b><span>登入後查看你的排名</span></div>
       <a class="btn btn-pri" href="index.html" style="height:38px;padding:0 20px;font-size:14px">繼續學習</a>
     </div>
     <div class="lb-list" id="lbList">${renderBoard(0)}</div>
   </div>`;
 
-  $$('.lb-tabs .chip', main).forEach((btn, i) => btn.onclick = () => {
+  $$('.lb-tabs .chip', main).forEach(btn => btn.onclick = () => {
     $$('.lb-tabs .chip', main).forEach(b => b.classList.remove('on'));
     btn.classList.add('on');
     activeTab = +btn.dataset.lbtab;

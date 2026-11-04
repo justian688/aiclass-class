@@ -2725,3 +2725,33 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 /* 搜尋 overlay Ctrl+K 提示 */
 .sbox-hint{font-size:12px;color:var(--tx3);text-align:center;margin-top:12px}
 .sbox-hint kbd{font-size:11px;padding:1px 5px;border:1px solid var(--line);border-radius:4px;background:var(--bg2);font-family:system-ui;margin:0 2px}
+
+/* 社群排序工具列 */
+.cmy-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.cmy-sort{display:flex;gap:6px}
+.cmy-course-link{font-size:12px;color:var(--pri);margin-top:4px}
+
+/* 測驗答題分析 */
+.qz-result-details{max-height:280px;overflow-y:auto;margin:16px 0;text-align:left;border:1px solid var(--line);border-radius:12px;padding:8px}
+.qz-detail-item{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap}
+.qz-detail-item:last-child{border-bottom:0}
+.qz-detail-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.qz-detail-item.correct .qz-detail-num{background:#34c75920;color:#34c759}
+.qz-detail-item.wrong .qz-detail-num{background:#ff3b3020;color:#ff3b30}
+.qz-detail-q{flex:1;min-width:0}
+.qz-detail-icon{flex-shrink:0}
+.qz-detail-ans{width:100%;font-size:12px;color:var(--pri);padding-left:32px;margin-top:2px}
+.qz-card-course{font-size:12px;color:var(--tx2);margin:-4px 0 6px}
+
+/* 成就 XP 進度條 */
+.ach-xp-bar{margin:0 auto 32px;max-width:480px;text-align:center}
+.ach-xp-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+.ach-xp-label b{color:var(--pri);font-size:20px}
+.ach-xp-track{height:10px;background:var(--bg2);border-radius:10px;overflow:hidden}
+.ach-xp-fill{height:100%;background:linear-gradient(90deg,var(--pri),var(--pink));border-radius:10px;transition:width .6s ease}
+.ach-xp-next{font-size:12px;color:var(--tx2);margin-top:6px}
+.ach-xp-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--pri);background:rgba(124,92,255,.1);padding:2px 8px;border-radius:8px;margin-top:4px}
+[data-theme="dark"] .ach-xp-badge{background:rgba(124,92,255,.2)}
+
+/* 直播回放標記 */
+.live-replay-badge{position:absolute;top:8px;left:8px;background:var(--pri);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
