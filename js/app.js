@@ -246,8 +246,14 @@ function shell() {
   // 通知面板
   const notifBtn = $('.notif-btn', hdr), notifPanel = $('.notif-panel', hdr);
   if (notifBtn) {
-    notifBtn.onclick = () => { notifPanel.classList.toggle('on'); const dot = $('.notif-dot', notifBtn); if (dot) dot.remove(); };
+    notifBtn.onclick = () => { notifPanel.classList.toggle('on'); };
     document.addEventListener('click', e => { if (!e.target.closest('.notif-wrap')) notifPanel.classList.remove('on'); });
+    const readAllBtn = $('.notif-read-all', hdr);
+    if (readAllBtn) readAllBtn.onclick = () => {
+      $$('.notif-item.unread', notifPanel).forEach(el => el.classList.remove('unread'));
+      const dot = $('.notif-dot', notifBtn); if (dot) dot.remove();
+      toast('已全部標為已讀');
+    };
   }
 
   // 深色模式切換
@@ -589,6 +595,16 @@ function home() {
       <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
   </section>`);
 
+  // 最近瀏覽（放在「為你推薦」上方）
+  const recentIds = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
+  if (recentIds.length > 0) {
+    const recentCourses = recentIds.map(id => byId[id]).filter(Boolean).slice(0, 6);
+    if (recentCourses.length) {
+      main.insertAdjacentHTML('beforeend', `<section class="sec" id="recent"><div class="wrap"><div class="sec-head rv-up"><div><h2>最近瀏覽</h2><div class="sub">繼續你的學習之旅</div></div></div>
+        <div class="rail">${recentCourses.map((c, i) => card(c, i)).join('')}</div></div></section>`);
+    }
+  }
+
   // 分類
   main.insertAdjacentHTML('beforeend', `<div class="wrap" id="cat-all"><div class="chips">${window.CATS.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-cat="${c.id}">${c.name}</button>`).join('')}</div></div>`);
   // 排序按鈕
@@ -694,16 +710,6 @@ function home() {
       return `<a class="cat-card" href="index.html#cat-${cat.id}" style="--cimg:url(${bgUrl})">
         <span class="cat-count">${cnt} 堂課程</span><span class="cat-name">${cat.name}</span></a>`;
     }).join('')}</div></div></section>`);
-
-  // 最近瀏覽
-  const recentIds = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
-  if (recentIds.length > 0) {
-    const recentCourses = recentIds.map(id => byId[id]).filter(Boolean).slice(0, 6);
-    if (recentCourses.length) {
-      main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>最近瀏覽</h2><div class="sub">繼續你的學習之旅</div></div></div>
-        <div class="rail">${recentCourses.map((c, i) => card(c, i)).join('')}</div></div></section>`);
-    }
-  }
 
   // 超值組合包
   const bundles = [
