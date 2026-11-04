@@ -3258,7 +3258,7 @@ function checkoutPage() {
   const submitBtn = $('#ckSubmit', main);
   submitBtn.onclick = () => {
     submitBtn.disabled = true;
-    submitBtn.textContent = '處理中…';
+    submitBtn.innerHTML = '<span class="ck-spinner"></span> 處理中…';
     const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
     items.forEach(c => owned.add(c.id));
     localStorage.setItem('aic-owned', JSON.stringify([...owned]));
@@ -3312,6 +3312,42 @@ function orderCompletePage() {
     </div>
   </div>`;
   reveal(main);
+  // Confetti celebration
+  const canvas = document.createElement('canvas'); canvas.className = 'oc-confetti';
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  document.body.append(canvas);
+  const ctx = canvas.getContext('2d');
+  const colors = ['#7c5cff','#ff5c8a','#34c759','#ff9500','#00b4d8','#ffcc00'];
+  const pieces = Array.from({length: 80}, () => ({
+    x: Math.random() * canvas.width, y: -20 - Math.random() * 200,
+    w: 6 + Math.random() * 6, h: 4 + Math.random() * 4,
+    r: Math.random() * 360, dr: (Math.random() - .5) * 8,
+    vy: 2 + Math.random() * 3, vx: (Math.random() - .5) * 2,
+    c: colors[Math.floor(Math.random() * colors.length)],
+    o: 1
+  }));
+  let frame = 0;
+  (function drawConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.o <= 0) return;
+      alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r * Math.PI / 180);
+      ctx.globalAlpha = p.o;
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+      p.y += p.vy; p.x += p.vx; p.r += p.dr;
+      p.vy += 0.05;
+      if (frame > 60) p.o -= 0.008;
+    });
+    frame++;
+    if (alive && frame < 180) requestAnimationFrame(drawConfetti);
+    else canvas.remove();
+  })();
 }
 
 /* ---------- 優惠券 ---------- */
