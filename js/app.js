@@ -252,13 +252,25 @@ function shell() {
   mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"><i>⌂</i>首頁</a><a href="#" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"><i>☺</i>我的</a>`;
   document.body.append(mn);
 
-  const toast = document.createElement('div'); toast.className = 'toast'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite'); document.body.append(toast);
+  if (page === 'home' && !sessionStorage.getItem('aic-splash')) {
+    sessionStorage.setItem('aic-splash', '1');
+    const splash = document.createElement('div'); splash.className = 'splash';
+    splash.innerHTML = `<div class="splash-inner"><svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><linearGradient id="slg" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="4" y="4" width="72" height="72" rx="22" fill="url(#slg)"/><path d="M22 58 L40 20 L58 58" stroke="#fff" stroke-width="6.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="46" r="5.2" fill="#fff"/></svg><div class="splash-bar"><div class="splash-fill"></div></div></div>`;
+    document.body.append(splash);
+    setTimeout(() => { splash.classList.add('out'); setTimeout(() => splash.remove(), 400); }, 600);
+  }
+
+  const toastBox = document.createElement('div'); toastBox.className = 'toast-stack'; toastBox.setAttribute('aria-live', 'polite'); document.body.append(toastBox);
   window.toast = (msg, type) => {
-    const icon = type === 'success' ? '✓ ' : type === 'error' ? '✕ ' : type === 'info' ? 'ℹ ' : '';
-    toast.className = 'toast' + (type ? ' toast-' + type : '');
-    toast.textContent = icon + msg;
-    toast.classList.add('on');
-    clearTimeout(toast.t); toast.t = setTimeout(() => toast.classList.remove('on'), 1800);
+    const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+    const el = document.createElement('div');
+    el.className = 'toast-item' + (type ? ' toast-' + type : '');
+    el.innerHTML = `${type && icons[type] ? `<span class="toast-icon">${icons[type]}</span>` : ''}<span class="toast-msg">${msg}</span><button class="toast-close" aria-label="關閉">×</button>`;
+    toastBox.append(el);
+    requestAnimationFrame(() => el.classList.add('on'));
+    const dismiss = () => { el.classList.remove('on'); setTimeout(() => el.remove(), 350); };
+    el.querySelector('.toast-close').onclick = dismiss;
+    setTimeout(dismiss, 3000);
   };
   const wBtn = $('[data-wishlist]');
   if (wBtn) wBtn.onclick = e => { e.preventDefault(); toast(`已收藏 ${wish.size} 堂課程`); };
@@ -1226,8 +1238,13 @@ function course() {
   $$('.qa button').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
   bindCards(main); bindRail($('#more'));
 
-  // 分頁 scrollspy
+  // 分頁 scrollspy + smooth scroll on click
   const tabs = $$('.tabs a'), secs = tabs.map(a => $(a.getAttribute('href')));
+  tabs.forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = $(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
   addEventListener('scroll', () => {
     let n = 0; secs.forEach((s, i) => { if (s.getBoundingClientRect().top < 180) n = i; });
     tabs.forEach((a, i) => a.classList.toggle('on', i === n));
@@ -1244,12 +1261,20 @@ function course() {
   // Sticky purchase bar (all viewports)
   if (!isOwned) {
     const sbar = document.createElement('div'); sbar.className = 'sticky-buy';
-    sbar.innerHTML = `<div class="wrap"><div class="sticky-buy-info"><img class="sticky-buy-thumb" src="${img(c)}" alt=""><span class="sticky-buy-title">${c.title}</span></div><span class="sticky-buy-origin">${fmt(c.origin)}</span><span class="sticky-buy-price">${fmt(c.price)}</span><button class="btn btn-ghost sticky-cart-btn">加入購物車</button><button class="btn btn-pri sticky-buy-btn">立即購買</button></div>`;
+    const disc = pct(c);
+    sbar.innerHTML = `<div class="wrap"><div class="sticky-buy-info"><img class="sticky-buy-thumb" src="${img(c)}" alt=""><span class="sticky-buy-title">${c.title}</span></div><span class="sticky-buy-origin">${fmt(c.origin)}</span><span class="sticky-buy-price">${fmt(c.price)}</span><span class="sb-disc">-${disc}%</span><button class="btn btn-ghost sticky-cart-btn"><span class="sb-cart-txt">加入購物車</span><span class="sb-cart-ok" hidden>✓ 已加入</span></button><button class="btn btn-pri sticky-buy-btn"><span class="sb-buy-full">立即購買</span><span class="sb-buy-short">購買</span></button></div>`;
     document.body.append(sbar);
     const buyAside = $('.buy');
     addEventListener('scroll', () => { sbar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }, { passive: true });
     $('.sticky-buy-btn', sbar).onclick = () => toast('示範網站：尚未串接金流');
-    $('.sticky-cart-btn', sbar).onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
+    const sbCartBtn = $('.sticky-cart-btn', sbar);
+    sbCartBtn.onclick = () => {
+      cart.add(c.id); saveCart(); updateCartBadge();
+      const txt = $('.sb-cart-txt', sbCartBtn), ok = $('.sb-cart-ok', sbCartBtn);
+      txt.hidden = true; ok.hidden = false; sbCartBtn.classList.add('sb-added');
+      setTimeout(() => { txt.hidden = false; ok.hidden = true; sbCartBtn.classList.remove('sb-added'); }, 1500);
+      toast('已加入購物車 🛒', 'success');
+    };
   }
 
   bindNotes(c.id, main);
