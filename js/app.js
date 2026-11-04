@@ -443,7 +443,8 @@ function searchOverlay() {
     selIdx = -1;
     const q = inp.value.trim().toLowerCase();
     const list = q ? C.filter(c => (c.title + c.teacher + c.role + (c.sub || '')).toLowerCase().includes(q)) : [];
-    res.innerHTML = !q ? '' : list.length ? `<div class="sres-count">找到 ${list.length} 筆結果</div>` + list.slice(0, 8).map((c, i) => `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt=""><div><b>${c.title}</b><div class="stars">${c.teacher}・${fmt(c.price)}</div><span class="sres-cat">${c.sub || c.cat}</span></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
+    const hl = (t) => { const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return t.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>'); };
+    res.innerHTML = !q ? '' : list.length ? `<div class="sres-count">找到 ${list.length} 筆結果</div>` + list.slice(0, 8).map((c, i) => `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt=""><div><b>${hl(c.title)}</b><div class="sres-info"><span class="sres-star">★ ${c.rating}</span><span>${hl(c.teacher)}・${fmt(c.price)}</span></div><span class="sres-cat">${c.sub || c.cat}</span></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
   };
   const updSel = () => { $$('.sres-item', res).forEach((a, i) => a.classList.toggle('sres-active', i === selIdx)); };
   inp.oninput = run;
@@ -1258,6 +1259,11 @@ function course() {
         <div><span>🔒</span> 安全加密付款</div>
         <div><span>⭐</span> ${c.rating.toFixed(1)} 超高評價</div>
       </div>
+      <div class="c-mini-reviews">
+        <h4>學員怎麼說</h4>
+        ${reviewData.slice(0, 2).map(r => `<div class="c-mini-rv"><div class="c-mini-av">${r.initial}</div><div><div class="c-mini-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div><p>${r.text.length > 50 ? r.text.slice(0, 50) + '…' : r.text}</p><span class="c-mini-name">${r.name}</span></div></div>`).join('')}
+        <a href="#reviews" class="c-mini-cta">查看全部 ${c.students.toLocaleString()} 則評價 →</a>
+      </div>
     </aside>
   </div></div></div>
   <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a></div></nav>
@@ -1283,6 +1289,15 @@ function course() {
         <div class="c-inc-item"><span class="c-inc-icon">🏆</span><span>結業證書</span></div>
       </div>
     </section>
+    <div class="c-update-pledge rv-up">
+      <div class="cup-header"><span class="cup-icon">🔄</span><h3>業界唯一的免費更新承諾</h3></div>
+      <p class="cup-desc">業界趨勢瞬息萬變，我們承諾課程內容將隨著工具更新、技術演進持續改版。已購買的學員，永遠免費享有最新版本。</p>
+      <div class="cup-timeline">
+        <div class="cup-tl-item"><div class="cup-tl-dot"></div><div><b>v3.2</b><span>2026/10 — 新增實戰專案章節</span></div></div>
+        <div class="cup-tl-item"><div class="cup-tl-dot"></div><div><b>v3.1</b><span>2026/09 — 素材包全面更新</span></div></div>
+        <div class="cup-tl-item"><div class="cup-tl-dot"></div><div><b>v3.0</b><span>2026/08 — 全課程重新錄製</span></div></div>
+      </div>
+    </div>
     <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${chapters.length} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
       <div class="curri-bar rv-up"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div>
       ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>

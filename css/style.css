@@ -3658,3 +3658,36 @@ h3{font-size:clamp(18px,2.2vw,24px)}
   footer{border-top:1pt solid #ccc;padding-top:8pt;font-size:9pt;color:#666}
   .cert-card{border:2pt solid #7c5cff;padding:24pt;text-align:center;page-break-inside:avoid}
 }
+
+/* ── 側邊欄學員心聲 ── */
+.c-mini-reviews{margin-top:16px;padding:16px;background:var(--bg2);border-radius:14px}
+.c-mini-reviews h4{font-size:14px;font-weight:700;margin:0 0 12px;color:var(--tx)}
+.c-mini-rv{display:flex;gap:10px;padding:10px 0;border-top:1px solid color-mix(in srgb,var(--tx) 8%,transparent)}
+.c-mini-rv:first-of-type{border-top:0;padding-top:0}
+.c-mini-av{width:32px;height:32px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.c-mini-stars{font-size:12px;color:#fbbf24;letter-spacing:-1px}
+.c-mini-rv p{font-size:13px;line-height:1.5;color:var(--tx2);margin:4px 0 2px}
+.c-mini-name{font-size:12px;color:var(--tx3)}
+.c-mini-cta{display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--pri);text-decoration:none;font-weight:600}
+.c-mini-cta:hover{text-decoration:underline}
+
+/* ── 免費更新保證 ── */
+.c-update-pledge{margin:32px 0;padding:28px 32px;border:2px solid color-mix(in srgb,var(--pri) 20%,transparent);border-radius:16px;background:color-mix(in srgb,var(--pri) 4%,var(--bg))}
+.cup-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cup-icon{font-size:28px}
+.cup-header h3{font-size:18px;font-weight:700;margin:0;color:var(--tx)}
+.cup-desc{font-size:14px;line-height:1.7;color:var(--tx2);margin:0 0 20px}
+.cup-timeline{position:relative;padding-left:20px;border-left:2px solid var(--pri)}
+.cup-tl-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;position:relative}
+.cup-tl-item:last-child{margin-bottom:0}
+.cup-tl-dot{width:10px;height:10px;border-radius:50%;background:var(--pri);position:absolute;left:-26px;top:4px;box-shadow:0 0 0 3px color-mix(in srgb,var(--pri) 20%,transparent)}
+.cup-tl-item b{font-size:13px;color:var(--pri);min-width:36px}
+.cup-tl-item span{font-size:13px;color:var(--tx2)}
+@media(max-width:760px){
+  .c-update-pledge{padding:20px}
+}
+
+/* ── 搜尋結果強化 ── */
+.sres-item mark{background:color-mix(in srgb,var(--pri) 25%,transparent);color:var(--tx);border-radius:2px;padding:0 1px}
+.sres-star{color:#fbbf24;font-size:13px;font-weight:600;margin-right:6px}
+.sres-info{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--tx2)}
