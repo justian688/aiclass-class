@@ -2296,3 +2296,14 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
 [data-theme="dark"] .lvl-beg{background:rgba(46,125,50,.15);color:#81c784}
 [data-theme="dark"] .lvl-mid{background:rgba(230,81,0,.15);color:#ffb74d}
 [data-theme="dark"] .lvl-adv{background:rgba(198,40,40,.15);color:#ef9a9a}
+
+/* ===== 字體大小 ===== */
+.font-size-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;font-weight:900;font-size:15px;color:var(--tx);background:var(--bg2);border:1px solid var(--line);cursor:pointer;transition:.2s;margin-left:4px}
+.font-size-btn:hover{border-color:var(--pri);color:var(--pri)}
+[data-fontsize="large"] body{font-size:17px}
+[data-fontsize="large"] .c-sec p,[data-fontsize="large"] .c-desc{font-size:16px;line-height:1.8}
+[data-fontsize="large"] .card h3{font-size:17px}
+[data-fontsize="xlarge"] body{font-size:19px}
+[data-fontsize="xlarge"] .c-sec p,[data-fontsize="xlarge"] .c-desc{font-size:18px;line-height:1.9}
+[data-fontsize="xlarge"] .card h3{font-size:19px}
+[data-fontsize="xlarge"] .c-title{font-size:32px}

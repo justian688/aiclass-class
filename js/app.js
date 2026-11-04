@@ -242,6 +242,20 @@ function shell() {
   syncTheme();
   tBtn.onclick = () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); localStorage.setItem('aic-theme', next); syncTheme(); };
 
+  // 字體大小調整
+  const sizes = ['normal', 'large', 'xlarge'];
+  const sizeLabels = ['標準', '大', '特大'];
+  let sizeIdx = sizes.indexOf(localStorage.getItem('aic-fontsize') || 'normal');
+  if (sizeIdx < 0) sizeIdx = 0;
+  document.documentElement.dataset.fontsize = sizes[sizeIdx];
+  const fsBtn = document.createElement('button');
+  fsBtn.className = 'font-size-btn';
+  fsBtn.setAttribute('aria-label', '字體大小');
+  fsBtn.textContent = 'A';
+  fsBtn.title = '字體大小：' + sizeLabels[sizeIdx];
+  fsBtn.onclick = () => { sizeIdx = (sizeIdx + 1) % sizes.length; document.documentElement.dataset.fontsize = sizes[sizeIdx]; localStorage.setItem('aic-fontsize', sizes[sizeIdx]); fsBtn.title = '字體大小：' + sizeLabels[sizeIdx]; toast('字體大小：' + sizeLabels[sizeIdx]); };
+  tBtn.after(fsBtn);
+
   // 回到頂部
   const btt = document.createElement('button'); btt.className = 'back-top'; btt.innerHTML = '↑'; btt.setAttribute('aria-label', '回到頂部');
   btt.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
