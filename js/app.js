@@ -10,6 +10,7 @@ const wish = new Set(JSON.parse(localStorage.getItem('aic-wish') || '[]'));
 const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
 const aicUser = JSON.parse(localStorage.getItem('aic-user') || 'null');
 const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
+const streakData = (() => { const k = 'aic-streak', today = new Date().toISOString().slice(0,10), d = JSON.parse(localStorage.getItem(k) || '{"last":"","count":0}'), yd = new Date(Date.now()-864e5).toISOString().slice(0,10); if (d.last !== today) { d.count = d.last === yd ? d.count + 1 : 1; d.last = today; localStorage.setItem(k, JSON.stringify(d)); } return d; })();
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) b.textContent = cart.size || ''; if (b) b.style.display = cart.size ? 'flex' : 'none'; }
 
@@ -148,6 +149,7 @@ function quickPreview(courseId) {
       <p class="qp-teacher">${c.teacher}・${c.role}</p>
       <div class="qp-stats"><span>★ ${c.rating.toFixed(1)}</span><span>${c.students.toLocaleString()} 學員</span><span>${c.hours} 小時</span></div>
       ${c.ai ? `<p class="qp-ai"><span class="ai-tag">✦ AI 摘要</span> ${c.ai}</p>` : ''}
+      ${(()=>{ const chs = window.CHAPTERS && window.CHAPTERS[courseId]; return chs ? `<div class="qp-chapters"><h4>📚 課程章節</h4><div class="qp-ch-list">${chs.map(ch=>`<div class="qp-ch"><span class="qp-ch-num">CH${ch.ch}</span><b>${ch.title}</b><span class="qp-ch-dur">${ch.duration} 分鐘・${ch.lessons.length} 堂</span></div>`).join('')}</div></div>` : ''; })()}
       <div class="qp-price"><span class="qp-now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del><span class="qp-pct">${pct(c)}% OFF</span></div>
       <div class="qp-actions">
         <a class="btn btn-pri" href="course.html?id=${c.id}">查看完整課程</a>
@@ -707,8 +709,9 @@ function home() {
 
   // 合作品牌
   if (window.PARTNERS) {
-    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>合作品牌與機構</h2><div class="sub">講師來自各領域頂尖企業</div></div></div>
-      <div class="partners rv-up">${window.PARTNERS.map(p => `<div class="partner">${p}</div>`).join('')}</div></div></section>`);
+    const pts = window.PARTNERS;
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>合作品牌與機構</h2><div class="sub">超過 ${pts.length} 家企業信賴 AI Class 的教育品質</div></div></div>
+      <div class="partners-marquee rv-up"><div class="partners-track">${[...pts,...pts].map(p => `<span class="partner-logo">${p}</span>`).join('')}</div></div></div></section>`);
   }
 
   // 分類瀏覽
@@ -721,26 +724,48 @@ function home() {
         <span class="cat-count">${cnt} 堂課程</span><span class="cat-name">${cat.name}</span></a>`;
     }).join('')}</div></div></section>`);
 
-  // 超值組合包
-  const bundles = [
-    { name: 'AI 入門全攻略', courses: C.slice(0, 3), origin: 14500, price: 9800, save: 32 },
-    { name: '設計師必修套餐', courses: C.slice(3, 6), origin: 16000, price: 10500, save: 34 },
-    { name: '全端開發者養成', courses: C.slice(6, 9), origin: 13800, price: 8900, save: 36 },
-  ];
-  main.insertAdjacentHTML('beforeend', `<section class="sec" id="bundles"><div class="wrap"><div class="sec-head rv-up"><div><h2>超值組合包</h2><div class="sub">多堂課程一起買，省更多</div></div></div>
-    <div class="bndl-grid rv-up">${bundles.map(b => `<div class="bndl-card">
-      <div class="bndl-badge">省 ${b.save}%</div>
-      <h3 class="bndl-name">${b.name}</h3>
-      <div class="bndl-thumbs">${b.courses.map(c => `<img src="${img(c)}" alt="${c.title}" title="${c.title}">`).join('')}</div>
-      <ul class="bndl-list">${b.courses.map(c => `<li>${c.title}</li>`).join('')}</ul>
-      <div class="bndl-price"><span class="bndl-origin">${fmt(b.origin)}</span><span class="bndl-now">${fmt(b.price)}</span></div>
-      <button class="btn btn-pri bndl-buy" onclick="toast('已將組合包加入購物車')">加入購物車</button>
-    </div>`).join('')}</div></div></section>`);
+  // 超值組合包（使用 data.js BUNDLES）
+  if (window.BUNDLES) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="bundles"><div class="wrap"><div class="sec-head rv-up"><div><h2>超值組合包</h2><div class="sub">多堂課程一起買，省更多</div></div></div>
+      <div class="bundle-grid">${window.BUNDLES.map(b => { const courses = b.courses.map(id => byId[id]).filter(Boolean); return `<div class="bundle-card rv-up">
+        <span class="bundle-tag">${b.tag}</span>
+        <div class="bundle-name">${b.name}</div>
+        <div class="bundle-desc">${b.desc}</div>
+        <div class="bundle-courses">${courses.map(c => `<span class="bundle-course-chip">${c.title.split('：')[0]}</span>`).join('')}</div>
+        <div class="bundle-price-row"><span class="bundle-price">${fmt(b.price)}</span><span class="bundle-origin">${fmt(b.original)}</span></div>
+        <div class="bundle-save">省下 ${fmt(b.save)}</div>
+        <button class="btn btn-pri" style="width:100%;margin-top:16px" onclick="toast('已將組合包加入購物車')">加入購物車</button>
+      </div>`; }).join('')}</div></div></section>`);
+  }
+
+  // 學員成功故事
+  if (window.SUCCESS_STORIES) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="stories"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員成功故事</h2><div class="sub">他們在 AI Class 找到了新的可能</div></div></div>
+      <div class="story-grid">${window.SUCCESS_STORIES.map(s => `<div class="story-card rv-up">
+        <div class="story-hdr"><div class="story-avatar">${s.avatar}</div><div class="story-meta"><h3>${s.name}</h3><span>${s.role}</span></div></div>
+        <div class="story-body">${s.story}</div>
+        <div class="story-stats"><div class="story-stat"><b>${s.salary}</b>薪資變化</div><div class="story-stat"><b>${s.duration}</b>花費時間</div></div>
+      </div>`).join('')}</div></div></section>`);
+  }
+
+  // 即將上架
+  if (window.UPCOMING_COURSES) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="upcoming"><div class="wrap"><div class="sec-head rv-up"><div><h2>即將上架</h2><div class="sub">搶先登記，開課通知第一手</div></div></div>
+      <div class="upcoming-grid">${window.UPCOMING_COURSES.map(uc => `<div class="upcoming-card rv-up">
+        <div class="upcoming-cat">${(window.CATS.find(c => c.id === uc.cat) || {}).name || ''}</div>
+        <h3>${uc.title}</h3>
+        <div class="upcoming-teacher">${uc.teacher}</div>
+        <div class="upcoming-date">預計 ${uc.expected} 上架</div>
+        <div class="upcoming-interest">${uc.interest.toLocaleString()} 人期待中</div>
+        <div class="upcoming-price">${fmt(uc.earlybird)}<small>早鳥價</small></div>
+        <button class="upcoming-btn" onclick="toast('已登記開課通知')">登記通知</button>
+      </div>`).join('')}</div></div></section>`);
+  }
 
   // 你的學習旅程（使用真實 owned 數據）
   const ownedCount = owned.size;
   const totalHours = [...owned].map(id => byId[id]).filter(Boolean).reduce((s, c) => s + c.hours, 0);
-  const streakDays = ownedCount > 0 ? Math.min(7, ownedCount + 4) : 0;
+  const streakDays = streakData.count;
   const streakPct = Math.round(streakDays / 7 * 100);
   const hoursPct = Math.min(100, Math.round(totalHours / 50 * 100));
   const coursePct = Math.min(100, Math.round(ownedCount / 10 * 100));
@@ -957,34 +982,42 @@ function course() {
   const others = C.filter(x => x.id !== c.id && x.cat === c.cat).concat(C.filter(x => x.cat !== c.cat)).slice(0, 8);
   const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
 
-  // 自動根據課程時數生成章節
-  const chapNames = ['課程介紹與準備','基礎觀念建立','進階技巧','完整專案實作','作品發表與職涯','加碼：業界趨勢'];
-  const lessonBank = [
-    ['講師介紹與課程地圖','工具安裝與環境設定','素材下載說明','課前暖身練習'],
-    ['核心原理拆解','常見錯誤與修正','練習：小作品實作','觀念總整理','延伸閱讀導讀'],
-    ['職人工作流程','效率提升的祕訣','案例分析','進階手法演練'],
-    ['專案規劃','製作過程全紀錄','細節修飾與完稿','專案覆盤與優化','跨平台適配'],
-    ['作品集整理','定價與接案流程','個人品牌經營','面試作品展示技巧'],
-    ['產業趨勢分析','AI 工具輔助創作','社群經營策略','結語與下一步']
-  ];
-  const numChaps = c.hours >= 20 ? 6 : 5;
-  const totalLessons = Math.max(numChaps * 4, Math.round(c.hours * 60 / 12));
-  const chapters = [];
-  let lessonIdx = 0;
-  for (let i = 0; i < numChaps; i++) {
-    const bank = lessonBank[i] || lessonBank[lessonBank.length - 1];
-    const cnt = i === 0 ? 4 : Math.min(5, Math.max(4, Math.round((totalLessons - lessonIdx) / (numChaps - i))));
-    const lessons = [];
-    for (let j = 0; j < cnt; j++) {
-      const mins = 8 + ((i * 3 + j * 7) % 15);
-      const secs = String((i * 17 + j * 23) % 60).padStart(2, '0');
-      const free = i === 0 && j === 0;
-      lessons.push({ name: bank[j % bank.length], time: `${mins}:${secs}`, free });
-      lessonIdx++;
+  // 使用 CHAPTERS 真實資料，或自動生成章節
+  let chapters, totalLessonCount, numChaps;
+  const _chData = window.CHAPTERS && window.CHAPTERS[c.id];
+  if (_chData) {
+    chapters = _chData.map((ch, ci) => ({ name: ch.title, lessons: ch.lessons.map((name, j) => ({ name, time: `${8 + (j * 7 % 15)}:${String((j * 23) % 60).padStart(2, '0')}`, free: ci === 0 && j === 0 })) }));
+    totalLessonCount = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
+    numChaps = chapters.length;
+  } else {
+    const chapNames = ['課程介紹與準備','基礎觀念建立','進階技巧','完整專案實作','作品發表與職涯','加碼：業界趨勢'];
+    const lessonBank = [
+      ['講師介紹與課程地圖','工具安裝與環境設定','素材下載說明','課前暖身練習'],
+      ['核心原理拆解','常見錯誤與修正','練習：小作品實作','觀念總整理','延伸閱讀導讀'],
+      ['職人工作流程','效率提升的祕訣','案例分析','進階手法演練'],
+      ['專案規劃','製作過程全紀錄','細節修飾與完稿','專案覆盤與優化','跨平台適配'],
+      ['作品集整理','定價與接案流程','個人品牌經營','面試作品展示技巧'],
+      ['產業趨勢分析','AI 工具輔助創作','社群經營策略','結語與下一步']
+    ];
+    const numChaps = c.hours >= 20 ? 6 : 5;
+    const totalLessons = Math.max(numChaps * 4, Math.round(c.hours * 60 / 12));
+    chapters = [];
+    let lessonIdx = 0;
+    for (let i = 0; i < numChaps; i++) {
+      const bank = lessonBank[i] || lessonBank[lessonBank.length - 1];
+      const cnt = i === 0 ? 4 : Math.min(5, Math.max(4, Math.round((totalLessons - lessonIdx) / (numChaps - i))));
+      const lessons = [];
+      for (let j = 0; j < cnt; j++) {
+        const mins = 8 + ((i * 3 + j * 7) % 15);
+        const secs = String((i * 17 + j * 23) % 60).padStart(2, '0');
+        const free = i === 0 && j === 0;
+        lessons.push({ name: bank[j % bank.length], time: `${mins}:${secs}`, free });
+        lessonIdx++;
+      }
+      chapters.push({ name: chapNames[i], lessons });
     }
-    chapters.push({ name: chapNames[i], lessons });
+    totalLessonCount = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
   }
-  const totalLessonCount = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
 
   // 評論假資料（含頭像首字、姓名、日期、評分）
   const reviewData = [
@@ -1054,11 +1087,14 @@ function course() {
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
       <div class="c-highlights rv-up">${['從零到一完整學習','業界實戰流程','可直接使用的專案檔','講師親自回覆問題','終身免費更新','完課證書'].map(t=>`<span class="c-hl">${t}</span>`).join('')}</div>
       <div class="points">
-      ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。'], ['04', '持續精進', '加碼業界趨勢與 AI 工具應用，讓你保持競爭力。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div></section>
+      ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。'], ['04', '持續精進', '加碼業界趨勢與 AI 工具應用，讓你保持競爭力。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div>
+      ${(()=>{const lv=courseLevel(c);const targets=lv.label==='入門'?['完全沒有相關經驗的初學者','想轉職但不知從何開始的人','對這個領域有興趣，想建立系統性知識的人','希望有人帶著做，不想自己摸索的人']:lv.label==='進階'?['已有基礎，想提升到專業水準的人','想學業界實戰流程與技巧的人','需要完成作品集或升級技能的在職者','想接案或建立個人品牌的創作者']:['有一定基礎，想更深入學習的人','希望系統化整理知識的自學者','想學更多實務技巧的在職人士','準備升級技能、拓展職涯的人'];return `<div class="c-target rv-up"><h3>🎯 適合對象</h3><ul>${targets.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;})()}
+      ${(()=>{const chs=window.CHAPTERS&&window.CHAPTERS[c.id];if(!chs)return '';const outcomes=chs.flatMap(ch=>ch.lessons.slice(0,2)).slice(0,8);return `<div class="c-outcomes rv-up"><h3>✅ 完成這堂課，你將能夠</h3><div class="c-outcomes-grid">${outcomes.map(o=>`<div class="c-outcome-item"><span class="c-outcome-check">✓</span>${o}</div>`).join('')}</div></div>`;})()}
+    </section>
     <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
       <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}"></video></div>
       ${others.slice(0, 4).map(o => `<div class="rv-up"><img src="${img(o)}" alt="" loading="lazy"></div>`).join('')}</div></section>
-    <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${numChaps} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
+    <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${chapters.length} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
       <div class="curri-bar rv-up"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div>
       ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
         <span><span class="chap-play">${l.free ? '▶' : '🔒'}</span>${i + 1}-${j + 1} ${l.name}${l.free ? '<em class="chap-free">免費試看</em>' : ''}</span>
@@ -2249,8 +2285,8 @@ function myPage() {
     return { date: d, mins, dow: d.getDay() };
   });
   const memberSince = '2026 年 3 月';
-  const streakDays = 7;
-  const totalPts = 462;
+  const streakDays = streakData.count;
+  const totalPts = streakDays * 30 + enrolled.length * 120;
   const level = Math.min(12, Math.floor(totalHours / 5) + 1);
   const levelTitle = totalHours >= 60 ? '學習大師' : totalHours >= 30 ? '進階學員' : '新手學員';
 

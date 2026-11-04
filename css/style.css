@@ -284,6 +284,11 @@ footer a:hover{color:var(--tx)}
 .partners{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
 .partner{flex:1 1 140px;max-width:180px;padding:22px 20px;text-align:center;border-radius:16px;background:var(--bg2);border:1px solid var(--line);font-size:16px;font-weight:700;color:var(--tx3);letter-spacing:.04em;transition:.3s}
 .partner:hover{color:var(--tx);border-color:var(--pri);transform:translateY(-3px)}
+.partners-marquee{overflow:hidden;mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.partners-track{display:flex;gap:40px;animation:marquee 25s linear infinite;white-space:nowrap;width:max-content}
+.partner-logo{font-size:18px;font-weight:800;color:var(--tx2);padding:14px 28px;background:var(--bg2);border-radius:12px;border:1px solid var(--line);flex-shrink:0;letter-spacing:.03em}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.partners-track{animation:none;flex-wrap:wrap;justify-content:center;width:auto}}
 
 /* 分類瀏覽 */
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
@@ -2819,6 +2824,105 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 [data-theme="dark"] .vid-card:hover{box-shadow:0 8px 24px rgba(124,92,255,.25)}
 @media(max-width:760px){.vid-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}}
 @media(max-width:480px){.vid-grid{grid-template-columns:1fr;gap:14px}.vid-modal{width:96%}}
+
+/* ===== 組合包 ===== */
+.bundle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px;margin-top:24px}
+.bundle-card{background:var(--card,#fff);border:1.5px solid var(--line);border-radius:18px;padding:28px;transition:transform .3s var(--ease),box-shadow .3s,border-color .3s;position:relative;overflow:hidden}
+.bundle-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(124,92,255,.12);border-color:var(--pri)}
+.bundle-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad);opacity:0;transition:opacity .3s}
+.bundle-card:hover::before{opacity:1}
+.bundle-tag{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--grad);padding:3px 12px;border-radius:8px;margin-bottom:12px}
+.bundle-tag:empty{display:none}
+.bundle-name{font-size:20px;font-weight:800;margin-bottom:6px}
+.bundle-desc{font-size:14px;color:var(--tx2);margin-bottom:16px;line-height:1.5}
+.bundle-courses{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.bundle-course-chip{font-size:12px;padding:4px 12px;border-radius:10px;background:var(--bg2);color:var(--tx2);white-space:nowrap}
+.bundle-price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.bundle-price{font-size:28px;font-weight:900;color:var(--pri)}
+.bundle-origin{font-size:15px;color:var(--tx3);text-decoration:line-through}
+.bundle-save{font-size:13px;color:var(--pink);font-weight:700}
+[data-theme="dark"] .bundle-card{box-shadow:0 2px 12px rgba(0,0,0,.3)}
+
+/* Quick Preview chapters */
+.qp-chapters{margin-top:16px}
+.qp-chapters h4{font-size:14px;margin-bottom:10px;color:var(--tx2)}
+.qp-ch-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
+.qp-ch{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;background:var(--bg2);font-size:13px}
+.qp-ch-num{font-weight:700;color:var(--pri);min-width:36px}
+.qp-ch b{flex:1;font-weight:500}
+.qp-ch-dur{color:var(--tx2);font-size:12px;white-space:nowrap}
+[data-theme="dark"] .qp-ch{background:rgba(255,255,255,.06)}
+
+/* Course target audience & outcomes */
+.c-target{margin-top:28px;padding:24px;border-radius:16px;background:var(--bg2)}
+.c-target h3{font-size:18px;margin-bottom:14px}
+.c-target ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.c-target li{font-size:14px;padding:8px 0;padding-left:24px;position:relative;color:var(--tx2);line-height:1.5}
+.c-target li::before{content:'✓';position:absolute;left:0;color:var(--pri);font-weight:700}
+.c-outcomes{margin-top:20px}
+.c-outcomes h3{font-size:18px;margin-bottom:14px}
+.c-outcomes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.c-outcome-item{display:flex;align-items:flex-start;gap:8px;font-size:14px;color:var(--tx2);line-height:1.5;padding:10px 14px;border-radius:10px;background:var(--bg2)}
+.c-outcome-check{color:var(--pri);font-weight:700;flex-shrink:0}
+[data-theme="dark"] .c-target{background:rgba(255,255,255,.04)}
+[data-theme="dark"] .c-outcome-item{background:rgba(255,255,255,.04)}
+[data-theme="dark"] .bundle-card:hover{box-shadow:0 16px 40px rgba(124,92,255,.2)}
+@media(max-width:480px){.bundle-grid{grid-template-columns:1fr}}
+
+/* ===== 成功故事 ===== */
+.story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:24px;margin-top:24px}
+.story-card{background:var(--card,#fff);border:1.5px solid var(--line);border-radius:18px;padding:28px;transition:transform .25s var(--ease),box-shadow .25s}
+.story-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(124,92,255,.1)}
+.story-hdr{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.story-avatar{width:52px;height:52px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.story-meta h3{font-size:16px;font-weight:700;margin-bottom:2px}
+.story-meta span{font-size:13px;color:var(--pri);font-weight:600}
+.story-body{font-size:14px;color:var(--tx2);line-height:1.7;margin-bottom:16px}
+.story-stats{display:flex;gap:16px;flex-wrap:wrap}
+.story-stat{display:flex;flex-direction:column;padding:8px 16px;border-radius:10px;background:var(--bg2);font-size:12px;color:var(--tx2)}
+.story-stat b{font-size:15px;color:var(--tx);font-weight:800}
+[data-theme="dark"] .story-card{box-shadow:0 2px 12px rgba(0,0,0,.3)}
+@media(max-width:480px){.story-grid{grid-template-columns:1fr}}
+
+/* ===== 即將上架 ===== */
+.upcoming-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px}
+.upcoming-card{background:var(--card,#fff);border:1.5px dashed var(--line);border-radius:16px;padding:24px;text-align:center;transition:transform .25s,border-color .3s}
+.upcoming-card:hover{transform:translateY(-3px);border-color:var(--pri)}
+.upcoming-cat{font-size:12px;color:var(--pri);font-weight:600;margin-bottom:8px}
+.upcoming-card h3{font-size:16px;font-weight:700;margin-bottom:4px;line-height:1.4}
+.upcoming-teacher{font-size:13px;color:var(--tx2);margin-bottom:12px}
+.upcoming-date{font-size:13px;color:var(--tx3);margin-bottom:8px}
+.upcoming-interest{font-size:14px;font-weight:700;color:var(--pink)}
+.upcoming-price{font-size:20px;font-weight:800;color:var(--pri);margin-top:8px}
+.upcoming-price small{font-size:12px;color:var(--tx2);font-weight:500;margin-left:4px}
+.upcoming-btn{display:inline-block;margin-top:12px;padding:8px 24px;border-radius:10px;background:var(--bg2);font-size:13px;font-weight:700;color:var(--pri);transition:background .2s}
+.upcoming-btn:hover{background:rgba(124,92,255,.12)}
+@media(max-width:480px){.upcoming-grid{grid-template-columns:1fr}}
+
+/* ===== 文章內文樣式 ===== */
+.article-rich h2{font-size:22px;font-weight:800;margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid rgba(124,92,255,.2)}
+.article-rich p{font-size:16px;line-height:1.85;color:var(--tx2);margin-bottom:16px}
+.article-rich p:first-child{font-size:17px;color:var(--tx);line-height:1.8}
+.article-rich blockquote{border-left:4px solid var(--pri);padding:12px 20px;margin:20px 0;background:rgba(124,92,255,.04);border-radius:0 12px 12px 0;font-style:italic;color:var(--tx2)}
+.article-rich ul,.article-rich ol{margin:12px 0 16px 24px;color:var(--tx2)}
+.article-rich li{margin-bottom:6px;line-height:1.7}
+.article-rich img{border-radius:12px;margin:20px 0}
+
+/* ===== 課程頁面標籤美化 ===== */
+.c-tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.c-tag{font-size:12px;padding:4px 14px;border-radius:20px;background:rgba(124,92,255,.08);color:var(--pri);font-weight:600;transition:background .2s}
+.c-tag:hover{background:rgba(124,92,255,.16)}
+
+/* ===== 脈動小點動畫 ===== */
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--pink);display:inline-block;position:relative}
+.pulse-dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:var(--pink);opacity:.4;animation:pulse-ring 1.5s ease infinite}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:.4}100%{transform:scale(2.2);opacity:0}}
+
+/* ===== 骨架載入改進 ===== */
+.skel-card{border-radius:var(--r);overflow:hidden}
+.skel-card .skel-img{aspect-ratio:16/10}
+.skel-card .skel-line{margin:12px 16px 0}
+.skel-card .skel-line:last-child{margin-bottom:16px}
 
 /* ===== 列印樣式 ===== */
 @media print{
