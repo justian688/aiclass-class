@@ -593,7 +593,6 @@ body.hdr-hidden .tabs{top:0}
   .cat-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:8px;gap:8px}
   .cat-tabs .chip{flex-shrink:0;font-size:13px}
   .sec h2{font-size:clamp(20px,5vw,28px)}
-  [data-theme="dark"] .mnav{background:rgba(28,28,30,.92)}
 }
 /* ===== 購物車 Badge ===== */
 .cart-btn{position:relative}
@@ -2999,21 +2998,12 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 .skel-card .skel-line{margin:12px 16px 0}
 .skel-card .skel-line:last-child{margin-bottom:16px}
 
-/* ===== 手機底部導航列 ===== */
-.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--bg);border-top:1px solid var(--line);z-index:101;padding:0 8px env(safe-area-inset-bottom,0)}
-.mob-nav-inner{display:flex;align-items:center;justify-content:space-around;height:100%;max-width:500px;margin:0 auto}
-.mob-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--tx3);text-decoration:none;padding:6px 12px;border-radius:10px;transition:color .2s}
-.mob-nav a .mn-icon{font-size:22px;line-height:1}
-.mob-nav a.on,.mob-nav a:hover{color:var(--pri)}
-.mob-nav a.on .mn-icon{transform:scale(1.1)}
-@media(max-width:760px){
-  .mob-nav{display:block}
-  body{padding-bottom:60px}
-  .btt{bottom:70px}
-  .sp-toast{bottom:74px}
-  .cmp-bar{bottom:60px}
-}
-[data-theme="dark"] .mob-nav{background:var(--bg);border-color:var(--line)}
+
+/* ===== 活動狀態標籤 ===== */
+.ev-status{display:inline-block;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;margin-top:16px;letter-spacing:.5px}
+.ev-status-live{background:rgba(52,199,89,.15);color:#34c759;border:1px solid rgba(52,199,89,.3)}
+.ev-status-soon{background:rgba(255,159,10,.15);color:#ff9f0a;border:1px solid rgba(255,159,10,.3)}
+.ev-status-ended{background:rgba(142,142,147,.15);color:#8e8e93;border:1px solid rgba(142,142,147,.3)}
 
 /* ===== 數字計數動畫 ===== */
 .count-up{transition:none}
@@ -3306,7 +3296,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff;color:#1d1d1f;font-size:12pt}
-  .hdr,.mnav,.mob-nav,.btt,.back-top,.sp-toast,.social-proof,.cookie-bar,.overlay,.vid-overlay,.kb-overlay,.nl-overlay,.read-bar,.cmp-bar,.cmp-overlay,#progress,.notif-panel,.mega-drop,.search-btn,.theme-toggle,.font-size-btn,.cart-btn,.user-menu-wrap,.recent-tip,.skip,footer .ft-social,footer .ft-lang,footer .ft-bottom p,.topbar,.sticky-buy,.art-toc-mob,.float-bar{display:none!important}
+  .hdr,.mnav,.btt,.back-top,.sp-toast,.social-proof,.cookie-bar,.overlay,.vid-overlay,.kb-overlay,.nl-overlay,.read-bar,.cmp-bar,.cmp-overlay,#progress,.notif-panel,.mega-drop,.search-btn,.theme-toggle,.font-size-btn,.cart-btn,.user-menu-wrap,.recent-tip,.skip,footer .ft-social,footer .ft-lang,footer .ft-bottom p,.topbar,.sticky-buy,.art-toc-mob,.float-bar{display:none!important}
   .wrap{max-width:100%;padding:0}
   a{color:inherit;text-decoration:underline}
   a[href]::after{content:" (" attr(href) ")";font-size:9pt;color:#666}

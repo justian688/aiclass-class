@@ -1325,6 +1325,7 @@ function eventPage() {
       <div class="ev-eyebrow">AI Class 年度最大優惠</div>
       <h1 class="ev-title">BLACK<br>FRIDAY</h1>
       <p class="ev-sub">全站課程最低 5 折起・限時搶購倒數中</p>
+      <span class="ev-status ev-status-live">🟢 活動進行中</span>
       <div class="ev-countdown" id="bf-cd">
         <div class="ev-cd-item"><span class="ev-cd-num" data-bf-d>00</span><span class="ev-cd-label">天</span></div>
         <div class="ev-cd-sep">:</div>
@@ -1412,7 +1413,8 @@ function cartPage() {
     const items = [...cart].map(id => byId[id]).filter(Boolean);
     const total = items.reduce((s, c) => s + c.price, 0);
     const saved = items.reduce((s, c) => s + (c.origin - c.price), 0);
-    const recommended = C.filter(c => !cart.has(c.id)).slice(0, 4);
+    const cartCats = new Set(items.map(c => c.cat));
+    const recommended = C.filter(c => !cart.has(c.id) && cartCats.has(c.cat)).slice(0, 4).concat(C.filter(c => !cart.has(c.id) && !cartCats.has(c.cat))).slice(0, 4);
 
     if (!items.length) {
       main.innerHTML = `<div class="wrap" style="padding:80px 0"><div class="cart-empty">
@@ -1428,6 +1430,7 @@ function cartPage() {
     }
 
     main.innerHTML = `<div class="wrap" style="padding:40px 0">
+      <div class="crumb" style="margin-bottom:16px"><a href="index.html">首頁</a> › 購物車</div>
       <h1 style="font-size:28px;font-weight:900;margin-bottom:28px">購物車 <span style="color:var(--tx3);font-size:18px">(${items.length})</span></h1>
       <div class="cart-layout">
         <div class="cart-items">
@@ -2454,8 +2457,10 @@ function wishlistPage() {
     }
     main.innerHTML = `
     <section class="wish-hero"><div class="wrap">
+      <div class="crumb rv-up"><a href="index.html">首頁</a> › 我的收藏</div>
       <h1 class="wish-title rv-up">我的收藏</h1>
       <p class="wish-count rv-up">共 ${items.length} 堂課程</p>
+      <button class="btn btn-pri wish-add-all rv-up" style="margin-top:12px">🛒 一鍵全部加入購物車</button>
     </div></section>
     <section class="sec"><div class="wrap">
       <div class="wish-grid">${items.map(c => `<div class="wish-item rv-up">
@@ -2478,6 +2483,12 @@ function wishlistPage() {
       render();
       toast('已移除收藏');
     });
+    const addAllBtn = $('.wish-add-all', main);
+    if (addAllBtn) addAllBtn.onclick = () => {
+      items.forEach(c => cart.add(c.id));
+      saveCart(); updateCartBadge();
+      toast(`已將 ${items.length} 堂課程加入購物車`, 'success');
+    };
     reveal(main);
   }
   render();
@@ -5165,23 +5176,6 @@ if (page === 'home' || page === 'course' || page === 'category') {
   }, spDelay);
 }
 
-// ── 手機底部導航列 ──
-{
-  const mn = document.createElement('nav');
-  mn.className = 'mob-nav';
-  mn.setAttribute('aria-label', '手機導航');
-  const links = [
-    { href: '/', icon: '🏠', label: '首頁', page: 'home' },
-    { href: '/hot.html', icon: '🔥', label: '探索', page: 'hot' },
-    { href: '/search.html', icon: '🔍', label: '搜尋', page: 'search' },
-    { href: '/cart.html', icon: '🛒', label: '購物車', page: 'cart' },
-    { href: '/my.html', icon: '👤', label: '我的', page: 'my' },
-  ];
-  mn.innerHTML = `<div class="mob-nav-inner">${links.map(l =>
-    `<a href="${l.href}" class="${page === l.page ? 'on' : ''}"><span class="mn-icon">${l.icon}</span>${l.label}</a>`
-  ).join('')}</div>`;
-  document.body.append(mn);
-}
 
 // ── 數字計數動畫 ──
 {
