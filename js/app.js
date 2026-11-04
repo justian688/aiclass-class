@@ -1,0 +1,3331 @@
+(() => {
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const C = window.COURSES, byId = Object.fromEntries(C.map(c => [c.id, c]));
+const fmt = n => 'NT$' + n.toLocaleString('en-US');
+const pct = c => Math.round((1 - c.price / c.origin) * 100);
+const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
+const page = document.body.dataset.page;
+const wish = new Set(JSON.parse(localStorage.getItem('aic-wish') || '[]'));
+const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
+function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
+function updateCartBadge() { const b = $('.cart-badge'); if (b) b.textContent = cart.size || ''; if (b) b.style.display = cart.size ? 'flex' : 'none'; }
+
+/* ---------- 共用：公告、頁首、頁尾、手機導覽 ---------- */
+const deadline = (() => { // 每天午夜重置的限時優惠
+  const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime();
+})();
+function shell() {
+  const top = document.createElement('div');
+  if (!sessionStorage.getItem('aic-topbar')) {
+    top.className = 'topbar';
+    top.innerHTML = `🎉 雙 11 全站課程最低 5 折，今日倒數 <b data-cd-inline>--:--:--</b><button class="x" aria-label="關閉">×</button>`;
+    document.body.prepend(top);
+    $('.x', top).onclick = () => { top.remove(); sessionStorage.setItem('aic-topbar', 1); };
+  }
+  const hdr = document.createElement('header');
+  hdr.className = 'hdr';
+  hdr.innerHTML = `<div class="wrap">
+    <a class="logo" href="index.html" aria-label="AI Class 首頁"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#lg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg></a>
+    <div class="mega-wrap">
+      <button class="mega-btn" aria-expanded="false">☰ 所有分類</button>
+      <div class="mega-drop" hidden>
+        <div class="mega-grid">${window.CATS.slice(1).map(c => `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}</a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`).join('')}</div>
+      </div>
+    </div>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="enterprise.html">企業方案</a></nav>
+    <div class="sp"></div>
+    <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程</button>
+    <div class="notif-wrap">
+      <button class="notif-btn" aria-label="通知">🔔<span class="notif-dot"></span></button>
+      <div class="notif-panel">
+        <h4>通知</h4>
+        <div class="notif-item"><div class="ni-icon">🔥</div><div class="ni-body">你收藏的「Python 自動化」正在限時特價中！<div class="ni-time">10 分鐘前</div></div></div>
+        <div class="notif-item"><div class="ni-icon">📚</div><div class="ni-body">課程更新：「UI/UX 設計實戰」新增了 3 堂課<div class="ni-time">2 小時前</div></div></div>
+        <div class="notif-item"><div class="ni-icon">🎉</div><div class="ni-body">恭喜！你已完成「零基礎 Blender」課程，可領取結業證書<div class="ni-time">昨天</div></div></div>
+        <div class="notif-item"><div class="ni-icon">💬</div><div class="ni-body">講師回覆了你在「攝影入門」的提問<div class="ni-time">2 天前</div></div></div>
+        <div class="notif-item"><div class="ni-icon">🏆</div><div class="ni-body">學習連續 7 天！獲得「持之以恆」徽章<div class="ni-time">3 天前</div></div></div>
+      </div>
+    </div>
+    <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
+    <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
+    <a class="btn btn-ghost" href="login.html">登入</a>
+    <a class="btn btn-pri" href="login.html">免費註冊</a>
+  </div>`;
+  top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
+
+  const prog = document.createElement('div'); prog.id = 'progress'; document.body.append(prog);
+
+  const ft = document.createElement('footer');
+  ft.innerHTML = `<div class="wrap"><div class="cols">
+    <div><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p></div>
+    <div><h4>課程分類</h4><ul>${window.CATS.slice(1, 6).map(c => `<li><a href="index.html#cat-${c.id}">${c.name}</a></li>`).join('')}</ul></div>
+    <div><h4>關於</h4><ul><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li><li><a href="invite.html">邀請好友</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li></ul></div>
+    <div><h4>支援</h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="coupon.html">優惠券</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li></ul></div>
+  </div><p style="margin-top:40px">© ${new Date().getFullYear()} AI Class. All rights reserved. 影片素材來源：Mixkit（免費授權）</p></div>`;
+  document.body.append(ft);
+
+  const mn = document.createElement('nav'); mn.className = 'mnav';
+  mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"><i>⌂</i>首頁</a><a href="#" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"><i>☺</i>我的</a>`;
+  document.body.append(mn);
+
+  const toast = document.createElement('div'); toast.className = 'toast'; document.body.append(toast);
+  window.toast = msg => { toast.textContent = msg; toast.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => toast.classList.remove('on'), 1800); };
+  const wBtn = $('[data-wishlist]');
+  if (wBtn) wBtn.onclick = e => { e.preventDefault(); toast(`已收藏 ${wish.size} 堂課程`); };
+
+  // 通知面板
+  const notifBtn = $('.notif-btn', hdr), notifPanel = $('.notif-panel', hdr);
+  if (notifBtn) {
+    notifBtn.onclick = () => { notifPanel.classList.toggle('on'); const dot = $('.notif-dot', notifBtn); if (dot) dot.remove(); };
+    document.addEventListener('click', e => { if (!e.target.closest('.notif-wrap')) notifPanel.classList.remove('on'); });
+  }
+
+  // 深色模式切換
+  const saved = localStorage.getItem('aic-theme');
+  const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const tBtn = $('[data-theme-toggle]', hdr);
+  function syncTheme() { tBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; }
+  syncTheme();
+  tBtn.onclick = () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); localStorage.setItem('aic-theme', next); syncTheme(); };
+
+  // 回到頂部
+  const btt = document.createElement('button'); btt.className = 'back-top'; btt.innerHTML = '↑'; btt.setAttribute('aria-label', '回到頂部');
+  btt.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+  document.body.append(btt);
+
+  // 頁首：往下捲隱藏、往上捲出現
+  let lastY = scrollY;
+  addEventListener('scroll', () => {
+    const y = scrollY, h = document.documentElement.scrollHeight - innerHeight;
+    prog.style.width = (h > 0 ? y / h * 100 : 0) + '%';
+    hdr.classList.toggle('scrolled', y > 10);
+    const hide = y > 300 && y > lastY;
+    hdr.classList.toggle('hide', hide);
+    document.body.classList.toggle('hdr-hidden', hide);
+    btt.classList.toggle('show', y > 600);
+    lastY = y;
+  }, { passive: true });
+
+  searchOverlay();
+
+  // Mega menu: hover on desktop, click on mobile
+  const megaBtn = $('.mega-btn', hdr), megaDrop = $('.mega-drop', hdr), megaWrap = $('.mega-wrap', hdr);
+  if (megaBtn) {
+    let hoverTimer;
+    const openMenu = () => { megaDrop.hidden = false; megaBtn.setAttribute('aria-expanded', 'true'); megaDrop.style.top = hdr.getBoundingClientRect().bottom + 8 + 'px'; };
+    const closeMenu = () => { megaDrop.hidden = true; megaBtn.setAttribute('aria-expanded', 'false'); };
+    megaWrap.addEventListener('mouseenter', () => { clearTimeout(hoverTimer); if (innerWidth > 760) openMenu(); });
+    megaWrap.addEventListener('mouseleave', () => { hoverTimer = setTimeout(closeMenu, 200); });
+    megaBtn.onclick = () => { if (innerWidth <= 760) megaDrop.hidden ? openMenu() : closeMenu(); };
+    document.addEventListener('click', e => { if (!megaDrop.hidden && !e.target.closest('.mega-wrap')) closeMenu(); });
+    megaDrop.addEventListener('click', e => { if (e.target.closest('a')) closeMenu(); });
+  }
+}
+
+/* ---------- 搜尋 ---------- */
+function searchOverlay() {
+  const recentKey = 'aic-recent-search';
+  const getRecent = () => JSON.parse(localStorage.getItem(recentKey) || '[]');
+  const addRecent = q => { let r = getRecent().filter(x => x !== q); r.unshift(q); localStorage.setItem(recentKey, JSON.stringify(r.slice(0, 8))); renderRecent(); };
+
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="sbox"><input placeholder="搜尋課程、講師…" aria-label="搜尋"><div class="hot">${['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案', '音樂'].map(k => `<button>${k}</button>`).join('')}</div><div class="recent"></div><div class="sres"></div></div>`;
+  document.body.append(ov);
+  const inp = $('input', ov), res = $('.sres', ov), recentEl = $('.recent', ov);
+
+  function renderRecent() {
+    const r = getRecent();
+    recentEl.innerHTML = r.length ? `<h5>最近搜尋 <button class="clear-recent">清除</button></h5><div class="recent-list">${r.map(k => `<button>${k}</button>`).join('')}</div>` : '';
+    const clrBtn = $('.clear-recent', ov);
+    if (clrBtn) clrBtn.onclick = () => { localStorage.removeItem(recentKey); renderRecent(); };
+    $$('.recent-list button', ov).forEach(b => b.onclick = () => { inp.value = b.textContent; run(); });
+  }
+
+  const run = () => {
+    const q = inp.value.trim().toLowerCase();
+    const list = q ? C.filter(c => (c.title + c.teacher + c.role).toLowerCase().includes(q)) : [];
+    res.innerHTML = !q ? '' : list.length ? list.slice(0, 5).map(c => `<a href="course.html?id=${c.id}"><img src="${img(c)}" alt=""><div><b>${c.title}</b><div class="stars">${c.teacher}・${fmt(c.price)}</div></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
+  };
+  inp.oninput = run;
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter' && inp.value.trim()) { addRecent(inp.value.trim()); location.href = 'search.html?q=' + encodeURIComponent(inp.value.trim()); } });
+  $$('.hot button', ov).forEach(b => b.onclick = () => { inp.value = b.textContent; addRecent(b.textContent); run(); });
+  const open = e => { e.preventDefault(); ov.classList.add('on'); renderRecent(); setTimeout(() => inp.focus(), 50); };
+  $$('[data-search]').forEach(b => b.onclick = open);
+  ov.onclick = e => { if (e.target === ov) ov.classList.remove('on'); };
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape') ov.classList.remove('on');
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') open(e);
+  });
+}
+
+/* ---------- 快捷鍵 ---------- */
+(function shortcuts() {
+  const keys = [
+    ['/', '開啟搜尋'],
+    ['Escape', '關閉搜尋 / 彈窗'],
+    ['?', '顯示快捷鍵'],
+    ['H', '回首頁'],
+    ['C', '前往購物車'],
+    ['M', '前往我的學習'],
+    ['D', '切換深色/淺色模式'],
+  ];
+  const el = document.createElement('div'); el.className = 'kb-overlay';
+  el.innerHTML = `<div class="kb-box"><h3>鍵盤快捷鍵</h3><div class="kb-list">${keys.map(([k, d]) => `<div class="kb-row"><kbd>${k}</kbd><span>${d}</span></div>`).join('')}</div><button class="btn btn-ghost kb-close">關閉</button></div>`;
+  document.body.append(el);
+  el.querySelector('.kb-close').onclick = () => el.classList.remove('on');
+  el.onclick = e => { if (e.target === el) el.classList.remove('on'); };
+  addEventListener('keydown', e => {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+    if (e.key === '?') { e.preventDefault(); e.stopImmediatePropagation(); el.classList.toggle('on'); }
+    else if (e.key === 'Escape' && el.classList.contains('on')) el.classList.remove('on');
+    else if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey && !document.querySelector('.overlay.on')) location.href = 'index.html';
+    else if (e.key.toLowerCase() === 'c' && !e.ctrlKey && !e.metaKey && !document.querySelector('.overlay.on')) location.href = 'cart.html';
+    else if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey && !document.querySelector('.overlay.on')) location.href = 'my.html';
+    else if (e.key.toLowerCase() === 'd' && !e.ctrlKey && !e.metaKey && !document.querySelector('.overlay.on')) { const t = document.querySelector('.theme-toggle'); if (t) t.click(); }
+  });
+})();
+
+/* ---------- 卡片 ---------- */
+function cardHighlights(c) {
+  const hl = [];
+  if (c.hours) hl.push(`${c.hours} 小時完整課程內容`);
+  if (c.rating >= 4.8) hl.push(`★ ${c.rating} 超高評分好課`);
+  else hl.push(`★ ${c.rating} 好評推薦`);
+  if (c.students > 5000) hl.push(`${(c.students/1000).toFixed(1)}K 學員已加入`);
+  else hl.push('附講師原始專案檔');
+  return hl;
+}
+
+function card(c, i, rank) {
+  const hl = cardHighlights(c);
+  return `<a class="card rv-up" href="course.html?id=${c.id}" data-v="${vid(c)}" style="transition-delay:${(i % 5) * 70}ms">
+    <div class="tw">${rank ? `<span class="num">${i + 1}</span>` : ''}<div class="thumb">
+      ${c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
+      <button class="wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" aria-label="收藏">${wish.has(c.id) ? '♥' : '♡'}</button>
+      <img src="${img(c)}" alt="" loading="lazy">
+      <span class="hours">${c.hours} 小時</span>
+    </div></div>
+    <div class="meta">
+      <div class="teacher">${c.teacher}</div>
+      <h3>${c.title}</h3>
+      <div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div>
+      <div class="stars"><b>★ ${c.rating.toFixed(1)}</b>・${c.students.toLocaleString()} 位學員</div>
+      ${c.ai ? '<div class="ai-summary"><span class="ai-tag">✦ AI 摘要</span>' + c.ai + '</div>' : ''}
+    </div>
+    <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns"><button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button></div></div>
+  </a>`;
+}
+
+// 滑鼠移入播放預覽影片
+function bindCards(root = document) {
+  $$('.card', root).forEach(el => {
+    if (el.bound) return; el.bound = 1;
+    let v, t;
+    el.addEventListener('mouseenter', () => {
+      t = setTimeout(() => {
+        if (!v) { v = document.createElement('video'); v.src = el.dataset.v; v.muted = v.loop = v.playsInline = true; v.preload = 'auto'; $('.thumb', el).insertBefore(v, $('.hours', el)); }
+        v.currentTime = 0; v.play().then(() => el.classList.add('play')).catch(() => {});
+      }, 260);
+    });
+    el.addEventListener('mouseleave', () => { clearTimeout(t); el.classList.remove('play'); v && v.pause(); });
+  });
+  $$('[data-wish]', root).forEach(b => b.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    const id = b.dataset.wish, on = !wish.has(id);
+    on ? wish.add(id) : wish.delete(id);
+    localStorage.setItem('aic-wish', JSON.stringify([...wish]));
+    $$(`[data-wish="${id}"]`).forEach(x => { x.classList.toggle('on', on); x.textContent = on ? '♥' : '♡'; });
+    toast(on ? '已加入收藏 ♥' : '已取消收藏');
+  });
+  $$('[data-addcart]', root).forEach(b => b.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    cart.add(b.dataset.addcart); saveCart(); updateCartBadge(); toast('已加入購物車');
+  });
+  $$('[data-addwish]', root).forEach(b => b.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    const id = b.dataset.addwish; wish.add(id);
+    localStorage.setItem('aic-wish', JSON.stringify([...wish]));
+    $$(`[data-wish="${id}"]`).forEach(x => { x.classList.add('on'); x.textContent = '♥'; });
+    toast('已加入收藏 ♥');
+  });
+  reveal(root);
+}
+
+// 軌道：按鈕＋拖曳
+function bindRail(sec) {
+  const rail = $('.rail', sec), [prev, next] = $$('.more .circle', sec);
+  const upd = () => { if (!prev) return; prev.disabled = rail.scrollLeft < 5; next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 5; };
+  const step = () => rail.clientWidth * .9;
+  prev && (prev.onclick = () => rail.scrollBy({ left: -step() }));
+  next && (next.onclick = () => rail.scrollBy({ left: step() }));
+  rail.addEventListener('scroll', upd, { passive: true }); upd();
+  let down = false, sx, sl, moved;
+  rail.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = rail.scrollLeft; });
+  addEventListener('pointermove', e => { if (!down) return; const d = e.clientX - sx; if (Math.abs(d) > 6) { moved = true; rail.classList.add('drag'); } rail.scrollLeft = sl - d; });
+  addEventListener('pointerup', () => { if (!down) return; down = false; setTimeout(() => rail.classList.remove('drag'), 0); });
+  rail.addEventListener('click', e => { if (moved) { e.preventDefault(); moved = false; } }, true);
+}
+
+function railSec(id, title, sub, list, rank) {
+  return `<section class="sec" id="${id}"><div class="wrap">
+    <div class="sec-head rv-up"><div><h2>${title}</h2>${sub ? `<div class="sub">${sub}</div>` : ''}</div>
+    <div class="more"><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
+    <div class="rail ${rank ? 'rank' : ''}">${list.map((c, i) => card(c, i, rank)).join('')}</div></div></section>`;
+}
+
+/* ---------- 進場動畫 ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -40px' });
+function reveal(root = document) { $$('.rv-up:not(.in)', root).forEach(el => io.observe(el)); }
+
+/* ---------- 倒數 ---------- */
+function tickCountdown() {
+  const left = Math.max(0, deadline - Date.now());
+  const h = Math.floor(left / 36e5), m = Math.floor(left / 6e4) % 60, s = Math.floor(left / 1e3) % 60;
+  const p = n => String(n).padStart(2, '0');
+  $$('[data-cd-inline]').forEach(el => el.textContent = `${p(h)}:${p(m)}:${p(s)}`);
+  $$('[data-cd]').forEach(el => { $('[data-h]', el).textContent = p(h); $('[data-m]', el).textContent = p(m); $('[data-s]', el).textContent = p(s); });
+}
+const cdHTML = `<div class="cd" data-cd><div><b data-h>00</b><small>時</small></div><div><b data-m>00</b><small>分</small></div><div><b data-s>00</b><small>秒</small></div></div>`;
+
+/* ---------- 首頁 ---------- */
+function home() {
+  const main = $('main');
+  main.innerHTML = '';
+  // Hero
+  const slides = window.HERO.map(id => byId[id]);
+  main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程">
+    ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
+      <img class="poster" src="${img(c)}" alt="">
+      <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}"></video>
+      <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span><h1>${h}</h1><p>${p}</p>
+      <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">立即了解 →</a> <a class="btn btn-ghost" href="course.html?id=${c.id}#preview" style="margin-left:8px">▶ 試看</a></div></div></div></div>`; }).join('')}
+    <div class="hero-ctrl"><div class="wrap">${slides.map((c, i) => `<button class="dot ${i ? '' : 'on'}"><div class="bar"><i></i></div><span>${c.title}</span></button>`).join('')}
+      <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
+  </section>`);
+
+  // 分類
+  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="cat-all"><div class="chips">${window.CATS.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-cat="${c.id}">${c.name}</button>`).join('')}</div></div>`);
+  // 排序按鈕
+  main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="sort-bar"><button class="sort-btn on" data-sort="default">推薦</button><button class="sort-btn" data-sort="new">最新上架</button><button class="sort-btn" data-sort="students">最多學員</button><button class="sort-btn" data-sort="price">價格低到高</button></div></div>`);
+  main.insertAdjacentHTML('beforeend', railSec('filtered', '為你推薦', '依照你選的分類即時篩選', C));
+
+  // 訓練營
+  if (window.BOOTCAMPS) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="bootcamp"><div class="wrap"><div class="sec-head rv-up"><div><h2>訓練營</h2><div class="sub">免費報名，就業導向密集訓練</div></div></div>
+      <div class="bootcamps">${window.BOOTCAMPS.map(b => `<div class="bootcamp rv-up"><span class="bc-badge">${b.badge}</span><span class="bc-tag">${b.tag}</span><h3>${b.name}</h3><p class="bc-desc">${b.desc}</p><div class="bc-meta"><span>📚 ${b.courses.length} 堂課程</span></div><div class="bc-price"><span class="free">NT$0</span><del>NT$${b.original.toLocaleString()}</del></div><button class="bc-enroll" onclick="toast('示範網站：報名功能開發中')">立即報名 →</button></div>`).join('')}</div></div></section>`);
+  }
+
+  const sortBy = (k) => [...C].sort((a, b) => b[k] - a[k]);
+  // TOP 10 + 時段切換
+  main.insertAdjacentHTML('beforeend', `<section class="sec" id="top10"><div class="wrap">
+    <div class="sec-head rv-up"><div><h2>TOP 10 排行</h2><div class="sub">學員最多人選的課程</div></div>
+    <div class="time-tabs"><button class="time-tab on" data-period="realtime">即時排行</button><button class="time-tab" data-period="weekly">本週排行</button><button class="time-tab" data-period="monthly">本月排行</button></div>
+    <div class="more"><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
+    <div class="rail rank">${sortBy('students').slice(0, 10).map((c, i) => card(c, i, true)).join('')}</div></div></section>`);
+
+  const mqWords = window.CATS.slice(1).map(c => c.name.split('/')[0]).concat(['創作','職人','學習','作品集']);
+  main.insertAdjacentHTML('beforeend', `<div class="marquee"><div class="track">${Array(2).fill(mqWords.map(w => `<span>${w}</span>`).join('')).join('')}</div></div>`);
+
+  main.insertAdjacentHTML('beforeend', railSec('new', '新上架課程', '每週持續更新', C.filter(c => c.tag === 'NEW').concat(C.filter(c => c.tag !== 'NEW')).slice(0, 10)));
+
+  // 學習路徑
+  if (window.PATHS) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="paths"><div class="wrap"><div class="sec-head rv-up"><div><h2>學習路徑</h2><div class="sub">系統化學習，目標導向的職涯規劃</div></div></div>
+      <div class="paths-rail">${window.PATHS.map(p => `<a href="path.html?id=${p.id}" class="path-card rv-up" style="text-decoration:none;color:inherit"><div class="pc-name">${p.name}</div><p class="pc-desc">${p.desc}</p><div class="pc-info"><span class="pc-chip">📚 ${p.courses.length} 堂課程</span><span class="pc-chip">⏱ ${p.duration}</span><span class="pc-chip">📊 ${p.level}</span></div><div class="pc-salary">💰 預估年薪 ${p.salary}</div><div class="pc-progress"><i></i></div><div class="pc-pct">學習進度 0%</div><span class="pc-start">開始學習 →</span></a>`).join('')}</div></div></section>`);
+  }
+
+  // 捲動敘事
+  const storyV = ['c06', 'c05', 'c03'].map(id => byId[id]);
+  const steps = [['01 / 職人親授', '跟著業界職人\n學真正用得到的技術', '每位講師都在第一線工作，把多年累積的流程與心法，整理成一步步可以跟著做的課程。'],
+                 ['02 / 專案實作', '每堂課都是\n一個完整作品', '附上講師原始專案檔與素材，從零開始跟著做，上完課就有能放進作品集的成果。'],
+                 ['03 / 無限期觀看', '一次購買\n隨時隨地重溫', '電腦、手機、平板都能看，支援倍速與字幕，課程更新內容免費開放。']];
+  main.insertAdjacentHTML('beforeend', `<section class="story"><div class="pin">
+    <div class="steps">${steps.map((s, i) => `<div class="step ${i ? '' : 'on'}"><div class="k">${s[0]}</div><h2>${s[1].replace('\n', '<br>')}</h2><p>${s[2]}</p></div>`).join('')}<div class="pager">${steps.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div></div>
+    <div class="media">${storyV.map((c, i) => `<video class="${i ? '' : 'on'}" src="${vid(c)}" muted loop playsinline preload="metadata" poster="${img(c)}"></video>`).join('')}</div>
+  </div></section>`);
+
+  main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="stats">
+    ${[[60000, '+', '累積學員'], [180, '+', '業界職人講師'], [4.9, '', '平均課程評分'], [98, '%', '學員推薦率']].map(([n, u, t]) => `<div class="stat rv-up"><b data-count="${n}" data-unit="${u}">0</b><span>${t}</span></div>`).join('')}
+  </div></div></section>`);
+
+  // 每日學習挑戰
+  if (window.MISSIONS) {
+    const surnames = ['陳','林','黃','張','王','李','吳','周','趙','許','蔡','鄭','劉','曾','謝'];
+    const actions = window.MISSIONS.map(m => ({ type: m.type, reward: m.reward, unit: m.unit }));
+    const feedItems = Array.from({ length: 20 }, () => {
+      const s = surnames[Math.floor(Math.random() * surnames.length)];
+      const a = actions[Math.floor(Math.random() * actions.length)];
+      return `<div class="af-item">${s}**完成了${a.type}任務 <b>+${a.reward}${a.unit}</b></div>`;
+    }).join('');
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="missions"><div class="wrap"><div class="sec-head rv-up"><div><h2>每日學習挑戰</h2><div class="sub">完成任務賺取學習點數</div></div></div>
+      <div class="mission-stats rv-up">累計已完成 <b>${window.MISSION_STATS.total.toLocaleString()}</b> 個任務・今日 <b>${window.MISSION_STATS.today.toLocaleString()}</b> 個</div>
+      <div class="missions"><div class="mission-list">${window.MISSIONS.map(m => `<div class="mission-item rv-up"><span class="mi-icon">${m.icon}</span><div class="mi-info"><div class="mi-type">${m.type}</div><div class="mi-reward">+${m.reward} ${m.unit}</div></div><button class="mi-btn" onclick="toast('示範網站：任務功能開發中')">領取</button></div>`).join('')}</div>
+      <div class="activity-feed rv-up"><div class="af-title">即時動態</div><div class="af-list">${feedItems}${feedItems}</div></div></div></div></section>`);
+  }
+
+  main.insertAdjacentHTML('beforeend', railSec('best', '評價最高', '五星好評不斷', sortBy('rating').slice(0, 10)));
+
+  // 影音學習
+  if (window.VIDEO_CONTENT) {
+    const vTabs = ['全部', '最新', '學員分享', '講師訪談', '幕後花絮'];
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="videos"><div class="wrap"><div class="sec-head rv-up"><div><h2>影音學習</h2><div class="sub">免費觀看精選影片</div></div></div>
+      <div class="video-tabs">${vTabs.map((t, i) => `<button class="video-tab ${i ? '' : 'on'}" data-vtab="${t}">${t}</button>`).join('')}</div>
+      <div class="video-grid" id="vgrid">${window.VIDEO_CONTENT.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="" loading="lazy"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('')}</div></div></section>`);
+  }
+
+  // 限時優惠
+  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="promo"><div class="promo rv-up"><video src="${vid(byId.c12)}" autoplay muted loop playsinline poster="${img(byId.c12)}"></video>
+    <div class="in"><div><span class="eyebrow">限時優惠</span><h2>雙 11 全站最低 5 折<br>今天午夜結束</h2><p>任選兩堂再折 NT$500，結帳自動套用</p><a class="btn" style="background:#fff;color:#000;margin-top:20px" href="#top10">查看優惠課程 →</a></div>${cdHTML}</div></div></div>`);
+
+  // 講師
+  const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
+  main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div></div>
+    <div class="teachers">${teachers.map((c, i) => `<a class="tc rv-up" style="transition-delay:${(i % 6) * 60}ms" href="course.html?id=${c.id}"><img src="${img(c)}" alt="" loading="lazy"><div class="n"><b>${c.teacher}</b><span>${c.role}</span></div></a>`).join('')}</div></div></section>`);
+
+  // 評價
+  const R = window.REVIEWS;
+  main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員真實心得</h2></div></div></div>
+    <div class="rv-wrap"><div class="reviews">${[...R, ...R].map(r => `<div class="rv"><div class="s">★★★★★</div><p>${r[2]}</p><small>${r[0]}・${r[1]}</small></div>`).join('')}</div></div></section>`);
+
+  // 合作品牌
+  if (window.PARTNERS) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>合作品牌與機構</h2><div class="sub">講師來自各領域頂尖企業</div></div></div>
+      <div class="partners rv-up">${window.PARTNERS.map(p => `<div class="partner">${p}</div>`).join('')}</div></div></section>`);
+  }
+
+  // 分類瀏覽
+  main.insertAdjacentHTML('beforeend', `<section class="sec" id="cats"><div class="wrap"><div class="sec-head rv-up"><div><h2>探索所有分類</h2><div class="sub">找到你有興趣的領域</div></div></div>
+    <div class="cat-grid rv-up">${window.CATS.slice(1).map(cat => {
+      const cnt = C.filter(c => c.cat === cat.id).length;
+      const sample = C.find(c => c.cat === cat.id);
+      const bgUrl = sample ? img(sample) : '';
+      return `<a class="cat-card" href="index.html#cat-${cat.id}" style="--cimg:url(${bgUrl})">
+        <span class="cat-count">${cnt} 堂課程</span><span class="cat-name">${cat.name}</span></a>`;
+    }).join('')}</div></div></section>`);
+
+  // 最近瀏覽
+  const recentIds = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
+  if (recentIds.length > 0) {
+    const recentCourses = recentIds.map(id => byId[id]).filter(Boolean).slice(0, 6);
+    if (recentCourses.length) {
+      main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>最近瀏覽</h2><div class="sub">繼續你的學習之旅</div></div></div>
+        <div class="rail">${recentCourses.map((c, i) => card(c, i)).join('')}</div></div></section>`);
+    }
+  }
+
+  // 超值組合包
+  const bundles = [
+    { name: 'AI 入門全攻略', courses: C.slice(0, 3), origin: 14500, price: 9800, save: 32 },
+    { name: '設計師必修套餐', courses: C.slice(3, 6), origin: 16000, price: 10500, save: 34 },
+    { name: '全端開發者養成', courses: C.slice(6, 9), origin: 13800, price: 8900, save: 36 },
+  ];
+  main.insertAdjacentHTML('beforeend', `<section class="sec" id="bundles"><div class="wrap"><div class="sec-head rv-up"><div><h2>超值組合包</h2><div class="sub">多堂課程一起買，省更多</div></div></div>
+    <div class="bndl-grid rv-up">${bundles.map(b => `<div class="bndl-card">
+      <div class="bndl-badge">省 ${b.save}%</div>
+      <h3 class="bndl-name">${b.name}</h3>
+      <div class="bndl-thumbs">${b.courses.map(c => `<img src="${img(c)}" alt="${c.title}" title="${c.title}">`).join('')}</div>
+      <ul class="bndl-list">${b.courses.map(c => `<li>${c.title}</li>`).join('')}</ul>
+      <div class="bndl-price"><span class="bndl-origin">${fmt(b.origin)}</span><span class="bndl-now">${fmt(b.price)}</span></div>
+      <button class="btn btn-pri bndl-buy" onclick="toast('已將組合包加入購物車')">加入購物車</button>
+    </div>`).join('')}</div></div></section>`);
+
+  // 你的學習旅程
+  main.insertAdjacentHTML('beforeend', `<section class="sec" id="journey"><div class="wrap"><div class="sec-head rv-up"><div><h2>你的學習旅程</h2><div class="sub">持續學習，成為更好的自己</div></div></div>
+    <div class="lj-grid rv-up">
+      <div class="lj-card"><div class="lj-ring" style="--pct:100"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="var(--pri)" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="0" stroke-linecap="round"/></svg><span class="lj-icon">🔥</span></div><b>7 天</b><span>連續學習</span></div>
+      <div class="lj-card"><div class="lj-ring" style="--pct:64"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="#ff5c8a" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="79" stroke-linecap="round"/></svg><span class="lj-icon">⏱</span></div><b>4.5 小時</b><span>本週學習</span></div>
+      <div class="lj-card"><div class="lj-ring" style="--pct:20"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="#34c759" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="176" stroke-linecap="round"/></svg><span class="lj-icon">✅</span></div><b>1 堂</b><span>已完成課程</span></div>
+      <div class="lj-card"><div class="lj-ring" style="--pct:46"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="#ffc107" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="119" stroke-linecap="round"/></svg><span class="lj-icon">💎</span></div><b>462</b><span>學習點數</span></div>
+    </div>
+    <div class="ach-row rv-up">
+      <span class="ach-badge earned">🔥 連續 7 天學習</span>
+      <span class="ach-badge earned">⭐ 完成第一堂課</span>
+      <span class="ach-badge">🎯 學習 100 小時</span>
+      <span class="ach-badge">💎 購買 5 堂課</span>
+      <span class="ach-badge">📝 撰寫第一則評價</span>
+      <span class="ach-badge">🏆 取得結業證書</span>
+    </div>
+  </div></section>`);
+
+  // FAQ
+  main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap faq"><div class="sec-head rv-up"><div><h2>常見問題</h2></div></div>
+    ${window.FAQ.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</div></section>`);
+
+  bindCards(main);
+  $$('.sec').forEach(s => $('.rail', s) && bindRail(s));
+  heroSlider();
+  chipsFilter();
+  story();
+  counters();
+  $$('.qa button').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+  $$('.stat').forEach(s => s.addEventListener('pointermove', e => { const r = s.getBoundingClientRect(); s.style.setProperty('--mx', e.clientX - r.left + 'px'); s.style.setProperty('--my', e.clientY - r.top + 'px'); }));
+
+  // 浮動側邊欄
+  const fb = document.createElement('div'); fb.className = 'float-bar';
+  fb.innerHTML = `<button onclick="toast('示範網站：優惠功能開發中')"><span style="font-size:20px">🎁</span><span class="fb-tip">優惠</span></button><button onclick="toast('示範網站：App 下載中')"><span style="font-size:20px">📱</span><span class="fb-tip">App</span></button><button onclick="toast('示範網站：客服功能開發中')"><span style="font-size:20px">💬</span><span class="fb-tip">客服</span></button><button onclick="scrollTo({top:0,behavior:'smooth'})"><span style="font-size:20px">⬆</span><span class="fb-tip">回頂部</span></button>`;
+  document.body.append(fb);
+  addEventListener('scroll', () => fb.classList.toggle('show', scrollY > innerHeight), { passive: true });
+
+  // 排序按鈕綁定
+  $$('.sort-btn').forEach(b => b.onclick = () => {
+    $$('.sort-btn').forEach(x => x.classList.toggle('on', x === b));
+    const sec = $('#filtered'), rail = $('.rail', sec);
+    const activeCat = $('.chip.on');
+    const cat = activeCat ? activeCat.dataset.cat : 'all';
+    let list = cat === 'all' ? [...C] : C.filter(c => c.cat === cat);
+    const s = b.dataset.sort;
+    if (s === 'new') list = list.filter(c => c.tag === 'NEW').concat(list.filter(c => c.tag !== 'NEW'));
+    else if (s === 'students') list.sort((a, b) => b.students - a.students);
+    else if (s === 'price') list.sort((a, b) => a.price - b.price);
+    rail.style.opacity = 0; rail.style.transform = 'translateY(14px)'; rail.style.transition = '.3s';
+    setTimeout(() => { rail.innerHTML = list.map((c, i) => card(c, i)).join(''); rail.scrollLeft = 0; bindCards(rail); rail.style.opacity = 1; rail.style.transform = 'none'; }, 300);
+  });
+
+  // 排行時段切換
+  $$('.time-tab').forEach(b => b.onclick = () => {
+    $$('.time-tab').forEach(x => x.classList.toggle('on', x === b));
+    const sec = $('#top10'), rail = $('.rail', sec);
+    let list = sortBy('students').slice(0, 10);
+    if (b.dataset.period === 'weekly') list = [...list].sort((a, b) => b.rating - a.rating);
+    if (b.dataset.period === 'monthly') list = [...list].sort((a, b) => a.price - b.price);
+    rail.style.opacity = 0; rail.style.transition = '.3s';
+    setTimeout(() => { rail.innerHTML = list.map((c, i) => card(c, i, true)).join(''); bindCards(rail); rail.style.opacity = 1; }, 300);
+  });
+
+  // 影音類別切換
+  $$('.video-tab').forEach(b => b.onclick = () => {
+    $$('.video-tab').forEach(x => x.classList.toggle('on', x === b));
+    const grid = $('#vgrid'), cat = b.dataset.vtab;
+    const list = cat === '全部' ? window.VIDEO_CONTENT : window.VIDEO_CONTENT.filter(v => v.cat === cat);
+    grid.innerHTML = list.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="" loading="lazy"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('');
+    reveal(grid);
+  });
+
+  // 頁首分類連結 → 篩選（支援子分類）
+  const goCat = () => {
+    const m = location.hash.match(/^#cat-(\w+)/);
+    if (m) {
+      const b = $(`.chip[data-cat="${m[1]}"]`);
+      if (b) {
+        b.click();
+        const subMatch = location.hash.match(/sub=([^&]+)/);
+        if (subMatch) {
+          const subName = decodeURIComponent(subMatch[1]);
+          const sec = $('#filtered'), rail = $('.rail', sec);
+          const list = C.filter(c => c.cat === m[1] && c.sub === subName);
+          if (list.length) {
+            setTimeout(() => {
+              rail.innerHTML = list.map((c, i) => card(c, i)).join(''); rail.scrollLeft = 0;
+              $('h2', sec).textContent = `${subName}`;
+              bindCards(rail);
+            }, 350);
+          }
+        }
+        setTimeout(() => b.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+      }
+    }
+  };
+  addEventListener('hashchange', goCat); goCat();
+}
+
+function heroSlider() {
+  const hero = $('.hero'), slides = $$('.slide', hero), dots = $$('.dot', hero);
+  let cur = 0, timer, paused = false; const DUR = 6500;
+  hero.style.setProperty('--dur', DUR + 'ms');
+  const load = v => { if (!v.src) v.src = v.dataset.src; };
+  load($('video', slides[0]));
+  function go(n) {
+    slides[cur].classList.remove('on'); dots[cur].classList.remove('on');
+    const old = $('video', slides[cur]); setTimeout(() => old.pause(), 1100);
+    cur = (n + slides.length) % slides.length;
+    const v = $('video', slides[cur]); load(v); v.currentTime = 0; v.play().catch(() => {});
+    slides[cur].classList.add('on');
+    void dots[cur].offsetWidth; dots[cur].classList.add('on');
+    load($('video', slides[(cur + 1) % slides.length]));
+    sched();
+  }
+  function sched() { clearTimeout(timer); if (!paused) timer = setTimeout(() => go(cur + 1), DUR); }
+  dots.forEach((d, i) => d.onclick = () => i !== cur && go(i));
+  $('[data-hn]').onclick = () => go(cur + 1);
+  $('[data-hp]').onclick = () => go(cur - 1);
+  $('[data-hpause]').onclick = e => { paused = !paused; hero.classList.toggle('paused', paused); e.currentTarget.textContent = paused ? '▶' : '❚❚'; paused ? (clearTimeout(timer), $('video', slides[cur]).pause()) : (go(cur + 1)); };
+  // 觸控滑動
+  let sx = null;
+  hero.addEventListener('touchstart', e => sx = e.touches[0].clientX, { passive: true });
+  hero.addEventListener('touchend', e => { if (sx == null) return; const d = e.changedTouches[0].clientX - sx; if (Math.abs(d) > 50) go(cur + (d < 0 ? 1 : -1)); sx = null; });
+  // 捲出畫面暫停
+  new IntersectionObserver(([e]) => { const v = $('video', slides[cur]); e.isIntersecting ? (!paused && v.play().catch(() => {})) : v.pause(); }).observe(hero);
+  // 視差
+  addEventListener('scroll', () => { const y = scrollY; if (y < innerHeight) $$('.txt', hero).forEach(t => t.style.transform = `translateY(${y * .25}px)`); }, { passive: true });
+  sched();
+}
+
+function chipsFilter() {
+  const sec = $('#filtered'), rail = $('.rail', sec);
+  $$('.chip').forEach(b => b.onclick = () => {
+    $$('.chip').forEach(x => x.classList.toggle('on', x === b));
+    const cat = b.dataset.cat, list = cat === 'all' ? C : C.filter(c => c.cat === cat);
+    rail.style.opacity = 0; rail.style.transform = 'translateY(14px)'; rail.style.transition = '.3s';
+    setTimeout(() => {
+      rail.innerHTML = list.map((c, i) => card(c, i)).join(''); rail.scrollLeft = 0;
+      $('h2', sec).textContent = cat === 'all' ? '為你推薦' : `${b.textContent} 課程`;
+      bindCards(rail); rail.style.opacity = 1; rail.style.transform = 'none';
+      rail.dispatchEvent(new Event('scroll'));
+    }, 300);
+  });
+}
+
+function story() {
+  const st = $('.story'); if (!st) return;
+  const steps = $$('.step', st), vids = $$('.media video', st), pager = $$('.pager i', st), media = $('.media', st);
+  let cur = -1;
+  const upd = () => {
+    if (innerWidth <= 760) return;
+    const r = st.getBoundingClientRect(), total = st.offsetHeight - innerHeight;
+    const p = Math.min(1, Math.max(0, -r.top / total));
+    media.style.setProperty('--clip', Math.max(0, 12 - p * 60) + '%');
+    const n = Math.min(steps.length - 1, Math.floor(p * steps.length));
+    if (n !== cur) {
+      cur = n;
+      steps.forEach((s, i) => s.classList.toggle('on', i === n));
+      pager.forEach((s, i) => s.classList.toggle('on', i === n));
+      vids.forEach((v, i) => { v.classList.toggle('on', i === n); i === n ? v.play().catch(() => {}) : v.pause(); });
+    }
+  };
+  addEventListener('scroll', upd, { passive: true }); upd();
+  if (innerWidth <= 760) vids.forEach(v => { v.classList.add('on'); });
+}
+
+function counters() {
+  const ob = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; ob.unobserve(e.target);
+    const el = e.target, to = +el.dataset.count, u = el.dataset.unit, dec = to % 1 ? 1 : 0, t0 = performance.now();
+    const f = t => { const k = Math.min(1, (t - t0) / 1600), v = to * (1 - Math.pow(1 - k, 4)); el.textContent = (dec ? v.toFixed(1) : Math.round(v).toLocaleString()) + u; k < 1 && requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+  }), { threshold: .5 });
+  $$('[data-count]').forEach(el => ob.observe(el));
+}
+
+/* ---------- 課程頁 ---------- */
+function course() {
+  const c = byId[new URLSearchParams(location.search).get('id')] || C[0];
+  document.title = `${c.title}｜AI Class`;
+  // 記錄最近瀏覽
+  let rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(x => x !== c.id);
+  rv.unshift(c.id); localStorage.setItem('aic-recent-view', JSON.stringify(rv.slice(0, 10)));
+  const cat = window.CATS.find(x => x.id === c.cat);
+  const others = C.filter(x => x.id !== c.id && x.cat === c.cat).concat(C.filter(x => x.cat !== c.cat)).slice(0, 8);
+  const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
+
+  // 自動根據課程時數生成章節
+  const chapNames = ['課程介紹與準備','基礎觀念建立','進階技巧','完整專案實作','作品發表與職涯','加碼：業界趨勢'];
+  const lessonBank = [
+    ['講師介紹與課程地圖','工具安裝與環境設定','素材下載說明','課前暖身練習'],
+    ['核心原理拆解','常見錯誤與修正','練習：小作品實作','觀念總整理','延伸閱讀導讀'],
+    ['職人工作流程','效率提升的祕訣','案例分析','進階手法演練'],
+    ['專案規劃','製作過程全紀錄','細節修飾與完稿','專案覆盤與優化','跨平台適配'],
+    ['作品集整理','定價與接案流程','個人品牌經營','面試作品展示技巧'],
+    ['產業趨勢分析','AI 工具輔助創作','社群經營策略','結語與下一步']
+  ];
+  const numChaps = c.hours >= 20 ? 6 : 5;
+  const totalLessons = Math.max(numChaps * 4, Math.round(c.hours * 60 / 12));
+  const chapters = [];
+  let lessonIdx = 0;
+  for (let i = 0; i < numChaps; i++) {
+    const bank = lessonBank[i] || lessonBank[lessonBank.length - 1];
+    const cnt = i === 0 ? 4 : Math.min(5, Math.max(4, Math.round((totalLessons - lessonIdx) / (numChaps - i))));
+    const lessons = [];
+    for (let j = 0; j < cnt; j++) {
+      const mins = 8 + ((i * 3 + j * 7) % 15);
+      const secs = String((i * 17 + j * 23) % 60).padStart(2, '0');
+      const free = i === 0 && j === 0;
+      lessons.push({ name: bank[j % bank.length], time: `${mins}:${secs}`, free });
+      lessonIdx++;
+    }
+    chapters.push({ name: chapNames[i], lessons });
+  }
+  const totalLessonCount = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
+
+  // 評論假資料（含頭像首字、姓名、日期、評分）
+  const reviewData = [
+    { initial: '陳', name: '陳**', rating: 5, date: '2026-10-28', text: '講師把實務上的交付流程講得超清楚，上完直接用在公司專案，同事都問我去哪學的。每個章節都有練習，非常紮實。' },
+    { initial: '林', name: '林**', rating: 5, date: '2026-10-25', text: '課程節奏很適合初學者，從來不敢嘗試的東西現在已經可以獨立完成了，很有成就感！' },
+    { initial: '黃', name: '黃**', rating: 5, date: '2026-10-20', text: '範例程式碼可以直接改來用，架構圖超清楚，學習曲線很順。講師回覆問題也很快。' },
+    { initial: '張', name: '張**', rating: 4, date: '2026-10-15', text: '整體內容很好，就是有些段落講得比較快，需要反覆看幾次。但確實學到了很多實用的技巧。' },
+    { initial: '王', name: '王**', rating: 5, date: '2026-10-10', text: '影片節奏剛好，每章都有作業可以練手。完成整套課程後，作品集終於有東西可以放了！' },
+    { initial: '李', name: '李**', rating: 4, date: '2026-10-05', text: '調色那章的價值就超過課程費用了，CP 值非常高。唯一建議是希望可以多一些進階案例。' }
+  ];
+  const distPcts = [72, 20, 5, 2, 1];
+
+  // 課程 FAQ
+  const courseFaq = [
+    ['購買後可以觀看多久？', '一次購買即可無限期觀看，日後課程更新的內容也會免費開放，不需要再付任何費用。'],
+    ['這堂課有字幕嗎？', '有的，課程提供繁體中文字幕，你也可以在播放器中自由開啟或關閉。'],
+    ['課程素材可以下載嗎？', '每堂課皆附講師使用的專案檔與練習素材，可於課程頁面直接下載。部分課程另附 PDF 講義。'],
+    ['不滿意可以退費嗎？', '購買後 7 天內，且觀看進度低於 20%，可透過客服申請全額退費，無需說明理由。'],
+    ['課程適合初學者嗎？', '這堂課從基礎開始，循序漸進引導到進階技巧。無論你是完全新手還是有經驗的學習者，都能從中獲益。']
+  ];
+
+  const main = $('main');
+  const isOwned = owned.has(c.id);
+
+  main.innerHTML = `<div class="c-hero"><div class="wrap"><div class="c-grid">
+    <div>
+      <div class="crumb"><a href="index.html">首頁</a> › <a href="index.html#cat-${c.cat}">${cat.name}</a></div>
+      <div class="c-video" id="preview"><video src="${vid(c)}" poster="${img(c)}" muted loop playsinline preload="metadata"></video><button class="play" aria-label="播放試看"><span>▶</span></button></div>
+      ${c.tag ? `<span class="badge ${c.tag}" style="position:static;display:inline-block;margin-top:24px">${c.tag}</span>` : ''}
+      <h1 class="c-title">${c.title}</h1>
+      <p class="c-sub">${c.teacher}・${c.role}　<span class="stars"><b>★ ${c.rating.toFixed(1)}</b>・${c.students.toLocaleString()} 位學員・${c.hours} 小時</span></p>
+      ${c.desc ? `<p class="c-desc">${c.desc}</p>` : ''}
+      <div class="c-share rv-up">
+        <span>分享課程</span>
+        <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>
+        <a class="c-share-btn" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="LINE 分享">💬 LINE</a>
+      </div>
+    </div>
+    <aside class="buy">
+      ${isOwned ? `
+        <div class="c-owned-badge">✓ 已購買</div>
+        <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">開始上課 →</a>
+      ` : `
+        <div><span class="pct">${pct(c)}%</span> <del>${fmt(c.origin)}</del></div>
+        <div class="big">${fmt(c.price)}</div>
+        <div style="color:var(--tx2);font-size:14px">或 3 期 0 利率，每期 ${fmt(Math.ceil(c.price / 3))}</div>
+        ${cdHTML}
+        <button class="btn btn-pri" data-buy>立即購買</button>
+        <button class="btn btn-ghost" data-cart>加入購物車</button>
+        <button class="btn btn-ghost" onclick="toast('示範網站：贈課功能開發中')" style="margin-top:6px">🎁 贈送此課程</button>
+        <button class="btn btn-ghost" onclick="toast('已設定降價通知')" style="margin-top:6px">🔔 降價通知</button>
+      `}
+      <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
+      <ul><li>✓ 無限期觀看</li><li>✓ ${c.hours} 小時・${numChaps} 章節・${totalLessonCount} 堂課</li><li>✓ 附講師專案檔與素材</li><li>✓ 7 天內未滿 20% 可退費</li></ul>
+    </aside>
+  </div></div></div>
+  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#faq">常見問題</a></div></nav>
+  <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
+    <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2><div class="points">
+      ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div></section>
+    <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
+      <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}"></video></div>
+      ${others.slice(0, 4).map(o => `<div class="rv-up"><img src="${img(o)}" alt="" loading="lazy"></div>`).join('')}</div></section>
+    <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${numChaps} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
+      ${chapters.map((ch, i) => `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
+        <span><span class="chap-play">${l.free ? '▶' : '🔒'}</span>${i + 1}-${j + 1} ${l.name}${l.free ? '<em class="chap-free">免費試看</em>' : ''}</span>
+        <span class="chap-time">${l.time}</span>
+      </li>`).join('')}</ul></div></div></div>`).join('')}</section>
+    <section class="c-sec" id="teacher"><h2 class="rv-up">講師介紹</h2><div class="tprofile rv-up"><img src="${img(c)}" alt=""><div><h3 style="font-size:22px">${c.teacher}</h3><div style="color:var(--pri);font-weight:700;margin:4px 0 10px">${c.role}</div><p style="color:var(--tx2)">擁有超過十年的業界經驗，合作過多個知名品牌與專案。希望把在第一線累積的經驗，用最好懂的方式分享給每一位想學習的人。</p></div></div></section>
+    <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span style="color:var(--pri);font-size:18px">★ ${c.rating.toFixed(1)}</span> <span style="font-size:15px;color:var(--tx3);font-weight:400">(${c.students.toLocaleString()} 位學員)</span></h2>
+      <div class="review-stats rv-up"><div class="rs-big"><b>${c.rating.toFixed(1)}</b><div class="rs-stars">★★★★★</div><div style="font-size:13px;color:var(--tx3)">${c.students.toLocaleString()} 則評價</div></div>
+      <div class="rs-bars">${distPcts.map((p, i) => `<div class="rs-bar"><span>${5 - i}</span><div class="rs-track"><i style="width:${p}%"></i></div><span>${p}%</span></div>`).join('')}</div></div>
+      <div class="review-list">${reviewData.map(r => `<div class="review-item rv-up">
+        <div class="ri-head"><div class="ri-avatar">${r.initial}</div><div class="ri-meta"><b>${r.name}</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${r.date}</span></div></div></div>
+        <p>${r.text}</p>
+      </div>`).join('')}</div></section>
+    <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</section>
+  </div>
+  ${railSec('more', '你可能也會喜歡', '', others)}`;
+
+  const box = $('.c-video'), v = $('video', box);
+  $('.play', box).onclick = () => { v.play(); box.classList.add('playing'); };
+  v.onclick = () => { v.paused ? v.play() : v.pause(); };
+  if (location.hash === '#preview') setTimeout(() => $('.play', box).click(), 400);
+  const buyBtn = $('[data-buy]');
+  if (buyBtn) buyBtn.onclick = () => toast('示範網站：尚未串接金流');
+  const cartBtn = $('[data-cart]');
+  if (cartBtn) cartBtn.onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
+  const copyBtn = $('[data-copy-link]');
+  if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); toast('已複製課程連結'); };
+  $$('.chap>button').forEach(b => {
+    b.onclick = () => {
+      const ch = b.parentNode;
+      const isOpen = ch.classList.contains('open');
+      ch.classList.toggle('open');
+      b.querySelector('.chap-count').textContent = ch.querySelector('.a ul').children.length + ' 堂 ' + (isOpen ? '＋' : '－');
+    };
+  });
+  $$('.qa button').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+  bindCards(main); bindRail($('#more'));
+
+  // 分頁 scrollspy
+  const tabs = $$('.tabs a'), secs = tabs.map(a => $(a.getAttribute('href')));
+  addEventListener('scroll', () => {
+    let n = 0; secs.forEach((s, i) => { if (s.getBoundingClientRect().top < 180) n = i; });
+    tabs.forEach((a, i) => a.classList.toggle('on', i === n));
+  }, { passive: true });
+}
+
+/* ---------- 活動頁 ---------- */
+function eventPage() {
+  const main = $('main');
+  const bfDeadline = new Date('2026-11-23T23:59:59').getTime();
+  const featured = C.filter(c => c.tag === 'HOT' || c.tag === 'BEST').slice(0, 8);
+  const coupons = [
+    { code: 'BF2026ALL', desc: '全站課程 85 折', detail: '不限金額，全站適用', color: '#ff2d55' },
+    { code: 'BF2026NEW', desc: '新課程 8 折', detail: '限 11 月新上架課程', color: '#ff6b35' },
+    { code: 'BF2026DUO', desc: '兩堂再折 NT$500', detail: '購買任意兩堂以上', color: '#a855f7' },
+    { code: 'BF2026VIP', desc: '加碼 VIP 7 折', detail: '限前 100 名', color: '#06b6d4' }
+  ];
+  main.innerHTML = `
+  <section class="ev-hero">
+    <div class="ev-particles"></div>
+    <div class="ev-hero-inner">
+      <div class="ev-eyebrow">AI Class 年度最大優惠</div>
+      <h1 class="ev-title">BLACK<br>FRIDAY</h1>
+      <p class="ev-sub">全站課程最低 5 折起・限時搶購倒數中</p>
+      <div class="ev-countdown" id="bf-cd">
+        <div class="ev-cd-item"><span class="ev-cd-num" data-bf-d>00</span><span class="ev-cd-label">天</span></div>
+        <div class="ev-cd-sep">:</div>
+        <div class="ev-cd-item"><span class="ev-cd-num" data-bf-h>00</span><span class="ev-cd-label">時</span></div>
+        <div class="ev-cd-sep">:</div>
+        <div class="ev-cd-item"><span class="ev-cd-num" data-bf-m>00</span><span class="ev-cd-label">分</span></div>
+        <div class="ev-cd-sep">:</div>
+        <div class="ev-cd-item"><span class="ev-cd-num" data-bf-s>00</span><span class="ev-cd-label">秒</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ev-benefits">
+    <div class="wrap">
+      <h2 class="ev-sec-title rv-up">四大優惠一次享</h2>
+      <div class="ev-benefit-grid">
+        <div class="ev-benefit rv-up" style="--bc:#ff2d55"><div class="ev-benefit-icon">🎲</div><h3>RANDOM COUPON</h3><p>隨機折扣券</p><span>最高折 NT$3,000</span></div>
+        <div class="ev-benefit rv-up" style="--bc:#ff6b35"><div class="ev-benefit-icon">⭐</div><h3>BONUS POINT</h3><p>雙倍學習點數</p><span>活動期間點數加倍</span></div>
+        <div class="ev-benefit rv-up" style="--bc:#a855f7"><div class="ev-benefit-icon">🏆</div><h3>1ST PRIZE</h3><p>頭獎抽 iPad</p><span>消費滿 NT$3,000 即可抽</span></div>
+        <div class="ev-benefit rv-up" style="--bc:#06b6d4"><div class="ev-benefit-icon">🎯</div><h3>BLACK POINT</h3><p>黑色星期五限定點數</p><span>可折抵下次消費</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ev-coupons">
+    <div class="wrap">
+      <h2 class="ev-sec-title rv-up">限量優惠券</h2>
+      <div class="ev-coupon-grid">
+        ${coupons.map(cp => `<div class="ev-coupon rv-up" style="--cc:${cp.color}">
+          <div class="ev-coupon-left"><div class="ev-coupon-desc">${cp.desc}</div><div class="ev-coupon-detail">${cp.detail}</div></div>
+          <div class="ev-coupon-right"><div class="ev-coupon-code">${cp.code}</div><button class="ev-coupon-btn" onclick="navigator.clipboard.writeText('${cp.code}');toast('已複製優惠碼 🎉')">領取</button></div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="ev-featured">
+    <div class="wrap">
+      <h2 class="ev-sec-title rv-up">精選優惠課程</h2>
+      <div class="ev-course-grid">
+        ${featured.map((c, i) => `<a class="ev-course rv-up" href="course.html?id=${c.id}" style="transition-delay:${(i%4)*80}ms">
+          <div class="ev-course-thumb"><img src="${img(c)}" alt="" loading="lazy">${c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}</div>
+          <div class="ev-course-info"><div class="teacher">${c.teacher}</div><h3>${c.title}</h3>
+          <div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div></div>
+        </a>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <div class="ev-sticky-bar">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between">
+      <div><b>BLACK FRIDAY</b> 全站最低 5 折｜倒數中</div>
+      <a class="btn btn-pri" href="#bf-cd" style="height:40px;font-size:14px">立即搶購 →</a>
+    </div>
+  </div>`;
+
+  function tickBF() {
+    const left = Math.max(0, bfDeadline - Date.now());
+    const d = Math.floor(left / 864e5), h = Math.floor(left / 36e5) % 24, m = Math.floor(left / 6e4) % 60, s = Math.floor(left / 1e3) % 60;
+    const p = n => String(n).padStart(2, '0');
+    const el = id => $(`[data-bf-${id}]`);
+    if (el('d')) el('d').textContent = p(d);
+    if (el('h')) el('h').textContent = p(h);
+    if (el('m')) el('m').textContent = p(m);
+    if (el('s')) el('s').textContent = p(s);
+  }
+  tickBF(); setInterval(tickBF, 1000);
+
+  // particles
+  const pc = $('.ev-particles');
+  for (let i = 0; i < 30; i++) {
+    const dot = document.createElement('span');
+    dot.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*5}s;animation-duration:${3+Math.random()*4}s;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px`;
+    pc.append(dot);
+  }
+
+  reveal(main);
+  bindCards(main);
+}
+
+/* ---------- 購物車頁 ---------- */
+function cartPage() {
+  const main = $('main');
+  function render() {
+    const items = [...cart].map(id => byId[id]).filter(Boolean);
+    const total = items.reduce((s, c) => s + c.price, 0);
+    const saved = items.reduce((s, c) => s + (c.origin - c.price), 0);
+    const recommended = C.filter(c => !cart.has(c.id)).slice(0, 4);
+
+    if (!items.length) {
+      main.innerHTML = `<div class="wrap" style="padding:80px 0"><div class="cart-empty">
+        <div class="cart-empty-icon">🛒</div>
+        <h2>購物車是空的</h2>
+        <p>探索超過 ${C.length} 堂職人課程，找到適合你的學習方向</p>
+        <a class="btn btn-pri" href="index.html">探索課程 →</a>
+      </div></div>
+      ${recommended.length ? `<div class="wrap"><h2 style="font-size:22px;font-weight:900;margin-bottom:20px">為你推薦</h2><div class="cart-recommend">${recommended.map((c, i) => card(c, i)).join('')}</div></div>` : ''}`;
+      bindCards(main);
+      reveal(main);
+      return;
+    }
+
+    main.innerHTML = `<div class="wrap" style="padding:40px 0">
+      <h1 style="font-size:28px;font-weight:900;margin-bottom:28px">購物車 <span style="color:var(--tx3);font-size:18px">(${items.length})</span></h1>
+      <div class="cart-layout">
+        <div class="cart-items">
+          <div class="cart-select-all"><label><input type="checkbox" checked class="cart-cb" data-all> 全選</label></div>
+          ${items.map(c => `<div class="cart-item" data-cid="${c.id}">
+            <input type="checkbox" checked class="cart-cb" data-item="${c.id}">
+            <a href="course.html?id=${c.id}" class="cart-item-thumb"><img src="${img(c)}" alt=""></a>
+            <div class="cart-item-info">
+              <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
+              <div class="teacher">${c.teacher}・${c.role}</div>
+              <div class="stars"><b>★ ${c.rating.toFixed(1)}</b>・${c.hours} 小時</div>
+            </div>
+            <div class="cart-item-price">
+              <div class="now">${fmt(c.price)}</div>
+              <del>${fmt(c.origin)}</del>
+              <span class="off">${pct(c)}% OFF</span>
+            </div>
+            <button class="cart-item-del" data-del="${c.id}" title="移除">✕</button>
+          </div>`).join('')}
+        </div>
+        <aside class="cart-summary">
+          <h3>訂單摘要</h3>
+          <div class="cart-summary-row"><span>商品小計 (<span class="cart-count">${items.length}</span> 件)</span><span class="cart-subtotal">${fmt(total)}</span></div>
+          <div class="cart-summary-row cart-saved"><span>已省下</span><span>-${fmt(saved)}</span></div>
+          <div class="cart-summary-row" style="font-size:13px;color:var(--tx3)"><span>優惠碼折扣</span><span>—</span></div>
+          <div class="cart-summary-divider"></div>
+          <div class="cart-summary-row cart-total"><span>合計</span><span>${fmt(total)}</span></div>
+          <a class="btn btn-pri" href="checkout.html" style="display:flex;align-items:center;justify-content:center;width:100%;height:52px;font-size:16px;margin-top:16px;text-decoration:none">前往結帳</a>
+          <div class="cart-coupon-input"><input placeholder="輸入優惠碼"><button onclick="toast('示範網站：優惠碼功能開發中')">套用</button></div>
+          <ul class="cart-perks"><li>✓ 7 天無條件退費</li><li>✓ 無限期觀看</li><li>✓ 附講師專案檔</li></ul>
+        </aside>
+      </div>
+    </div>
+    ${recommended.length ? `<div class="wrap" style="padding-bottom:60px"><h2 style="font-size:22px;font-weight:900;margin-bottom:20px">你可能也會喜歡</h2><div class="cart-recommend">${recommended.map((c, i) => card(c, i)).join('')}</div></div>` : ''}`;
+
+    // delete
+    $$('[data-del]', main).forEach(b => b.onclick = () => {
+      cart.delete(b.dataset.del); saveCart(); updateCartBadge(); render();
+    });
+    // select all
+    const allCb = $('[data-all]', main);
+    if (allCb) allCb.onchange = () => $$('[data-item]', main).forEach(cb => cb.checked = allCb.checked);
+
+    bindCards(main);
+    reveal(main);
+  }
+  render();
+}
+
+/* ---------- 登入頁 ---------- */
+function loginPage() {
+  const main = $('main');
+  const mosaic = C.slice(0, 16).map((c, i) => {
+    const size = 60 + Math.random() * 50;
+    const x = 5 + (i % 4) * 24 + Math.random() * 10;
+    const y = 5 + Math.floor(i / 4) * 24 + Math.random() * 8;
+    const delay = Math.random() * 5;
+    const dur = 4 + Math.random() * 3;
+    return `<div class="login-circle" style="width:${size}px;height:${size}px;left:${x}%;top:${y}%;animation-delay:${delay}s;animation-duration:${dur}s"><img src="${img(c)}" alt=""></div>`;
+  }).join('');
+
+  main.innerHTML = `<div class="login-wrap">
+    <div class="login-left">${mosaic}</div>
+    <div class="login-right">
+      <div class="login-form">
+        <a href="index.html" class="login-logo"><img src="assets/logo.svg" alt="AI Class" style="height:28px"></a>
+        <h1>歡迎回來</h1>
+        <p>登入你的 AI Class 帳號，繼續學習之旅</p>
+        <button class="login-line" onclick="toast('示範網站：LINE 登入功能開發中')"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C6.48 2 2 5.88 2 10.54c0 4.02 3.56 7.38 8.37 8.26.32.07.76.22.87.5.1.26.07.66.03.92l-.14.85c-.04.26-.2 1.01.88.55s5.89-3.47 8.03-5.93C21.94 13.54 22 11.92 22 10.54 22 5.88 17.52 2 12 2z"/></svg>使用 LINE 帳號登入</button>
+        <div class="login-divider"><span>或</span></div>
+        <div class="login-field"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+        <div class="login-field"><label>密碼</label><input type="password" placeholder="輸入密碼"></div>
+        <div class="login-options"><label><input type="checkbox"> 記住我</label><a href="#">忘記密碼？</a></div>
+        <button class="btn btn-pri login-submit" onclick="toast('示範網站：登入功能開發中')">登入</button>
+        <div class="login-footer">還沒有帳號？<a href="#">Email 註冊</a></div>
+      </div>
+    </div>
+  </div>`;
+  reveal(main);
+}
+
+/* ---------- 企業培訓行銷頁 ---------- */
+function enterprisePage() {
+  const main = $('main');
+  const features = [
+    { icon: '🎯', title: '客製化課程', desc: '根據企業需求量身打造培訓內容，涵蓋 AI、設計、行銷、管理等領域。' },
+    { icon: '📊', title: '學習數據追蹤', desc: '即時掌握每位員工的學習進度、完成率、測驗成績，讓培訓效果可視化。' },
+    { icon: '🏢', title: '專屬企業帳號', desc: '統一管理企業帳號，批量新增員工、設定權限、分配課程。' },
+    { icon: '📹', title: '企業影片託管', desc: '上傳公司內部培訓影片，建立專屬影音知識庫，永久保存。' },
+    { icon: '🏆', title: '證書與認證', desc: '員工完成課程後自動頒發證書，支援客製化企業 LOGO 與樣式。' },
+    { icon: '💬', title: '專屬客服支援', desc: '一對一專屬客服經理，協助規劃培訓方案，隨時解決問題。' }
+  ];
+  const steps = [
+    { num: '01', title: '需求諮詢', desc: '與專屬顧問深入討論企業培訓目標與需求' },
+    { num: '02', title: '方案規劃', desc: '量身打造最適合的課程組合與學習路徑' },
+    { num: '03', title: '帳號開通', desc: '快速建立企業專屬培訓平台，批量匯入員工' },
+    { num: '04', title: '持續優化', desc: '定期檢視學習數據，調整培訓策略以達最佳效果' }
+  ];
+  const plans = [
+    { name: '入門方案', price: '免費', unit: '', desc: '適合小型團隊體驗', features: ['最多 5 位員工', '精選 10 堂課程', '基礎學習報表', '社群支援'], cta: '免費開始', ghost: true },
+    { name: '專業方案', price: 'NT$2,980', unit: '/月', desc: '適合中小型企業', features: ['最多 50 位員工', '全站 200+ 課程', '進階數據分析', '企業影片上傳 50GB', '專屬客服', '客製化證書'], cta: '立即訂閱', ghost: false },
+    { name: '旗艦方案', price: '聯繫我們', unit: '', desc: '適合大型企業', features: ['無限員工帳號', '全站課程 + 客製課程', '完整 API 串接', '無限影片儲存空間', '專屬客服經理', '到府教育訓練', 'SSO 企業登入'], cta: '預約諮詢', ghost: true }
+  ];
+  const testimonials = [
+    { company: '科技新創 A 公司', role: '人資總監', text: '導入 AI Class 企業培訓後，員工技能提升速度快了 3 倍，離職率也下降了 20%。', name: '陳經理' },
+    { company: '知名設計公司', role: '執行長', text: '客製化的課程內容完全貼合我們的需求，團隊設計能力有了質的飛躍。', name: '林總監' },
+    { company: '金融集團', role: '教育訓練處長', text: '學習數據分析讓我們能精準掌握每位同仁的成長軌跡，培訓 ROI 提升了 150%。', name: '王處長' }
+  ];
+  const faqs = [
+    ['企業方案最少需要幾位員工？', '入門方案最少 1 位即可開始，專業方案建議 10 位以上以獲得最佳效益。'],
+    ['可以先試用再決定嗎？', '當然！我們提供 14 天免費試用專業方案的所有功能，不需要綁定信用卡。'],
+    ['企業影片上傳有格式限制嗎？', '支援 MP4、MOV、AVI 等主流格式，單檔最大 5GB，我們會自動轉檔優化。'],
+    ['可以和公司現有的 HR 系統整合嗎？', '旗艦方案提供完整 API，支援 SSO、SCIM 等企業級整合方式。'],
+    ['培訓數據可以匯出嗎？', '所有方案都支援 CSV/Excel 匯出，旗艦方案另提供 API 即時存取。'],
+    ['合約期間可以調整方案嗎？', '可以隨時升級方案，差額按比例計算。降級則在下個計費週期生效。']
+  ];
+
+  main.innerHTML = `
+  <section class="ent-hero">
+    <div class="ent-hero-bg"></div>
+    <div class="wrap ent-hero-inner">
+      <span class="ent-eyebrow rv-up">AI Class for Business</span>
+      <h1 class="ent-title rv-up">企業培訓<br>交給 AI Class</h1>
+      <p class="ent-sub rv-up">為您的團隊提供業界頂尖的線上培訓方案<br>從 AI 技術到創意設計，全面提升企業競爭力</p>
+      <div class="ent-hero-cta rv-up">
+        <a class="btn btn-pri" href="#pricing" style="height:52px;padding:0 32px;font-size:17px">查看方案 →</a>
+        <a class="btn btn-ghost" href="#contact" style="height:52px;padding:0 32px;font-size:17px">預約諮詢</a>
+      </div>
+      <div class="ent-hero-stats rv-up">
+        <div><b>500+</b><span>企業客戶</span></div>
+        <div><b>98%</b><span>續約率</span></div>
+        <div><b>150%</b><span>培訓 ROI 提升</span></div>
+        <div><b>60,000+</b><span>企業學員</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ent-features" id="features">
+    <div class="wrap">
+      <h2 class="ent-sec-title rv-up">為什麼選擇 AI Class？</h2>
+      <p class="ent-sec-sub rv-up">完整的企業培訓生態系，從課程到管理一站搞定</p>
+      <div class="ent-feature-grid">
+        ${features.map((f, i) => `<div class="ent-feature rv-up" style="transition-delay:${(i % 3) * 80}ms">
+          <div class="ent-feature-icon">${f.icon}</div>
+          <h3>${f.title}</h3>
+          <p>${f.desc}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="ent-steps">
+    <div class="wrap">
+      <h2 class="ent-sec-title rv-up">四步驟開始企業培訓</h2>
+      <div class="ent-step-grid">
+        ${steps.map((s, i) => `<div class="ent-step rv-up" style="transition-delay:${i * 100}ms">
+          <div class="ent-step-num">${s.num}</div>
+          <h3>${s.title}</h3>
+          <p>${s.desc}</p>
+          ${i < 3 ? '<div class="ent-step-arrow">→</div>' : ''}
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="ent-pricing" id="pricing">
+    <div class="wrap">
+      <h2 class="ent-sec-title rv-up">選擇最適合的方案</h2>
+      <p class="ent-sec-sub rv-up">所有方案皆含 14 天免費試用</p>
+      <div class="ent-plan-grid">
+        ${plans.map((p, i) => `<div class="ent-plan rv-up ${i === 1 ? 'ent-plan-pop' : ''}" style="transition-delay:${i * 100}ms">
+          ${i === 1 ? '<div class="ent-plan-badge">最受歡迎</div>' : ''}
+          <h3>${p.name}</h3>
+          <div class="ent-plan-price"><span class="ent-plan-amount">${p.price}</span>${p.unit ? `<span class="ent-plan-unit">${p.unit}</span>` : ''}</div>
+          <p class="ent-plan-desc">${p.desc}</p>
+          <ul>${p.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul>
+          <button class="btn ${p.ghost ? 'btn-ghost' : 'btn-pri'}" style="width:100%;height:48px" onclick="toast('示範網站：方案功能開發中')">${p.cta}</button>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="ent-testimonials">
+    <div class="wrap">
+      <h2 class="ent-sec-title rv-up">客戶怎麼說</h2>
+      <div class="ent-testi-grid">
+        ${testimonials.map((t, i) => `<div class="ent-testi rv-up" style="transition-delay:${i * 80}ms">
+          <div class="ent-testi-stars">★★★★★</div>
+          <p>"${t.text}"</p>
+          <div class="ent-testi-author"><b>${t.name}</b><span>${t.company}・${t.role}</span></div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="ent-cta" id="contact">
+    <div class="wrap">
+      <div class="ent-cta-box rv-up">
+        <h2>立即開始企業培訓之旅</h2>
+        <p>留下聯絡方式，專屬顧問將在 24 小時內與您聯繫</p>
+        <div class="ent-cta-form">
+          <input type="text" placeholder="公司名稱">
+          <input type="email" placeholder="Email">
+          <input type="tel" placeholder="聯絡電話">
+          <button class="btn btn-pri" style="height:52px;padding:0 32px" onclick="toast('示範網站：諮詢功能開發中')">預約諮詢 →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ent-faq">
+    <div class="wrap faq">
+      <h2 class="ent-sec-title rv-up">常見問題</h2>
+      ${faqs.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
+    </div>
+  </section>`;
+
+  $$('.qa button', main).forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+  reveal(main);
+}
+
+/* ---------- 企業培訓後台 ---------- */
+function trainingPage() {
+  const main = $('main');
+  const demoCourses = [
+    { id: 't1', title: '新人入職培訓', cat: '必修', progress: 85, employees: 48, hours: 4.5, status: '進行中' },
+    { id: 't2', title: 'AI 工具實戰應用', cat: 'AI', progress: 62, employees: 32, hours: 8, status: '進行中' },
+    { id: 't3', title: '資安意識培訓', cat: '必修', progress: 100, employees: 50, hours: 2, status: '已完成' },
+    { id: 't4', title: 'Figma UI 設計基礎', cat: '設計', progress: 45, employees: 15, hours: 12, status: '進行中' },
+    { id: 't5', title: '專案管理實務', cat: '管理', progress: 30, employees: 22, hours: 6, status: '進行中' },
+    { id: 't6', title: '公司產品知識', cat: '必修', progress: 95, employees: 50, hours: 3, status: '進行中' },
+    { id: 't7', title: 'Python 數據分析', cat: 'AI', progress: 18, employees: 12, hours: 16, status: '進行中' },
+    { id: 't8', title: '簡報設計技巧', cat: '通識', progress: 100, employees: 35, hours: 4, status: '已完成' }
+  ];
+  const demoEmployees = [
+    { name: '陳小明', dept: '工程部', role: '前端工程師', courses: 5, progress: 78, lastActive: '2 小時前' },
+    { name: '林雅婷', dept: '設計部', role: 'UI 設計師', courses: 4, progress: 92, lastActive: '30 分鐘前' },
+    { name: '黃志偉', dept: '行銷部', role: '行銷經理', courses: 3, progress: 65, lastActive: '1 天前' },
+    { name: '張美玲', dept: '人資部', role: 'HR 專員', courses: 6, progress: 88, lastActive: '3 小時前' },
+    { name: '王大華', dept: '工程部', role: '後端工程師', courses: 4, progress: 55, lastActive: '5 小時前' },
+    { name: '李佳穎', dept: '設計部', role: '品牌設計師', courses: 3, progress: 100, lastActive: '1 小時前' },
+    { name: '吳建宏', dept: '業務部', role: '業務主管', courses: 2, progress: 40, lastActive: '2 天前' },
+    { name: '周雅芳', dept: '工程部', role: 'PM', courses: 5, progress: 72, lastActive: '4 小時前' },
+    { name: '趙志明', dept: '行銷部', role: '社群經理', courses: 3, progress: 85, lastActive: '6 小時前' },
+    { name: '許淑華', dept: '財務部', role: '會計', courses: 2, progress: 100, lastActive: '1 天前' },
+    { name: '蔡宗翰', dept: '工程部', role: 'DevOps', courses: 4, progress: 68, lastActive: '8 小時前' },
+    { name: '鄭文惠', dept: '客服部', role: '客服主管', courses: 3, progress: 90, lastActive: '2 小時前' }
+  ];
+
+  const navItems = [
+    { id: 'overview', icon: '📊', label: '總覽' },
+    { id: 'courses', icon: '📚', label: '課程管理' },
+    { id: 'employees', icon: '👥', label: '員工管理' },
+    { id: 'reports', icon: '📈', label: '學習報表' },
+    { id: 'videos', icon: '📹', label: '企業影片' },
+    { id: 'settings', icon: '⚙️', label: '設定' }
+  ];
+
+  main.innerHTML = `<div class="trn-layout">
+    <aside class="trn-sidebar">
+      <div class="trn-sidebar-logo">
+        <a href="index.html"><img src="assets/logo.svg" alt="AI Class" style="height:24px;filter:brightness(10)"></a>
+        <span class="trn-sidebar-tag">企業版</span>
+      </div>
+      <div class="trn-sidebar-company">
+        <div class="trn-company-avatar">A</div>
+        <div><b>Acme 科技</b><div class="trn-plan-tag">專業方案</div></div>
+      </div>
+      <nav class="trn-nav">
+        ${navItems.map((n, i) => `<button class="trn-nav-item ${i === 0 ? 'on' : ''}" data-tab="${n.id}"><span class="trn-nav-icon">${n.icon}</span>${n.label}</button>`).join('')}
+      </nav>
+      <div class="trn-sidebar-bottom">
+        <a href="enterprise.html" class="trn-nav-item"><span class="trn-nav-icon">🔙</span>返回企業方案</a>
+        <a href="index.html" class="trn-nav-item"><span class="trn-nav-icon">🏠</span>返回首頁</a>
+      </div>
+    </aside>
+    <div class="trn-main">
+      <header class="trn-header">
+        <button class="trn-menu-btn">☰</button>
+        <h1 class="trn-page-title">總覽</h1>
+        <div class="trn-header-right">
+          <button class="trn-notif" onclick="toast('示範網站：通知功能開發中')">🔔<span class="trn-notif-dot"></span></button>
+          <div class="trn-user"><div class="trn-user-avatar">陳</div><span>陳管理員</span></div>
+        </div>
+      </header>
+      <div class="trn-content">
+        <!-- 總覽 -->
+        <div class="trn-tab-panel" id="tab-overview">
+          <div class="trn-stat-grid">
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(124,92,255,.15);color:var(--pri)">👥</div><div><div class="trn-stat-num">50</div><div class="trn-stat-label">員工帳號</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(76,255,138,.12);color:#4cff8a">📚</div><div><div class="trn-stat-num">8</div><div class="trn-stat-label">培訓課程</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,92,138,.12);color:var(--pink)">📊</div><div><div class="trn-stat-num">72%</div><div class="trn-stat-label">平均完成率</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,195,92,.12);color:#ffc35c">⏱</div><div><div class="trn-stat-num">1,280</div><div class="trn-stat-label">累計學習時數</div></div></div>
+          </div>
+          <div class="trn-row">
+            <div class="trn-card trn-chart-card">
+              <h3>本週學習時數</h3>
+              <div class="trn-bar-chart">
+                ${['一','二','三','四','五','六','日'].map((d, i) => {
+                  const h = [42, 58, 65, 48, 72, 25, 18][i];
+                  return `<div class="trn-bar-col"><div class="trn-bar" style="height:${h}%"><span>${Math.round(h * 0.8)}</span></div><div class="trn-bar-label">${d}</div></div>`;
+                }).join('')}
+              </div>
+            </div>
+            <div class="trn-card">
+              <h3>近期動態</h3>
+              <div class="trn-activity">
+                ${[
+                  { time: '10 分鐘前', text: '林雅婷 完成了「Figma UI 設計基礎」第 8 章' },
+                  { time: '30 分鐘前', text: '陳小明 開始學習「AI 工具實戰應用」' },
+                  { time: '1 小時前', text: '張美玲 通過了「資安意識培訓」測驗 (95 分)' },
+                  { time: '2 小時前', text: '新增課程「Python 數據分析」' },
+                  { time: '3 小時前', text: '周雅芳 完成了「專案管理實務」作業' },
+                  { time: '5 小時前', text: '鄭文惠 獲得「公司產品知識」證書' },
+                  { time: '昨天', text: '批量匯入 5 位新員工帳號' },
+                  { time: '昨天', text: '蔡宗翰 開始學習「Python 數據分析」' }
+                ].map(a => `<div class="trn-activity-item"><span class="trn-activity-time">${a.time}</span><span>${a.text}</span></div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="trn-card">
+            <div class="trn-card-head"><h3>課程完成概況</h3></div>
+            <div class="trn-course-overview">
+              ${demoCourses.slice(0, 5).map(c => `<div class="trn-course-row">
+                <div class="trn-course-name"><b>${c.title}</b><span class="trn-cat-tag">${c.cat}</span></div>
+                <div class="trn-progress-bar"><div class="trn-progress-fill" style="width:${c.progress}%"></div></div>
+                <span class="trn-progress-num">${c.progress}%</span>
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- 課程管理 -->
+        <div class="trn-tab-panel" id="tab-courses" hidden>
+          <div class="trn-card-head" style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+            <h3 style="font-size:18px">所有培訓課程</h3>
+            <button class="btn btn-pri" style="height:40px;font-size:14px" onclick="toast('示範網站：新增課程功能開發中')">+ 新增課程</button>
+          </div>
+          <div class="trn-table-wrap">
+            <table class="trn-table">
+              <thead><tr><th>課程名稱</th><th>分類</th><th>時數</th><th>指派人數</th><th>平均進度</th><th>狀態</th><th></th></tr></thead>
+              <tbody>
+                ${demoCourses.map(c => `<tr>
+                  <td><b>${c.title}</b></td>
+                  <td><span class="trn-cat-tag">${c.cat}</span></td>
+                  <td>${c.hours}h</td>
+                  <td>${c.employees} 人</td>
+                  <td><div class="trn-progress-bar trn-progress-sm"><div class="trn-progress-fill" style="width:${c.progress}%"></div></div><span style="font-size:13px;margin-left:8px">${c.progress}%</span></td>
+                  <td><span class="trn-status ${c.status === '已完成' ? 'trn-status-done' : ''}">${c.status}</span></td>
+                  <td><button class="trn-action-btn" onclick="toast('示範網站：編輯功能開發中')">編輯</button></td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 員工管理 -->
+        <div class="trn-tab-panel" id="tab-employees" hidden>
+          <div class="trn-card-head" style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+            <h3 style="font-size:18px">員工名單 <span style="color:var(--tx3);font-weight:400">(${demoEmployees.length})</span></h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost" style="height:40px;font-size:14px" onclick="toast('示範網站：匯入功能開發中')">批量匯入</button>
+              <button class="btn btn-pri" style="height:40px;font-size:14px" onclick="toast('示範網站：新增員工功能開發中')">+ 新增員工</button>
+            </div>
+          </div>
+          <div class="trn-table-wrap">
+            <table class="trn-table">
+              <thead><tr><th>姓名</th><th>部門</th><th>職位</th><th>課程數</th><th>整體進度</th><th>最近活躍</th><th></th></tr></thead>
+              <tbody>
+                ${demoEmployees.map(e => `<tr>
+                  <td><div style="display:flex;align-items:center;gap:10px"><div class="trn-emp-avatar">${e.name[0]}</div><b>${e.name}</b></div></td>
+                  <td>${e.dept}</td>
+                  <td>${e.role}</td>
+                  <td>${e.courses}</td>
+                  <td><div class="trn-progress-bar trn-progress-sm"><div class="trn-progress-fill" style="width:${e.progress}%"></div></div><span style="font-size:13px;margin-left:8px">${e.progress}%</span></td>
+                  <td style="color:var(--tx3)">${e.lastActive}</td>
+                  <td><button class="trn-action-btn" onclick="toast('示範網站：檢視功能開發中')">檢視</button></td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 學習報表 -->
+        <div class="trn-tab-panel" id="tab-reports" hidden>
+          <div class="trn-stat-grid">
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(124,92,255,.15);color:var(--pri)">📊</div><div><div class="trn-stat-num">72%</div><div class="trn-stat-label">平均完成率</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(76,255,138,.12);color:#4cff8a">🏆</div><div><div class="trn-stat-num">156</div><div class="trn-stat-label">已發證書</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,92,138,.12);color:var(--pink)">⏱</div><div><div class="trn-stat-num">25.6h</div><div class="trn-stat-label">人均學習時數</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,195,92,.12);color:#ffc35c">⭐</div><div><div class="trn-stat-num">4.8</div><div class="trn-stat-label">平均課程評分</div></div></div>
+          </div>
+          <div class="trn-row">
+            <div class="trn-card trn-chart-card">
+              <h3>各部門完成率</h3>
+              <div class="trn-bar-chart trn-bar-h">
+                ${[
+                  { dept: '設計部', pct: 92 },
+                  { dept: '人資部', pct: 88 },
+                  { dept: '客服部', pct: 85 },
+                  { dept: '工程部', pct: 72 },
+                  { dept: '行銷部', pct: 65 },
+                  { dept: '業務部', pct: 40 },
+                  { dept: '財務部', pct: 55 }
+                ].map(d => `<div class="trn-bar-row"><span class="trn-bar-dept">${d.dept}</span><div class="trn-bar-track"><div class="trn-bar-fill" style="width:${d.pct}%"></div></div><span class="trn-bar-pct">${d.pct}%</span></div>`).join('')}
+              </div>
+            </div>
+            <div class="trn-card">
+              <h3>學習排行榜</h3>
+              <div class="trn-leaderboard">
+                ${demoEmployees.sort((a, b) => b.progress - a.progress).slice(0, 8).map((e, i) => `<div class="trn-lb-item">
+                  <span class="trn-lb-rank ${i < 3 ? 'trn-lb-top' : ''}">${i + 1}</span>
+                  <div class="trn-emp-avatar">${e.name[0]}</div>
+                  <div class="trn-lb-info"><b>${e.name}</b><span>${e.dept}</span></div>
+                  <span class="trn-lb-pct">${e.progress}%</span>
+                </div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="trn-card" style="text-align:center;padding:40px">
+            <p style="color:var(--tx2);margin-bottom:16px">匯出完整報表以進行更深入的分析</p>
+            <button class="btn btn-ghost" onclick="toast('示範網站：匯出功能開發中')">匯出 CSV 報表</button>
+          </div>
+        </div>
+
+        <!-- 企業影片 -->
+        <div class="trn-tab-panel" id="tab-videos" hidden>
+          <div class="trn-card-head" style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+            <h3 style="font-size:18px">企業影片庫</h3>
+            <button class="btn btn-pri" style="height:40px;font-size:14px" onclick="toast('示範網站：上傳功能開發中')">+ 上傳影片</button>
+          </div>
+          <div class="trn-video-grid">
+            ${[
+              { title: '2026 Q4 全員大會', dur: '1:32:00', date: '2026-10-28', views: 48 },
+              { title: '新產品功能培訓', dur: '45:20', date: '2026-10-25', views: 35 },
+              { title: 'OKR 撰寫教學', dur: '28:15', date: '2026-10-20', views: 42 },
+              { title: '客服話術標準流程', dur: '35:40', date: '2026-10-15', views: 30 },
+              { title: 'Git 工作流程規範', dur: '52:10', date: '2026-10-12', views: 22 },
+              { title: '品牌視覺規範說明', dur: '18:30', date: '2026-10-08', views: 38 }
+            ].map(v => `<div class="trn-video-card">
+              <div class="trn-video-thumb"><div class="trn-video-play">▶</div><span class="trn-video-dur">${v.dur}</span></div>
+              <div class="trn-video-info"><h4>${v.title}</h4><span>${v.date}・${v.views} 次觀看</span></div>
+            </div>`).join('')}
+          </div>
+          <div class="trn-card" style="margin-top:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><b>儲存空間</b><span style="color:var(--tx3);margin-left:12px">12.8 GB / 50 GB</span></div>
+              <div class="trn-progress-bar" style="width:200px"><div class="trn-progress-fill" style="width:25.6%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 設定 -->
+        <div class="trn-tab-panel" id="tab-settings" hidden>
+          <div class="trn-card">
+            <h3 style="margin-bottom:20px">企業資訊</h3>
+            <div class="trn-form-grid">
+              <div class="trn-field"><label>公司名稱</label><input value="Acme 科技股份有限公司"></div>
+              <div class="trn-field"><label>統一編號</label><input value="12345678"></div>
+              <div class="trn-field"><label>管理員信箱</label><input value="admin@acme-tech.com"></div>
+              <div class="trn-field"><label>聯絡電話</label><input value="02-2345-6789"></div>
+            </div>
+            <button class="btn btn-pri" style="margin-top:20px;height:42px" onclick="toast('示範網站：儲存功能開發中')">儲存變更</button>
+          </div>
+          <div class="trn-card" style="margin-top:20px">
+            <h3 style="margin-bottom:20px">方案資訊</h3>
+            <div class="trn-plan-info">
+              <div><span style="color:var(--tx3)">目前方案</span><b>專業方案</b></div>
+              <div><span style="color:var(--tx3)">員工上限</span><b>50 人</b></div>
+              <div><span style="color:var(--tx3)">影片空間</span><b>50 GB</b></div>
+              <div><span style="color:var(--tx3)">下次續約</span><b>2027-01-15</b></div>
+            </div>
+            <button class="btn btn-ghost" style="margin-top:16px;height:42px" onclick="toast('示範網站：升級功能開發中')">升級方案</button>
+          </div>
+          <div class="trn-card" style="margin-top:20px">
+            <h3 style="margin-bottom:16px">安全設定</h3>
+            <div class="trn-toggle-row"><span>強制雙重驗證 (2FA)</span><label class="trn-toggle"><input type="checkbox" checked><span class="trn-toggle-slider"></span></label></div>
+            <div class="trn-toggle-row"><span>限制 IP 登入</span><label class="trn-toggle"><input type="checkbox"><span class="trn-toggle-slider"></span></label></div>
+            <div class="trn-toggle-row"><span>允許員工下載影片</span><label class="trn-toggle"><input type="checkbox"><span class="trn-toggle-slider"></span></label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Tab switching
+  const tabs = $$('.trn-nav-item[data-tab]', main);
+  const panels = $$('.trn-tab-panel', main);
+  const title = $('.trn-page-title', main);
+  tabs.forEach(t => t.onclick = () => {
+    tabs.forEach(x => x.classList.toggle('on', x === t));
+    panels.forEach(p => p.hidden = p.id !== 'tab-' + t.dataset.tab);
+    title.textContent = t.textContent.trim();
+  });
+
+  // Mobile sidebar toggle
+  const sidebar = $('.trn-sidebar', main);
+  const menuBtn = $('.trn-menu-btn', main);
+  if (menuBtn) menuBtn.onclick = () => sidebar.classList.toggle('open');
+}
+
+/* ---------- 部落格列表 ---------- */
+function blogPage() {
+  const main = $('main');
+  const posts = window.POSTS;
+  const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
+  catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
+  const cats = [...new Set(posts.map(p => p.cat))];
+  const featured = posts[0];
+
+  main.innerHTML = `
+  <section class="blog-hero"><div class="wrap">
+    <h1 class="blog-title rv-up">學習專欄</h1>
+    <p class="blog-sub rv-up">深度好文，幫你掌握學習方法與產業趨勢</p>
+    <div class="blog-cats rv-up">
+      <button class="chip on" data-cat="all">全部</button>
+      ${cats.map(c => `<button class="chip" data-cat="${c}">${catMap[c] || c}</button>`).join('')}
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <a class="blog-feat rv-up" href="article.html?id=${featured.id}">
+      <div class="blog-feat-img"><img src="assets/img/v${featured.v}.jpg" alt="" loading="lazy"></div>
+      <div class="blog-feat-body">
+        <span class="blog-tag">${catMap[featured.cat] || featured.cat}</span>
+        <h2>${featured.title}</h2>
+        <p>${featured.excerpt}</p>
+        <div class="blog-meta">${featured.author}・${featured.date}・${featured.readTime} 分鐘閱讀</div>
+      </div>
+    </a>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="blog-grid" id="blog-grid">
+      ${posts.slice(1).map(p => `<a class="blog-card rv-up" href="article.html?id=${p.id}" data-cat="${p.cat}">
+        <div class="blog-card-img"><img src="assets/img/v${p.v}.jpg" alt="" loading="lazy"></div>
+        <div class="blog-card-body">
+          <span class="blog-tag">${catMap[p.cat] || p.cat}</span>
+          <h3>${p.title}</h3>
+          <p>${p.excerpt}</p>
+          <div class="blog-meta">${p.author}・${p.date}・${p.readTime} 分鐘</div>
+        </div>
+      </a>`).join('')}
+    </div>
+  </div></section>`;
+
+  $$('.blog-cats .chip', main).forEach(btn => btn.onclick = () => {
+    $$('.blog-cats .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    const cat = btn.dataset.cat;
+    $$('#blog-grid .blog-card', main).forEach(c => {
+      c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+  reveal(main);
+}
+
+/* ---------- 文章頁 ---------- */
+function articlePage() {
+  const main = $('main');
+  const id = new URLSearchParams(location.search).get('id');
+  const posts = window.POSTS;
+  const post = posts.find(p => p.id === id) || posts[0];
+  const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
+  catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
+  const related = posts.filter(p => p.cat === post.cat && p.id !== post.id).slice(0, 3);
+  document.title = post.title + '｜AI Class 學習專欄';
+
+  const body = `<p>在當今快速變化的時代，持續學習已經不再是選項，而是每個專業人士的必修課。${post.excerpt}</p>
+<h2>為什麼這個主題很重要？</h2>
+<p>不論你是剛入門的新手，還是有經驗的專業人士，掌握最新的知識和技能都能讓你在職場上保持競爭力。根據最新調查，超過 78% 的企業表示，持續學習的員工更容易獲得升遷機會。</p>
+<p>我們訪問了多位業界專家，整理出以下幾個關鍵要點：</p>
+<h3>1. 建立系統化的學習框架</h3>
+<p>零散的學習往往效果不佳。建議你先設定明確的學習目標，再根據目標規劃學習路線。例如，如果你的目標是成為一名全端工程師，可以從基礎的 HTML/CSS 開始，逐步深入 JavaScript、React，最後學習後端技術。</p>
+<h3>2. 實作是最好的老師</h3>
+<p>光看影片是不夠的，真正的學習來自動手實作。每學完一個章節，就試著做一個小專案，把學到的知識應用到實際場景中。這樣不僅能加深理解，還能累積作品集。</p>
+<h3>3. 加入學習社群</h3>
+<p>與志同道合的人一起學習，可以大幅提升學習效率。在 AI Class 的每堂課程都設有討論區，你可以在那裡提問、分享心得，和其他學員互相交流。</p>
+<h2>結語</h2>
+<p>學習是一場馬拉松，不是短跑。保持耐心、持續練習，你一定能看到成果。如果你還在猶豫要從哪裡開始，不妨先選一堂最感興趣的課程，跨出第一步。</p>`;
+
+  main.innerHTML = `
+  <section class="art-hero"><div class="wrap art-wrap">
+    <div class="art-main">
+      <div class="crumb rv-up"><a href="index.html">首頁</a> / <a href="blog.html">學習專欄</a> / ${catMap[post.cat] || post.cat}</div>
+      <h1 class="art-title rv-up">${post.title}</h1>
+      <div class="art-info rv-up">
+        <span class="art-author">${post.author}</span>
+        <span>${post.date}</span>
+        <span>${post.readTime} 分鐘閱讀</span>
+      </div>
+      <div class="art-tags rv-up">${post.tags.map(t => `<span class="art-tag">${t}</span>`).join('')}</div>
+      <div class="art-cover rv-up"><img src="assets/img/v${post.v}.jpg" alt="" loading="lazy"></div>
+      <div class="art-body rv-up">${body}</div>
+      <div class="art-share rv-up">
+        <span>分享這篇文章</span>
+        <button onclick="navigator.clipboard.writeText(location.href);toast('已複製連結')">📋 複製連結</button>
+      </div>
+    </div>
+    <aside class="art-side">
+      <div class="art-side-card rv-up">
+        <h3>相關文章</h3>
+        ${related.length ? related.map(r => `<a class="art-side-item" href="article.html?id=${r.id}">
+          <img src="assets/img/v${r.v}.jpg" alt="" loading="lazy">
+          <div><h4>${r.title}</h4><span>${r.date}</span></div>
+        </a>`).join('') : '<p style="color:var(--tx3)">暫無相關文章</p>'}
+      </div>
+      <div class="art-side-card rv-up">
+        <h3>熱門標籤</h3>
+        <div class="art-side-tags">${[...new Set(posts.flatMap(p => p.tags))].slice(0, 12).map(t => `<a href="blog.html" class="art-tag">${t}</a>`).join('')}</div>
+      </div>
+    </aside>
+  </div></section>`;
+  reveal(main);
+}
+
+/* ---------- 講師列表 ---------- */
+function instructorPage() {
+  const main = $('main');
+  const teacherMap = {};
+  C.forEach(c => {
+    if (!teacherMap[c.teacher]) teacherMap[c.teacher] = { name: c.teacher, role: c.role, courses: [], students: 0, avgRating: 0 };
+    teacherMap[c.teacher].courses.push(c);
+    teacherMap[c.teacher].students += c.students;
+  });
+  const teachers = Object.values(teacherMap).map(t => {
+    t.avgRating = (t.courses.reduce((s, c) => s + c.rating, 0) / t.courses.length).toFixed(1);
+    t.v = t.courses[0].v;
+    return t;
+  }).sort((a, b) => b.students - a.students);
+
+  main.innerHTML = `
+  <section class="ins-hero"><div class="wrap">
+    <h1 class="ins-title rv-up">所有講師</h1>
+    <p class="ins-sub rv-up">業界頂尖職人親授，${teachers.length} 位講師帶你把熱情學成專業</p>
+  </div></section>
+  <section class="sec"><div class="wrap">
+    <div class="ins-grid">
+      ${teachers.map(t => `<div class="ins-card rv-up">
+        <div class="ins-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}" loading="lazy"></div>
+        <h3 class="ins-name">${t.name}</h3>
+        <p class="ins-role">${t.role}</p>
+        <div class="ins-stats">
+          <div><b>${t.courses.length}</b><span>門課程</span></div>
+          <div><b>${(t.students / 1000).toFixed(1)}K</b><span>學生</span></div>
+          <div><b>⭐ ${t.avgRating}</b><span>評分</span></div>
+        </div>
+        <div class="ins-courses">${t.courses.slice(0, 2).map(c => `<a href="course.html?id=${c.id}" class="ins-course-link">${c.title}</a>`).join('')}</div>
+      </div>`).join('')}
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
+/* ---------- 分類瀏覽 ---------- */
+function categoryPage() {
+  const main = $('main');
+  const catId = new URLSearchParams(location.search).get('cat');
+  const cats = window.CATS.filter(c => c.id !== 'all');
+
+  if (catId) {
+    const cat = cats.find(c => c.id === catId) || cats[0];
+    const courses = C.filter(c => c.cat === catId);
+    document.title = cat.name + '｜AI Class 課程分類';
+    main.innerHTML = `
+    <section class="catp-hero"><div class="wrap">
+      <div class="crumb rv-up"><a href="index.html">首頁</a> / <a href="category.html">分類</a> / ${cat.name}</div>
+      <h1 class="catp-title rv-up">${cat.name}</h1>
+      <p class="catp-count rv-up">共 ${courses.length} 堂課程</p>
+      ${cat.subs ? `<div class="catp-subs rv-up">${cat.subs.map(s => `<span class="chip">${s}</span>`).join('')}</div>` : ''}
+    </div></section>
+    <section class="sec"><div class="wrap">
+      <div class="catp-grid">${courses.map(c => card(c)).join('')}</div>
+      ${courses.length === 0 ? '<p style="text-align:center;color:var(--tx3);padding:60px 0">此分類尚無課程</p>' : ''}
+    </div></section>`;
+  } else {
+    main.innerHTML = `
+    <section class="catp-hero"><div class="wrap">
+      <h1 class="catp-title rv-up">課程分類</h1>
+      <p class="catp-count rv-up">探索 ${cats.length} 大類別，找到你感興趣的課程</p>
+    </div></section>
+    <section class="sec"><div class="wrap">
+      <div class="cat-grid">${cats.map(c => {
+        const count = C.filter(x => x.cat === c.id).length;
+        const sample = C.find(x => x.cat === c.id);
+        return `<a class="cat-card rv-up" href="category.html?cat=${c.id}" style="--cimg:url(assets/img/v${sample ? sample.v : '785'}.jpg)">
+          <span class="cat-count">${count} 堂課程</span><span class="cat-name">${c.name}</span>
+        </a>`;
+      }).join('')}</div>
+    </div></section>`;
+  }
+  bindCards(main);
+}
+
+/* ---------- 收藏頁 ---------- */
+function wishlistPage() {
+  const main = $('main');
+  const items = [...wish].map(id => byId[id]).filter(Boolean);
+
+  function render() {
+    const items = [...wish].map(id => byId[id]).filter(Boolean);
+    if (!items.length) {
+      main.innerHTML = `<section class="sec"><div class="wrap">
+        <div class="cart-empty"><div class="cart-empty-icon">♡</div><h2>收藏清單是空的</h2><p>瀏覽課程時點擊愛心，把感興趣的課程加入收藏</p><a class="btn btn-pri" href="index.html">探索課程</a></div>
+      </div></section>`;
+      return;
+    }
+    main.innerHTML = `
+    <section class="wish-hero"><div class="wrap">
+      <h1 class="wish-title rv-up">我的收藏</h1>
+      <p class="wish-count rv-up">共 ${items.length} 堂課程</p>
+    </div></section>
+    <section class="sec"><div class="wrap">
+      <div class="wish-grid">${items.map(c => `<div class="wish-item rv-up">
+        <a href="course.html?id=${c.id}" class="wish-thumb"><img src="assets/img/v${c.v}.jpg" alt="" loading="lazy"></a>
+        <div class="wish-info">
+          <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
+          <p class="teacher">${c.teacher}・${c.role}</p>
+          <div class="stars"><b>★</b> ${c.rating}（${c.students.toLocaleString()} 人）</div>
+          <div class="price"><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del><span class="off">-${pct(c)}%</span></div>
+        </div>
+        <div class="wish-actions">
+          <button class="btn btn-pri" onclick="cart.add('${c.id}');saveCart();updateCartBadge();toast('已加入購物車')">加入購物車</button>
+          <button class="wish-rm" data-id="${c.id}" title="移除收藏">✕</button>
+        </div>
+      </div>`).join('')}</div>
+    </div></section>`;
+    $$('.wish-rm', main).forEach(b => b.onclick = () => {
+      wish.delete(b.dataset.id);
+      localStorage.setItem('aic-wish', JSON.stringify([...wish]));
+      render();
+      toast('已移除收藏');
+    });
+    reveal(main);
+  }
+  render();
+}
+
+/* ---------- 我的學習 ---------- */
+function myPage() {
+  const main = $('main');
+  const enrolled = C.slice(0, 5).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62][i], lastWatch: ['2 小時前', '昨天', '3 天前', '5 分鐘前', '1 天前'][i] }));
+  const totalHours = enrolled.reduce((s, c) => s + c.hours, 0);
+  const completed = enrolled.filter(c => c.progress === 100).length;
+  const wishlist = C.slice(8, 12);
+  const orders = [
+    { id: 'ORD-20261028-001', date: '2026/10/28', items: [C[0]], total: 4980, status: '已完成' },
+    { id: 'ORD-20261015-002', date: '2026/10/15', items: [C[1], C[4]], total: 9860, status: '已完成' },
+    { id: 'ORD-20260920-003', date: '2026/09/20', items: [C[2]], total: 4580, status: '已完成' },
+  ];
+  const coupons = [
+    { code: 'WELCOME20', desc: '新會員 8 折券', expire: '2026/12/31', min: 3000, used: false },
+    { code: 'DOUBLE11', desc: '雙 11 滿 5,000 折 800', expire: '2026/11/15', min: 5000, used: false },
+    { code: 'BDAY500', desc: '生日禮 $500 折抵', expire: '2026/11/30', min: 2000, used: true },
+  ];
+
+  // Learning calendar (last 30 days)
+  const today = new Date();
+  const calDays = Array.from({ length: 35 }, (_, i) => {
+    const d = new Date(today); d.setDate(d.getDate() - 34 + i);
+    const active = [1,2,3,5,6,8,10,11,12,14,15,17,19,20,21,22,24,26,27,28,30,31,33,34].includes(i);
+    const mins = active ? [15,30,45,60,90,120][Math.floor(Math.random() * 6)] : 0;
+    return { date: d, mins, dow: d.getDay() };
+  });
+
+  main.innerHTML = `
+  <div class="myp-layout">
+    <aside class="myp-aside rv-up">
+      <div class="myp-profile">
+        <div class="myp-avatar">學</div>
+        <h3 class="myp-name">學員</h3>
+        <p class="myp-email">user@aiclass.tw</p>
+      </div>
+      <nav class="myp-nav">
+        <button class="myp-nav-btn on" data-sec="courses">📚 我的課程</button>
+        <button class="myp-nav-btn" data-sec="calendar">📅 學習紀錄</button>
+        <button class="myp-nav-btn" data-sec="wishlist">♡ 心願清單</button>
+        <a href="order-history.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🧾 訂單紀錄</a>
+        <button class="myp-nav-btn" data-sec="coupons">🎟️ 優惠券</button>
+        <button class="myp-nav-btn" data-sec="settings">⚙️ 帳號設定</button>
+        <a href="certificate.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🏆 結業證書</a>
+      </nav>
+      <div class="myp-aside-stats">
+        <div><b>${enrolled.length}</b><span>課程</span></div>
+        <div><b>${totalHours}</b><span>時數</span></div>
+        <div><b>462</b><span>點數</span></div>
+      </div>
+    </aside>
+    <div class="myp-main">
+      <!-- 我的課程 -->
+      <section class="myp-sec" id="myp-sec-courses">
+        <h2 class="myp-sec-title rv-up">我的課程</h2>
+        <div class="myp-stats rv-up">
+          <div class="myp-stat"><b>${enrolled.length}</b><span>已購課程</span></div>
+          <div class="myp-stat"><b>${completed}</b><span>已完成</span></div>
+          <div class="myp-stat"><b>${totalHours}</b><span>總時數</span></div>
+          <div class="myp-stat"><b>462</b><span>學習點數</span></div>
+        </div>
+        <div class="myp-tabs rv-up">
+          <button class="chip on" data-tab="all">全部課程</button>
+          <button class="chip" data-tab="ing">學習中</button>
+          <button class="chip" data-tab="done">已完成</button>
+        </div>
+        <div class="myp-grid" id="myp-list">
+          ${enrolled.map(c => `<div class="myp-card rv-up" data-status="${c.progress === 100 ? 'done' : 'ing'}">
+            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="" loading="lazy"></a>
+            <div class="myp-card-body">
+              <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
+              <p class="teacher">${c.teacher}</p>
+              <div class="myp-progress-row">
+                <div class="myp-progress"><div class="myp-progress-fill" style="width:${c.progress}%"></div></div>
+                <span>${c.progress}%</span>
+              </div>
+              <div class="myp-card-foot">
+                <span class="myp-meta">${c.lastWatch}</span>
+                <a href="player.html?id=${c.id}" class="btn btn-pri btn-sm">${c.progress === 100 ? '複習' : '繼續學習'}</a>
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </section>
+
+      <!-- 學習紀錄 -->
+      <section class="myp-sec" id="myp-sec-calendar" hidden>
+        <h2 class="myp-sec-title rv-up">學習紀錄</h2>
+        <div class="myp-cal-wrap rv-up">
+          <div class="myp-cal-header">
+            <h3>近 5 週學習日曆</h3>
+            <div class="myp-cal-legend"><span class="myp-cal-dot l0"></span>0 分<span class="myp-cal-dot l1"></span>< 30 分<span class="myp-cal-dot l2"></span>< 60 分<span class="myp-cal-dot l3"></span>60+ 分</div>
+          </div>
+          <div class="myp-cal-grid">
+            <div class="myp-cal-labels"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+            <div class="myp-cal-days">
+              ${calDays.map(d => {
+                const lvl = d.mins === 0 ? 0 : d.mins < 30 ? 1 : d.mins < 60 ? 2 : 3;
+                return `<div class="myp-cal-day l${lvl}" title="${d.date.getMonth()+1}/${d.date.getDate()} — ${d.mins} 分鐘">${d.date.getDate()}</div>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="myp-cal-summary">
+            <div class="myp-stat"><b>${calDays.filter(d => d.mins > 0).length}</b><span>學習天數</span></div>
+            <div class="myp-stat"><b>${Math.round(calDays.reduce((s, d) => s + d.mins, 0) / 60)}</b><span>累計時數</span></div>
+            <div class="myp-stat"><b>7</b><span>連續天數</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 心願清單 -->
+      <section class="myp-sec" id="myp-sec-wishlist" hidden>
+        <h2 class="myp-sec-title rv-up">心願清單</h2>
+        <div class="myp-grid">
+          ${wishlist.map(c => `<div class="myp-card rv-up">
+            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="" loading="lazy"></a>
+            <div class="myp-card-body">
+              <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
+              <p class="teacher">${c.teacher}</p>
+              <div class="myp-card-foot">
+                <span class="myp-card-price"><b>NT$${c.price.toLocaleString()}</b></span>
+                <button class="btn btn-pri btn-sm" onclick="toast('已加入購物車')">加入購物車</button>
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </section>
+
+      <!-- 訂單記錄 -->
+      <section class="myp-sec" id="myp-sec-orders" hidden>
+        <h2 class="myp-sec-title rv-up">訂單記錄</h2>
+        <div class="myp-orders rv-up">
+          ${orders.map(o => `<div class="myp-order">
+            <div class="myp-order-head">
+              <span class="myp-order-id">${o.id}</span>
+              <span class="myp-order-date">${o.date}</span>
+              <span class="myp-order-status">${o.status}</span>
+            </div>
+            <div class="myp-order-items">${o.items.map(c => `<div class="myp-order-item"><img src="assets/img/v${c.v}.jpg" alt=""><span>${c.title}</span></div>`).join('')}</div>
+            <div class="myp-order-total">合計 <b>NT$${o.total.toLocaleString()}</b></div>
+          </div>`).join('')}
+        </div>
+      </section>
+
+      <!-- 優惠券 -->
+      <section class="myp-sec" id="myp-sec-coupons" hidden>
+        <h2 class="myp-sec-title rv-up">優惠券 <a href="coupon.html" style="font-size:.85rem;font-weight:500;color:var(--pri);margin-left:8px">查看全部 →</a></h2>
+        <div class="myp-coupons rv-up">
+          ${coupons.map(cp => `<div class="myp-coupon ${cp.used ? 'used' : ''}">
+            <div class="myp-coupon-left"><span class="myp-coupon-code">${cp.code}</span><span class="myp-coupon-desc">${cp.desc}</span></div>
+            <div class="myp-coupon-right"><span>滿 NT$${cp.min.toLocaleString()} 可用</span><span>有效期限：${cp.expire}</span>${cp.used ? '<span class="myp-coupon-used">已使用</span>' : '<button class="btn btn-pri btn-sm" onclick="toast(\'已複製優惠碼\')">使用</button>'}</div>
+          </div>`).join('')}
+        </div>
+      </section>
+
+      <!-- 帳號設定 -->
+      <section class="myp-sec" id="myp-sec-settings" hidden>
+        <h2 class="myp-sec-title rv-up">帳號設定</h2>
+        <div class="myp-settings rv-up">
+          <div class="myp-set-group">
+            <h3>個人資料</h3>
+            <div class="myp-set-row"><label>姓名</label><input value="學員" placeholder="你的姓名"></div>
+            <div class="myp-set-row"><label>Email</label><input value="user@aiclass.tw" placeholder="Email"></div>
+            <div class="myp-set-row"><label>手機</label><input placeholder="手機號碼（選填）"></div>
+            <button class="btn btn-pri btn-sm" onclick="toast('示範網站：設定功能開發中')">儲存變更</button>
+          </div>
+          <div class="myp-set-group">
+            <h3>密碼變更</h3>
+            <div class="myp-set-row"><label>目前密碼</label><input type="password" placeholder="輸入目前密碼"></div>
+            <div class="myp-set-row"><label>新密碼</label><input type="password" placeholder="輸入新密碼"></div>
+            <div class="myp-set-row"><label>確認密碼</label><input type="password" placeholder="再次輸入新密碼"></div>
+            <button class="btn btn-pri btn-sm" onclick="toast('示範網站：設定功能開發中')">更新密碼</button>
+          </div>
+          <div class="myp-set-group">
+            <h3>通知偏好</h3>
+            <div class="myp-set-row toggle"><label>課程更新通知</label><input type="checkbox" checked></div>
+            <div class="myp-set-row toggle"><label>促銷活動通知</label><input type="checkbox" checked></div>
+            <div class="myp-set-row toggle"><label>學習提醒</label><input type="checkbox"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec"><div class="wrap">
+        <div class="sec-head rv-up"><h2>推薦你可能會喜歡</h2></div>
+        <div class="rail">${C.slice(10, 18).map(c => card(c)).join('')}</div>
+      </div></section>
+    </div>
+  </div>`;
+
+  // Section navigation
+  $$('.myp-nav-btn', main).forEach(btn => btn.onclick = () => {
+    $$('.myp-nav-btn', main).forEach(b => b.classList.toggle('on', b === btn));
+    $$('.myp-sec', main).forEach(s => s.hidden = s.id !== 'myp-sec-' + btn.dataset.sec);
+  });
+
+  // Course tabs filter
+  $$('.myp-tabs .chip', main).forEach(btn => btn.onclick = () => {
+    $$('.myp-tabs .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    const tab = btn.dataset.tab;
+    $$('#myp-list .myp-card', main).forEach(c => {
+      c.style.display = (tab === 'all' || c.dataset.status === tab) ? '' : 'none';
+    });
+  });
+  bindCards(main);
+}
+
+/* ---------- 關於我們 ---------- */
+function aboutPage() {
+  const main = $('main');
+  const totalStudents = C.reduce((s, c) => s + c.students, 0);
+  const teacherCount = [...new Set(C.map(c => c.teacher))].length;
+
+  main.innerHTML = `
+  <section class="abt-hero"><div class="wrap">
+    <h1 class="abt-title rv-up">關於 AI Class</h1>
+    <p class="abt-sub rv-up">跟著業界職人，把熱情學成專業</p>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="abt-mission rv-up">
+      <h2>我們的使命</h2>
+      <p>AI Class 相信，每個人都有潛力成為自己領域的專家。我們匯集了來自各行業的頂尖職人，將他們多年積累的實戰經驗，轉化為系統化的線上課程，讓學習不再受限於時間和地點。</p>
+      <p>從設計、繪畫、AI 科技到料理烘焙，我們涵蓋了超過 10 大領域，課程一次購買即可無限期觀看，讓你用自己的節奏學習，真正把熱情變成專業能力。</p>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="stats rv-up">
+      <div class="stat"><b>${C.length}+</b><span>精選課程</span></div>
+      <div class="stat"><b>${teacherCount}+</b><span>頂尖講師</span></div>
+      <div class="stat"><b>${(totalStudents / 10000).toFixed(1)} 萬+</b><span>學員人次</span></div>
+      <div class="stat"><b>98%</b><span>好評率</span></div>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <h2 class="ent-sec-title rv-up">我們的價值觀</h2>
+    <div class="ent-feature-grid">
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🎯</div><h3>實戰導向</h3><p>每堂課都以實際成果為目標設計，學完就能直接應用在工作或創作上，而不只是理論。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🏆</div><h3>品質堅持</h3><p>嚴格篩選講師資格，每堂課經過完整的課程設計審核、影片品質把關，確保學習體驗。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">♾️</div><h3>終身學習</h3><p>一次購買、無限期觀看、免費更新，我們相信持續學習不應該有時間壓力。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🤝</div><h3>社群共學</h3><p>每堂課設有討論區，讓你和講師、同學交流，學習路上不孤單。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🌏</div><h3>多元包容</h3><p>涵蓋 10 大領域、超過 37 堂課程，從技術到創作、從入門到進階，每個人都能找到適合的學習路徑。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🚀</div><h3>持續創新</h3><p>緊跟 AI 時代的腳步，不斷推出最新技術課程，幫助學員保持市場競爭力。</p></div>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="abt-cta rv-up">
+      <h2>開始你的學習旅程</h2>
+      <p>加入超過 ${(totalStudents / 10000).toFixed(0)} 萬學員的行列，找到你的下一堂課</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:24px">
+        <a class="btn btn-pri" href="index.html">探索課程</a>
+        <a class="btn btn-ghost" href="teach.html">成為講師</a>
+      </div>
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
+/* ---------- 完整 FAQ ---------- */
+function faqPage() {
+  const main = $('main');
+  const faqData = window.FAQ_FULL;
+
+  main.innerHTML = `
+  <section class="faqp-hero"><div class="wrap">
+    <h1 class="faqp-title rv-up">常見問題</h1>
+    <p class="faqp-sub rv-up">找不到答案？歡迎來信 hi@aiclass.tw，我們會在 24 小時內回覆</p>
+    <div class="faqp-search rv-up"><input placeholder="搜尋問題…" id="faq-search"></div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="faqp-cats rv-up">
+      <button class="chip on" data-cat="all">全部</button>
+      ${faqData.map(g => `<button class="chip" data-cat="${g.cat}">${g.cat}</button>`).join('')}
+    </div>
+    <div class="faq" id="faq-list">
+      ${faqData.map(g => `<div class="faqp-group" data-cat="${g.cat}">
+        <h2 class="faqp-group-title rv-up">${g.cat}</h2>
+        ${g.items.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
+      </div>`).join('')}
+    </div>
+  </div></section>`;
+
+  $$('.qa button', main).forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+
+  $$('.faqp-cats .chip', main).forEach(btn => btn.onclick = () => {
+    $$('.faqp-cats .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    const cat = btn.dataset.cat;
+    $$('#faq-list .faqp-group', main).forEach(g => {
+      g.style.display = (cat === 'all' || g.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+
+  $('#faq-search', main).oninput = e => {
+    const q = e.target.value.toLowerCase();
+    $$('#faq-list .qa', main).forEach(qa => {
+      qa.style.display = qa.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+    $$('#faq-list .faqp-group', main).forEach(g => {
+      const visible = $$('.qa', g).some(qa => qa.style.display !== 'none');
+      g.style.display = visible ? '' : 'none';
+    });
+  };
+  reveal(main);
+}
+
+/* ---------- 成為講師 ---------- */
+function teachPage() {
+  const main = $('main');
+  const totalStudents = C.reduce((s, c) => s + c.students, 0);
+  const teacherCount = [...new Set(C.map(c => c.teacher))].length;
+
+  main.innerHTML = `
+  <section class="tch-hero"><div class="wrap">
+    <div class="tch-hero-inner rv-up">
+      <span class="ent-eyebrow">JOIN US</span>
+      <h1 class="tch-title">在 AI Class 開課<br>讓你的專業被看見</h1>
+      <p class="tch-sub">把你多年累積的實戰經驗，轉化為線上課程，分享給更多有熱情的學習者。我們提供完整的課程製作支援、行銷資源與透明的分潤制度。</p>
+      <a class="btn btn-pri" href="#tch-apply" style="height:52px;font-size:16px;padding:0 32px">立即申請開課</a>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="stats rv-up">
+      <div class="stat"><b>${(totalStudents / 10000).toFixed(1)} 萬+</b><span>平台學員</span></div>
+      <div class="stat"><b>${teacherCount}+</b><span>合作講師</span></div>
+      <div class="stat"><b>70%</b><span>講師分潤</span></div>
+      <div class="stat"><b>0 元</b><span>開課費用</span></div>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <h2 class="ent-sec-title rv-up">為什麼選擇 AI Class？</h2>
+    <p class="ent-sec-sub rv-up">我們幫你處理技術和行銷，你只需要專注在教學</p>
+    <div class="ent-feature-grid">
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🎬</div><h3>專業拍攝支援</h3><p>提供攝影棚、專業器材與拍攝團隊，讓你的課程影片達到業界水準。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">📣</div><h3>行銷推廣資源</h3><p>社群媒體、Email 行銷、SEO 優化，我們用全方位策略為你的課程帶來曝光。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">💰</div><h3>透明分潤制度</h3><p>業界最高 70% 講師分潤比例，每月結算，收入透明可追蹤。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">📊</div><h3>數據分析儀表板</h3><p>即時查看課程銷售、學員互動、評價等數據，持續優化你的課程。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🎨</div><h3>課程設計顧問</h3><p>資深課程設計師一對一協助，從大綱規劃到章節安排，確保學習效果。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🌐</div><h3>全球市場觸及</h3><p>課程上架後觸及全球華語學習者，品牌影響力不受地域限制。</p></div>
+    </div>
+  </div></section>
+
+  <section class="ent-steps"><div class="wrap">
+    <h2 class="ent-sec-title rv-up">開課流程</h2>
+    <p class="ent-sec-sub rv-up">從申請到上架，最快 4 週完成</p>
+    <div class="ent-step-grid">
+      <div class="ent-step rv-up"><div class="ent-step-num">01</div><h3>提交申請</h3><p>填寫開課申請表，附上你的專業經歷與課程構想</p><span class="ent-step-arrow">→</span></div>
+      <div class="ent-step rv-up"><div class="ent-step-num">02</div><h3>課程規劃</h3><p>與課程設計師一起規劃大綱、章節與教材</p><span class="ent-step-arrow">→</span></div>
+      <div class="ent-step rv-up"><div class="ent-step-num">03</div><h3>錄製拍攝</h3><p>使用我們的攝影棚或遠端錄製，製作高品質影片</p><span class="ent-step-arrow">→</span></div>
+      <div class="ent-step rv-up"><div class="ent-step-num">04</div><h3>審核上架</h3><p>通過品質審核後正式上架，開始觸及全球學員</p></div>
+    </div>
+  </div></section>
+
+  <section class="sec" id="tch-apply"><div class="wrap">
+    <div class="ent-cta-box rv-up">
+      <h2>準備好開始了嗎？</h2>
+      <p>填寫你的資訊，我們的課程顧問會在 2 個工作天內與你聯繫</p>
+      <div class="ent-cta-form">
+        <input placeholder="你的姓名">
+        <input placeholder="Email">
+        <input placeholder="你的專業領域">
+        <button class="btn btn-pri" style="height:52px;flex:none;padding:0 28px" onclick="toast('示範網站：申請功能開發中')">送出申請</button>
+      </div>
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
+/* ---------- 課程播放器 ---------- */
+function playerPage() {
+  const c = byId[new URLSearchParams(location.search).get('id')] || C[0];
+  document.title = `${c.title}｜AI Class 播放器`;
+  document.body.style.setProperty('--bg', '#070710');
+
+  const chapters = [
+    { name: '課程介紹與準備', lessons: [{ t: '講師介紹與課程地圖', dur: '08:24' }, { t: '工具安裝與環境設定', dur: '12:37' }, { t: '素材下載說明', dur: '05:12' }, { t: '課前暖身練習', dur: '09:45' }] },
+    { name: '基礎觀念建立', lessons: [{ t: '核心原理完整拆解', dur: '18:30' }, { t: '常見錯誤與修正方式', dur: '14:22' }, { t: '基本操作演練', dur: '11:08' }, { t: '練習：第一個小作品', dur: '20:15' }, { t: '基礎觀念複習', dur: '06:40' }] },
+    { name: '進階技巧', lessons: [{ t: '職人工作流程揭密', dur: '22:10' }, { t: '效率提升的五個祕訣', dur: '15:33' }, { t: '案例分析：品牌專案', dur: '19:47' }, { t: '進階工具與插件', dur: '13:25' }] },
+    { name: '完整專案實作', lessons: [{ t: '專案規劃與架構設計', dur: '16:42' }, { t: '從零開始建置（上）', dur: '25:18' }, { t: '從零開始建置（下）', dur: '28:05' }, { t: '細節修飾與完稿', dur: '17:30' }, { t: '專案優化與輸出', dur: '12:55' }, { t: '專案回顧與檢討', dur: '08:20' }] },
+    { name: '作品發表與職涯', lessons: [{ t: '作品集整理技巧', dur: '14:16' }, { t: '定價與接案策略', dur: '16:08' }, { t: '客戶溝通實戰', dur: '11:43' }, { t: '個人品牌經營', dur: '13:50' }] },
+    { name: '加碼：業界趨勢', lessons: [{ t: '2026 趨勢觀察', dur: '10:28' }, { t: 'AI 輔助工作流程', dur: '18:35' }, { t: '講師推薦資源', dur: '07:12' }, { t: '結語與下一步', dur: '05:55' }] }
+  ];
+
+  let curCh = 0, curLs = 0;
+  const totalLessons = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
+  const doneSet = new Set();
+  for (let i = 0; i < 7; i++) doneSet.add(`0-${i < 4 ? i : ''}`);
+  doneSet.add('0-0'); doneSet.add('0-1'); doneSet.add('0-2'); doneSet.add('0-3');
+  doneSet.add('1-0'); doneSet.add('1-1'); doneSet.add('1-2');
+
+  function lessonId(ci, li) { return ci + '-' + li; }
+  function progress() { return Math.round(doneSet.size / totalLessons * 100); }
+
+  function renderSidebar() {
+    return chapters.map((ch, ci) => {
+      const doneInCh = ch.lessons.filter((_, li) => doneSet.has(lessonId(ci, li))).length;
+      return `<div class="plr-ch ${ci === curCh ? 'open' : ''}">
+        <button class="plr-ch-btn" data-ch="${ci}">
+          <span class="plr-ch-name">第 ${ci + 1} 章　${ch.name}</span>
+          <span class="plr-ch-prog">${doneInCh}/${ch.lessons.length}</span>
+        </button>
+        <div class="plr-lessons">${ch.lessons.map((ls, li) => {
+          const done = doneSet.has(lessonId(ci, li));
+          const active = ci === curCh && li === curLs;
+          return `<button class="plr-ls ${active ? 'active' : ''} ${done ? 'done' : ''}" data-ch="${ci}" data-ls="${li}">
+            <span class="plr-ls-icon">${done ? '✓' : active ? '▶' : '○'}</span>
+            <span class="plr-ls-title">${ci + 1}-${li + 1}　${ls.t}</span>
+            <span class="plr-ls-dur">${ls.dur}</span>
+          </button>`;
+        }).join('')}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const QA_DATA = [
+    { user: '王**', time: '2 天前', q: '請問第三章的素材連結在哪裡下載？', a: '素材已更新在第三章第一課的附件區，請重新整理後下載。', likes: 12 },
+    { user: '李**', time: '5 天前', q: '老師推薦的外掛是付費的嗎？有免費替代方案嗎？', a: '課程中介紹的主要外掛都有免費版本可以使用，付費版只是多了一些進階功能，初學者用免費版就夠了。', likes: 28 },
+    { user: '張**', time: '1 週前', q: '作品集需要放幾個作品比較適合？', a: '建議精選 5-8 個代表作品即可，質量比數量重要。每個作品都要附上設計思路和成果說明。', likes: 35 },
+    { user: '陳**', time: '2 週前', q: '完成課程後可以接到什麼價位的案子？', a: '依照市場行情，初階約 5,000-15,000/案，累積作品後可以逐步提升到 30,000 以上。重點是先累積作品和口碑。', likes: 19 },
+  ];
+
+  const main = $('main');
+  main.innerHTML = `
+  <div class="plr-wrap">
+    <header class="plr-hdr">
+      <a href="index.html" class="plr-logo">AI Class</a>
+      <span class="plr-course-name">${c.title}</span>
+      <div class="plr-hdr-right">
+        <span class="plr-prog-txt">${progress()}% 完成</span>
+        <a href="course.html?id=${c.id}" class="plr-back">← 課程詳情</a>
+        <button class="plr-sidebar-toggle" aria-label="章節列表">☰</button>
+      </div>
+    </header>
+    <div class="plr-body">
+      <div class="plr-main">
+        <div class="plr-video-wrap">
+          <video id="plr-vid" src="${vid(c)}" poster="${img(c)}" preload="metadata" playsinline></video>
+          <div class="plr-controls">
+            <div class="plr-progress-bar" id="plr-pbar"><div class="plr-progress-fill" id="plr-pfill"></div><div class="plr-progress-handle" id="plr-phandle"></div></div>
+            <div class="plr-ctrl-row">
+              <div class="plr-ctrl-left">
+                <button id="plr-play" class="plr-ctrl-btn" aria-label="播放">▶</button>
+                <button id="plr-prev-ls" class="plr-ctrl-btn" aria-label="上一課">⏮</button>
+                <button id="plr-next-ls" class="plr-ctrl-btn" aria-label="下一課">⏭</button>
+                <div class="plr-vol-wrap">
+                  <button id="plr-mute" class="plr-ctrl-btn" aria-label="靜音">🔊</button>
+                  <input type="range" id="plr-vol" min="0" max="1" step="0.05" value="1" class="plr-vol-slider">
+                </div>
+                <span class="plr-time" id="plr-time">0:00 / 0:00</span>
+              </div>
+              <div class="plr-ctrl-right">
+                <div class="plr-speed-wrap">
+                  <button id="plr-speed" class="plr-ctrl-btn">1x</button>
+                  <div class="plr-speed-menu" id="plr-speed-menu" hidden>
+                    <button data-spd="0.5">0.5x</button><button data-spd="0.75">0.75x</button><button data-spd="1" class="on">1x</button><button data-spd="1.25">1.25x</button><button data-spd="1.5">1.5x</button><button data-spd="2">2x</button>
+                  </div>
+                </div>
+                <button id="plr-pip" class="plr-ctrl-btn" aria-label="子母畫面">⧉</button>
+                <button id="plr-fs" class="plr-ctrl-btn" aria-label="全螢幕">⛶</button>
+              </div>
+            </div>
+          </div>
+          <div class="plr-lesson-bar" id="plr-lesson-bar">
+            <span class="plr-lb-chapter">第 1 章</span>
+            <span class="plr-lb-sep">›</span>
+            <span class="plr-lb-title">1-1　${chapters[0].lessons[0].t}</span>
+          </div>
+        </div>
+      </div>
+      <aside class="plr-sidebar" id="plr-sidebar">
+        <div class="plr-sb-tabs">
+          <button class="plr-sb-tab on" data-tab="chapters">章節目錄</button>
+          <button class="plr-sb-tab" data-tab="notes">筆記</button>
+          <button class="plr-sb-tab" data-tab="qa">Q&A</button>
+        </div>
+        <div class="plr-sb-panel" id="plr-panel-chapters">
+          <div class="plr-sb-head">
+            <div class="plr-sb-progress"><div class="plr-sb-bar"><div class="plr-sb-fill" style="width:${progress()}%"></div></div><span>${progress()}%</span></div>
+          </div>
+          <div class="plr-sb-list" id="plr-sb-list">${renderSidebar()}</div>
+        </div>
+        <div class="plr-sb-panel" id="plr-panel-notes" hidden>
+          <div class="plr-notes-sb">
+            <textarea id="plr-note" placeholder="在這裡記下學習重點…" rows="12"></textarea>
+            <div class="plr-note-actions">
+              <span class="plr-note-info">筆記自動儲存在本機</span>
+              <button class="plr-note-stamp" id="plr-stamp">+ 加入時間戳記</button>
+            </div>
+          </div>
+        </div>
+        <div class="plr-sb-panel" id="plr-panel-qa" hidden>
+          <div class="plr-qa-list">
+            ${QA_DATA.map(q => `<div class="plr-qa-item">
+              <div class="plr-qa-head"><b>${q.user}</b><span>${q.time}</span></div>
+              <div class="plr-qa-q">${q.q}</div>
+              <div class="plr-qa-a"><span class="plr-qa-badge">講師回覆</span>${q.a}</div>
+              <div class="plr-qa-foot"><button class="plr-qa-like">♡ ${q.likes}</button></div>
+            </div>`).join('')}
+            <div class="plr-qa-input">
+              <textarea placeholder="輸入你的問題…" rows="3"></textarea>
+              <button class="btn btn-pri" onclick="toast('示範網站：提問功能開發中')">送出提問</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>`;
+
+  // Video controls
+  const vid_el = $('#plr-vid');
+  const playBtn = $('#plr-play');
+  const pbar = $('#plr-pbar'), pfill = $('#plr-pfill'), phandle = $('#plr-phandle');
+  const timeEl = $('#plr-time');
+
+  function fmtTime(s) { const m = Math.floor(s / 60); return m + ':' + String(Math.floor(s % 60)).padStart(2, '0'); }
+
+  playBtn.onclick = () => { vid_el.paused ? vid_el.play() : vid_el.pause(); };
+  vid_el.onclick = () => { vid_el.paused ? vid_el.play() : vid_el.pause(); };
+  vid_el.onplay = () => { playBtn.textContent = '⏸'; };
+  vid_el.onpause = () => { playBtn.textContent = '▶'; };
+  vid_el.ontimeupdate = () => {
+    if (!vid_el.duration) return;
+    const pctVal = vid_el.currentTime / vid_el.duration * 100;
+    pfill.style.width = pctVal + '%';
+    phandle.style.left = pctVal + '%';
+    timeEl.textContent = fmtTime(vid_el.currentTime) + ' / ' + fmtTime(vid_el.duration);
+  };
+
+  pbar.onclick = e => {
+    const r = pbar.getBoundingClientRect();
+    vid_el.currentTime = ((e.clientX - r.left) / r.width) * vid_el.duration;
+  };
+
+  // Volume
+  const volSlider = $('#plr-vol'), muteBtn = $('#plr-mute');
+  volSlider.oninput = () => { vid_el.volume = +volSlider.value; muteBtn.textContent = vid_el.volume === 0 ? '🔇' : '🔊'; };
+  muteBtn.onclick = () => { vid_el.muted = !vid_el.muted; muteBtn.textContent = vid_el.muted ? '🔇' : '🔊'; };
+
+  // Speed
+  const speedBtn = $('#plr-speed'), speedMenu = $('#plr-speed-menu');
+  speedBtn.onclick = () => { speedMenu.hidden = !speedMenu.hidden; };
+  $$('[data-spd]', speedMenu).forEach(b => b.onclick = () => {
+    vid_el.playbackRate = +b.dataset.spd;
+    speedBtn.textContent = b.dataset.spd + 'x';
+    $$('[data-spd]', speedMenu).forEach(x => x.classList.toggle('on', x === b));
+    speedMenu.hidden = true;
+  });
+
+  // Fullscreen
+  $('#plr-fs').onclick = () => {
+    const w = $('.plr-video-wrap');
+    if (document.fullscreenElement) document.exitFullscreen();
+    else w.requestFullscreen();
+  };
+
+  // PiP
+  $('#plr-pip').onclick = () => {
+    if (document.pictureInPictureElement) document.exitPictureInPicture();
+    else vid_el.requestPictureInPicture && vid_el.requestPictureInPicture();
+  };
+
+  // Sidebar toggle
+  const sidebar = $('#plr-sidebar');
+  $('.plr-sidebar-toggle').onclick = () => sidebar.classList.toggle('open');
+
+  // Sidebar tabs
+  $$('.plr-sb-tab').forEach(tab => tab.onclick = () => {
+    $$('.plr-sb-tab').forEach(t => t.classList.toggle('on', t === tab));
+    $$('.plr-sb-panel').forEach(p => p.hidden = p.id !== 'plr-panel-' + tab.dataset.tab);
+  });
+
+  function updateLessonBar() {
+    const bar = $('#plr-lesson-bar');
+    if (bar) {
+      bar.querySelector('.plr-lb-chapter').textContent = `第 ${curCh + 1} 章`;
+      bar.querySelector('.plr-lb-title').textContent = `${curCh + 1}-${curLs + 1}　${chapters[curCh].lessons[curLs].t}`;
+    }
+  }
+
+  // Lesson navigation
+  function goLesson(ci, li) {
+    doneSet.add(lessonId(curCh, curLs));
+    curCh = ci; curLs = li;
+    vid_el.currentTime = 0;
+    vid_el.play();
+    const sb = $('#plr-sb-list');
+    sb.innerHTML = renderSidebar();
+    bindSidebar();
+    updateLessonBar();
+    const p = progress();
+    $('.plr-prog-txt').textContent = p + '% 完成';
+    $('.plr-sb-fill').style.width = p + '%';
+    $('.plr-sb-progress span').textContent = p + '%';
+  }
+
+  function bindSidebar() {
+    $$('.plr-ch-btn').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+    $$('.plr-ls').forEach(b => b.onclick = () => goLesson(+b.dataset.ch, +b.dataset.ls));
+  }
+  bindSidebar();
+
+  // Auto-next when video ends
+  vid_el.onended = () => {
+    doneSet.add(lessonId(curCh, curLs));
+    const p = progress();
+    $('.plr-prog-txt').textContent = p + '% 完成';
+    $('.plr-sb-fill').style.width = p + '%';
+    $('.plr-sb-progress span').textContent = p + '%';
+    if (curLs < chapters[curCh].lessons.length - 1) goLesson(curCh, curLs + 1);
+    else if (curCh < chapters.length - 1) goLesson(curCh + 1, 0);
+    else toast('恭喜完成所有課程！🎉');
+  };
+
+  $('#plr-prev-ls').onclick = () => {
+    if (curLs > 0) goLesson(curCh, curLs - 1);
+    else if (curCh > 0) goLesson(curCh - 1, chapters[curCh - 1].lessons.length - 1);
+  };
+  $('#plr-next-ls').onclick = () => {
+    if (curLs < chapters[curCh].lessons.length - 1) goLesson(curCh, curLs + 1);
+    else if (curCh < chapters.length - 1) goLesson(curCh + 1, 0);
+  };
+
+  // Notes (localStorage)
+  const noteKey = 'aic-note-' + c.id;
+  const noteEl = $('#plr-note');
+  noteEl.value = localStorage.getItem(noteKey) || '';
+  noteEl.oninput = () => localStorage.setItem(noteKey, noteEl.value);
+
+  // Timestamp stamp button
+  $('#plr-stamp').onclick = () => {
+    const ts = fmtTime(vid_el.currentTime);
+    noteEl.value += (noteEl.value ? '\n' : '') + `[${ts}] `;
+    noteEl.focus();
+    localStorage.setItem(noteKey, noteEl.value);
+  };
+
+  // Keyboard shortcuts
+  document.onkeydown = e => {
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+    if (e.code === 'Space') { e.preventDefault(); vid_el.paused ? vid_el.play() : vid_el.pause(); }
+    if (e.code === 'ArrowLeft') { vid_el.currentTime = Math.max(0, vid_el.currentTime - 10); }
+    if (e.code === 'ArrowRight') { vid_el.currentTime = Math.min(vid_el.duration, vid_el.currentTime + 10); }
+    if (e.code === 'KeyF') { const w = $('.plr-video-wrap'); document.fullscreenElement ? document.exitFullscreen() : w.requestFullscreen(); }
+    if (e.code === 'KeyP') { if (vid_el.requestPictureInPicture) { document.pictureInPictureElement ? document.exitPictureInPicture() : vid_el.requestPictureInPicture(); } }
+  };
+}
+
+/* ---------- 服務條款 ---------- */
+function termsPage() {
+  const main = $('main');
+  main.innerHTML = `
+  <section class="legal-hero"><div class="wrap">
+    <h1 class="legal-title rv-up">服務條款</h1>
+    <p class="legal-sub rv-up">最後更新日期：2026 年 11 月</p>
+  </div></section>
+  <section class="sec"><div class="wrap">
+    <div class="legal-body rv-up">
+      <h2>一、總則</h2>
+      <p>歡迎使用 AI Class 線上課程平台（以下簡稱「本平台」）。當您註冊帳號、瀏覽網站或購買課程時，即表示您已閱讀、瞭解並同意接受本服務條款的所有內容。若您不同意本條款的任何部分，請勿使用本平台的服務。</p>
+      <p>本平台保留隨時修訂本條款的權利，修訂後的條款將公布於本頁面，並於公布時立即生效。建議您定期查閱本頁面以了解最新條款。</p>
+
+      <h2>二、帳號管理</h2>
+      <ul>
+        <li>您須提供真實、準確且完整的個人資料來完成註冊。</li>
+        <li>每位使用者僅能註冊一個帳號，帳號不得轉讓或借用。</li>
+        <li>您有責任保管好自己的帳號密碼，因帳號遭盜用所產生的損失由使用者自行承擔。</li>
+        <li>如發現帳號遭未經授權的使用，請立即聯繫我們。</li>
+        <li>本平台有權在您違反本條款時，暫停或終止您的帳號。</li>
+      </ul>
+
+      <h2>三、課程購買與退費</h2>
+      <h3>購買</h3>
+      <ul>
+        <li>課程價格以購買當下頁面顯示為準，所有價格均為新台幣含稅價。</li>
+        <li>購買完成後，課程將立即開通，您可無限期觀看。</li>
+        <li>本平台提供的優惠折扣碼有使用期限與條件限制，不得與其他優惠併用，除非另有說明。</li>
+      </ul>
+      <h3>退費</h3>
+      <ul>
+        <li>依消費者保護法規定，數位內容於購買後 7 日內且觀看進度未超過課程總時長 20% 者，可申請全額退費。</li>
+        <li>超過上述退費期限或觀看比例者，恕不接受退費。</li>
+        <li>退費將於申請核准後 14 個工作天內退回原付款方式。</li>
+        <li>若因課程內容有重大瑕疵（如影片無法播放且本平台無法於合理期間內修復），不受上述退費比例限制。</li>
+      </ul>
+
+      <h2>四、使用規範</h2>
+      <ul>
+        <li>課程內容僅供您個人學習使用，不得以任何形式複製、錄製、下載、散佈、轉售或公開播映。</li>
+        <li>不得使用任何技術手段規避本平台的內容保護機制。</li>
+        <li>不得在本平台發布違法、侵權、不實、騷擾或具攻擊性的內容。</li>
+        <li>不得利用本平台進行任何商業行為，除非事先取得書面同意。</li>
+        <li>不得使用自動化工具（如爬蟲、機器人）存取本平台。</li>
+      </ul>
+
+      <h2>五、智慧財產權</h2>
+      <p>本平台上的所有內容，包括但不限於課程影片、文字、圖片、商標、Logo、網站設計、程式碼等，均受著作權法及其他智慧財產權法律保護。未經本平台或相關權利人書面授權，不得擅自使用。</p>
+      <p>講師保有其所授課程內容的著作權，並授權本平台進行必要的展示與傳輸。學員透過課程所完成的個人作品，其著作權歸學員所有。</p>
+
+      <h2>六、免責聲明</h2>
+      <ul>
+        <li>本平台力求課程內容的正確性，但不保證所有內容皆為最新或完全正確，使用者應自行判斷。</li>
+        <li>課程中提及的第三方工具、軟體或服務，其使用條款與風險由使用者自行承擔。</li>
+        <li>本平台不保證服務將不間斷或無錯誤，因系統維護、不可抗力或其他原因導致的服務中斷，本平台不承擔責任。</li>
+        <li>學員依據課程內容所做的任何商業或投資決策，本平台不承擔相關損失。</li>
+      </ul>
+
+      <h2>七、爭議處理</h2>
+      <p>本條款之解釋與適用，以中華民國法律為準據法。因本條款所生之爭議，雙方同意以台灣台北地方法院為第一審管轄法院。</p>
+      <p>如您對本條款有任何疑問，歡迎來信 <a href="mailto:hi@aiclass.tw">hi@aiclass.tw</a>。</p>
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
+/* ---------- 隱私權政策 ---------- */
+function privacyPage() {
+  const main = $('main');
+  main.innerHTML = `
+  <section class="legal-hero"><div class="wrap">
+    <h1 class="legal-title rv-up">隱私權政策</h1>
+    <p class="legal-sub rv-up">最後更新日期：2026 年 11 月</p>
+  </div></section>
+  <section class="sec"><div class="wrap">
+    <div class="legal-body rv-up">
+      <h2>一、前言</h2>
+      <p>AI Class（以下簡稱「本平台」）非常重視您的隱私。本隱私權政策說明我們如何收集、使用、儲存與保護您的個人資料。使用本平台的服務即表示您同意本政策的內容。</p>
+
+      <h2>二、資料收集</h2>
+      <h3>我們收集的資料類型</h3>
+      <ul>
+        <li><b>帳號資料：</b>姓名、Email、密碼（加密儲存）、頭像。</li>
+        <li><b>交易資料：</b>購買記錄、付款方式（僅保留末四碼）、發票資訊。</li>
+        <li><b>學習資料：</b>觀看進度、完成記錄、筆記、作業。</li>
+        <li><b>裝置資料：</b>瀏覽器類型、作業系統、IP 位址、螢幕解析度。</li>
+        <li><b>使用行為：</b>瀏覽頁面、點擊操作、搜尋紀錄。</li>
+      </ul>
+      <h3>收集方式</h3>
+      <ul>
+        <li>您主動填寫的表單與註冊資訊。</li>
+        <li>透過 Cookie 與類似技術自動收集。</li>
+        <li>第三方登入服務（如 Google）提供的公開資料。</li>
+      </ul>
+
+      <h2>三、資料使用</h2>
+      <p>我們收集的個人資料將用於以下目的：</p>
+      <ul>
+        <li>提供、維護和改善平台服務。</li>
+        <li>處理課程購買與退費。</li>
+        <li>個人化您的學習體驗與課程推薦。</li>
+        <li>寄送與您帳號或課程相關的通知。</li>
+        <li>寄送行銷資訊（您可隨時取消訂閱）。</li>
+        <li>防止詐欺行為與維護平台安全。</li>
+        <li>遵守法律義務。</li>
+      </ul>
+
+      <h2>四、Cookie 政策</h2>
+      <p>本平台使用 Cookie 和類似技術來提供更好的使用體驗：</p>
+      <ul>
+        <li><b>必要性 Cookie：</b>維持登入狀態、購物車功能，無法關閉。</li>
+        <li><b>功能性 Cookie：</b>記住您的偏好設定，如語言、播放品質。</li>
+        <li><b>分析性 Cookie：</b>幫助我們了解網站的使用情況，以改善服務（如 Google Analytics）。</li>
+        <li><b>行銷 Cookie：</b>用於提供與您相關的廣告內容。</li>
+      </ul>
+      <p>您可以透過瀏覽器設定管理或刪除 Cookie。請注意，停用部分 Cookie 可能影響網站的功能。</p>
+
+      <h2>五、資料分享</h2>
+      <p>本平台不會出售您的個人資料。在以下情況下，我們可能與第三方分享您的資料：</p>
+      <ul>
+        <li><b>服務供應商：</b>代為處理付款、寄送 Email、提供雲端服務的合作夥伴（受保密協議約束）。</li>
+        <li><b>講師：</b>講師可查看其課程中學員的非個資統計數據（如學員人數、完課率）。</li>
+        <li><b>法律要求：</b>依法院命令、政府機關要求或法律規定。</li>
+        <li><b>企業轉讓：</b>若本平台發生合併、收購或資產出售，您的資料可能隨之移轉（將事先通知）。</li>
+      </ul>
+
+      <h2>六、資料安全</h2>
+      <ul>
+        <li>所有資料傳輸均使用 SSL/TLS 加密。</li>
+        <li>密碼以不可逆加密方式儲存。</li>
+        <li>付款資訊由符合 PCI DSS 標準的第三方處理。</li>
+        <li>定期進行安全性評估與弱點掃描。</li>
+        <li>限制內部人員存取個人資料的權限。</li>
+      </ul>
+      <p>儘管我們盡最大努力保護您的資料，但沒有任何網際網路傳輸或電子儲存方式是 100% 安全的。</p>
+
+      <h2>七、您的權利</h2>
+      <p>依據個人資料保護法，您享有以下權利：</p>
+      <ul>
+        <li>查詢或請求閱覽您的個人資料。</li>
+        <li>請求製給複製本。</li>
+        <li>請求補充或更正。</li>
+        <li>請求停止蒐集、處理或利用。</li>
+        <li>請求刪除。</li>
+      </ul>
+      <p>如需行使上述權利，請來信 <a href="mailto:hi@aiclass.tw">hi@aiclass.tw</a>，我們將在 30 天內回覆。</p>
+
+      <h2>八、兒童隱私</h2>
+      <p>本平台不針對未滿 16 歲的兒童提供服務。若我們發現不慎收集了兒童的個人資料，將立即刪除。如果您認為您的孩子向我們提供了個人資料，請聯繫我們。</p>
+
+      <h2>九、政策修訂</h2>
+      <p>本平台保留隨時修訂本隱私權政策的權利。重大變更時，我們將透過 Email 或網站公告通知您。修訂後的政策將於本頁面公布後立即生效。</p>
+      <p>如您對本隱私權政策有任何疑問，歡迎來信 <a href="mailto:hi@aiclass.tw">hi@aiclass.tw</a>。</p>
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
+/* ---------- 結帳頁 ---------- */
+function checkoutPage() {
+  const main = $('main');
+  const items = [...cart].map(id => byId[id]).filter(Boolean);
+  if (!items.length) { location.href = 'cart.html'; return; }
+
+  const subtotal = items.reduce((s, c) => s + c.price, 0);
+  const saved = items.reduce((s, c) => s + (c.origin - c.price), 0);
+
+  main.innerHTML = `<div class="wrap ck-wrap">
+    <a href="cart.html" class="ck-back">← 返回購物車</a>
+    <h1 class="ck-title">結帳</h1>
+    <div class="ck-layout">
+      <div class="ck-left">
+        <section class="ck-section">
+          <h2><span class="ck-step">1</span>付款方式</h2>
+          <div class="ck-pay-methods">
+            <label class="ck-pay-option active"><input type="radio" name="pay" value="card" checked><span class="ck-pay-icon">💳</span><span>信用卡 / 金融卡</span></label>
+            <label class="ck-pay-option"><input type="radio" name="pay" value="line"><span class="ck-pay-icon">🟢</span><span>LINE Pay</span></label>
+            <label class="ck-pay-option"><input type="radio" name="pay" value="cvs"><span class="ck-pay-icon">🏪</span><span>超商代碼繳費</span></label>
+            <label class="ck-pay-option"><input type="radio" name="pay" value="atm"><span class="ck-pay-icon">🏧</span><span>ATM 轉帳</span></label>
+          </div>
+          <div class="ck-card-form" id="cardForm">
+            <div class="ck-field"><label>卡號</label><input type="text" placeholder="0000 0000 0000 0000" maxlength="19"></div>
+            <div class="ck-field-row">
+              <div class="ck-field"><label>有效期限</label><input type="text" placeholder="MM/YY" maxlength="5"></div>
+              <div class="ck-field"><label>安全碼</label><input type="text" placeholder="CVV" maxlength="4"></div>
+            </div>
+            <div class="ck-field"><label>持卡人姓名</label><input type="text" placeholder="王大明"></div>
+          </div>
+        </section>
+
+        <section class="ck-section">
+          <h2><span class="ck-step">2</span>優惠碼</h2>
+          <div class="ck-coupon-row"><input id="ckCoupon" placeholder="輸入優惠碼"><button class="btn btn-ghost" id="ckCouponBtn">套用</button></div>
+        </section>
+
+        <section class="ck-section">
+          <h2><span class="ck-step">3</span>發票資訊</h2>
+          <div class="ck-pay-methods">
+            <label class="ck-pay-option active"><input type="radio" name="inv" value="donate" checked><span>捐贈發票</span></label>
+            <label class="ck-pay-option"><input type="radio" name="inv" value="personal"><span>個人電子發票</span></label>
+            <label class="ck-pay-option"><input type="radio" name="inv" value="company"><span>公司戶發票</span></label>
+          </div>
+        </section>
+
+        <section class="ck-section">
+          <h2><span class="ck-step">4</span>Email 確認</h2>
+          <div class="ck-field"><input type="email" placeholder="your@email.com" value=""></div>
+          <p class="ck-hint">訂單確認信與發票將寄送至此 Email</p>
+        </section>
+      </div>
+
+      <aside class="ck-right">
+        <div class="ck-order-summary">
+          <h3>訂單明細</h3>
+          <div class="ck-order-items">${items.map(c => `<div class="ck-order-item">
+            <img src="${img(c)}" alt="">
+            <div class="ck-order-item-info"><div class="ck-order-item-title">${c.title}</div><div class="ck-order-item-teacher">${c.teacher}</div></div>
+            <div class="ck-order-item-price">${fmt(c.price)}</div>
+          </div>`).join('')}</div>
+          <div class="ck-divider"></div>
+          <div class="ck-row"><span>商品小計 (${items.length} 件)</span><span>${fmt(subtotal)}</span></div>
+          <div class="ck-row ck-saved"><span>已省下</span><span>-${fmt(saved)}</span></div>
+          <div class="ck-row" style="color:var(--tx3)"><span>優惠碼折扣</span><span>—</span></div>
+          <div class="ck-divider"></div>
+          <div class="ck-row ck-total"><span>應付金額</span><span>${fmt(subtotal)}</span></div>
+          <button class="btn btn-pri ck-submit" id="ckSubmit">確認付款 ${fmt(subtotal)}</button>
+          <ul class="ck-perks"><li>🔒 SSL 加密安全付款</li><li>✓ 7 天無條件退費保證</li><li>✓ 付款後立即開通課程</li></ul>
+        </div>
+      </aside>
+    </div>
+  </div>`;
+
+  $$('[name="pay"]', main).forEach(r => r.onchange = () => {
+    $$('.ck-pay-option', main).forEach(l => l.classList.toggle('active', l.querySelector('input').checked));
+    const cf = $('#cardForm', main);
+    if (cf) cf.style.display = r.value === 'card' ? '' : 'none';
+  });
+  $$('[name="inv"]', main).forEach(r => r.onchange = () => {
+    $$('[name="inv"]', main).forEach(r2 => r2.closest('.ck-pay-option').classList.toggle('active', r2.checked));
+  });
+
+  const ckCouponBtn = $('#ckCouponBtn', main);
+  if (ckCouponBtn) ckCouponBtn.onclick = () => toast('示範網站：優惠碼功能開發中');
+
+  const submitBtn = $('#ckSubmit', main);
+  submitBtn.onclick = () => {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '處理中…';
+    const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
+    items.forEach(c => owned.add(c.id));
+    localStorage.setItem('aic-owned', JSON.stringify([...owned]));
+    const orderId = 'AIC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+    localStorage.setItem('aic-last-order', JSON.stringify({ id: orderId, items: items.map(c => c.id), total: subtotal, time: Date.now() }));
+    cart.clear(); saveCart(); updateCartBadge();
+    setTimeout(() => { location.href = 'order-complete.html'; }, 1200);
+  };
+  reveal(main);
+}
+
+/* ---------- 訂單完成頁 ---------- */
+function orderCompletePage() {
+  const main = $('main');
+  const order = JSON.parse(localStorage.getItem('aic-last-order') || 'null');
+  if (!order) { location.href = 'index.html'; return; }
+
+  const items = order.items.map(id => byId[id]).filter(Boolean);
+  const d = new Date(order.time);
+  const dateStr = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+  main.innerHTML = `<div class="wrap oc-wrap">
+    <div class="oc-hero">
+      <div class="oc-check"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none" stroke="#34c759" stroke-width="2"/><path fill="none" stroke="#34c759" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14 27l8 8 16-16" class="oc-tick"/></svg></div>
+      <h1>付款成功！</h1>
+      <p class="oc-sub">感謝您的購買，課程已立即開通</p>
+    </div>
+
+    <div class="oc-card">
+      <div class="oc-card-hdr"><h3>訂單資訊</h3><span class="oc-badge">已付款</span></div>
+      <div class="oc-info-grid">
+        <div><span class="oc-label">訂單編號</span><span class="oc-val">${order.id}</span></div>
+        <div><span class="oc-label">付款時間</span><span class="oc-val">${dateStr}</span></div>
+        <div><span class="oc-label">課程數量</span><span class="oc-val">${items.length} 堂</span></div>
+        <div><span class="oc-label">付款金額</span><span class="oc-val oc-amount">${fmt(order.total)}</span></div>
+      </div>
+    </div>
+
+    <div class="oc-card">
+      <h3 style="margin-bottom:16px">已購課程</h3>
+      <div class="oc-courses">${items.map(c => `<a href="course.html?id=${c.id}" class="oc-course">
+        <img src="${img(c)}" alt="">
+        <div class="oc-course-info"><div class="oc-course-title">${c.title}</div><div class="oc-course-teacher">${c.teacher}・${c.hours} 小時</div></div>
+        <span class="btn btn-pri" style="white-space:nowrap;font-size:13px;padding:6px 16px">開始上課</span>
+      </a>`).join('')}</div>
+    </div>
+
+    <div class="oc-actions">
+      <a class="btn btn-pri" href="my.html">我的課程</a>
+      <a class="btn btn-ghost" href="index.html">回首頁探索更多</a>
+    </div>
+  </div>`;
+  reveal(main);
+}
+
+/* ---------- 優惠券 ---------- */
+function couponPage() {
+  const main = $('main');
+  const coupons = [
+    { code: 'WELCOME20', desc: '新會員 8 折優惠', type: 'discount', amount: '8折', min: 3000, expire: '2026/12/31', used: false },
+    { code: 'DOUBLE11', desc: '雙 11 購課限定', type: 'amount', amount: 'NT$800', min: 5000, expire: '2026/11/15', used: false },
+    { code: 'BDAY500', desc: '生日禮金折抵', type: 'amount', amount: 'NT$500', min: 2000, expire: '2026/11/30', used: true },
+    { code: 'AI2026', desc: 'AI 系列課程專屬', type: 'discount', amount: '85折', min: 2000, expire: '2027/03/31', used: false },
+    { code: 'FREESHIP', desc: '免運費優惠', type: 'free', amount: '免運', min: 0, expire: '2026/12/31', used: false },
+  ];
+  const now = new Date();
+  coupons.forEach(cp => { cp.expired = new Date(cp.expire) < now; });
+
+  const renderCoupons = filter => {
+    let list = coupons;
+    if (filter === 'active') list = coupons.filter(c => !c.used && !c.expired);
+    else if (filter === 'used') list = coupons.filter(c => c.used);
+    else if (filter === 'expired') list = coupons.filter(c => c.expired);
+    const grid = $('#cpn-grid');
+    if (!list.length) { grid.innerHTML = '<div class="cpn-empty">目前沒有符合條件的優惠券</div>'; return; }
+    grid.innerHTML = list.map(cp => `<div class="cpn-card ${cp.used ? 'used' : ''} ${cp.expired ? 'expired' : ''} rv-up">
+      <div class="cpn-left">
+        <span class="cpn-badge ${cp.type}">${cp.type === 'discount' ? '折扣' : cp.type === 'amount' ? '折抵' : '免費'}</span>
+        <div class="cpn-desc">${cp.desc}</div>
+        <div class="cpn-code-row"><span class="cpn-code">${cp.code}</span><button class="cpn-copy" onclick="navigator.clipboard.writeText('${cp.code}');toast('已複製優惠碼 ${cp.code}')">📋</button></div>
+      </div>
+      <div class="cpn-right">
+        <div class="cpn-amount">${cp.amount}</div>
+        ${cp.min > 0 ? `<div class="cpn-min">滿 NT$${cp.min.toLocaleString()} 可用</div>` : ''}
+        <div class="cpn-expire">有效期限 ${cp.expire}</div>
+      </div>
+    </div>`).join('');
+    reveal(grid);
+  };
+
+  main.innerHTML = `
+  <section class="cpn-hero rv-up"><div class="wrap">
+    <h1>我的優惠券</h1>
+    <p>查看你的優惠券，結帳時輸入優惠碼即可享受折扣</p>
+  </div></section>
+  <div class="wrap">
+    <div class="cpn-tabs">
+      <button class="chip on" data-cpn="all">全部</button>
+      <button class="chip" data-cpn="active">可使用</button>
+      <button class="chip" data-cpn="used">已使用</button>
+      <button class="chip" data-cpn="expired">已過期</button>
+    </div>
+    <div class="cpn-grid" id="cpn-grid"></div>
+  </div>`;
+
+  renderCoupons('all');
+  $$('.cpn-tabs .chip', main).forEach(btn => btn.onclick = () => {
+    $$('.cpn-tabs .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    renderCoupons(btn.dataset.cpn);
+  });
+}
+
+/* ---------- 結業證書 ---------- */
+function certificatePage() {
+  const main = $('main');
+  const owned = JSON.parse(localStorage.getItem('aic-owned') || '[]');
+  const completed = C.slice(0, 5).filter((c, i) => [2].includes(i));
+  const certificates = completed.map(c => ({
+    ...c,
+    student: '學員',
+    completedDate: '2026/10/25',
+    certId: 'CERT-' + c.id.toUpperCase() + '-' + Date.now().toString(36).slice(-6).toUpperCase()
+  }));
+
+  main.innerHTML = `
+  <section class="cert-hero rv-up"><div class="wrap">
+    <h1>結業證書</h1>
+    <p>完成課程後即可取得結業證書，證明你的學習成果</p>
+  </div></section>
+  <div class="wrap">
+    ${certificates.length ? `<div class="cert-grid">
+      ${certificates.map(c => `<div class="cert-card rv-up">
+        <div class="cert-preview">
+          <div class="cert-logo">AI CLASS</div>
+          <div class="cert-title">結 業 證 書</div>
+          <div class="cert-cname">${c.title}</div>
+          <div class="cert-student">${c.student}</div>
+          <div class="cert-msg">已完成本課程全部內容，特此頒發結業證書以資證明。</div>
+          <div class="cert-date">發證日期：${c.completedDate}</div>
+          <div class="cert-seal">✓</div>
+        </div>
+        <div class="cert-info">
+          <h3>${c.title}</h3>
+          <p class="teacher">${c.teacher} · ${c.hours} 小時</p>
+          <div class="cert-actions">
+            <button class="btn btn-pri btn-sm" onclick="toast('示範網站：下載功能開發中')">下載證書</button>
+            <button class="btn btn-ghost btn-sm" onclick="toast('已複製分享連結')">分享</button>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>` : `<div class="cert-empty">
+      <p>你還沒有結業證書</p>
+      <p>完成任一課程的所有章節即可取得結業證書</p>
+      <p style="margin-top:16px"><a href="index.html" class="btn btn-pri">探索課程</a></p>
+    </div>`}
+  </div>`;
+}
+
+/* ---------- 學習路徑詳情 ---------- */
+function pathPage() {
+  const main = $('main');
+  const pid = new URLSearchParams(location.search).get('id');
+  const p = window.PATHS.find(x => x.id === pid) || window.PATHS[0];
+  const courses = p.courses.map(id => byId[id]).filter(Boolean);
+  const totalHours = courses.reduce((s, c) => s + c.hours, 0);
+  const totalStudents = Math.min(...courses.map(c => c.students));
+  document.title = `${p.name}｜AI Class 學習路徑`;
+
+  main.innerHTML = `
+  <section class="pth-hero rv-up"><div class="wrap">
+    <div class="pth-badge">學習路徑</div>
+    <h1>${p.name}</h1>
+    <p class="pth-desc">${p.desc}</p>
+    <div class="pth-meta">
+      <span>📚 ${courses.length} 堂課程</span>
+      <span>⏱ ${totalHours} 小時</span>
+      <span>📅 ${p.duration}</span>
+      <span>📊 ${p.level}</span>
+      <span>💰 預期年薪 ${p.salary}</span>
+    </div>
+    <div class="pth-actions">
+      <button class="btn btn-pri btn-lg" onclick="toast('示範網站：已加入學習路徑')">開始學習路徑</button>
+      <button class="btn btn-ghost btn-lg" onclick="toast('已分享路徑連結')">分享路徑</button>
+    </div>
+  </div></section>
+
+  <div class="wrap pth-wrap">
+    <div class="pth-timeline rv-up">
+      <h2>課程規劃</h2>
+      <p class="pth-timeline-desc">按照以下順序學習，循序漸進掌握完整技能</p>
+      <div class="pth-steps">
+        ${courses.map((c, i) => `<div class="pth-step rv-up" style="transition-delay:${i * 100}ms">
+          <div class="pth-step-num">${i + 1}</div>
+          <div class="pth-step-content">
+            <a href="course.html?id=${c.id}" class="pth-step-card">
+              <img src="${img(c)}" alt="">
+              <div class="pth-step-info">
+                <h3>${c.title}</h3>
+                <p>${c.teacher} · ${c.hours} 小時 · ★ ${c.rating}</p>
+                <div class="pth-step-skills">${['核心觀念', '實作練習', '專案作品'][i % 3].split('').length ? `<span class="pth-skill">${['核心觀念', '實作練習', '專案作品'][i % 3]}</span>` : ''}</div>
+              </div>
+              <span class="pth-step-price">${fmt(c.price)}</span>
+            </a>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="pth-summary rv-up">
+      <div class="pth-sum-card">
+        <h3>路徑總覽</h3>
+        <div class="pth-sum-row"><span>課程數量</span><b>${courses.length} 堂</b></div>
+        <div class="pth-sum-row"><span>總時數</span><b>${totalHours} 小時</b></div>
+        <div class="pth-sum-row"><span>建議學習期間</span><b>${p.duration}</b></div>
+        <div class="pth-sum-row"><span>適合程度</span><b>${p.level}</b></div>
+        <div class="pth-sum-row"><span>分開購買</span><b class="pth-origin">${fmt(courses.reduce((s, c) => s + c.origin, 0))}</b></div>
+        <div class="pth-sum-row"><span>路徑優惠價</span><b class="pth-deal">${fmt(courses.reduce((s, c) => s + c.price, 0))}</b></div>
+        <button class="btn btn-pri" style="width:100%;margin-top:16px" onclick="toast('示範網站：已加入全部課程')">一次購買全路徑</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec"><div class="wrap">
+    <div class="sec-head rv-up"><div><h2>其他學習路徑</h2></div></div>
+    <div class="pth-other-grid rv-up">
+      ${window.PATHS.filter(x => x.id !== p.id).map(op => {
+        const oCourses = op.courses.map(id => byId[id]).filter(Boolean);
+        return `<a href="path.html?id=${op.id}" class="pth-other-card">
+          <div class="pth-other-imgs">${oCourses.slice(0, 2).map(c => `<img src="${img(c)}" alt="">`).join('')}</div>
+          <h3>${op.name}</h3>
+          <p>${op.desc}</p>
+          <span class="pth-other-meta">${oCourses.length} 堂 · ${op.duration}</span>
+        </a>`;
+      }).join('')}
+    </div>
+  </div></section>`;
+  bindCards(main);
+}
+
+/* ---------- 邀請好友 ---------- */
+function invitePage() {
+  const main = $('main');
+  const code = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase();
+  const link = 'https://aiclass.tw/invite?ref=' + code;
+  const stats = { invited: 3, registered: 2, earned: 1000 };
+
+  main.innerHTML = `
+  <section class="inv-hero rv-up"><div class="wrap">
+    <h1>邀請好友一起學</h1>
+    <p>每成功邀請一位好友註冊並購課，你和好友各獲得 <b>NT$500</b> 折價券</p>
+  </div></section>
+  <div class="wrap inv-wrap">
+    <div class="inv-card rv-up">
+      <h2>你的專屬推薦連結</h2>
+      <div class="inv-link-row">
+        <input type="text" value="${link}" readonly class="inv-link">
+        <button class="btn btn-pri" onclick="navigator.clipboard.writeText('${link}');toast('已複製邀請連結')">複製連結</button>
+      </div>
+      <div class="inv-code-row">
+        <span>推薦碼：</span><code class="inv-code">${code}</code>
+        <button class="inv-copy" onclick="navigator.clipboard.writeText('${code}');toast('已複製推薦碼')">📋</button>
+      </div>
+      <div class="inv-share">
+        <span>分享至：</span>
+        <button class="inv-share-btn" onclick="toast('示範網站')">LINE</button>
+        <button class="inv-share-btn" onclick="toast('示範網站')">Facebook</button>
+        <button class="inv-share-btn" onclick="toast('示範網站')">Email</button>
+      </div>
+    </div>
+
+    <div class="inv-steps rv-up">
+      <h2>如何運作？</h2>
+      <div class="inv-step-grid">
+        <div class="inv-step"><div class="inv-step-num">1</div><h3>分享邀請連結</h3><p>將你的專屬推薦連結分享給朋友</p></div>
+        <div class="inv-step"><div class="inv-step-num">2</div><h3>好友註冊</h3><p>好友透過你的連結註冊 AI Class 帳號</p></div>
+        <div class="inv-step"><div class="inv-step-num">3</div><h3>好友購課</h3><p>好友完成第一筆課程購買</p></div>
+        <div class="inv-step"><div class="inv-step-num">4</div><h3>雙方獲獎</h3><p>你和好友各獲得 NT$500 折價券</p></div>
+      </div>
+    </div>
+
+    <div class="inv-stats rv-up">
+      <h2>推薦成績</h2>
+      <div class="inv-stat-grid">
+        <div class="inv-stat"><b>${stats.invited}</b><span>已邀請</span></div>
+        <div class="inv-stat"><b>${stats.registered}</b><span>已註冊</span></div>
+        <div class="inv-stat"><b>NT$${stats.earned.toLocaleString()}</b><span>已賺取</span></div>
+      </div>
+    </div>
+
+    <div class="inv-rules rv-up">
+      <h3>活動規則</h3>
+      <ul>
+        <li>被推薦者須為新用戶（從未註冊過 AI Class）</li>
+        <li>被推薦者需透過推薦連結或推薦碼完成註冊</li>
+        <li>被推薦者首筆購課金額需達 NT$2,000 以上</li>
+        <li>折價券有效期限為發放後 30 天</li>
+        <li>每人最多可邀請 50 位好友</li>
+        <li>AI Class 保留活動最終解釋權</li>
+      </ul>
+    </div>
+  </div>`;
+}
+
+/* ---------- 訂單紀錄 ---------- */
+function orderHistoryPage() {
+  const main = $('main');
+  const img_ = c => `assets/img/v${c.v}.jpg`;
+  const demoOrders = [
+    { id: 'AIC-20261028-A3F2', date: '2026/10/28 14:32', status: 'completed', pay: '信用卡（Visa **** 6411）', inv: '電子發票 GH-83920145', items: [C[0], C[3]], total: 9660 },
+    { id: 'AIC-20261020-B7D1', date: '2026/10/20 09:17', status: 'completed', pay: 'LINE Pay', inv: '電子發票 GH-72810936', items: [C[1]], total: 5280 },
+    { id: 'AIC-20261105-C1K9', date: '2026/11/05 18:45', status: 'pending', pay: '超商代碼（等待付款）', inv: '—', items: [C[5], C[8]], total: 8460 },
+    { id: 'AIC-20261012-D4M3', date: '2026/10/12 21:03', status: 'completed', pay: '信用卡（MasterCard **** 1290）', inv: '電子發票 GH-61092837', items: [C[2], C[6], C[10]], total: 13240 },
+    { id: 'AIC-20260915-E8P6', date: '2026/09/15 11:28', status: 'cancelled', pay: '信用卡', inv: '—', items: [C[4]], total: 4680 },
+    { id: 'AIC-20261101-F2Q8', date: '2026/11/01 16:55', status: 'completed', pay: 'LINE Pay', inv: '電子發票 GH-95031748', items: [C[7]], total: 3980 },
+    { id: 'AIC-20260830-G5R1', date: '2026/08/30 08:12', status: 'cancelled', pay: '超商代碼（逾期未付）', inv: '—', items: [C[9], C[11]], total: 7860 },
+  ];
+
+  const statusMap = { completed: { label: '已完成', cls: 'done' }, pending: { label: '待付款', cls: 'pending' }, cancelled: { label: '已取消', cls: 'cancel' } };
+  const completedOrders = demoOrders.filter(o => o.status === 'completed');
+  const totalSpent = completedOrders.reduce((s, o) => s + o.total, 0);
+  const totalCourses = completedOrders.reduce((s, o) => s + o.items.length, 0);
+
+  let currentFilter = 'all';
+  let searchQuery = '';
+
+  function filterOrders() {
+    let list = [...demoOrders];
+    if (currentFilter !== 'all') list = list.filter(o => o.status === currentFilter);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(o => o.id.toLowerCase().includes(q) || o.items.some(c => c.title.toLowerCase().includes(q)));
+    }
+    return list;
+  }
+
+  function renderOrders() {
+    const list = filterOrders();
+    const grid = $('#oh-list');
+    if (!list.length) {
+      grid.innerHTML = `<div class="oh-empty rv-up"><p>找不到符合條件的訂單</p><a href="index.html" class="btn btn-pri" style="margin-top:12px">去逛逛課程</a></div>`;
+      return;
+    }
+    grid.innerHTML = list.map(o => {
+      const st = statusMap[o.status];
+      return `<div class="oh-card rv-up">
+        <div class="oh-card-hdr" data-oh-toggle>
+          <div class="oh-card-left">
+            <span class="oh-badge ${st.cls}">${st.label}</span>
+            <span class="oh-id">${o.id}</span>
+            <span class="oh-date">${o.date}</span>
+          </div>
+          <div class="oh-card-right">
+            <span class="oh-total">${fmt(o.total)}</span>
+            <span class="oh-arrow">›</span>
+          </div>
+        </div>
+        <div class="oh-card-items">
+          ${o.items.map(c => `<div class="oh-item">
+            <img src="${img_(c)}" alt="" loading="lazy">
+            <div class="oh-item-info">
+              <a href="course.html?id=${c.id}" class="oh-item-title">${c.title}</a>
+              <span class="oh-item-teacher">${c.teacher}・${c.hours} 小時</span>
+            </div>
+            <span class="oh-item-price">${fmt(c.price)}</span>
+          </div>`).join('')}
+        </div>
+        <div class="oh-card-detail">
+          <div class="oh-detail-row"><span>付款方式</span><span>${o.pay}</span></div>
+          <div class="oh-detail-row"><span>發票資訊</span><span>${o.inv}</span></div>
+          <div class="oh-detail-row"><span>課程數量</span><span>${o.items.length} 堂</span></div>
+          <div class="oh-detail-row"><span>訂單金額</span><span class="oh-detail-total">${fmt(o.total)}</span></div>
+        </div>
+        <div class="oh-card-actions">
+          ${o.status === 'completed' ? `<a href="player.html?id=${o.items[0].id}" class="btn btn-pri btn-sm">開始上課</a><button class="btn btn-ghost btn-sm" onclick="toast('示範網站：發票下載功能開發中')">下載發票</button>` :
+            o.status === 'pending' ? `<button class="btn btn-pri btn-sm" onclick="toast('示範網站：付款功能開發中')">前往付款</button><button class="btn btn-ghost btn-sm" onclick="toast('示範網站：取消功能開發中')">取消訂單</button>` :
+            `<button class="btn btn-pri btn-sm" onclick="toast('已將課程加入購物車')">重新購買</button>`}
+        </div>
+      </div>`;
+    }).join('');
+    reveal($('#oh-list'));
+    $$('[data-oh-toggle]', main).forEach(hdr => hdr.onclick = () => hdr.closest('.oh-card').classList.toggle('open'));
+  }
+
+  main.innerHTML = `
+  <section class="oh-hero rv-up"><div class="wrap">
+    <h1>訂單紀錄</h1>
+    <p>查看所有課程訂單與付款狀態</p>
+  </div></section>
+  <div class="wrap oh-wrap">
+    <div class="oh-stats rv-up">
+      <div class="oh-stat"><b>${demoOrders.length}</b><span>總訂單</span></div>
+      <div class="oh-stat"><b>${fmt(totalSpent)}</b><span>累計消費</span></div>
+      <div class="oh-stat"><b>${totalCourses}</b><span>已購課程</span></div>
+      <div class="oh-stat"><b>${completedOrders.length}</b><span>已完成</span></div>
+    </div>
+    <div class="oh-toolbar rv-up">
+      <div class="oh-tabs">
+        <button class="chip on" data-ohf="all">全部</button>
+        <button class="chip" data-ohf="completed">已完成</button>
+        <button class="chip" data-ohf="pending">待付款</button>
+        <button class="chip" data-ohf="cancelled">已取消</button>
+      </div>
+      <div class="oh-search">
+        <input type="text" id="oh-search" placeholder="搜尋訂單編號或課程名稱…">
+      </div>
+    </div>
+    <div class="oh-list" id="oh-list"></div>
+    <div class="oh-back rv-up"><a href="my.html" class="btn btn-ghost">← 回到我的頁面</a></div>
+  </div>`;
+
+  renderOrders();
+  $$('[data-ohf]', main).forEach(btn => btn.onclick = () => {
+    $$('[data-ohf]', main).forEach(b => b.classList.toggle('on', b === btn));
+    currentFilter = btn.dataset.ohf;
+    renderOrders();
+  });
+  const searchInput = $('#oh-search', main);
+  let debounce;
+  searchInput.oninput = () => { clearTimeout(debounce); debounce = setTimeout(() => { searchQuery = searchInput.value.trim(); renderOrders(); }, 300); };
+  reveal(main);
+}
+
+/* ---------- 搜尋結果頁 ---------- */
+function searchPage() {
+  const main = $('main');
+  const params = new URLSearchParams(location.search);
+  const initQ = params.get('q') || '';
+  const cats = window.CATS.slice(1);
+  const trending = ['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案'];
+
+  const state = { q: initQ, cats: new Set(), priceRange: 'all', minRating: 0, sort: 'relevance' };
+
+  main.innerHTML = `
+  <div class="wrap srch-wrap">
+    <div class="srch-top rv-up">
+      <div class="srch-input-wrap">
+        <span class="srch-icon">⌕</span>
+        <input class="srch-input" type="text" value="${initQ.replace(/"/g, '&quot;')}" placeholder="搜尋課程、講師、關鍵字…" autofocus>
+        <button class="srch-clear" style="display:${initQ ? 'flex' : 'none'}">✕</button>
+      </div>
+    </div>
+    <div class="srch-tags" id="srchTags"></div>
+    <div class="srch-body">
+      <aside class="srch-sidebar" id="srchSidebar">
+        <div class="srch-sb-head"><h3>篩選條件</h3><button class="srch-sb-reset" id="srchReset">清除全部</button></div>
+        <div class="srch-group">
+          <h4>課程分類</h4>
+          <div class="srch-cats">${cats.map(c => `<label class="srch-cb"><input type="checkbox" value="${c.id}"><span class="srch-ck"></span>${c.name}</label>`).join('')}</div>
+        </div>
+        <div class="srch-group">
+          <h4>價格範圍</h4>
+          <div class="srch-prices">
+            <label class="srch-chip-radio"><input type="radio" name="srch-price" value="all" checked><span>全部</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-price" value="free"><span>免費</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-price" value="under3000"><span>NT$3,000 以下</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-price" value="3000to5000"><span>NT$3,000–5,000</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-price" value="over5000"><span>NT$5,000 以上</span></label>
+          </div>
+        </div>
+        <div class="srch-group">
+          <h4>最低評分</h4>
+          <div class="srch-prices">
+            <label class="srch-chip-radio"><input type="radio" name="srch-rating" value="0" checked><span>全部</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-rating" value="4"><span>★ 4.0+</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-rating" value="4.5"><span>★ 4.5+</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-rating" value="4.8"><span>★ 4.8+</span></label>
+          </div>
+        </div>
+        <div class="srch-group">
+          <h4>課程時長</h4>
+          <div class="srch-prices">
+            <label class="srch-chip-radio"><input type="radio" name="srch-dur" value="all" checked><span>全部</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-dur" value="short"><span>10 小時以下</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-dur" value="medium"><span>10–20 小時</span></label>
+            <label class="srch-chip-radio"><input type="radio" name="srch-dur" value="long"><span>20 小時以上</span></label>
+          </div>
+        </div>
+      </aside>
+      <div class="srch-main">
+        <div class="srch-bar">
+          <span class="srch-count" id="srchCount"></span>
+          <div class="srch-bar-right">
+            <button class="srch-filter-toggle" id="srchFilterToggle">☰ 篩選</button>
+            <select class="srch-sort" id="srchSort">
+              <option value="relevance">依相關度</option>
+              <option value="newest">最新上架</option>
+              <option value="price-low">價格低到高</option>
+              <option value="price-high">價格高到低</option>
+              <option value="rating">評分最高</option>
+              <option value="students">最多學員</option>
+            </select>
+          </div>
+        </div>
+        <div class="srch-grid" id="srchGrid"></div>
+        <div class="srch-empty" id="srchEmpty" style="display:none">
+          <div class="srch-empty-icon">🔍</div>
+          <h3>找不到相關課程</h3>
+          <p>試試其他關鍵字或調整篩選條件</p>
+          <div class="srch-trending">
+            <h4>熱門搜尋</h4>
+            <div class="srch-trend-chips">${trending.map(t => `<button class="chip srch-trend">${t}</button>`).join('')}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ${!initQ ? `<div class="srch-discover rv-up">
+      <h3>熱門搜尋</h3>
+      <div class="srch-trend-chips">${trending.map(t => `<button class="chip srch-trend">${t}</button>`).join('')}</div>
+    </div>` : ''}
+  </div>`;
+
+  const inp = $('.srch-input', main), grid = $('#srchGrid'), countEl = $('#srchCount'), emptyEl = $('#srchEmpty'), tagsEl = $('#srchTags');
+  const clearBtn = $('.srch-clear', main);
+
+  function filter() {
+    let list = [...C];
+    const q = state.q.toLowerCase();
+    if (q) list = list.filter(c => (c.title + c.teacher + c.role + (c.desc || '') + (c.sub || '') + (c.ai || '')).toLowerCase().includes(q));
+    if (state.cats.size) list = list.filter(c => state.cats.has(c.cat));
+    if (state.priceRange === 'free') list = list.filter(c => c.price === 0);
+    else if (state.priceRange === 'under3000') list = list.filter(c => c.price < 3000);
+    else if (state.priceRange === '3000to5000') list = list.filter(c => c.price >= 3000 && c.price <= 5000);
+    else if (state.priceRange === 'over5000') list = list.filter(c => c.price > 5000);
+    if (state.minRating > 0) list = list.filter(c => c.rating >= state.minRating);
+    const durVal = $('[name="srch-dur"]:checked', main)?.value;
+    if (durVal === 'short') list = list.filter(c => c.hours < 10);
+    else if (durVal === 'medium') list = list.filter(c => c.hours >= 10 && c.hours <= 20);
+    else if (durVal === 'long') list = list.filter(c => c.hours > 20);
+
+    if (state.sort === 'newest') list.sort((a, b) => (b.tag === 'NEW' ? 1 : 0) - (a.tag === 'NEW' ? 1 : 0));
+    else if (state.sort === 'price-low') list.sort((a, b) => a.price - b.price);
+    else if (state.sort === 'price-high') list.sort((a, b) => b.price - a.price);
+    else if (state.sort === 'rating') list.sort((a, b) => b.rating - a.rating);
+    else if (state.sort === 'students') list.sort((a, b) => b.students - a.students);
+
+    countEl.textContent = `找到 ${list.length} 堂課程`;
+    if (list.length) {
+      grid.innerHTML = list.map((c, i) => card(c, i)).join('');
+      grid.style.display = '';
+      emptyEl.style.display = 'none';
+      bindCards(grid);
+    } else {
+      grid.style.display = 'none';
+      grid.innerHTML = '';
+      emptyEl.style.display = '';
+    }
+    renderTags();
+  }
+
+  function renderTags() {
+    const tags = [];
+    if (state.q) tags.push({ label: `"${state.q}"`, clear: () => { state.q = ''; inp.value = ''; clearBtn.style.display = 'none'; } });
+    state.cats.forEach(id => { const c = cats.find(x => x.id === id); if (c) tags.push({ label: c.name, clear: () => { state.cats.delete(id); $(`.srch-cb input[value="${id}"]`, main).checked = false; } }); });
+    if (state.priceRange !== 'all') {
+      const labels = { free: '免費', under3000: 'NT$3,000 以下', '3000to5000': 'NT$3,000–5,000', over5000: 'NT$5,000 以上' };
+      tags.push({ label: labels[state.priceRange], clear: () => { state.priceRange = 'all'; $('[name="srch-price"][value="all"]', main).checked = true; } });
+    }
+    if (state.minRating > 0) tags.push({ label: `★ ${state.minRating}+`, clear: () => { state.minRating = 0; $('[name="srch-rating"][value="0"]', main).checked = true; } });
+    tagsEl.innerHTML = tags.map((t, i) => `<span class="srch-tag">${t.label}<button data-idx="${i}">✕</button></span>`).join('');
+    $$('.srch-tag button', tagsEl).forEach(b => b.onclick = () => { tags[+b.dataset.idx].clear(); filter(); });
+  }
+
+  inp.oninput = () => {
+    state.q = inp.value.trim();
+    clearBtn.style.display = state.q ? 'flex' : 'none';
+    filter();
+  };
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && inp.value.trim()) {
+      let r = JSON.parse(localStorage.getItem('aic-recent-search') || '[]').filter(x => x !== inp.value.trim());
+      r.unshift(inp.value.trim()); localStorage.setItem('aic-recent-search', JSON.stringify(r.slice(0, 8)));
+    }
+  });
+  clearBtn.onclick = () => { inp.value = ''; state.q = ''; clearBtn.style.display = 'none'; inp.focus(); filter(); };
+
+  $$('.srch-cb input', main).forEach(cb => cb.onchange = () => { cb.checked ? state.cats.add(cb.value) : state.cats.delete(cb.value); filter(); });
+  $$('[name="srch-price"]', main).forEach(r => r.onchange = () => { state.priceRange = r.value; filter(); });
+  $$('[name="srch-rating"]', main).forEach(r => r.onchange = () => { state.minRating = +r.value; filter(); });
+  $$('[name="srch-dur"]', main).forEach(r => r.onchange = () => filter());
+  $('#srchSort').onchange = e => { state.sort = e.target.value; filter(); };
+  $('#srchReset').onclick = () => {
+    state.cats.clear(); state.priceRange = 'all'; state.minRating = 0;
+    $$('.srch-cb input', main).forEach(cb => cb.checked = false);
+    $('[name="srch-price"][value="all"]', main).checked = true;
+    $('[name="srch-rating"][value="0"]', main).checked = true;
+    $('[name="srch-dur"][value="all"]', main).checked = true;
+    filter();
+  };
+
+  const sidebar = $('#srchSidebar');
+  $('#srchFilterToggle').onclick = () => sidebar.classList.toggle('open');
+
+  $$('.srch-trend', main).forEach(b => b.onclick = () => { inp.value = b.textContent; state.q = b.textContent; clearBtn.style.display = 'flex'; filter(); inp.focus(); });
+
+  if (initQ) {
+    let r = JSON.parse(localStorage.getItem('aic-recent-search') || '[]').filter(x => x !== initQ);
+    r.unshift(initQ); localStorage.setItem('aic-recent-search', JSON.stringify(r.slice(0, 8)));
+  }
+
+  filter();
+  reveal(main);
+}
+
+/* ---------- 學習社群 ---------- */
+function communityPage() {
+  const main = $('main');
+  const cats = ['全部','作品分享','課程討論','接案經驗','求職面試','學習心得'];
+  const catColors = {'作品分享':'#7c5cff','課程討論':'#ff5c8a','接案經驗':'#34c759','求職面試':'#ff9500','學習心得':'#00b4d8'};
+  const threads = [
+    {id:1,cat:'作品分享',user:'林予安',init:'林',title:'分享我的 UI 作品集，請大家給點建議！',preview:'花了兩個月完成的作品集，主要是 App 介面設計和響應式網頁，想請社群的前輩們幫忙看看有沒有可以改進的地方…',views:2834,replies:47,likes:182,time:'30 分鐘前',hot:true,pinned:false},
+    {id:2,cat:'課程討論',user:'陳柏睿',init:'陳',title:'Python 自動化課程第五章的作業卡關了',preview:'請問有人做到自動爬取資料那段嗎？我的程式一直出現 timeout 的錯誤，已經調整過等待時間了還是不行…',views:1256,replies:23,likes:45,time:'1 小時前',hot:false,pinned:true},
+    {id:3,cat:'接案經驗',user:'蘇敏慧',init:'蘇',title:'第一次接到設計案，報價該怎麼算？',preview:'最近在社群接到第一個商業案，對方要做品牌識別全套（Logo、名片、信封），想請問大家初接案的報價經驗…',views:4521,replies:89,likes:324,time:'2 小時前',hot:true,pinned:false},
+    {id:4,cat:'求職面試',user:'方鈺倫',init:'方',title:'UI/UX 面試常見問題整理（持續更新）',preview:'整理了我最近面試五家公司的經驗，包含作品集報告、白板設計挑戰、行為面試題等，希望對準備面試的同學有幫助…',views:6732,replies:156,likes:891,time:'3 小時前',hot:true,pinned:true},
+    {id:5,cat:'學習心得',user:'許志豪',init:'許',title:'零基礎三個月轉職前端工程師心路歷程',preview:'從完全不會寫程式到拿到 offer，想分享一下我的學習路線和踩過的坑。先說結論：AI Class 的課程真的幫了很大的忙…',views:8923,replies:201,likes:1247,time:'5 小時前',hot:true,pinned:false},
+    {id:6,cat:'作品分享',user:'張雅琪',init:'張',title:'用 Blender 做了一組低多邊形場景，附源檔',preview:'跟著 Blender 3D 建模課做完後自己延伸的作品，做了一個日式庭院場景。附上 .blend 源檔給大家參考學習…',views:3102,replies:58,likes:267,time:'6 小時前',hot:false,pinned:false},
+    {id:7,cat:'課程討論',user:'王建宏',init:'王',title:'攝影課的色彩管理章節有人能解釋一下嗎？',preview:'關於 sRGB 和 Adobe RGB 的差異，課程裡有提到但我還是不太理解在實際工作中該怎麼選擇色彩空間…',views:876,replies:15,likes:32,time:'8 小時前',hot:false,pinned:false},
+    {id:8,cat:'接案經驗',user:'李美玲',init:'李',title:'接案平台比較：104外包 vs Freelancer vs 直接接',preview:'做了兩年自由接案，用過不同平台也有直接從社群接案的經驗，整理一下各管道的優缺點給剛起步的同學參考…',views:5678,replies:112,likes:534,time:'10 小時前',hot:true,pinned:false},
+    {id:9,cat:'學習心得',user:'鄭凱文',init:'鄭',title:'AI 生成圖片用在商業設計可行嗎？實測分享',preview:'最近嘗試把 AI 生成的素材融入商業設計專案中，跟大家分享我的工作流程以及客戶的反饋，結果出乎意料…',views:4230,replies:76,likes:389,time:'12 小時前',hot:false,pinned:false},
+    {id:10,cat:'求職面試',user:'吳佳蓉',init:'吳',title:'非本科轉 UX 研究員，需要什麼技能？',preview:'我是社會學系畢業，對使用者研究很有興趣，想請問有沒有從非相關科系轉職成功的前輩可以分享經驗和建議…',views:2145,replies:34,likes:98,time:'14 小時前',hot:false,pinned:false},
+    {id:11,cat:'作品分享',user:'黃俊傑',init:'黃',title:'我的第一個完整網站上線了！來看看',preview:'從零開始學 HTML/CSS/JS，花了四個月完成了一個餐廳官網。雖然還有很多可以改進的地方，但真的很有成就感…',views:1890,replies:42,likes:156,time:'16 小時前',hot:false,pinned:false},
+    {id:12,cat:'課程討論',user:'趙怡君',init:'趙',title:'Figma 進階功能：Auto Layout 的使用技巧分享',preview:'上完 UI/UX 課程後自己整理了一份 Auto Layout 的完整筆記，包含嵌套用法和 Component 設計模式，分享給大家…',views:3456,replies:67,likes:278,time:'1 天前',hot:false,pinned:false},
+  ];
+  const topMembers = [
+    {name:'方鈺倫',init:'方',posts:156,color:'#7c5cff'},
+    {name:'李美玲',init:'李',posts:134,color:'#ff5c8a'},
+    {name:'許志豪',init:'許',posts:98,color:'#34c759'},
+    {name:'蘇敏慧',init:'蘇',posts:87,color:'#ff9500'},
+    {name:'張雅琪',init:'張',posts:76,color:'#00b4d8'},
+  ];
+  const trending = ['AI 繪圖商用','Figma 設計系統','接案報價指南','前端面試準備','Blender 場景'];
+
+  let activeCat = '全部';
+
+  function renderThreads(cat) {
+    const list = cat === '全部' ? threads : threads.filter(t => t.cat === cat);
+    return list.map(t => `<div class="cmy-thread rv-up">
+      ${t.pinned ? '<span class="cmy-pin">📌 置頂</span>' : ''}
+      ${t.hot ? '<span class="cmy-hot">🔥 熱門</span>' : ''}
+      <div class="cmy-thread-body">
+        <div class="cmy-avatar" style="--av-c:${catColors[t.cat]||'var(--pri)'}">${t.init}</div>
+        <div class="cmy-thread-main">
+          <div class="cmy-thread-meta"><span class="cmy-user">${t.user}</span><span class="cmy-tag" style="--tag-c:${catColors[t.cat]||'var(--pri)'}">${t.cat}</span><span class="cmy-time">${t.time}</span></div>
+          <h3 class="cmy-thread-title"><a href="#">${t.title}</a></h3>
+          <p class="cmy-thread-preview">${t.preview}</p>
+          <div class="cmy-thread-stats"><span>👁 ${t.views.toLocaleString()}</span><span>💬 ${t.replies}</span><span>♡ ${t.likes}</span></div>
+        </div>
+      </div>
+    </div>`).join('');
+  }
+
+  main.innerHTML = `
+  <section class="cmy-hero rv-up"><div class="wrap">
+    <h1>學習社群</h1>
+    <p>分享作品、討論課程、交流經驗，與超過 60,000 名學員一起成長</p>
+    <div class="cmy-hero-stats"><span><b>12,450</b> 篇討論</span><span><b>4,892</b> 位活躍成員</span><span><b>38,120</b> 則回覆</span></div>
+  </div></section>
+  <div class="wrap cmy-layout">
+    <div class="cmy-main">
+      <div class="cmy-tabs">${cats.map(c => `<button class="chip ${c === '全部' ? 'on' : ''}" data-cmycat="${c}">${c}</button>`).join('')}</div>
+      <div class="cmy-list" id="cmy-list">${renderThreads('全部')}</div>
+      <div class="cmy-pagination">
+        <button class="cmy-pg on">1</button><button class="cmy-pg">2</button><button class="cmy-pg">3</button><button class="cmy-pg">4</button><span>...</span><button class="cmy-pg">12</button><button class="cmy-pg">下一頁 →</button>
+      </div>
+    </div>
+    <aside class="cmy-sidebar">
+      <div class="cmy-sb-card rv-up">
+        <h4>🔥 熱門話題</h4>
+        <ol class="cmy-trending">${trending.map((t, i) => `<li><span class="cmy-rank">${i + 1}</span><a href="#">${t}</a></li>`).join('')}</ol>
+      </div>
+      <div class="cmy-sb-card rv-up">
+        <h4>⭐ 活躍成員</h4>
+        <div class="cmy-members">${topMembers.map(m => `<div class="cmy-member"><div class="cmy-avatar sm" style="--av-c:${m.color}">${m.init}</div><div class="cmy-member-info"><b>${m.name}</b><span>${m.posts} 篇發文</span></div></div>`).join('')}</div>
+      </div>
+      <div class="cmy-sb-card rv-up">
+        <h4>📊 本週統計</h4>
+        <div class="cmy-week-stats">
+          <div><b>328</b><span>新討論</span></div>
+          <div><b>1,456</b><span>回覆數</span></div>
+          <div><b>892</b><span>活躍成員</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+  <button class="cmy-fab" id="cmy-fab">✏️ 發起討論</button>
+  <div class="cmy-modal" id="cmy-modal" hidden>
+    <div class="cmy-modal-bg"></div>
+    <div class="cmy-modal-box">
+      <div class="cmy-modal-hdr"><h3>發起新討論</h3><button class="cmy-modal-close" id="cmy-close">×</button></div>
+      <div class="cmy-modal-body">
+        <select class="cmy-select"><option value="">選擇分類</option>${cats.slice(1).map(c => `<option>${c}</option>`).join('')}</select>
+        <input class="cmy-input" placeholder="討論標題">
+        <textarea class="cmy-textarea" rows="6" placeholder="分享你的想法、作品或問題…"></textarea>
+      </div>
+      <div class="cmy-modal-foot">
+        <button class="btn btn-ghost" id="cmy-cancel">取消</button>
+        <button class="btn btn-pri" onclick="toast('示範網站：發文功能開發中')">發佈討論</button>
+      </div>
+    </div>
+  </div>`;
+
+  $$('.cmy-tabs .chip', main).forEach(btn => btn.onclick = () => {
+    $$('.cmy-tabs .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    activeCat = btn.dataset.cmycat;
+    $('#cmy-list').innerHTML = renderThreads(activeCat);
+    reveal($('#cmy-list'));
+  });
+  const modal = $('#cmy-modal');
+  $('#cmy-fab').onclick = () => { modal.hidden = false; };
+  $('#cmy-close').onclick = () => { modal.hidden = true; };
+  $('#cmy-cancel').onclick = () => { modal.hidden = true; };
+  $('.cmy-modal-bg', modal).onclick = () => { modal.hidden = true; };
+  $$('.cmy-pg').forEach(b => b.onclick = () => { $$('.cmy-pg').forEach(x => x.classList.remove('on')); b.classList.add('on'); toast('示範網站：分頁功能開發中'); });
+  reveal(main);
+}
+
+/* ---------- 直播教室 ---------- */
+function livePage() {
+  const main = $('main');
+  const liveNow = [
+    {title:'Figma 元件系統實戰教學',teacher:'陳柏睿',role:'UI/UX 設計師',viewers:342,course:'c05',started:'45 分鐘前'},
+    {title:'Python 資料分析快速上手',teacher:'許志豪',role:'資料科學家',viewers:218,course:'c10',started:'1 小時前'},
+  ];
+  const upcoming = [
+    {title:'AI 繪圖在商業設計的應用',teacher:'林予安',date:'11/06（三）',time:'20:00',spots:500,registered:387},
+    {title:'從零開始的 3D 建模之路',teacher:'蘇敏慧',date:'11/07（四）',time:'19:30',spots:300,registered:245},
+    {title:'接案人生：自由工作者的日常',teacher:'李美玲',date:'11/08（五）',time:'21:00',spots:400,registered:312},
+    {title:'前端面試攻略與實戰演練',teacher:'方鈺倫',date:'11/10（日）',time:'14:00',spots:600,registered:489},
+    {title:'攝影後製：調色的藝術',teacher:'張雅琪',date:'11/12（二）',time:'20:00',spots:350,registered:178},
+    {title:'Blender 場景燈光設計密技',teacher:'黃俊傑',date:'11/14（四）',time:'19:00',spots:250,registered:134},
+  ];
+  const recordings = C.slice(0, 8);
+
+  main.innerHTML = `
+  <section class="live-hero rv-up"><div class="wrap">
+    <h1>直播教室</h1>
+    <p>即時互動教學，業界講師線上開講，與講師和學員即時交流</p>
+    <div class="live-hero-stats"><span><b>128</b> 場已播出</span><span><b>45,000+</b> 累計觀看</span><span><b>4.9</b> 平均評分</span></div>
+  </div></section>
+
+  <div class="wrap">
+    <section class="live-sec rv-up">
+      <div class="sec-head"><div><h2><span class="live-dot"></span> 正在直播</h2><div class="sub">點擊加入即時互動</div></div></div>
+      <div class="live-now-grid">${liveNow.map(l => {
+        const c = byId[l.course];
+        return `<div class="live-card now">
+          <div class="live-thumb"><img src="${c ? img(c) : ''}" alt="" loading="lazy"><div class="live-badge">● LIVE</div><div class="live-viewers">👁 ${l.viewers} 人觀看</div></div>
+          <div class="live-info">
+            <h3>${l.title}</h3>
+            <div class="live-teacher"><b>${l.teacher}</b><span>${l.role}</span></div>
+            <div class="live-meta">已開始 ${l.started}</div>
+            <button class="btn btn-pri" onclick="toast('示範網站：直播功能開發中')">加入直播 →</button>
+          </div>
+        </div>`;
+      }).join('')}</div>
+    </section>
+
+    <section class="live-sec rv-up">
+      <div class="sec-head"><div><h2>📅 即將開播</h2><div class="sub">預約提醒，準時參加</div></div></div>
+      <div class="live-schedule">${upcoming.map(u => `<div class="live-sched-item rv-up">
+        <div class="live-sched-date"><span class="live-sched-day">${u.date}</span><span class="live-sched-time">${u.time}</span></div>
+        <div class="live-sched-info">
+          <h4>${u.title}</h4>
+          <span class="live-sched-teacher">${u.teacher}</span>
+          <div class="live-sched-bar"><div class="live-sched-fill" style="width:${Math.round(u.registered/u.spots*100)}%"></div></div>
+          <span class="live-sched-seats">${u.registered}/${u.spots} 已預約</span>
+        </div>
+        <button class="btn btn-ghost" onclick="toast('已預約提醒：' + '${u.title}')">🔔 預約提醒</button>
+      </div>`).join('')}</div>
+    </section>
+
+    <section class="live-sec rv-up">
+      <div class="sec-head"><div><h2>🎬 精選回放</h2><div class="sub">錯過直播也能補看</div></div></div>
+      <div class="live-rec-grid">${recordings.map(c => `<div class="live-rec-card rv-up">
+        <div class="live-rec-thumb"><img src="${img(c)}" alt="" loading="lazy"><div class="live-rec-dur">${c.hours} 小時</div></div>
+        <div class="live-rec-info"><h4>${c.title}</h4><span>${c.teacher}・${(c.students * 0.3).toFixed(0)} 次觀看</span></div>
+      </div>`).join('')}</div>
+    </section>
+  </div>`;
+  reveal(main);
+}
+
+/* ---------- 啟動 ---------- */
+if (page !== 'training' && page !== 'player') shell();
+if (page === 'home') home();
+else if (page === 'course') course();
+else if (page === 'event') eventPage();
+else if (page === 'cart') cartPage();
+else if (page === 'login') loginPage();
+else if (page === 'enterprise') enterprisePage();
+else if (page === 'training') trainingPage();
+else if (page === 'blog') blogPage();
+else if (page === 'article') articlePage();
+else if (page === 'instructor') instructorPage();
+else if (page === 'category') categoryPage();
+else if (page === 'wishlist') wishlistPage();
+else if (page === 'my') myPage();
+else if (page === 'about') aboutPage();
+else if (page === 'faq') faqPage();
+else if (page === 'teach') teachPage();
+else if (page === 'terms') termsPage();
+else if (page === 'privacy') privacyPage();
+else if (page === 'checkout') checkoutPage();
+else if (page === 'order-complete') orderCompletePage();
+else if (page === 'coupon') couponPage();
+else if (page === 'certificate') certificatePage();
+else if (page === 'invite') invitePage();
+else if (page === 'path') pathPage();
+else if (page === 'player') playerPage();
+else if (page === 'community') communityPage();
+else if (page === 'live') livePage();
+else if (page === 'order-history') orderHistoryPage();
+else if (page === 'search') searchPage();
+reveal();
+tickCountdown(); setInterval(tickCountdown, 1000);
+document.body.classList.add('loaded');
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+})();
