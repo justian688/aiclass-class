@@ -843,7 +843,7 @@ function home() {
   const INS = window.INSTRUCTORS || [];
   if (INS.length) {
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div><a class="more" href="instructor.html">查看全部 →</a></div>
-      <div class="ins-grid">${INS.map((t, i) => `<a href="instructor.html" class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms;text-decoration:none;color:inherit"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span><span>${(t.students / 1000).toFixed(1)}k 學員</span></div></a>`).join('')}</div></div></section>`);
+      <div class="ins-grid">${INS.map((t, i) => `<a href="instructor.html?name=${encodeURIComponent(t.name)}" class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms;text-decoration:none;color:inherit"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span><span>${(t.students / 1000).toFixed(1)}k 學員</span></div></a>`).join('')}</div></div></section>`);
   } else {
     const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div></div>
@@ -963,7 +963,7 @@ function home() {
       <div class="instr-grid">${topInstr.map(t => {
         const tCourses = C.filter(x => x.teacher === t.name);
         const avgRating = tCourses.length ? (tCourses.reduce((s, x) => s + x.rating, 0) / tCourses.length).toFixed(1) : '5.0';
-        return `<a class="instr-card rv-up" href="instructor.html?id=${t.id}">
+        return `<a class="instr-card rv-up" href="instructor.html?name=${encodeURIComponent(t.name)}">
           <div class="instr-avatar">${t.avatar}</div>
           <h3 class="instr-name">${t.name}</h3>
           <p class="instr-role">${t.role}</p>
@@ -1302,7 +1302,7 @@ function course() {
         ${cdHTML}
         <button class="btn btn-pri c-buy-pulse" data-buy>立即購買</button>
         <button class="btn btn-ghost" data-cart>加入購物車</button>
-        <button class="btn btn-ghost" onclick="toast('示範網站：贈課功能開發中')" style="margin-top:6px">🎁 贈送此課程</button>
+        <button class="btn btn-ghost" data-gift style="margin-top:6px">🎁 贈送此課程</button>
         <button class="btn btn-ghost" onclick="toast('已設定降價通知')" style="margin-top:6px">🔔 降價通知</button>
       `}
       <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
@@ -1328,6 +1328,7 @@ function course() {
       ${(()=>{const lv=courseLevel(c);const targets=lv.label==='入門'?['完全沒有相關經驗的初學者','想轉職但不知從何開始的人','對這個領域有興趣，想建立系統性知識的人','希望有人帶著做，不想自己摸索的人']:lv.label==='進階'?['已有基礎，想提升到專業水準的人','想學業界實戰流程與技巧的人','需要完成作品集或升級技能的在職者','想接案或建立個人品牌的創作者']:['有一定基礎，想更深入學習的人','希望系統化整理知識的自學者','想學更多實務技巧的在職人士','準備升級技能、拓展職涯的人'];return `<div class="c-target rv-up"><h3>🎯 適合對象</h3><ul>${targets.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;})()}
       ${(()=>{const chs=window.CHAPTERS&&window.CHAPTERS[c.id];if(!chs)return '';const outcomes=chs.flatMap(ch=>ch.lessons.slice(0,2)).slice(0,8);return `<div class="c-outcomes rv-up"><h3>✅ 完成這堂課，你將能夠</h3><div class="c-outcomes-grid">${outcomes.map(o=>`<div class="c-outcome-item"><span class="c-outcome-check">✓</span>${o}</div>`).join('')}</div></div>`;})()}
       ${(()=>{const lv=courseLevel(c);const prereqs=lv.label==='入門'?['不需要任何先備知識，從零開始','準備一台電腦（Windows / Mac 皆可）','對本領域有興趣和學習熱忱']:lv.label==='進階'?['建議先完成相關入門課程或有半年以上經驗','了解基本操作和常用工具','具備自主練習和解決問題的能力']:['建議有基礎概念和初步操作經驗','準備對應的軟體或工具（課程內會說明版本）','願意花時間練習和完成作業'];return `<div class="c-prereq rv-up"><h3>📋 學習前需要</h3><div class="c-prereq-list">${prereqs.map(p=>`<div class="c-prereq-item"><span class="c-prereq-icon">${lv.label==='入門'?'✅':'📌'}</span>${p}</div>`).join('')}</div><div class="c-prereq-level"><span class="lvl-badge ${lv.cls}">${lv.label}</span><span>建議學習時間 ${lv.weeks} 週（每週 ${lv.label==='入門'?'5':'3-4'} 小時）</span></div></div>`;})()}
+      ${(()=>{const toolMap={design:[{icon:'🎨',name:'Adobe Photoshop',ver:'2024 以上',note:'修圖與合成'},{icon:'✏️',name:'Adobe Illustrator',ver:'2024 以上',note:'向量繪圖'},{icon:'🖥️',name:'Figma',ver:'免費版即可',note:'UI 設計協作'}],drawing:[{icon:'🖌️',name:'Procreate',ver:'最新版',note:'iPad 繪圖'},{icon:'✏️',name:'Adobe Photoshop',ver:'2024 以上',note:'數位繪圖'},{icon:'📱',name:'繪圖板',ver:'入門款即可',note:'如 Wacom Intuos'}],ai:[{icon:'🐍',name:'Python',ver:'3.10+',note:'程式語言'},{icon:'📓',name:'Jupyter Notebook',ver:'最新版',note:'互動式開發'},{icon:'💻',name:'VS Code',ver:'最新版',note:'程式編輯器'}],video:[{icon:'🎬',name:'Adobe Premiere Pro',ver:'2024 以上',note:'影片剪輯'},{icon:'🎞️',name:'After Effects',ver:'2024 以上',note:'動態特效'},{icon:'🎵',name:'Audition',ver:'2024 以上',note:'音訊處理'}],music:[{icon:'🎹',name:'Logic Pro / Ableton',ver:'最新版',note:'數位音樂工作站'},{icon:'🎧',name:'監聽耳機',ver:'入門款即可',note:'混音監聽必備'},{icon:'🎤',name:'MIDI 鍵盤',ver:'25 鍵以上',note:'選配，提高效率'}],photo:[{icon:'📷',name:'Adobe Lightroom',ver:'Classic 或 CC',note:'照片後製'},{icon:'🎨',name:'Adobe Photoshop',ver:'2024 以上',note:'進階修圖'},{icon:'📸',name:'相機',ver:'可換鏡頭或手機',note:'拍攝工具'}],game:[{icon:'🎮',name:'Unity',ver:'2022 LTS',note:'遊戲引擎'},{icon:'💻',name:'Visual Studio',ver:'2022',note:'C# 開發'},{icon:'🖥️',name:'Blender',ver:'3.x',note:'3D 建模（選配）'}],beauty:[{icon:'💄',name:'基礎彩妝工具',ver:'',note:'刷具與海綿組'},{icon:'🪞',name:'化妝鏡',ver:'帶燈',note:'清楚觀察細節'},{icon:'📱',name:'手機',ver:'',note:'記錄練習成果'}],baking:[{icon:'🍳',name:'烤箱',ver:'家用即可',note:'基本烘焙設備'},{icon:'⚖️',name:'電子秤',ver:'精度 1g',note:'精確秤量'},{icon:'🥣',name:'攪拌器',ver:'手持或桌上型',note:'打發麵糊'}]};const tools=toolMap[c.cat]||[{icon:'💻',name:'電腦',ver:'Windows / Mac',note:'基本設備'},{icon:'🌐',name:'瀏覽器',ver:'Chrome 最新版',note:'課程觀看'},{icon:'📱',name:'手機或平板',ver:'選配',note:'行動學習'}];return `<div class="c-tools rv-up"><h3>🛠️ 需要工具 / 軟體</h3><div class="c-tools-grid">${tools.map(t=>`<div class="c-tool-item"><span class="c-tool-icon">${t.icon}</span><div class="c-tool-info"><b>${t.name}</b>${t.ver?`<span class="c-tool-ver">${t.ver}</span>`:''}<span class="c-tool-note">${t.note}</span></div></div>`).join('')}</div></div>`;})()}
     </section>
     <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
       <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}" aria-hidden="true"></video></div>
@@ -1359,7 +1360,7 @@ function course() {
       </li>`).join('')}</ul></div></div></div>`}).join('')}</section>
     <section class="c-sec" id="teacher"><h2 class="rv-up">講師介紹</h2><div class="tprofile rv-up"><img src="${img(c)}" alt="${c.teacher}"><div><h3 style="font-size:22px">${c.teacher}</h3><div style="color:var(--pri);font-weight:700;margin:4px 0 10px">${c.role}</div><p style="color:var(--tx2)">擁有超過十年的業界經驗，合作過多個知名品牌與專案。希望把在第一線累積的經驗，用最好懂的方式分享給每一位想學習的人。</p>
       <div class="t-stats"><span>📚 ${C.filter(x=>x.teacher===c.teacher).length} 堂課程</span><span>👥 ${C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.students,0).toLocaleString()} 位學員</span><span>⭐ ${(C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.rating,0)/C.filter(x=>x.teacher===c.teacher).length).toFixed(1)} 平均評分</span></div>
-      <a href="instructor.html" class="t-all-courses">查看所有課程 →</a>
+      <a href="instructor.html?name=${encodeURIComponent(c.teacher)}" class="t-all-courses">查看所有課程 →</a>
     </div></div>
     ${(() => { const tc = C.filter(x => x.teacher === c.teacher && x.id !== c.id).slice(0, 4); if (!tc.length) return ''; return `<div class="t-other-courses"><h4>${c.teacher} 的其他課程</h4><div class="t-oc-grid">${tc.map(x => `<a href="course.html?id=${x.id}" class="t-oc-card"><img src="${img(x)}" alt="${x.title}" loading="lazy"><div><b>${x.title}</b><span>★ ${x.rating} ・ ${fmt(x.price)}</span></div></a>`).join('')}</div></div>`; })()}
     </section>
@@ -1454,6 +1455,26 @@ function course() {
   if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); toast('已複製課程連結'); window.trackEvent('share', { method: 'copy_link', content_type: 'course', item_id: c.id }); };
   const nativeShare = $('[data-native-share]');
   if (nativeShare) nativeShare.onclick = () => navigator.share({ title: c.title + '｜AI Class', url: location.href }).then(() => window.trackEvent('share', { method: 'native', content_type: 'course', item_id: c.id })).catch(() => {});
+  const giftBtn = $('[data-gift]');
+  if (giftBtn) giftBtn.onclick = () => {
+    const ov = document.createElement('div'); ov.className = 'gift-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','贈送課程');
+    ov.innerHTML = `<div class="gift-modal"><button class="gift-close" aria-label="關閉">×</button><h2>🎁 贈送此課程</h2><div class="gift-course"><img src="${img(c)}" alt="${c.title}"><div><b>${c.title}</b><span>${c.teacher}・${fmt(c.price)}</span></div></div><div class="gift-form"><label>收禮人姓名 <span class="gift-req">*</span></label><input class="gift-input" id="gift-name" placeholder="請輸入收禮人姓名" aria-required="true"><label>收禮人 Email <span class="gift-req">*</span></label><input class="gift-input" id="gift-email" type="email" placeholder="example@mail.com" aria-required="true"><label>祝福訊息（選填）</label><textarea class="gift-input gift-msg" id="gift-msg" placeholder="寫一段話送給對方..." rows="3"></textarea></div><div class="gift-total"><span>贈送金額</span><b>${fmt(c.price)}</b></div><button class="btn btn-pri gift-submit" style="width:100%">確認贈送 →</button><p class="gift-note">付款完成後，對方會收到一封包含課程兌換連結的 Email</p></div>`;
+    document.body.append(ov);
+    requestAnimationFrame(() => { requestAnimationFrame(() => ov.classList.add('on')); $('#gift-name', ov).focus(); });
+    const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+    $('.gift-close', ov).onclick = close;
+    ov.onclick = e => { if (e.target === ov) close(); };
+    document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
+    const focusable = $$('input,textarea,button', ov);
+    ov.addEventListener('keydown', e => { if (e.key !== 'Tab') return; const first = focusable[0], last = focusable[focusable.length - 1]; if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } });
+    $('.gift-submit', ov).onclick = () => {
+      const name = $('#gift-name', ov).value.trim(), email = $('#gift-email', ov).value.trim();
+      if (!name) { toast('請輸入收禮人姓名', 'error'); $('#gift-name', ov).focus(); return; }
+      if (!email || !email.includes('@')) { toast('請輸入有效的 Email', 'error'); $('#gift-email', ov).focus(); return; }
+      close(); toast('示範網站：贈送功能開發中，感謝你的心意！', 'info');
+      window.trackEvent('gift_course', { item_id: c.id, item_name: c.title });
+    };
+  };
   $$('.chap>button').forEach(b => {
     b.onclick = () => {
       const ch = b.parentNode;
