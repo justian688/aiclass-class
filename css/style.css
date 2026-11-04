@@ -3721,6 +3721,14 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .exit-skip{background:none;border:none;color:var(--tx2);font-size:13px;cursor:pointer;margin-top:12px;padding:8px}
 .exit-skip:hover{color:var(--tx)}
 
+/* ── 暗色模式：Round 27-29 新增元素 ── */
+[data-theme="dark"] .c-mini-reviews{background:var(--bg2)}
+[data-theme="dark"] .c-update-pledge{background:color-mix(in srgb,var(--pri) 8%,var(--bg2));border-color:color-mix(in srgb,var(--pri) 25%,transparent)}
+[data-theme="dark"] .exit-box{background:var(--card)}
+[data-theme="dark"] .exit-pick{background:var(--bg2)}
+[data-theme="dark"] .t-oc-card:hover{background:rgba(124,92,255,.1)}
+[data-theme="dark"] .promo-sticky{background:linear-gradient(135deg,#5a3ec8,#8b5cf6)}
+
 /* ── 課程比較已購買 ── */
 .cmp-owned{color:var(--pri);font-weight:700;font-size:14px}
 .cmp-not-owned{color:var(--tx2);font-size:13px}
