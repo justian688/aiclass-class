@@ -208,10 +208,10 @@ function shell() {
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
-      <button class="notif-btn" aria-label="通知">🔔${(window.NOTIFICATIONS||[]).filter(n=>!n.read).length?'<span class="notif-dot"></span>':''}</button>
+      <button class="notif-btn" aria-label="通知">🔔${(()=>{const c=(window.NOTIFICATIONS||[]).filter(n=>!n.read).length;return c?`<span class="notif-badge-count">${c}</span>`:''})()}</button>
       <div class="notif-panel" role="dialog" aria-modal="false" aria-label="通知面板">
         <div class="notif-hdr"><h4>通知</h4><button class="notif-read-all">全部已讀</button></div>
-        <div class="notif-list">${(window.NOTIFICATIONS||[]).map(n=>{const icons={course:'📚',promo:'🏷️',community:'💬',achievement:'🏆',live:'📡',system:'⚙️'};return `<${n.link?`a href="${n.link}"`:'div'} class="notif-item${n.read?'':' unread'}"><div class="ni-icon">${icons[n.type]||'🔔'}</div><div class="ni-body"><b>${n.title}</b><p>${n.body}</p><div class="ni-time">${n.time}</div></div></${n.link?'a':'div'}>`}).join('')}</div>
+        <div class="notif-list">${(window.NOTIFICATIONS||[]).length?(window.NOTIFICATIONS||[]).map(n=>{const icons={course:'📚',promo:'🏷️',community:'💬',achievement:'🏆',live:'📡',system:'⚙️'};return `<${n.link?`a href="${n.link}"`:'div'} class="notif-item${n.read?'':' unread'}"><div class="ni-icon">${icons[n.type]||'🔔'}</div><div class="ni-body"><b>${n.title}</b><p>${n.body}</p><div class="ni-time">${n.time}</div></div></${n.link?'a':'div'}>`}).join(''):'<div class="notif-empty"><div class="notif-empty-icon">🔕</div><p>目前沒有新通知</p></div>'}</div>
       </div>
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
@@ -266,10 +266,20 @@ function shell() {
   if (notifBtn) {
     notifBtn.onclick = () => { notifPanel.classList.toggle('on'); };
     document.addEventListener('click', e => { if (!e.target.closest('.notif-wrap')) notifPanel.classList.remove('on'); });
+    const updateBadge = () => {
+      const count = $$('.notif-item.unread', notifPanel).length;
+      const badge = $('.notif-badge-count', notifBtn);
+      if (badge) { if (count) { badge.textContent = count; } else { badge.remove(); } }
+    };
+    $$('.notif-item', notifPanel).forEach(el => {
+      el.addEventListener('click', () => { el.classList.remove('unread'); updateBadge(); });
+    });
     const readAllBtn = $('.notif-read-all', hdr);
     if (readAllBtn) readAllBtn.onclick = () => {
-      $$('.notif-item.unread', notifPanel).forEach(el => el.classList.remove('unread'));
-      const dot = $('.notif-dot', notifBtn); if (dot) dot.remove();
+      $$('.notif-item.unread', notifPanel).forEach(el => { el.classList.remove('unread'); el.style.transition = 'background .3s'; });
+      updateBadge();
+      readAllBtn.textContent = '✓ 已完成';
+      setTimeout(() => { readAllBtn.textContent = '全部已讀'; }, 1500);
       toast('已全部標為已讀');
     };
   }
@@ -394,10 +404,15 @@ function searchOverlay() {
 
   function renderRecent() {
     const r = getRecent();
-    recentEl.innerHTML = r.length ? `<h5>最近搜尋 <button class="clear-recent">清除</button></h5><div class="recent-list">${r.map(k => `<button>${k}</button>`).join('')}</div>` : '';
+    recentEl.innerHTML = r.length ? `<h5>最近搜尋 <button class="clear-recent">全部清除</button></h5><div class="recent-list">${r.map(k => `<span class="recent-item"><span class="ri-text">${k}</span><button class="ri-del" aria-label="刪除">×</button></span>`).join('')}</div>` : '';
     const clrBtn = $('.clear-recent', ov);
     if (clrBtn) clrBtn.onclick = () => { localStorage.removeItem(recentKey); renderRecent(); };
-    $$('.recent-list button', ov).forEach(b => b.onclick = () => { inp.value = b.textContent; run(); });
+    $$('.recent-item', ov).forEach(el => {
+      const text = $('.ri-text', el).textContent;
+      el.onclick = e => { if (!e.target.closest('.ri-del')) { inp.value = text; run(); } };
+      const del = $('.ri-del', el);
+      if (del) del.onclick = e => { e.stopPropagation(); let arr = getRecent().filter(x => x !== text); localStorage.setItem(recentKey, JSON.stringify(arr)); renderRecent(); };
+    });
   }
 
   let selIdx = -1;
@@ -405,7 +420,7 @@ function searchOverlay() {
     selIdx = -1;
     const q = inp.value.trim().toLowerCase();
     const list = q ? C.filter(c => (c.title + c.teacher + c.role + (c.sub || '')).toLowerCase().includes(q)) : [];
-    res.innerHTML = !q ? '' : list.length ? list.slice(0, 8).map((c, i) => `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt=""><div><b>${c.title}</b><div class="stars">${c.teacher}・${fmt(c.price)}</div><span class="sres-cat">${c.sub || c.cat}</span></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
+    res.innerHTML = !q ? '' : list.length ? `<div class="sres-count">找到 ${list.length} 筆結果</div>` + list.slice(0, 8).map((c, i) => `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt=""><div><b>${c.title}</b><div class="stars">${c.teacher}・${fmt(c.price)}</div><span class="sres-cat">${c.sub || c.cat}</span></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
   };
   const updSel = () => { $$('.sres-item', res).forEach((a, i) => a.classList.toggle('sres-active', i === selIdx)); };
   inp.oninput = run;
@@ -2043,6 +2058,13 @@ function articlePage() {
       </div>
       <div class="art-cover rv-up"><img src="assets/img/v${post.v}.jpg" alt="" loading="lazy"></div>
       <div class="art-body rv-up" id="art-body">${body}</div>
+
+      ${(() => {
+        const idx = posts.findIndex(p => p.id === post.id);
+        const prev = idx < posts.length - 1 ? posts[idx + 1] : null;
+        const next = idx > 0 ? posts[idx - 1] : null;
+        return (prev || next) ? `<div class="art-prevnext rv-up">${prev ? `<a class="art-pn prev" href="article.html?id=${prev.id}"><div class="art-pn-label">← 上一篇</div><div class="art-pn-title">${prev.title}</div></a>` : '<div></div>'}${next ? `<a class="art-pn next" href="article.html?id=${next.id}"><div class="art-pn-label">下一篇 →</div><div class="art-pn-title">${next.title}</div></a>` : '<div></div>'}</div>` : '';
+      })()}
 
       <div class="art-author-bio rv-up">
         <div class="art-author-avatar"><img src="assets/img/v${post.v}.jpg" alt="${post.author}" loading="lazy"></div>
