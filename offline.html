@@ -2,17 +2,25 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>離線模式｜AI Class</title>
+<meta name="theme-color" content="#7c5cff">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f5f7;font-family:"Noto Sans TC",system-ui,sans-serif;color:#1d1d1f;padding:24px}
+:root{--bg:#f5f5f7;--tx:#1d1d1f;--tx2:#6e6e73;--tx3:#aeaeb2}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0b10;--tx:#e8e8ec;--tx2:#8e8e93;--tx3:#5a5a6a}}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--tx);padding:24px;transition:background .3s,color .3s}
 .box{text-align:center;max-width:420px}
-.icon{font-size:72px;margin-bottom:24px;filter:grayscale(.3)}
+.icon{font-size:72px;margin-bottom:24px;filter:grayscale(.3);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@media(prefers-reduced-motion:reduce){.icon{animation:none}}
 h1{font-size:24px;font-weight:800;margin-bottom:12px}
-p{color:#6e6e73;line-height:1.6;margin-bottom:24px}
-.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 32px;background:linear-gradient(135deg,#7c5cff,#ff5c8a);color:#fff;font-weight:700;font-size:15px;border:0;border-radius:14px;cursor:pointer;text-decoration:none}
-.tip{margin-top:20px;font-size:13px;color:#aeaeb2}
+p{color:var(--tx2);line-height:1.6;margin-bottom:24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 32px;background:linear-gradient(135deg,#7c5cff,#a855f7);color:#fff;font-weight:700;font-size:15px;border:0;border-radius:14px;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px rgba(124,92,255,.3);transition:transform .25s,box-shadow .25s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,92,255,.4)}
+.tip{margin-top:20px;font-size:13px;color:var(--tx3)}
+.status{margin-top:16px;font-size:13px;color:var(--tx3)}
 </style>
 </head>
 <body>
@@ -22,6 +30,10 @@ p{color:#6e6e73;line-height:1.6;margin-bottom:24px}
   <p>AI Class 需要網路才能載入課程內容。<br>請檢查你的網路連線後重新整理頁面。</p>
   <button class="btn" onclick="location.reload()">重新整理</button>
   <p class="tip">已購買的課程影片會在有網路時自動快取，方便你下次離線觀看。</p>
+  <p class="status" id="status"></p>
 </div>
+<script>
+window.addEventListener('online', () => { document.getElementById('status').textContent = '網路已恢復，正在重新載入…'; setTimeout(() => location.reload(), 800); });
+</script>
 </body>
 </html>

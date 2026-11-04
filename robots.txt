@@ -3,5 +3,9 @@ Allow: /
 Disallow: /player.html
 Disallow: /checkout.html
 Disallow: /order-complete.html
+Disallow: /login.html
+Disallow: /my.html
+Disallow: /wishlist.html
+Disallow: /order-history.html
 
 Sitemap: https://aiclass.tw/sitemap.xml

@@ -1,8 +1,8 @@
-const CACHE = 'aic-v3';
-const OFFLINE = '/offline.html';
+const CACHE = 'aic-v4';
+const STATIC = ['/offline.html', '/css/style.css', '/js/data.js', '/js/app.js', '/manifest.json', '/assets/favicon.svg'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll([OFFLINE])));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));
   self.skipWaiting();
 });
 
@@ -14,7 +14,6 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
 
-  // Cache media assets (images & videos)
   if (url.pathname.startsWith('/assets/img/') || url.pathname.startsWith('/assets/video/')) {
     e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
       if (res.ok) { const clone = res.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
@@ -23,7 +22,6 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Cache fonts
   if (url.hostname === 'fonts.gstatic.com') {
     e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
       if (res.ok) { const clone = res.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
@@ -32,9 +30,16 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Navigation requests: network first, fallback to offline page
+  if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js') || url.pathname.endsWith('.json')) {
+    e.respondWith(fetch(e.request).then(res => {
+      if (res.ok) { const clone = res.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
+      return res;
+    }).catch(() => caches.match(e.request)));
+    return;
+  }
+
   if (e.request.mode === 'navigate') {
-    e.respondWith(fetch(e.request).catch(() => caches.match(OFFLINE)));
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request).then(r => r || caches.match('/offline.html'))));
     return;
   }
 });
