@@ -3720,3 +3720,19 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .exit-coupon span:last-child{font-size:13px;color:var(--tx2)}
 .exit-skip{background:none;border:none;color:var(--tx2);font-size:13px;cursor:pointer;margin-top:12px;padding:8px}
 .exit-skip:hover{color:var(--tx)}
+
+/* ── 課程比較已購買 ── */
+.cmp-owned{color:var(--pri);font-weight:700;font-size:14px}
+.cmp-not-owned{color:var(--tx2);font-size:13px}
+
+/* ── 首頁 sticky 促銷底欄 ── */
+.promo-sticky{position:fixed;bottom:0;left:0;right:0;z-index:900;background:linear-gradient(135deg,#7c5cff,#a855f7);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:16px;transform:translateY(100%);transition:transform .4s ease;font-size:14px;font-weight:600}
+.promo-sticky.show{transform:none}
+.promo-sticky .ps-text{flex:1;text-align:center}
+.promo-sticky .ps-code{font-family:monospace;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:8px;letter-spacing:1px;font-size:15px}
+.promo-sticky .ps-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:4px 8px}
+.promo-sticky .ps-close:hover{color:#fff}
+@media(max-width:760px){
+  .promo-sticky{padding:10px 14px;font-size:12px;gap:8px;bottom:56px}
+  .promo-sticky .ps-code{font-size:13px;padding:3px 8px}
+}

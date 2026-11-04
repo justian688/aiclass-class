@@ -45,7 +45,7 @@ const allNotes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
 function saveNotes() { localStorage.setItem('aic-notes', JSON.stringify(allNotes)); }
 function notesWidget(courseId) {
   const notes = allNotes[courseId] || [];
-  return `<section class="c-sec" id="notes"><h2 class="rv-up">📝 我的學習筆記</h2>
+  return `<section class="c-sec" id="notes"><h2 class="rv-up">📝 我的學習筆記 ${notes.length ? `<button class="notes-export btn btn-ghost btn-sm" style="font-size:13px;margin-left:12px">📥 匯出筆記</button>` : ''}</h2>
     <div class="notes-add rv-up"><textarea class="notes-input" placeholder="記錄你的學習重點..." rows="3" aria-label="學習筆記"></textarea><button class="btn btn-pri notes-save">儲存筆記</button></div>
     <div class="notes-list">${notes.map((n, i) => `<div class="note-item rv-up"><div class="note-date">${new Date(n.ts).toLocaleDateString('zh-TW')} ${new Date(n.ts).toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${n.text}</p><button class="note-del" data-ni="${i}">刪除</button></div>`).join('')}${!notes.length ? '<p class="notes-empty">還沒有筆記，開始記錄你的學習心得吧！</p>' : ''}</div></section>`;
 }
@@ -75,6 +75,18 @@ function bindNotes(courseId, main) {
     if (!allNotes[courseId]?.length) { const list = $('.notes-list', main); list.innerHTML = '<p class="notes-empty">還沒有筆記，開始記錄你的學習心得吧！</p>'; }
     toast('筆記已刪除');
   });
+  const exportBtn = $('.notes-export', main);
+  if (exportBtn) exportBtn.onclick = () => {
+    const ns = allNotes[courseId] || [];
+    if (!ns.length) { toast('沒有筆記可匯出'); return; }
+    const cTitle = (byId[courseId] || {}).title || courseId;
+    const txt = `# ${cTitle} — 學習筆記\n匯出時間：${new Date().toLocaleString('zh-TW')}\n${'─'.repeat(40)}\n\n` +
+      ns.map((n, i) => `## 筆記 ${i + 1}\n📅 ${new Date(n.ts).toLocaleString('zh-TW')}\n\n${n.text}\n`).join('\n' + '─'.repeat(40) + '\n\n');
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI-Class-筆記-${cTitle.slice(0,20)}.txt`; a.click();
+    URL.revokeObjectURL(a.href);
+    toast('筆記已匯出');
+  };
 }
 
 /* ---------- 課程進度追蹤 ---------- */
@@ -969,6 +981,15 @@ function home() {
   fb.innerHTML = `<button onclick="toast('示範網站：優惠功能開發中')"><span style="font-size:20px">🎁</span><span class="fb-tip">優惠</span></button><button onclick="toast('示範網站：App 下載中')"><span style="font-size:20px">📱</span><span class="fb-tip">App</span></button><button onclick="toast('示範網站：客服功能開發中')"><span style="font-size:20px">💬</span><span class="fb-tip">客服</span></button><button onclick="scrollTo({top:0,behavior:'smooth'})"><span style="font-size:20px">⬆</span><span class="fb-tip">回頂部</span></button>`;
   document.body.append(fb);
   addEventListener('scroll', () => fb.classList.toggle('show', scrollY > innerHeight), { passive: true });
+
+  // Sticky 促銷底欄
+  if (!sessionStorage.getItem('aic-promo-closed')) {
+    const ps = document.createElement('div'); ps.className = 'promo-sticky';
+    ps.innerHTML = `<span class="ps-text">🔥 雙 11 全站最低 5 折｜折扣碼 <span class="ps-code">DOUBLE11</span> 滿 5,000 再折 800</span><button class="ps-close" aria-label="關閉">✕</button>`;
+    document.body.append(ps);
+    setTimeout(() => ps.classList.add('show'), 2000);
+    ps.querySelector('.ps-close').onclick = () => { ps.classList.remove('show'); sessionStorage.setItem('aic-promo-closed', '1'); setTimeout(() => ps.remove(), 400); };
+  }
 
   // 排序按鈕綁定
   $$('.sort-btn').forEach(b => b.onclick = () => {
@@ -5408,7 +5429,8 @@ function updCmpUI() {
         <tr><td>時數</td>${courses.map((c, i) => `<td${hi(bHrs,i)}>${c.hours} 小時</td>`).join('')}</tr>
         <tr><td>講師</td>${courses.map(c => `<td>${c.teacher}</td>`).join('')}</tr>
         <tr><td>分類</td>${courses.map(c => `<td>${c.sub}</td>`).join('')}</tr>
-        <tr><td></td>${courses.map(c => `<td><a class="btn btn-ghost cmp-view" href="course.html?id=${c.id}" style="height:36px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;text-decoration:none">查看課程</a><button class="btn btn-pri cmp-add-cart" data-id="${c.id}" style="height:36px;font-size:13px">加入購物車</button></td>`).join('')}</tr>
+        <tr><td>狀態</td>${courses.map(c => `<td>${owned.has(c.id) ? '<span class="cmp-owned">✓ 已購買</span>' : '<span class="cmp-not-owned">未購買</span>'}</td>`).join('')}</tr>
+        <tr><td></td>${courses.map(c => `<td>${owned.has(c.id) ? `<a class="btn btn-pri cmp-view" href="player.html?id=${c.id}" style="height:36px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">開始上課</a>` : `<a class="btn btn-ghost cmp-view" href="course.html?id=${c.id}" style="height:36px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;text-decoration:none">查看課程</a><button class="btn btn-pri cmp-add-cart" data-id="${c.id}" style="height:36px;font-size:13px">加入購物車</button>`}</td>`).join('')}</tr>
       </tbody></table></div></div>`;
     document.body.append(ov);
     $$('.cmp-add-cart', ov).forEach(b => b.onclick = () => { cart.add(b.dataset.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); });
