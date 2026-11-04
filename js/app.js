@@ -380,13 +380,21 @@ function searchOverlay() {
     $$('.recent-list button', ov).forEach(b => b.onclick = () => { inp.value = b.textContent; run(); });
   }
 
+  let selIdx = -1;
   const run = () => {
+    selIdx = -1;
     const q = inp.value.trim().toLowerCase();
-    const list = q ? C.filter(c => (c.title + c.teacher + c.role).toLowerCase().includes(q)) : [];
-    res.innerHTML = !q ? '' : list.length ? list.slice(0, 5).map(c => `<a href="course.html?id=${c.id}"><img src="${img(c)}" alt=""><div><b>${c.title}</b><div class="stars">${c.teacher}・${fmt(c.price)}</div></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
+    const list = q ? C.filter(c => (c.title + c.teacher + c.role + (c.sub || '')).toLowerCase().includes(q)) : [];
+    res.innerHTML = !q ? '' : list.length ? list.slice(0, 8).map((c, i) => `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt=""><div><b>${c.title}</b><div class="stars">${c.teacher}・${fmt(c.price)}</div><span class="sres-cat">${c.sub || c.cat}</span></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
   };
+  const updSel = () => { $$('.sres-item', res).forEach((a, i) => a.classList.toggle('sres-active', i === selIdx)); };
   inp.oninput = run;
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter' && inp.value.trim()) { addRecent(inp.value.trim()); location.href = 'search.html?q=' + encodeURIComponent(inp.value.trim()); } });
+  inp.addEventListener('keydown', e => {
+    const items = $$('.sres-item', res);
+    if (e.key === 'ArrowDown' && items.length) { e.preventDefault(); selIdx = Math.min(selIdx + 1, items.length - 1); updSel(); }
+    else if (e.key === 'ArrowUp' && items.length) { e.preventDefault(); selIdx = Math.max(selIdx - 1, -1); updSel(); }
+    else if (e.key === 'Enter') { if (selIdx >= 0 && items[selIdx]) { addRecent(inp.value.trim()); location.href = items[selIdx].href; } else if (inp.value.trim()) { addRecent(inp.value.trim()); location.href = 'search.html?q=' + encodeURIComponent(inp.value.trim()); } }
+  });
   $$('.hot button', ov).forEach(b => b.onclick = () => { inp.value = b.textContent; addRecent(b.textContent); run(); });
   const open = e => { e.preventDefault(); ov.classList.add('on'); renderRecent(); setTimeout(() => inp.focus(), 50); };
   $$('[data-search]').forEach(b => b.onclick = open);
@@ -508,9 +516,9 @@ function bindCards(root = document) {
     e.preventDefault(); e.stopPropagation();
     quickPreview(b.dataset.qp);
   });
-  $$('img[loading="lazy"]', root).forEach(img => {
-    if (img.complete) img.classList.add('loaded');
-    else img.onload = () => img.classList.add('loaded');
+  $$('img[loading="lazy"]', root).forEach(im => {
+    const markReady = () => { im.classList.add('loaded'); const th = im.closest('.thumb'); if (th) th.classList.add('img-ready'); };
+    if (im.complete) markReady(); else im.onload = markReady;
   });
   reveal(root);
 }
@@ -537,8 +545,14 @@ function railSec(id, title, sub, list, rank) {
     <div class="rail ${rank ? 'rank' : ''}">${list.map((c, i) => card(c, i, rank)).join('')}</div></div></section>`;
 }
 
-/* ---------- 進場動畫 ---------- */
-const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -40px' });
+/* ---------- 進場動畫（stagger） ---------- */
+const io = new IntersectionObserver(es => {
+  const byParent = new Map();
+  es.forEach(e => { if (!e.isIntersecting) return; const p = e.target.parentElement; if (!byParent.has(p)) byParent.set(p, []); byParent.get(p).push(e.target); });
+  byParent.forEach(els => {
+    els.forEach((el, i) => { el.style.transitionDelay = (i * 60) + 'ms'; el.classList.add('in'); io.unobserve(el); });
+  });
+}, { threshold: .12, rootMargin: '0px 0px -40px' });
 function reveal(root = document) { $$('.rv-up:not(.in)', root).forEach(el => io.observe(el)); }
 
 /* ---------- 倒數 ---------- */
@@ -4477,19 +4491,25 @@ function updCmpUI() {
   $('.cmp-clear', bar).onclick = () => { cmpList.length = 0; saveCmp(); };
   $('.cmp-go', bar).onclick = () => {
     const courses = cmpList.map(id => byId[id]).filter(Boolean);
+    const best = (arr, fn) => { const vals = arr.map(fn); const m = Math.max(...vals); return vals.map(v => v === m); };
+    const low = (arr, fn) => { const vals = arr.map(fn); const m = Math.min(...vals); return vals.map(v => v === m); };
+    const bPrice = low(courses, c => c.price), bDisc = best(courses, c => pct(c)), bRate = best(courses, c => c.rating), bStu = best(courses, c => c.students), bHrs = best(courses, c => c.hours);
+    const hi = (flags, i) => flags[i] ? ' class="cmp-best"' : '';
     const ov = document.createElement('div'); ov.className = 'cmp-overlay';
     ov.innerHTML = `<div class="cmp-modal"><div class="cmp-modal-head"><h2>課程比較</h2><button class="cmp-close">×</button></div>
       <div class="cmp-table"><table><thead><tr><th></th>${courses.map(c => `<th><img src="${img(c)}" alt=""><br>${c.title}</th>`).join('')}</tr></thead><tbody>
-        <tr><td>價格</td>${courses.map(c => `<td class="cmp-pri">${fmt(c.price)}</td>`).join('')}</tr>
+        <tr><td>價格</td>${courses.map((c, i) => `<td${hi(bPrice,i)}>${fmt(c.price)}</td>`).join('')}</tr>
         <tr><td>原價</td>${courses.map(c => `<td><del>${fmt(c.origin)}</del></td>`).join('')}</tr>
-        <tr><td>折扣</td>${courses.map(c => `<td>${pct(c)}% OFF</td>`).join('')}</tr>
-        <tr><td>評分</td>${courses.map(c => `<td>★ ${c.rating}</td>`).join('')}</tr>
-        <tr><td>學員數</td>${courses.map(c => `<td>${c.students.toLocaleString()}</td>`).join('')}</tr>
-        <tr><td>時數</td>${courses.map(c => `<td>${c.hours} 小時</td>`).join('')}</tr>
+        <tr><td>折扣</td>${courses.map((c, i) => `<td${hi(bDisc,i)}>${pct(c)}% OFF</td>`).join('')}</tr>
+        <tr><td>評分</td>${courses.map((c, i) => `<td${hi(bRate,i)}>★ ${c.rating}</td>`).join('')}</tr>
+        <tr><td>學員數</td>${courses.map((c, i) => `<td${hi(bStu,i)}>${c.students.toLocaleString()}</td>`).join('')}</tr>
+        <tr><td>時數</td>${courses.map((c, i) => `<td${hi(bHrs,i)}>${c.hours} 小時</td>`).join('')}</tr>
         <tr><td>講師</td>${courses.map(c => `<td>${c.teacher}</td>`).join('')}</tr>
         <tr><td>分類</td>${courses.map(c => `<td>${c.sub}</td>`).join('')}</tr>
+        <tr><td></td>${courses.map(c => `<td><button class="btn btn-pri cmp-add-cart" data-id="${c.id}" style="height:36px;font-size:13px">加入購物車</button></td>`).join('')}</tr>
       </tbody></table></div></div>`;
     document.body.append(ov);
+    $$('.cmp-add-cart', ov).forEach(b => b.onclick = () => { cart.add(b.dataset.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); });
     $('.cmp-close', ov).onclick = () => ov.remove();
     ov.onclick = e => { if (e.target === ov) ov.remove(); };
   };
