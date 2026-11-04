@@ -907,6 +907,21 @@ function home() {
       }).join('')}</div></div></section>`);
   }
 
+  // 課程推薦測驗 CTA
+  main.insertAdjacentHTML('beforeend', `<section class="sec quiz-cta-sec"><div class="wrap">
+    <div class="quiz-cta rv-up">
+      <div class="quiz-cta-left">
+        <span class="quiz-cta-badge">🎯 1 分鐘找到你的課程</span>
+        <h2>不知道從哪堂課開始？</h2>
+        <p>回答 3 個簡單問題，AI 幫你推薦最適合的學習方向</p>
+        <button class="btn btn-pri quiz-cta-btn" id="startQuizBtn">開始推薦測驗 →</button>
+      </div>
+      <div class="quiz-cta-right">
+        <div class="quiz-cta-cards">${C.slice(0, 4).map(c => `<div class="quiz-cta-card"><img src="${img(c)}" alt="" loading="lazy"></div>`).join('')}</div>
+      </div>
+    </div>
+  </div></section>`);
+
   // FAQ
   main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap faq"><div class="sec-head rv-up"><div><h2>常見問題</h2></div></div>
     ${window.FAQ.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
@@ -920,6 +935,10 @@ function home() {
   counters();
   $$('.qa button').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
   $$('.stat').forEach(s => s.addEventListener('pointermove', e => { const r = s.getBoundingClientRect(); s.style.setProperty('--mx', e.clientX - r.left + 'px'); s.style.setProperty('--my', e.clientY - r.top + 'px'); }));
+
+  // 課程推薦測驗互動
+  const quizBtn = $('#startQuizBtn', main);
+  if (quizBtn) quizBtn.onclick = () => openRecommendQuiz();
 
   // 浮動側邊欄
   const fb = document.createElement('div'); fb.className = 'float-bar';
@@ -5410,6 +5429,95 @@ if (page === 'article') {
     const pct = scrollY / (document.documentElement.scrollHeight - innerHeight) * 100;
     bar.style.width = Math.min(pct, 100) + '%';
   }, { passive: true });
+}
+
+// ── 課程推薦測驗 ──
+function openRecommendQuiz() {
+  const questions = [
+    { q: '你目前的學習目標是？', opts: [
+      { text: '轉職/跨領域', cats: ['ai','code','data'] },
+      { text: '提升現有技能', cats: ['design','video','photo'] },
+      { text: '培養興趣愛好', cats: ['drawing','music','lifestyle'] },
+      { text: '創業/接案', cats: ['design','video','ai'] }
+    ]},
+    { q: '你每週能投入多少時間學習？', opts: [
+      { text: '不到 3 小時', hours: 'short' },
+      { text: '3–7 小時', hours: 'medium' },
+      { text: '7–15 小時', hours: 'long' },
+      { text: '超過 15 小時', hours: 'xlong' }
+    ]},
+    { q: '你偏好哪種學習方式？', opts: [
+      { text: '跟著影片一步步做', style: 'project' },
+      { text: '先看理論再實作', style: 'theory' },
+      { text: '直接挑戰專案', style: 'challenge' },
+      { text: '短影片快速學', style: 'quick' }
+    ]}
+  ];
+  let step = 0;
+  const answers = [];
+  const ov = document.createElement('div'); ov.className = 'rq-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', '課程推薦測驗');
+  function renderStep() {
+    const isResult = step >= questions.length;
+    if (isResult) {
+      const catPrefs = answers[0]?.cats || ['design'];
+      let pool = C.filter(c => catPrefs.includes(c.cat));
+      if (!pool.length) pool = C;
+      const hoursMax = answers[1]?.hours === 'short' ? 12 : answers[1]?.hours === 'medium' ? 20 : 999;
+      pool = pool.filter(c => c.hours <= hoursMax);
+      if (!pool.length) pool = C.filter(c => catPrefs.includes(c.cat));
+      if (!pool.length) pool = C;
+      const picks = pool.sort((a, b) => b.rating - a.rating).slice(0, 3);
+      ov.innerHTML = `<div class="rq-box rq-result"><button class="rq-close" aria-label="關閉">×</button>
+        <div class="rq-done-icon">🎉</div>
+        <h2>為你推薦這 ${picks.length} 堂課程</h2>
+        <p class="rq-done-sub">根據你的回答，我們精選了最適合你的課程</p>
+        <div class="rq-picks">${picks.map(c => `<a class="rq-pick" href="course.html?id=${c.id}">
+          <img src="${img(c)}" alt="" loading="lazy">
+          <div class="rq-pick-info"><h3>${c.title}</h3><span>${c.teacher}・★ ${c.rating}・${c.hours} 小時</span><b>${fmt(c.price)}</b></div>
+        </a>`).join('')}</div>
+        <button class="btn btn-ghost rq-retry">重新測驗</button>
+      </div>`;
+      ov.querySelector('.rq-retry').onclick = () => { step = 0; answers.length = 0; renderStep(); };
+    } else {
+      const qq = questions[step];
+      ov.innerHTML = `<div class="rq-box"><button class="rq-close" aria-label="關閉">×</button>
+        <div class="rq-progress"><div class="rq-prog-fill" style="width:${(step / questions.length) * 100}%"></div></div>
+        <div class="rq-step">${step + 1} / ${questions.length}</div>
+        <h2>${qq.q}</h2>
+        <div class="rq-opts">${qq.opts.map((o, i) => `<button class="rq-opt" data-oi="${i}">${o.text}</button>`).join('')}</div>
+        ${step > 0 ? '<button class="rq-back">← 上一步</button>' : ''}
+      </div>`;
+      ov.querySelectorAll('.rq-opt').forEach(b => b.onclick = () => {
+        answers[step] = qq.opts[+b.dataset.oi];
+        b.classList.add('picked');
+        setTimeout(() => { step++; renderStep(); }, 300);
+      });
+      const backBtn = ov.querySelector('.rq-back');
+      if (backBtn) backBtn.onclick = () => { step--; renderStep(); };
+    }
+    ov.querySelector('.rq-close').onclick = closeQuiz;
+  }
+  function closeQuiz() { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); }
+  document.body.append(ov);
+  requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
+  renderStep();
+  ov.onclick = e => { if (e.target === ov) closeQuiz(); };
+  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { closeQuiz(); document.removeEventListener('keydown', esc); } });
+}
+
+// ── 影片懶載入（IntersectionObserver） ──
+{
+  const videoIO = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const v = entry.target;
+      if (v.dataset.lazySrc && !v.src) { v.src = v.dataset.lazySrc; v.load(); }
+      obs.unobserve(v);
+    });
+  }, { rootMargin: '200px' });
+  requestAnimationFrame(() => {
+    $$('video[data-lazy-src]').forEach(v => videoIO.observe(v));
+  });
 }
 
 // ── 頁面轉場動畫 ──
