@@ -620,7 +620,7 @@ function home() {
   const slides = window.HERO.map(id => byId[id]);
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程">
     ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
-      <img class="poster" src="${img(c)}" alt="">
+      <img class="poster" src="${img(c)}" alt=""${i ? '' : ' fetchpriority="high"'}>
       <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
       <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span><h1>${h}</h1><p>${p}</p>
       <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">立即了解 →</a> <a class="btn btn-ghost" href="course.html?id=${c.id}#preview" style="margin-left:8px">▶ 試看</a></div></div></div></div>`; }).join('')}
@@ -1515,6 +1515,7 @@ function enterprisePage() {
   <section class="ent-hero">
     <div class="ent-hero-bg"></div>
     <div class="wrap ent-hero-inner">
+      <div class="crumb rv-up" style="margin-bottom:16px"><a href="index.html">首頁</a> / 企業方案</div>
       <span class="ent-eyebrow rv-up">AI Class for Business</span>
       <h1 class="ent-title rv-up">企業培訓<br>交給 AI Class</h1>
       <p class="ent-sub rv-up">為您的團隊提供業界頂尖的線上培訓方案<br>從 AI 技術到創意設計，全面提升企業競爭力</p>
@@ -1542,6 +1543,13 @@ function enterprisePage() {
           <p>${f.desc}</p>
         </div>`).join('')}
       </div>
+    </div>
+  </section>
+
+  <section class="ent-partners">
+    <div class="wrap">
+      <h2 class="ent-sec-title rv-up">信賴 AI Class 的企業</h2>
+      <div class="ent-partner-logos rv-up">${(window.PARTNERS||[]).map(p => `<span class="ent-partner-logo">${p}</span>`).join('')}</div>
     </div>
   </section>
 
@@ -4864,6 +4872,30 @@ if (page === 'article') {
     const pct = scrollY / (document.documentElement.scrollHeight - innerHeight) * 100;
     bar.style.width = Math.min(pct, 100) + '%';
   }, { passive: true });
+}
+
+// ── 頁面轉場動畫 ──
+{
+  const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+    const isInternal = (href.endsWith('.html') || href.includes('.html?') || href.includes('.html#')) && !href.startsWith('http');
+    if (!isInternal) return;
+    if (a.target === '_blank' || href.startsWith('#')) return;
+    if (prefersReduced) return;
+    e.preventDefault();
+    const m = $('main');
+    if (m) { m.style.transition = 'opacity .15s,transform .15s'; m.style.opacity = '0'; m.style.transform = 'translateY(8px)'; }
+    setTimeout(() => { location.href = a.href; }, 160);
+  });
+  const m = $('main');
+  if (m && !prefersReduced) {
+    m.style.opacity = '0'; m.style.transform = 'translateY(8px)';
+    requestAnimationFrame(() => { m.style.transition = 'opacity .2s,transform .2s'; m.style.opacity = '1'; m.style.transform = 'none'; });
+  }
 }
 
 })();

@@ -3046,6 +3046,13 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 .ck-step-line.done{background:var(--pri)}
 @media(max-width:480px){.ck-steps{gap:0;padding:0}.ck-step-num{width:28px;height:28px;font-size:11px}.ck-step-item span:last-child{font-size:10px}.ck-step-line{max-width:40px}}
 
+/* ===== 企業合作 Logo ===== */
+.ent-partners{padding:48px 0;background:var(--bg2)}
+.ent-partner-logos{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:32px 48px;margin-top:24px}
+.ent-partner-logo{font-size:18px;font-weight:700;color:var(--tx3);opacity:.55;transition:opacity .3s}
+.ent-partner-logo:hover{opacity:1}
+[data-theme="dark"] .ent-partners{background:var(--bg2)}
+
 /* ===== 列印樣式 ===== */
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
