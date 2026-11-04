@@ -8,6 +8,7 @@ const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`
 const page = document.body.dataset.page;
 const wish = new Set(JSON.parse(localStorage.getItem('aic-wish') || '[]'));
 const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
+const aicUser = JSON.parse(localStorage.getItem('aic-user') || 'null');
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) b.textContent = cart.size || ''; if (b) b.style.display = cart.size ? 'flex' : 'none'; }
 
@@ -201,10 +202,18 @@ function shell() {
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
     <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
-    <a class="btn btn-ghost" href="login.html">登入</a>
-    <a class="btn btn-pri" href="login.html">免費註冊</a>
+    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><a href="my.html">我的學習</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
   </div>`;
   top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
+
+  const umBtn = $('.user-menu-btn', hdr);
+  if (umBtn) {
+    const drop = $('.user-menu-drop', hdr);
+    umBtn.onclick = () => { drop.hidden = !drop.hidden; };
+    document.addEventListener('click', e => { if (!e.target.closest('.user-menu-wrap')) drop.hidden = true; });
+    const logoutBtn = $('#aic-logout', hdr);
+    if (logoutBtn) logoutBtn.onclick = () => { localStorage.removeItem('aic-user'); location.reload(); };
+  }
 
   const prog = document.createElement('div'); prog.id = 'progress'; document.body.append(prog);
 
@@ -746,7 +755,29 @@ function home() {
     const list = cat === '全部' ? window.VIDEO_CONTENT : window.VIDEO_CONTENT.filter(v => v.cat === cat);
     grid.innerHTML = list.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="" loading="lazy"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('');
     reveal(grid);
+    bindVidCards();
   });
+
+  function bindVidCards() {
+    $$('.vid-card').forEach(el => { if (el._bound) return; el._bound = true; el.style.cursor = 'pointer';
+      el.onclick = () => {
+        const title = $('h4', el)?.textContent || '';
+        const imgSrc = $('img', el)?.src || '';
+        const vc = (window.VIDEO_CONTENT || []).find(v => v.title === title);
+        const cc = vc ? byId[vc.course] : null;
+        const videoSrc = cc ? vid(cc) : '';
+        const ov = document.createElement('div'); ov.className = 'overlay';
+        ov.innerHTML = `<div class="vid-modal"><button class="vid-modal-close">×</button><video src="${videoSrc}" poster="${imgSrc}" controls autoplay></video><h3>${title}</h3></div>`;
+        document.body.append(ov);
+        requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
+        const close = () => { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); };
+        $('.vid-modal-close', ov).onclick = close;
+        ov.onclick = e => { if (e.target === ov) close(); };
+        document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
+      };
+    });
+  }
+  bindVidCards();
 
   // 頁首分類連結 → 篩選（支援子分類）
   const goCat = () => {
@@ -1273,11 +1304,23 @@ function loginPage() {
         <div class="login-field"><label>Email</label><input type="email" placeholder="your@email.com"></div>
         <div class="login-field"><label>密碼</label><input type="password" placeholder="輸入密碼"></div>
         <div class="login-options"><label><input type="checkbox"> 記住我</label><a href="#">忘記密碼？</a></div>
-        <button class="btn btn-pri login-submit" onclick="toast('示範網站：登入功能開發中')">登入</button>
+        <button class="btn btn-pri login-submit" id="login-go">登入</button>
         <div class="login-footer">還沒有帳號？<a href="#">Email 註冊</a></div>
       </div>
     </div>
   </div>`;
+
+  $('#login-go', main).onclick = () => {
+    const email = $('input[type="email"]', main).value.trim();
+    const pass = $('input[type="password"]', main).value;
+    if (!email || !email.includes('@')) { toast('請輸入有效的 Email'); return; }
+    if (!pass) { toast('請輸入密碼'); return; }
+    const name = email.split('@')[0].replace(/[^a-zA-Z一-鿿]/g, '') || '學員';
+    localStorage.setItem('aic-user', JSON.stringify({ name, email }));
+    toast(`歡迎回來，${name}！`);
+    setTimeout(() => location.href = 'index.html', 800);
+  };
+
   reveal(main);
 }
 
@@ -4333,6 +4376,7 @@ tickCountdown(); setInterval(tickCountdown, 1000);
 document.body.classList.add('loaded');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 
+
 // ── 課程比較功能 ──
 const cmpList = JSON.parse(sessionStorage.getItem('aic-cmp') || '[]');
 function saveCmp() { sessionStorage.setItem('aic-cmp', JSON.stringify(cmpList)); updCmpUI(); }
@@ -4391,6 +4435,14 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
     }
   }, { passive: true });
 }
+
+// ── 鍵盤無障礙：chip / qa 可用 Enter/Space 操作 ──
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const t = e.target;
+  if (t.matches('.chip, .qa button, .video-tab, .sort-btn, .time-tab')) { e.preventDefault(); t.click(); }
+});
+$$('.chip, .qa button, .video-tab, .sort-btn, .time-tab').forEach(el => { if (!el.getAttribute('tabindex')) el.setAttribute('tabindex', '0'); });
 
 // ── 平滑頁面導航 ──
 document.addEventListener('click', e => {

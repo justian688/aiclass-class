@@ -2199,9 +2199,12 @@ body:not(.loaded) main{min-height:100vh}
 ::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
 [data-theme="dark"] ::-webkit-scrollbar-track{background:#0e0e18}
 
-button:focus-visible,a:focus-visible{outline-offset:3px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--pri);outline-offset:3px;border-radius:8px}
 
 .btn-pri:active,.btn-ghost:active,.chip:active{transform:scale(.96)}
+.card{transition:transform .3s var(--ease),box-shadow .3s}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 40px -12px rgba(0,0,0,.12)}
+[data-theme="dark"] .card:hover{box-shadow:0 16px 40px -12px rgba(0,0,0,.4)}
 .btn-pri{transition:background .25s,transform .15s,box-shadow .3s}
 .btn-pri:hover{box-shadow:0 8px 24px -6px rgba(124,92,255,.5)}
 .btn-ghost{transition:border-color .25s,color .25s,transform .15s}
@@ -2227,6 +2230,22 @@ footer li a:hover::after{width:100%}
 .chip:hover{transform:translateY(-1px)}
 
 input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-text-fill-color:var(--tx)}
+
+/* 影片播放 modal */
+.vid-modal{position:relative;width:90%;max-width:900px;margin:auto;background:#000;border-radius:18px;overflow:hidden}
+.vid-modal video{width:100%;display:block;max-height:70vh}
+.vid-modal h3{padding:16px 20px;color:#fff;font-size:16px;font-weight:700}
+.vid-modal-close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);border:0;color:#fff;font-size:20px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;transition:.2s}
+.vid-modal-close:hover{background:rgba(255,255,255,.4)}
+
+/* 使用者下拉選單 */
+.user-menu-wrap{position:relative}
+.user-menu-btn{font-weight:600!important}
+.user-menu-drop{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:8px 0;min-width:180px;box-shadow:0 12px 40px rgba(0,0,0,.12);z-index:9999}
+.user-menu-drop a,.user-menu-drop button{display:block;width:100%;padding:10px 20px;font-size:14px;color:var(--tx);text-align:left;border:0;background:0;cursor:pointer;transition:.15s;text-decoration:none}
+.user-menu-drop a:hover,.user-menu-drop button:hover{background:var(--bg2);color:var(--pri)}
+.user-menu-drop button{border-top:1px solid var(--line);margin-top:4px;padding-top:12px;color:var(--tx3)}
+[data-theme="dark"] .user-menu-drop{background:var(--card);border-color:var(--line);box-shadow:0 12px 40px rgba(0,0,0,.4)}
 
 /* Skeleton loading */
 @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
