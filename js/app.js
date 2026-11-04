@@ -766,11 +766,11 @@ function home() {
         const vc = (window.VIDEO_CONTENT || []).find(v => v.title === title);
         const cc = vc ? byId[vc.course] : null;
         const videoSrc = cc ? vid(cc) : '';
-        const ov = document.createElement('div'); ov.className = 'overlay';
+        const ov = document.createElement('div'); ov.className = 'vid-overlay';
         ov.innerHTML = `<div class="vid-modal"><button class="vid-modal-close">×</button><video src="${videoSrc}" poster="${imgSrc}" controls autoplay></video><h3>${title}</h3></div>`;
         document.body.append(ov);
-        requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
-        const close = () => { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); };
+        requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
+        const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
         $('.vid-modal-close', ov).onclick = close;
         ov.onclick = e => { if (e.target === ov) close(); };
         document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });

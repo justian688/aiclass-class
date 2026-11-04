@@ -2232,6 +2232,8 @@ footer li a:hover::after{width:100%}
 input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-text-fill-color:var(--tx)}
 
 /* 影片播放 modal */
+.vid-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.vid-overlay.on{opacity:1;visibility:visible}
 .vid-modal{position:relative;width:90%;max-width:900px;margin:auto;background:#000;border-radius:18px;overflow:hidden}
 .vid-modal video{width:100%;display:block;max-height:70vh}
 .vid-modal h3{padding:16px 20px;color:#fff;font-size:16px;font-weight:700}
