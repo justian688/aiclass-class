@@ -1196,13 +1196,24 @@ function course() {
   ];
   const distPcts = [72, 20, 5, 2, 1];
 
-  // 課程 FAQ
+  // 課程 FAQ（通用 + 分類相關）
+  const catFaqMap = {
+    design: [['需要會畫畫才能學設計嗎？', '不需要。設計更重要的是邏輯思考和審美能力，課程會從工具操作開始教起，零繪畫基礎也能上手。']],
+    drawing: [['需要準備繪圖板嗎？', '建議購買入門款繪圖板（如 Wacom Intuos），課程前幾章會介紹推薦配備。滑鼠也能練習，但效率較低。']],
+    ai: [['需要懂程式才能學 AI 嗎？', '大部分 AI 工具課程不需要程式基礎。若是 AI 開發課程，課程會從 Python 基礎教起。']],
+    video: [['需要什麼等級的電腦？', '建議至少 16GB RAM、獨立顯卡。課程中會說明各軟體的最低與建議配備。']],
+    baking: [['沒有烤箱可以學嗎？', '部分課程有無烤箱替代方案。建議至少有基本烤箱，課程會推薦平價入門機型。']],
+    music: [['需要什麼軟體？', '課程會使用業界標準 DAW（如 Logic Pro、Ableton），部分有免費替代方案的教學。']],
+    beauty: [['需要先買齊所有工具嗎？', '不用，課程開頭會列出必備清單，建議先買基本款，隨課程進度再擴充。']],
+    game: [['需要會 3D 建模嗎？', '依課程內容而定，部分遊戲開發課程會包含基礎建模教學，也可搭配其他課程學習。']]
+  };
   const courseFaq = [
+    ...(catFaqMap[c.cat] || []),
     ['購買後可以觀看多久？', '一次購買即可無限期觀看，日後課程更新的內容也會免費開放，不需要再付任何費用。'],
     ['這堂課有字幕嗎？', '有的，課程提供繁體中文字幕，你也可以在播放器中自由開啟或關閉。'],
     ['課程素材可以下載嗎？', '每堂課皆附講師使用的專案檔與練習素材，可於課程頁面直接下載。部分課程另附 PDF 講義。'],
     ['不滿意可以退費嗎？', '購買後 7 天內，且觀看進度低於 20%，可透過客服申請全額退費，無需說明理由。'],
-    ['課程適合初學者嗎？', '這堂課從基礎開始，循序漸進引導到進階技巧。無論你是完全新手還是有經驗的學習者，都能從中獲益。']
+    ['課程適合初學者嗎？', `${c.hours <= 10 ? '這是一堂入門課程，完全沒有基礎也能跟上。' : c.hours <= 20 ? '課程涵蓋入門到進階內容，建議有基本概念會更容易吸收。' : '這堂課內容較為深入，建議有一定基礎再開始學習，但課程仍會從核心觀念講起。'}`]
   ];
 
   const main = $('main');
@@ -1319,7 +1330,7 @@ function course() {
         </div>`).join('')}
       </div>
     </section>
-    <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</section>
+    <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}<div class="faq-more rv-up"><p>找不到你要的答案？</p><a href="faq.html" class="btn btn-ghost">前往幫助中心</a> <button class="btn btn-ghost" onclick="toast('示範網站：客服功能開發中')">💬 聯繫客服</button></div></section>
     <section class="c-sec c-changelog rv-up" id="changelog"><h2>📋 課程更新日誌</h2>
       <div class="cl-timeline">
         <div class="cl-item"><div class="cl-dot new"></div><div class="cl-body"><span class="cl-date">2026/10/20</span><h4>v3.2 新增第五章「實戰專案」</h4><p>新增 5 堂實戰課程，包含完整專案從零到部署的流程教學。</p></div></div>
@@ -5405,12 +5416,24 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
       triggered = true; sessionStorage.setItem('aic-nl-shown', '1');
       removeEventListener('scroll', nlCheck);
       const nl = document.createElement('div'); nl.className = 'nl-overlay'; nl.setAttribute('role', 'dialog'); nl.setAttribute('aria-modal', 'true'); nl.setAttribute('aria-label', '訂閱電子報');
-      nl.innerHTML = `<div class="nl-box"><button class="nl-close" aria-label="關閉">×</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址" aria-label="Email 地址"><button class="btn btn-pri">免費訂閱</button></div><small>隨時可取消訂閱，我們不會寄送垃圾信。</small></div>`;
+      nl.innerHTML = `<div class="nl-box"><button class="nl-close" aria-label="關閉">✕</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址" aria-label="Email 地址" required><button class="btn btn-pri">免費訂閱</button></div><div class="nl-err" style="display:none;color:#ff5c8a;font-size:13px;margin-top:8px"></div><small>🔒 我們重視你的隱私，絕不分享個資。隨時可取消訂閱。</small></div>`;
       document.body.append(nl);
+      const nlClose = () => { nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
       requestAnimationFrame(() => requestAnimationFrame(() => nl.classList.add('show')));
-      nl.querySelector('.nl-close').onclick = () => { nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
-      nl.onclick = e => { if (e.target === nl) { nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); } };
-      nl.querySelector('.nl-form button').onclick = () => { toast('感謝訂閱！📬'); nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
+      nl.querySelector('.nl-close').onclick = nlClose;
+      nl.onclick = e => { if (e.target === nl) nlClose(); };
+      const nlInput = nl.querySelector('input[type="email"]');
+      const nlErr = nl.querySelector('.nl-err');
+      nl.querySelector('.nl-form button').onclick = () => {
+        const email = nlInput.value.trim();
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { nlErr.textContent = '請輸入正確的 Email 格式'; nlErr.style.display = ''; nlInput.focus(); return; }
+        nlErr.style.display = 'none';
+        const box = nl.querySelector('.nl-box');
+        box.innerHTML = '<div class="nl-icon" style="font-size:48px">🎉</div><h3>訂閱成功！</h3><p>感謝你的訂閱，我們會在每週三將精選內容寄到你的信箱。</p><button class="btn btn-pri nl-done" style="margin-top:16px">太好了！</button>';
+        box.querySelector('.nl-done').onclick = nlClose;
+        if (typeof gtag === 'function') gtag('event', 'newsletter_subscribe', { method: 'popup' });
+      };
+      nlInput.addEventListener('keydown', e => { if (e.key === 'Enter') nl.querySelector('.nl-form button').click(); });
     }
   }, { passive: true });
 }
@@ -5661,5 +5684,13 @@ function openRecommendQuiz() {
     requestAnimationFrame(() => { m.style.transition = 'opacity .2s,transform .2s'; m.style.opacity = '1'; m.style.transform = 'none'; });
   }
 }
+
+// ── Google Analytics 4 佔位（替換 G-XXXXXXXXXX 為真實 Measurement ID 即可啟用）──
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+gtag('js', new Date());
+gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
+gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
+window.trackEvent = (name, params) => { if (typeof gtag === 'function') gtag('event', name, params); };
 
 })();
