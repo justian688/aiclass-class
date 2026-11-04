@@ -127,14 +127,19 @@ function renderUserReviews(courseId, container) {
 
 /* ---------- 智慧推薦 ---------- */
 function smartRecommend(current) {
-  const recentIds = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(id => id !== current.id);
-  if (!recentIds.length) return '';
-  const base = byId[recentIds[0]];
-  if (!base) return '';
-  const recs = C.filter(c => c.id !== current.id && c.id !== base.id && (c.cat === base.cat || c.cat === current.cat)).slice(0, 4);
-  if (!recs.length) return '';
-  return `<section class="sec sr-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>因為你看過「${base.title.slice(0, 15)}${base.title.length > 15 ? '…' : ''}」</h2><div class="sub">為你精選相關課程</div></div></div>
-    <div class="rail">${recs.map((c, i) => card(c, i)).join('')}</div></div></section>`;
+  const scored = C.filter(c => c.id !== current.id).map(c => {
+    let s = 0;
+    if (c.cat === current.cat) s += 3;
+    if (c.teacher === current.teacher) s += 5;
+    if (c.rating >= 4.7) s += 1;
+    return { ...c, _score: s };
+  }).sort((a, b) => b._score - a._score).slice(0, 6);
+  if (!scored.length) return '';
+  return `<section class="sec sr-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學了這門的人也學了</h2><div class="sub">根據學員購買行為推薦</div></div></div>
+    <div class="rail">${scored.map((c, i) => {
+      const buyPct = 40 + Math.floor(Math.random() * 35);
+      return `<div class="sr-card-wrap">${card(c, i)}<div class="sr-also-bought">${buyPct}% 的學員也購買</div></div>`;
+    }).join('')}</div></div></section>`;
 }
 
 /* ---------- 快速預覽彈窗 ---------- */
@@ -675,6 +680,15 @@ function home() {
   const mqWords = window.CATS.slice(1).map(c => c.name.split('/')[0]).concat(['創作','職人','學習','作品集']);
   main.insertAdjacentHTML('beforeend', `<div class="marquee"><div class="track">${Array(2).fill(mqWords.map(w => `<span>${w}</span>`).join('')).join('')}</div></div>`);
 
+  // 本月精選
+  if (window.EDITORS_PICKS) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="picks"><div class="wrap"><div class="sec-head rv-up"><div><h2>本月精選</h2><div class="sub">編輯嚴選，不容錯過的好課</div></div></div>
+      <div class="picks-grid">${window.EDITORS_PICKS.map(ep => { const c = byId[ep.id]; if (!c) return ''; return `<a class="pick-card rv-up" href="course.html?id=${c.id}" style="--pimg:url(assets/img/v${c.v}.jpg)">
+        <div class="pick-overlay"></div>
+        <div class="pick-body"><span class="pick-badge">編輯精選</span><h3>${c.title}</h3><p class="pick-quote">「${ep.quote}」</p>
+        <div class="pick-meta"><span>★ ${c.rating}</span><span>${c.hours} 小時</span><span>${fmt(c.price)}</span></div></div></a>`; }).join('')}</div></div></section>`);
+  }
+
   main.insertAdjacentHTML('beforeend', railSec('new', '新上架課程', '每週持續更新', C.filter(c => c.tag === 'NEW').concat(C.filter(c => c.tag !== 'NEW')).slice(0, 10)));
 
   // 學習路徑
@@ -738,9 +752,18 @@ function home() {
   }
 
   // 評價
-  const R = window.REVIEWS;
-  main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員真實心得</h2></div></div></div>
-    <div class="rv-wrap"><div class="reviews">${[...R, ...R].map(r => `<div class="rv"><div class="s">★★★★★</div><p>${r[2]}</p><small>${r[0]}・${r[1]}</small></div>`).join('')}</div></div></section>`);
+  const TM = window.TESTIMONIALS;
+  if (TM && TM.length) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員真實心得</h2><div class="sub">來自真實學員的學習故事</div></div></div></div>
+      <div class="rv-wrap"><div class="reviews">${[...TM, ...TM].map(t => {
+        const cc = byId[t.course];
+        return `<div class="rv rv-detailed rv-up"><div class="rv-hdr"><span class="rv-avatar">${t.avatar}</span><div><b>${t.name}</b><span class="rv-role">${t.role}</span></div></div><div class="s">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div><p>${t.text}</p>${cc ? `<a class="rv-course-link" href="course.html?id=${cc.id}">📚 ${cc.title.slice(0, 20)}${cc.title.length > 20 ? '…' : ''}</a>` : ''}</div>`;
+      }).join('')}</div></div></section>`);
+  } else {
+    const R = window.REVIEWS;
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員真實心得</h2></div></div></div>
+      <div class="rv-wrap"><div class="reviews">${[...R, ...R].map(r => `<div class="rv"><div class="s">★★★★★</div><p>${r[2]}</p><small>${r[0]}・${r[1]}</small></div>`).join('')}</div></div></section>`);
+  }
 
   // 合作品牌
   if (window.PARTNERS) {
@@ -2282,12 +2305,9 @@ function instructorPage() {
     const t = teachers.find(x => x.name === decodeURIComponent(nameParam));
     if (!t) { notFoundPage(); return; }
     const totalHrs = t.courses.reduce((s, c) => s + c.hours, 0);
-    const bios = [
-      '擁有超過十年業界實戰經驗，專注於將複雜的專業知識轉化為易懂的教學內容。曾任多家知名企業顧問，培訓超過上千名學員。',
-      '在業界深耕多年，致力於推廣實用的技術與知識。教學風格注重實作，強調「做中學」的學習理念。',
-      '從入門到精通的系統化教學方法備受好評，學員完課率高達 95%。相信每個人都有無限的學習潛力。'
-    ];
-    const bio = bios[teachers.indexOf(t) % bios.length];
+    const BIOS = window.INSTRUCTOR_BIOS || {};
+    const bioData = BIOS[t.name];
+    const bio = bioData ? bioData.detail : '擁有豐富的業界實戰經驗，專注於將專業知識轉化為易懂的教學內容。教學風格注重實作，強調「做中學」的學習理念。';
     seo({ title: `${t.name}｜AI Class 講師`, desc: `${t.name} — ${t.role}，${t.courses.length} 門課程，${t.students.toLocaleString()} 位學員`, url: `https://aiclass.tw/instructor.html?name=${encodeURIComponent(t.name)}`, ogType: 'profile',
       jsonLd: { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { '@type': 'Person', name: t.name, jobTitle: t.role, description: bio } }
     });
@@ -2301,6 +2321,7 @@ function instructorPage() {
           <h1>${t.name}</h1>
           <span class="insd-role">${t.role}</span>
           <p class="insd-bio">${bio}</p>
+          ${bioData && bioData.works ? `<div class="insd-works"><h4>經歷與成就</h4><ul>${bioData.works.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}
           <div class="insd-stats">
             <div class="insd-stat"><b>${t.courses.length}</b><span>門課程</span></div>
             <div class="insd-stat"><b>${t.students.toLocaleString()}</b><span>位學員</span></div>
