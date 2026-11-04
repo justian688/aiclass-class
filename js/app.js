@@ -3170,12 +3170,12 @@ function checkoutPage() {
             <label class="ck-pay-option"><input type="radio" name="pay" value="atm"><span class="ck-pay-icon">🏧</span><span>ATM 轉帳</span></label>
           </div>
           <div class="ck-card-form" id="cardForm">
-            <div class="ck-field"><label>卡號</label><input type="text" placeholder="0000 0000 0000 0000" maxlength="19"></div>
+            <div class="ck-field"><label>卡號 <span class="ck-card-type" id="ckCardType"></span></label><input type="text" id="ckCardNum" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number"></div>
             <div class="ck-field-row">
-              <div class="ck-field"><label>有效期限</label><input type="text" placeholder="MM/YY" maxlength="5"></div>
-              <div class="ck-field"><label>安全碼</label><input type="text" placeholder="CVV" maxlength="4"></div>
+              <div class="ck-field"><label>有效期限</label><input type="text" id="ckExpiry" inputmode="numeric" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp"></div>
+              <div class="ck-field"><label>安全碼</label><input type="text" id="ckCvv" inputmode="numeric" placeholder="CVV" maxlength="4" autocomplete="cc-csc"></div>
             </div>
-            <div class="ck-field"><label>持卡人姓名</label><input type="text" placeholder="王大明"></div>
+            <div class="ck-field"><label>持卡人姓名</label><input type="text" placeholder="王大明" autocomplete="cc-name"></div>
           </div>
         </section>
 
@@ -3230,6 +3230,27 @@ function checkoutPage() {
   $$('[name="inv"]', main).forEach(r => r.onchange = () => {
     $$('[name="inv"]', main).forEach(r2 => r2.closest('.ck-pay-option').classList.toggle('active', r2.checked));
   });
+
+  const cardNum = $('#ckCardNum', main);
+  const cardType = $('#ckCardType', main);
+  const expiry = $('#ckExpiry', main);
+  const cvv = $('#ckCvv', main);
+  if (cardNum) {
+    cardNum.oninput = () => {
+      const d = cardNum.value.replace(/\D/g, '').slice(0, 16);
+      cardNum.value = d.replace(/(.{4})/g, '$1 ').trim();
+      const t = d.startsWith('4') ? 'Visa' : d.startsWith('5') ? 'Mastercard' : d.startsWith('35') ? 'JCB' : d.startsWith('3') ? 'AMEX' : '';
+      cardType.textContent = t;
+    };
+  }
+  if (expiry) {
+    expiry.oninput = () => {
+      let d = expiry.value.replace(/\D/g, '').slice(0, 4);
+      if (d.length >= 2) d = d.slice(0, 2) + '/' + d.slice(2);
+      expiry.value = d;
+    };
+  }
+  if (cvv) cvv.oninput = () => { cvv.value = cvv.value.replace(/\D/g, '').slice(0, 4); };
 
   const ckCouponBtn = $('#ckCouponBtn', main);
   if (ckCouponBtn) ckCouponBtn.onclick = () => toast('示範網站：優惠碼功能開發中');
@@ -4450,6 +4471,12 @@ document.addEventListener('click', e => {
   if (!a || a.target === '_blank' || a.href.includes('#') || !a.href.startsWith(location.origin)) return;
   e.preventDefault();
   document.body.classList.add('page-exit');
-  setTimeout(() => location.href = a.href, 250);
+  const m = $('main');
+  if (m) {
+    m.innerHTML = `<div class="wrap" style="padding:40px 0"><div class="skel-row"><div class="skeleton" style="height:32px;width:40%;border-radius:8px;margin-bottom:20px"></div><div class="skeleton" style="height:16px;width:70%;border-radius:6px;margin-bottom:12px"></div><div class="skeleton" style="height:16px;width:55%;border-radius:6px;margin-bottom:28px"></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">${'<div class="skeleton" style="height:200px;border-radius:14px"></div>'.repeat(4)}</div></div></div>`;
+    m.style.opacity = '1'; m.style.transform = 'none';
+  }
+  scrollTo({ top: 0 });
+  setTimeout(() => location.href = a.href, 300);
 });
 })();

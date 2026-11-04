@@ -1714,6 +1714,7 @@ body.loaded::before,body.loaded::after{opacity:0;visibility:hidden;pointer-event
 .ck-submit:disabled{opacity:.6;cursor:wait}
 .ck-perks{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--tx2)}
 .ck-installment{margin-top:14px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(124,92,255,.06),rgba(255,92,138,.06));border:1px solid rgba(124,92,255,.15);font-size:13px;color:var(--pri);font-weight:600;display:flex;align-items:center;gap:6px}
+.ck-card-type{font-size:12px;font-weight:700;color:var(--pri);margin-left:6px;vertical-align:middle;letter-spacing:.5px}
 @media(max-width:1100px){.ck-layout{grid-template-columns:1fr;gap:24px}.ck-right{position:static;order:-1}}
 @media(max-width:760px){.ck-wrap{padding:24px 0 60px}.ck-section{padding:20px}.ck-field-row{grid-template-columns:1fr}.ck-pay-methods{flex-direction:column}.ck-order-summary{padding:20px}}
 
@@ -2600,6 +2601,23 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
   .qz-grid{grid-template-columns:1fr}
   .qz-card{padding:20px}
   .topbar{font-size:12px;padding:7px 12px}
+  .vid-modal{width:96%;border-radius:12px}
+  .vid-modal h3{font-size:14px;padding:12px 14px}
+  .vid-modal-close{width:30px;height:30px;font-size:16px;top:8px;right:8px}
+  .user-menu-drop{min-width:160px;right:-10px}
+  .user-menu-drop a,.user-menu-drop button{font-size:13px;padding:8px 16px}
+  .ck-title{font-size:22px;margin-bottom:20px}
+  .ck-section h2{font-size:16px}
+  .ck-pay-option{padding:10px 14px;font-size:13px}
+  .ck-submit{height:48px;font-size:15px}
+  .ck-order-item img{width:48px;height:32px}
+  .ck-order-item-title{font-size:12px}
+  .oc-hero h1{font-size:22px}
+  .oc-check{width:56px;height:56px}
+  .oc-card{padding:16px}
+  .lb-podium{min-width:72px;padding:10px 8px}
+  .lb-podium-avatar{width:40px;height:40px;font-size:16px}
+  .lb-podium.gold{transform:scale(1)}
 }
 
 /* ===== 排行榜 ===== */
