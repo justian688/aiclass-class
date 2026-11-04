@@ -5707,6 +5707,87 @@ function upcomingPage() {
   reveal(main);
 }
 
+/* ---------- 聯絡我們頁面 ---------- */
+function contactPage() {
+  seo({ title: '聯絡我們', desc: 'AI Class 客服中心——常見問題、聯絡表單、線上客服，我們隨時為你的學習之旅提供協助。', ogType: 'website' });
+  const main = $('#main');
+  const quickFAQ = [
+    { q: '如何購買課程？', a: '在課程頁面點擊「加入購物車」，前往購物車頁面完成結帳即可。支援信用卡、超商付款、ATM 轉帳等付款方式。' },
+    { q: '課程可以退費嗎？', a: '購買後 7 天內且觀看進度未超過 30%，可申請全額退費。請透過下方表單或客服信箱提出申請。' },
+    { q: '忘記密碼怎麼辦？', a: '點擊登入頁面的「忘記密碼」，輸入註冊信箱即可收到重設密碼連結。信件通常 5 分鐘內送達。' },
+    { q: '課程有觀看期限嗎？', a: '所有課程皆為無限期觀看，購買後可隨時回來複習，且享有課程更新保證。' },
+    { q: '如何取得完課證書？', a: '完成課程所有章節並通過課後測驗後，系統會自動發放電子證書，可在「我的學習」頁面下載。' },
+    { q: '可以用手機觀看嗎？', a: '可以。AI Class 支援所有裝置，包括桌面電腦、平板和手機，也可安裝 PWA 離線使用。' }
+  ];
+  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+    <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>聯絡我們</span></nav>
+    <div class="ctc-hero rv-up">
+      <span class="ctc-eyebrow">Support Center</span>
+      <h1>我們在這裡幫助你</h1>
+      <p>學習遇到問題？帳務需要協助？我們的客服團隊隨時為你服務</p>
+    </div>
+    <div class="ctc-channels rv-up">
+      <div class="ctc-ch">
+        <div class="ctc-ch-icon">📧</div>
+        <h3>Email 客服</h3>
+        <p>support@aiclass.tw</p>
+        <span>24 小時內回覆</span>
+      </div>
+      <div class="ctc-ch">
+        <div class="ctc-ch-icon">💬</div>
+        <h3>LINE 客服</h3>
+        <p>@aiclass</p>
+        <span>週一至週五 09:00-18:00</span>
+      </div>
+      <div class="ctc-ch">
+        <div class="ctc-ch-icon">📞</div>
+        <h3>電話客服</h3>
+        <p>(02) 2345-6789</p>
+        <span>週一至週五 09:00-18:00</span>
+      </div>
+    </div>
+    <section class="ctc-faq rv-up">
+      <h2>常見問題速查</h2>
+      <div class="qa">
+        ${quickFAQ.map(f => `<div class="qa-item"><button>${f.q}</button><div class="qa-ans" hidden><p>${f.a}</p></div></div>`).join('')}
+      </div>
+      <p style="text-align:center;margin-top:20px"><a href="faq.html" class="btn btn-ghost">查看更多常見問題 →</a></p>
+    </section>
+    <section class="ctc-form-sec rv-up">
+      <h2>填寫聯絡表單</h2>
+      <p class="ctc-form-sub">無法找到答案？直接留下你的問題，客服團隊會盡快回覆</p>
+      <form class="ctc-form" onsubmit="event.preventDefault();toast('感謝您的來信，我們會在 24 小時內回覆！');this.reset();">
+        <div class="ctc-row">
+          <div class="ctc-field"><label>姓名 <span>*</span></label><input type="text" required placeholder="你的姓名"></div>
+          <div class="ctc-field"><label>Email <span>*</span></label><input type="email" required placeholder="your@email.com"></div>
+        </div>
+        <div class="ctc-field"><label>問題類型</label>
+          <select><option>課程相關</option><option>帳務/付款</option><option>技術問題</option><option>退費申請</option><option>企業方案洽詢</option><option>講師合作</option><option>其他</option></select>
+        </div>
+        <div class="ctc-field"><label>訊息內容 <span>*</span></label><textarea required rows="5" placeholder="請詳細描述你的問題..."></textarea></div>
+        <button type="submit" class="btn btn-pri" style="width:100%;padding:14px">送出表單</button>
+      </form>
+    </section>
+    <section class="ctc-info rv-up" style="margin-top:48px">
+      <h2>AI Class 公司資訊</h2>
+      <div class="ctc-info-grid">
+        <div><b>公司名稱</b><p>AI Class 股份有限公司</p></div>
+        <div><b>統一編號</b><p>12345678</p></div>
+        <div><b>公司地址</b><p>台北市信義區松仁路 100 號 10 樓</p></div>
+        <div><b>營業時間</b><p>週一至週五 09:00 - 18:00</p></div>
+      </div>
+    </section>
+  </div>`;
+  const faqItems = main.querySelectorAll('.qa-item button');
+  faqItems.forEach(btn => btn.addEventListener('click', () => {
+    const ans = btn.nextElementSibling;
+    const open = !ans.hidden;
+    main.querySelectorAll('.qa-ans').forEach(a => { a.hidden = true; a.previousElementSibling.classList.remove('open'); });
+    if (!open) { ans.hidden = false; btn.classList.add('open'); }
+  }));
+  reveal(main);
+}
+
 /* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
@@ -5755,6 +5836,7 @@ else if (page === 'video') videoPage();
 else if (page === 'bundle') bundlePage();
 else if (page === 'success') successPage();
 else if (page === 'upcoming') upcomingPage();
+else if (page === 'contact') contactPage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
