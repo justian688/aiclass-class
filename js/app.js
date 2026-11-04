@@ -26,6 +26,8 @@ function seo(opts = {}) {
   setMeta('property', 'og:description', dDesc);
   setMeta('property', 'og:url', dUrl);
   setMeta('property', 'og:image', dImg);
+  setMeta('property', 'og:locale', 'zh_TW');
+  if (opts.ogType) setMeta('property', 'og:type', opts.ogType);
   setMeta('name', 'twitter:title', dTitle);
   setMeta('name', 'twitter:description', dDesc);
   setMeta('name', 'twitter:image', dImg);
@@ -1172,6 +1174,7 @@ function course() {
     desc: c.desc || c.ai || '',
     url: `https://aiclass.tw/course.html?id=${c.id}`,
     img: `https://aiclass.tw/${img(c)}`,
+    ogType: 'course',
     jsonLd: [
       { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, ratingCount: c.students }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H` } },
       { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: cat.name, item: `https://aiclass.tw/category.html?cat=${c.cat}` }, { '@type': 'ListItem', position: 3, name: c.title }] }
@@ -2034,6 +2037,7 @@ function articlePage() {
     desc: post.excerpt,
     url: `https://aiclass.tw/article.html?id=${post.id}`,
     img: `https://aiclass.tw/assets/img/v${post.v}.jpg`,
+    ogType: 'article',
     jsonLd: { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.excerpt, author: { '@type': 'Person', name: post.author }, datePublished: post.date, image: `https://aiclass.tw/assets/img/v${post.v}.jpg`, publisher: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' } }
   });
 

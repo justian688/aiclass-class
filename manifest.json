@@ -17,8 +17,13 @@
     { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "shortcuts": [
-    { "name": "探索課程", "url": "/category.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
-    { "name": "我的學習", "url": "/my.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
-    { "name": "社群", "url": "/community.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
+    { "name": "探索課程", "short_name": "課程", "url": "/category.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "我的學習", "short_name": "學習", "url": "/my.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "學習專欄", "short_name": "文章", "url": "/blog.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "社群討論", "short_name": "社群", "url": "/community.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
+  ],
+  "screenshots": [
+    { "src": "assets/img/og-cover.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "AI Class 首頁 — 探索 72 門業界職人課程" },
+    { "src": "assets/img/v785.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "課程詳情頁 — 完整章節與學員評價" }
   ]
 }
