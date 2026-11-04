@@ -1708,6 +1708,9 @@ function blogPage() {
   <section class="blog-hero"><div class="wrap">
     <h1 class="blog-title rv-up">學習專欄</h1>
     <p class="blog-sub rv-up">深度好文，幫你掌握學習方法與產業趨勢</p>
+    <div class="blog-search rv-up">
+      <input type="text" id="blog-q" placeholder="搜尋文章..." autocomplete="off">
+    </div>
     <div class="blog-cats rv-up">
       <button class="chip on" data-cat="all">全部</button>
       ${cats.map(c => `<button class="chip" data-cat="${c}">${catMap[c] || c}</button>`).join('')}
@@ -1728,7 +1731,7 @@ function blogPage() {
 
   <section class="sec"><div class="wrap">
     <div class="blog-grid" id="blog-grid">
-      ${posts.slice(1).map(p => `<a class="blog-card rv-up" href="article.html?id=${p.id}" data-cat="${p.cat}">
+      ${posts.slice(1).map(p => `<a class="blog-card rv-up" href="article.html?id=${p.id}" data-cat="${p.cat}" data-kw="${(p.title + p.excerpt + (p.tags||[]).join('')).toLowerCase()}">
         <div class="blog-card-img"><img src="assets/img/v${p.v}.jpg" alt="" loading="lazy"></div>
         <div class="blog-card-body">
           <span class="blog-tag">${catMap[p.cat] || p.cat}</span>
@@ -1738,15 +1741,54 @@ function blogPage() {
         </div>
       </a>`).join('')}
     </div>
+    <div class="blog-empty" id="blog-empty" style="display:none">
+      <p>找不到符合的文章，試試其他關鍵字？</p>
+    </div>
+  </div></section>
+
+  <section class="sec blog-newsletter rv-up"><div class="wrap">
+    <div class="blog-nl-card">
+      <h2>📬 訂閱學習電子報</h2>
+      <p>每週精選好文直送信箱，掌握最新學習趨勢</p>
+      <div class="blog-nl-form">
+        <input type="email" id="blog-nl-email" placeholder="your@email.com">
+        <button class="btn btn-pri" id="blog-nl-btn">免費訂閱</button>
+      </div>
+      <span class="blog-nl-hint">我們尊重你的隱私，隨時可以取消訂閱</span>
+    </div>
   </div></section>`;
+
+  const blogQ = $('#blog-q', main);
+  const filterCards = () => {
+    const activeCat = $('.blog-cats .chip.on', main)?.dataset.cat || 'all';
+    const q = (blogQ.value || '').toLowerCase().trim();
+    let visible = 0;
+    $$('#blog-grid .blog-card', main).forEach(c => {
+      const catOk = activeCat === 'all' || c.dataset.cat === activeCat;
+      const qOk = !q || (c.dataset.kw || '').includes(q);
+      const show = catOk && qOk;
+      c.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    const emptyEl = $('#blog-empty', main);
+    if (emptyEl) emptyEl.style.display = visible ? 'none' : '';
+  };
+  blogQ.oninput = filterCards;
 
   $$('.blog-cats .chip', main).forEach(btn => btn.onclick = () => {
     $$('.blog-cats .chip', main).forEach(b => b.classList.toggle('on', b === btn));
-    const cat = btn.dataset.cat;
-    $$('#blog-grid .blog-card', main).forEach(c => {
-      c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
-    });
+    filterCards();
   });
+
+  const nlBtn = $('#blog-nl-btn', main);
+  if (nlBtn) nlBtn.onclick = () => {
+    const em = $('#blog-nl-email', main).value.trim();
+    if (!em || !em.includes('@')) { toast('請輸入有效的 Email'); return; }
+    toast('感謝訂閱！我們會將最新文章寄到你的信箱');
+    nlBtn.textContent = '已訂閱 ✓';
+    nlBtn.disabled = true;
+  };
+
   reveal(main);
 }
 
@@ -1792,14 +1834,38 @@ function articlePage() {
         <span>${post.readTime} 分鐘閱讀</span>
       </div>
       <div class="art-tags rv-up">${post.tags.map(t => `<span class="art-tag">${t}</span>`).join('')}</div>
+      <div class="art-actions rv-up">
+        <button class="art-act-btn" id="art-like"><span>👍</span> 有幫助</button>
+        <button class="art-act-btn" id="art-bm"><span>🔖</span> 收藏</button>
+      </div>
       <div class="art-cover rv-up"><img src="assets/img/v${post.v}.jpg" alt="" loading="lazy"></div>
-      <div class="art-body rv-up">${body}</div>
+      <div class="art-body rv-up" id="art-body">${body}</div>
+
+      <div class="art-author-bio rv-up">
+        <div class="art-author-avatar"><img src="assets/img/v${post.v}.jpg" alt="${post.author}" loading="lazy"></div>
+        <div class="art-author-info">
+          <h4>${post.author}</h4>
+          <p>AI Class 特約作者，專注於 ${catMap[post.cat] || post.cat} 領域，持續分享業界洞見與實戰經驗。</p>
+          <a href="blog.html" class="art-author-more">查看更多文章 →</a>
+        </div>
+      </div>
+
       <div class="art-share rv-up">
         <span>分享這篇文章</span>
         <button onclick="navigator.clipboard.writeText(location.href);toast('已複製連結')">📋 複製連結</button>
+        <a class="c-share-btn" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">💬 LINE</a>
+      </div>
+      <div class="art-cta rv-up">
+        <h3>想深入學習？</h3>
+        <p>探索更多 ${catMap[post.cat] || post.cat} 相關課程</p>
+        <a class="btn btn-pri" href="index.html#cat-${post.cat}">瀏覽課程 →</a>
       </div>
     </div>
     <aside class="art-side">
+      <div class="art-side-card art-toc rv-up" id="art-toc">
+        <h3>目錄</h3>
+        <nav class="art-toc-nav"></nav>
+      </div>
       <div class="art-side-card rv-up">
         <h3>相關文章</h3>
         ${related.length ? related.map(r => `<a class="art-side-item" href="article.html?id=${r.id}">
@@ -1813,6 +1879,55 @@ function articlePage() {
       </div>
     </aside>
   </div></section>`;
+
+  const tocNav = $('#art-toc-nav, .art-toc-nav', main);
+  const bodyEl = $('#art-body', main);
+  if (tocNav && bodyEl) {
+    const headings = bodyEl.querySelectorAll('h2, h3');
+    if (headings.length) {
+      tocNav.innerHTML = [...headings].map((h, i) => {
+        h.id = 'sec-' + i;
+        return `<a class="art-toc-link ${h.tagName === 'H3' ? 'sub' : ''}" href="#sec-${i}">${h.textContent}</a>`;
+      }).join('');
+      const links = tocNav.querySelectorAll('.art-toc-link');
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(l => l.classList.remove('on'));
+            const idx = [...headings].indexOf(e.target);
+            if (idx >= 0 && links[idx]) links[idx].classList.add('on');
+          }
+        });
+      }, { rootMargin: '-80px 0px -60% 0px' });
+      headings.forEach(h => obs.observe(h));
+    } else {
+      $('#art-toc', main).style.display = 'none';
+    }
+  }
+
+  const likeBtn = $('#art-like', main);
+  const bmBtn = $('#art-bm', main);
+  const liked = JSON.parse(localStorage.getItem('aic-likes') || '[]');
+  const bookmarked = JSON.parse(localStorage.getItem('aic-bm') || '[]');
+  if (liked.includes(post.id)) likeBtn.classList.add('on');
+  if (bookmarked.includes(post.id)) bmBtn.classList.add('on');
+  likeBtn.onclick = () => {
+    const arr = JSON.parse(localStorage.getItem('aic-likes') || '[]');
+    const has = arr.includes(post.id);
+    if (has) arr.splice(arr.indexOf(post.id), 1); else arr.push(post.id);
+    localStorage.setItem('aic-likes', JSON.stringify(arr));
+    likeBtn.classList.toggle('on');
+    toast(has ? '已取消' : '感謝回饋！');
+  };
+  bmBtn.onclick = () => {
+    const arr = JSON.parse(localStorage.getItem('aic-bm') || '[]');
+    const has = arr.includes(post.id);
+    if (has) arr.splice(arr.indexOf(post.id), 1); else arr.push(post.id);
+    localStorage.setItem('aic-bm', JSON.stringify(arr));
+    bmBtn.classList.toggle('on');
+    toast(has ? '已取消收藏' : '已收藏文章');
+  };
+
   reveal(main);
 }
 
@@ -1831,14 +1946,21 @@ function instructorPage() {
     return t;
   }).sort((a, b) => b.students - a.students);
 
+  const roles = [...new Set(teachers.map(t => t.role))];
+
   main.innerHTML = `
   <section class="ins-hero"><div class="wrap">
     <h1 class="ins-title rv-up">所有講師</h1>
     <p class="ins-sub rv-up">業界頂尖職人親授，${teachers.length} 位講師帶你把熱情學成專業</p>
+    <div class="ins-search rv-up"><input type="text" id="ins-q" placeholder="搜尋講師名稱或專業..." autocomplete="off"></div>
+    <div class="ins-filters rv-up">
+      <button class="chip on" data-role="all">全部</button>
+      ${roles.slice(0, 8).map(r => `<button class="chip" data-role="${r}">${r}</button>`).join('')}
+    </div>
   </div></section>
   <section class="sec"><div class="wrap">
-    <div class="ins-grid">
-      ${teachers.map(t => `<div class="ins-card rv-up">
+    <div class="ins-grid" id="ins-grid">
+      ${teachers.map(t => `<div class="ins-card rv-up" data-name="${t.name}" data-role="${t.role}">
         <div class="ins-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}" loading="lazy"></div>
         <h3 class="ins-name">${t.name}</h3>
         <p class="ins-role">${t.role}</p>
@@ -1850,7 +1972,30 @@ function instructorPage() {
         <div class="ins-courses">${t.courses.slice(0, 2).map(c => `<a href="course.html?id=${c.id}" class="ins-course-link">${c.title}</a>`).join('')}</div>
       </div>`).join('')}
     </div>
+    <div class="blog-empty" id="ins-empty" style="display:none"><p>找不到符合的講師</p></div>
   </div></section>`;
+
+  const insQ = $('#ins-q', main);
+  const filterIns = () => {
+    const role = $('.ins-filters .chip.on', main)?.dataset.role || 'all';
+    const q = (insQ.value || '').toLowerCase().trim();
+    let vis = 0;
+    $$('#ins-grid .ins-card', main).forEach(c => {
+      const rOk = role === 'all' || c.dataset.role === role;
+      const qOk = !q || c.dataset.name.toLowerCase().includes(q) || c.dataset.role.toLowerCase().includes(q);
+      const show = rOk && qOk;
+      c.style.display = show ? '' : 'none';
+      if (show) vis++;
+    });
+    const emp = $('#ins-empty', main);
+    if (emp) emp.style.display = vis ? 'none' : '';
+  };
+  insQ.oninput = filterIns;
+  $$('.ins-filters .chip', main).forEach(btn => btn.onclick = () => {
+    $$('.ins-filters .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    filterIns();
+  });
+
   reveal(main);
 }
 
@@ -2329,11 +2474,21 @@ function aboutPage() {
   </div></section>
 
   <section class="sec"><div class="wrap">
-    <div class="stats rv-up">
-      <div class="stat"><b>${C.length}+</b><span>精選課程</span></div>
-      <div class="stat"><b>${teacherCount}+</b><span>頂尖講師</span></div>
-      <div class="stat"><b>${(totalStudents / 10000).toFixed(1)} 萬+</b><span>學員人次</span></div>
-      <div class="stat"><b>98%</b><span>好評率</span></div>
+    <div class="stats rv-up" id="abt-stats">
+      <div class="stat"><b data-count="${C.length}">0</b><span>精選課程</span></div>
+      <div class="stat"><b data-count="${teacherCount}">0</b><span>頂尖講師</span></div>
+      <div class="stat"><b data-count="${Math.round(totalStudents / 10000)}" data-suffix=" 萬+">0</b><span>學員人次</span></div>
+      <div class="stat"><b data-count="98" data-suffix="%">0</b><span>好評率</span></div>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <h2 class="ent-sec-title rv-up">發展歷程</h2>
+    <div class="abt-timeline">
+      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2023</span><h3>平台創立</h3><p>以「讓每個人都能跟頂尖職人學習」為理念，AI Class 正式上線</p></div></div>
+      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2024</span><h3>突破 50 堂課程</h3><p>與 ${teacherCount}+ 位業界講師合作，涵蓋設計、程式、AI、攝影等領域</p></div></div>
+      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2025</span><h3>AI 學習助手上線</h3><p>導入 AI 技術，提供個人化學習路徑推薦與智慧筆記功能</p></div></div>
+      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2026</span><h3>邁向國際</h3><p>累積超過 ${Math.round(totalStudents / 10000)} 萬學員，持續擴展更多語言與領域</p></div></div>
     </div>
   </div></section>
 
@@ -2360,6 +2515,26 @@ function aboutPage() {
     </div>
   </div></section>`;
   reveal(main);
+
+  const statsEl = $('#abt-stats', main);
+  if (statsEl) {
+    const countObs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      countObs.disconnect();
+      statsEl.querySelectorAll('[data-count]').forEach(b => {
+        const target = +b.dataset.count;
+        const suffix = b.dataset.suffix || '+';
+        let cur = 0;
+        const step = Math.max(1, Math.ceil(target / 40));
+        const iv = setInterval(() => {
+          cur = Math.min(cur + step, target);
+          b.textContent = cur + suffix;
+          if (cur >= target) clearInterval(iv);
+        }, 30);
+      });
+    }, { threshold: 0.3 });
+    countObs.observe(statsEl);
+  }
 }
 
 /* ---------- 完整 FAQ ---------- */
