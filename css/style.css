@@ -3480,7 +3480,9 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff;color:#1d1d1f;font-size:12pt}
-  .hdr,.mnav,.btt,.back-top,.sp-toast,.social-proof,.cookie-bar,.overlay,.vid-overlay,.kb-overlay,.nl-overlay,.read-bar,.cmp-bar,.cmp-overlay,#progress,.notif-panel,.mega-drop,.search-btn,.theme-toggle,.font-size-btn,.cart-btn,.user-menu-wrap,.recent-tip,.skip,footer .ft-social,footer .ft-lang,footer .ft-bottom p,.topbar,.sticky-buy,.art-toc-mob,.float-bar{display:none!important}
+  .hdr,.mnav,.btt,.back-top,.sp-toast,.social-proof,.cookie-bar,.overlay,.vid-overlay,.kb-overlay,.nl-overlay,.read-bar,.cmp-bar,.cmp-overlay,#progress,.notif-panel,.mega-drop,.search-btn,.theme-toggle,.font-size-btn,.cart-btn,.user-menu-wrap,.recent-tip,.skip,footer .ft-social,footer .ft-lang,footer .ft-bottom p,.topbar,.sticky-buy,.art-toc-mob,.float-bar,.splash,.toast-stack,.mob-nav,.plr-sidebar-overlay,.stk-bar{display:none!important}
+  .chap-lessons{max-height:none!important;overflow:visible!important}
+  .chap-toggle i{display:none}
   .wrap{max-width:100%;padding:0}
   a{color:inherit;text-decoration:underline}
   a[href]::after{content:" (" attr(href) ")";font-size:9pt;color:#666}
