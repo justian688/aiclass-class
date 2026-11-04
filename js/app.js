@@ -148,6 +148,8 @@ function smartRecommend(current) {
     if (c.cat === current.cat) s += 3;
     if (c.teacher === current.teacher) s += 5;
     if (c.rating >= 4.7) s += 1;
+    if (Math.abs(c.price - current.price) < 1500) s += 1;
+    if (Math.abs(c.hours - current.hours) < 5) s += 1;
     return { ...c, _score: s };
   }).sort((a, b) => b._score - a._score).slice(0, 6);
   if (!scored.length) return '';
@@ -185,7 +187,7 @@ function quickPreview(courseId) {
   ov.querySelector('.qp-close').onclick = () => { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); };
   ov.onclick = e => { if (e.target === ov) { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); } };
   ov.querySelector('.qp-play').onclick = () => { const v = ov.querySelector('video'); v.play(); ov.querySelector('.qp-play').style.display = 'none'; };
-  ov.querySelector('.qp-cart').onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
+  ov.querySelector('.qp-cart').onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); window.trackEvent('add_to_cart', { item_id: c.id, item_name: c.title, value: c.price }); };
   document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); document.removeEventListener('keydown', esc); } });
 }
 window.quickPreview = quickPreview;
@@ -578,10 +580,12 @@ function bindCards(root = document) {
     localStorage.setItem('aic-wish', JSON.stringify([...wish]));
     $$(`[data-wish="${id}"]`).forEach(x => { x.classList.toggle('on', on); x.textContent = on ? '♥' : '♡'; });
     toast(on ? '已加入收藏 ♥' : '已取消收藏');
+    window.trackEvent(on ? 'add_to_wishlist' : 'remove_from_wishlist', { item_id: id });
   });
   $$('[data-addcart]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
-    cart.add(b.dataset.addcart); saveCart(); updateCartBadge(); toast('已加入購物車');
+    const cid = b.dataset.addcart; cart.add(cid); saveCart(); updateCartBadge(); toast('已加入購物車');
+    window.trackEvent('add_to_cart', { item_id: cid });
   });
   $$('[data-addwish]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
@@ -1166,6 +1170,7 @@ function course() {
   // 記錄最近瀏覽
   let rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(x => x !== c.id);
   rv.unshift(c.id); localStorage.setItem('aic-recent-view', JSON.stringify(rv.slice(0, 10)));
+  window.trackEvent('view_item', { item_id: c.id, item_name: c.title, item_category: c.cat, value: c.price });
   const cat = window.CATS.find(x => x.id === c.cat);
   const others = C.filter(x => x.id !== c.id && x.cat === c.cat).concat(C.filter(x => x.cat !== c.cat)).slice(0, 8);
   const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
@@ -1416,11 +1421,11 @@ function course() {
   const buyBtn = $('[data-buy]');
   if (buyBtn) buyBtn.onclick = () => toast('示範網站：尚未串接金流');
   const cartBtn = $('[data-cart]');
-  if (cartBtn) cartBtn.onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
+  if (cartBtn) cartBtn.onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); window.trackEvent('add_to_cart', { item_id: c.id, item_name: c.title, value: c.price }); };
   const copyBtn = $('[data-copy-link]');
-  if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); toast('已複製課程連結'); };
+  if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); toast('已複製課程連結'); window.trackEvent('share', { method: 'copy_link', content_type: 'course', item_id: c.id }); };
   const nativeShare = $('[data-native-share]');
-  if (nativeShare) nativeShare.onclick = () => navigator.share({ title: c.title + '｜AI Class', url: location.href }).catch(() => {});
+  if (nativeShare) nativeShare.onclick = () => navigator.share({ title: c.title + '｜AI Class', url: location.href }).then(() => window.trackEvent('share', { method: 'native', content_type: 'course', item_id: c.id })).catch(() => {});
   $$('.chap>button').forEach(b => {
     b.onclick = () => {
       const ch = b.parentNode;
@@ -3447,6 +3452,7 @@ function teachPage() {
 function playerPage() {
   const c = byId[new URLSearchParams(location.search).get('id')] || C[0];
   document.title = `${c.title}｜AI Class 播放器`;
+  window.trackEvent('begin_content', { item_id: c.id, item_name: c.title });
   document.body.style.setProperty('--bg', '#070710');
 
   const fallbackChapters = [
@@ -4107,6 +4113,7 @@ function orderCompletePage() {
   if (!order) { location.href = 'index.html'; return; }
 
   const items = order.items.map(id => byId[id]).filter(Boolean);
+  window.trackEvent('purchase', { transaction_id: order.id, value: order.total, items: items.map(c => ({ item_id: c.id, item_name: c.title, price: c.price })) });
   const d = new Date(order.time);
   const dateStr = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
@@ -4761,6 +4768,7 @@ function searchPage() {
     if (e.key === 'Enter' && inp.value.trim()) {
       let r = JSON.parse(localStorage.getItem('aic-recent-search') || '[]').filter(x => x !== inp.value.trim());
       r.unshift(inp.value.trim()); localStorage.setItem('aic-recent-search', JSON.stringify(r.slice(0, 8)));
+      window.trackEvent('search', { search_term: inp.value.trim() });
     }
   });
   clearBtn.onclick = () => { inp.value = ''; state.q = ''; clearBtn.style.display = 'none'; inp.focus(); filter(); };
