@@ -444,5 +444,40 @@ window.CHAPTERS = {
     { ch: 3, title: 'JavaScript 核心', lessons: ['變數、型別與運算子', '函數與作用域', '陣列與物件操作', 'DOM 操作與事件', '非同步與 Promise', 'Fetch API 串接'], duration: 160 },
     { ch: 4, title: '專案實作', lessons: ['專案一：個人履歷網站', '專案二：Todo App', '專案三：天氣查詢', '專案四：電影搜尋', '專案五：部落格系統'], duration: 200 },
     { ch: 5, title: '部署與進階', lessons: ['Git 版本控制', 'GitHub Pages 部署', '效能優化基礎', '無障礙設計', '前端面試準備'], duration: 95 }
+  ],
+  c01: [
+    { ch: 1, title: '字體設計概論', lessons: ['什麼是品牌字體', '字型發展簡史', '中文與西文字體差異', '案例解析：世界知名品牌字型'], duration: 70 },
+    { ch: 2, title: '手繪草圖', lessons: ['工具準備與握筆方式', '筆畫結構分析', '草圖發想流程', '中文字的骨架與重心', '英文字母比例基準'], duration: 90 },
+    { ch: 3, title: 'Glyphs 軟體操作', lessons: ['介面導覽與基本設定', '貝茲曲線繪製技巧', '筆畫一致性調校', '中文注音／部首拆解', '字距與字偶對設定'], duration: 130 },
+    { ch: 4, title: '品牌字型系統', lessons: ['字重家族規劃', '中英文配字原則', '數字與標點設計', '排版測試與微調', '品牌手冊整合'], duration: 110 },
+    { ch: 5, title: '授權與上架', lessons: ['字型格式匯出（OTF / TTF / WOFF2）', '授權模式選擇', '字型平台上架流程', '版權保護與浮水印'], duration: 60 }
+  ],
+  c02: [
+    { ch: 1, title: 'UX 研究基礎', lessons: ['使用者訪談方法', '競品分析框架', '人物誌與情境', 'User Journey Map'], duration: 80 },
+    { ch: 2, title: 'Figma 核心技巧', lessons: ['Frame 與 Auto Layout', '元件與 Variants', '設計系統建立', 'Token 管理與命名'], duration: 110 },
+    { ch: 3, title: 'UI 視覺設計', lessons: ['色彩系統規劃', '文字排版層級', '圖標風格統一', '間距與格線系統', '深色模式適配'], duration: 120 },
+    { ch: 4, title: 'Prototype 與交互', lessons: ['互動原型製作', '微動效設計', 'Smart Animate 進階', '使用者測試流程'], duration: 100 },
+    { ch: 5, title: 'Dev Mode 交付', lessons: ['標注與切圖匯出', 'CSS 屬性對照', '與前端溝通要點', '設計 QA 檢查清單', '期末作品發表'], duration: 90 }
+  ],
+  c05: [
+    { ch: 1, title: '角色設計基礎', lessons: ['角色設計的市場需求', '風格參考與情緒版', '基本體型與比例', '臉型與五官設計'], duration: 75 },
+    { ch: 2, title: '配色與光影', lessons: ['色彩心理學與角色個性', '固有色選擇策略', '光源方向與投影', '環境色反射處理'], duration: 90 },
+    { ch: 3, title: '表情與動態', lessons: ['表情九宮格練習', '身體語言與姿勢', '動作線與重心', '服裝與配件設計'], duration: 105 },
+    { ch: 4, title: '角色 IP 開發', lessons: ['世界觀設定文件', '角色關係圖譜', '周邊商品設計', '社群行銷應用'], duration: 95 },
+    { ch: 5, title: '作品集整理', lessons: ['作品展示排版', '個人品牌建立', '接案報價策略', 'Behance / ArtStation 上架'], duration: 55 }
+  ],
+  c10: [
+    { ch: 1, title: '攝影基礎', lessons: ['相機與鏡頭選擇', '曝光三角（光圈/快門/ISO）', '對焦模式與景深', '白平衡與色溫'], duration: 80 },
+    { ch: 2, title: '構圖與光線', lessons: ['三分法與引導線', '自然光運用', '人工補光基礎', '黃金時刻拍攝'], duration: 85 },
+    { ch: 3, title: '主題攝影', lessons: ['人像攝影與引導', '風景攝影長曝', '美食攝影打光', '街頭攝影快拍'], duration: 110 },
+    { ch: 4, title: 'Lightroom 修圖', lessons: ['RAW 檔處理流程', '色調與色彩分級', '局部調整工具', '預設檔製作與批次處理'], duration: 95 },
+    { ch: 5, title: '作品與接案', lessons: ['攝影集編排', '個人網站建置', '報價與合約', '客戶溝通技巧'], duration: 50 }
+  ],
+  c08: [
+    { ch: 1, title: 'Blender 入門', lessons: ['介面與快捷鍵', '基本建模工具', 'Modifier 修改器', '場景管理與 Collection'], duration: 90 },
+    { ch: 2, title: '角色建模', lessons: ['人體參考與比例', '面部拓撲規劃', 'Sculpt 模式精修', 'Retopology 優化', 'UV 展開'], duration: 150 },
+    { ch: 3, title: '材質與貼圖', lessons: ['Shader Editor 節點', 'PBR 材質原理', 'Texture Paint 手繪貼圖', '程序性材質', 'HDRI 環境照明'], duration: 120 },
+    { ch: 4, title: '骨架與動畫', lessons: ['Armature 骨骼綁定', 'Weight Paint 權重', '關鍵影格動畫', 'NLA 動作混合', '臉部動畫 Shape Key'], duration: 140 },
+    { ch: 5, title: '渲染與輸出', lessons: ['Cycles 與 Eevee 選擇', '攝影機動畫', '合成節點後製', '輸出設定與格式', '作品展示發布'], duration: 80 }
   ]
 };

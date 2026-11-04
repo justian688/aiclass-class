@@ -236,7 +236,7 @@ function shell() {
   mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"><i>⌂</i>首頁</a><a href="#" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"><i>☺</i>我的</a>`;
   document.body.append(mn);
 
-  const toast = document.createElement('div'); toast.className = 'toast'; document.body.append(toast);
+  const toast = document.createElement('div'); toast.className = 'toast'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite'); document.body.append(toast);
   window.toast = (msg, type) => {
     const icon = type === 'success' ? '✓ ' : type === 'error' ? '✕ ' : type === 'info' ? 'ℹ ' : '';
     toast.className = 'toast' + (type ? ' toast-' + type : '');
@@ -367,7 +367,7 @@ function searchOverlay() {
   const getRecent = () => JSON.parse(localStorage.getItem(recentKey) || '[]');
   const addRecent = q => { let r = getRecent().filter(x => x !== q); r.unshift(q); localStorage.setItem(recentKey, JSON.stringify(r.slice(0, 8))); renderRecent(); };
 
-  const ov = document.createElement('div'); ov.className = 'overlay';
+  const ov = document.createElement('div'); ov.className = 'overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', '搜尋課程');
   ov.innerHTML = `<div class="sbox"><input placeholder="搜尋課程、講師…" aria-label="搜尋"><div class="hot">${['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案', '音樂'].map(k => `<button>${k}</button>`).join('')}</div><div class="recent"></div><div class="sres"></div></div>`;
   document.body.append(ov);
   const inp = $('input', ov), res = $('.sres', ov), recentEl = $('.recent', ov);
@@ -396,11 +396,22 @@ function searchOverlay() {
     else if (e.key === 'Enter') { if (selIdx >= 0 && items[selIdx]) { addRecent(inp.value.trim()); location.href = items[selIdx].href; } else if (inp.value.trim()) { addRecent(inp.value.trim()); location.href = 'search.html?q=' + encodeURIComponent(inp.value.trim()); } }
   });
   $$('.hot button', ov).forEach(b => b.onclick = () => { inp.value = b.textContent; addRecent(b.textContent); run(); });
-  const open = e => { e.preventDefault(); ov.classList.add('on'); renderRecent(); setTimeout(() => inp.focus(), 50); };
+  let triggerEl = null;
+  const open = e => { e.preventDefault(); triggerEl = document.activeElement; ov.classList.add('on'); renderRecent(); setTimeout(() => inp.focus(), 50); };
+  const close = () => { ov.classList.remove('on'); if (triggerEl) { triggerEl.focus(); triggerEl = null; } };
   $$('[data-search]').forEach(b => b.onclick = open);
-  ov.onclick = e => { if (e.target === ov) ov.classList.remove('on'); };
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      const focusable = $$('input,button,a[href]', ov).filter(el => el.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
   addEventListener('keydown', e => {
-    if (e.key === 'Escape') ov.classList.remove('on');
+    if (e.key === 'Escape' && ov.classList.contains('on')) { close(); return; }
     if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')) { e.preventDefault(); open(e); }
   });
 }
@@ -416,7 +427,7 @@ function searchOverlay() {
     ['M', '前往我的學習'],
     ['D', '切換深色/淺色模式'],
   ];
-  const el = document.createElement('div'); el.className = 'kb-overlay';
+  const el = document.createElement('div'); el.className = 'kb-overlay'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', '鍵盤快捷鍵');
   el.innerHTML = `<div class="kb-box"><h3>鍵盤快捷鍵</h3><div class="kb-list">${keys.map(([k, d]) => `<div class="kb-row"><kbd>${k}</kbd><span>${d}</span></div>`).join('')}</div><button class="btn btn-ghost kb-close">關閉</button></div>`;
   document.body.append(el);
   el.querySelector('.kb-close').onclick = () => el.classList.remove('on');
@@ -803,11 +814,12 @@ function home() {
         const vc = (window.VIDEO_CONTENT || []).find(v => v.title === title);
         const cc = vc ? byId[vc.course] : null;
         const videoSrc = cc ? vid(cc) : '';
-        const ov = document.createElement('div'); ov.className = 'vid-overlay';
-        ov.innerHTML = `<div class="vid-modal"><button class="vid-modal-close">×</button><video src="${videoSrc}" poster="${imgSrc}" controls autoplay></video><h3>${title}</h3></div>`;
+        const trigger = document.activeElement;
+        const ov = document.createElement('div'); ov.className = 'vid-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', title || '影片預覽');
+        ov.innerHTML = `<div class="vid-modal"><button class="vid-modal-close" aria-label="關閉">×</button><video src="${videoSrc}" poster="${imgSrc}" controls autoplay></video><h3>${title}</h3></div>`;
         document.body.append(ov);
-        requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
-        const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+        requestAnimationFrame(() => { requestAnimationFrame(() => ov.classList.add('on')); $('.vid-modal-close', ov).focus(); });
+        const close = () => { ov.classList.remove('on'); setTimeout(() => { ov.remove(); if (trigger) trigger.focus(); }, 300); };
         $('.vid-modal-close', ov).onclick = close;
         ov.onclick = e => { if (e.target === ov) close(); };
         document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
@@ -4498,7 +4510,7 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
     if (pctScroll >= 60) {
       triggered = true; sessionStorage.setItem('aic-nl-shown', '1');
       removeEventListener('scroll', nlCheck);
-      const nl = document.createElement('div'); nl.className = 'nl-overlay';
+      const nl = document.createElement('div'); nl.className = 'nl-overlay'; nl.setAttribute('role', 'dialog'); nl.setAttribute('aria-modal', 'true'); nl.setAttribute('aria-label', '訂閱電子報');
       nl.innerHTML = `<div class="nl-box"><button class="nl-close">×</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址"><button class="btn btn-pri">免費訂閱</button></div><small>隨時可取消訂閱，我們不會寄送垃圾信。</small></div>`;
       document.body.append(nl);
       requestAnimationFrame(() => requestAnimationFrame(() => nl.classList.add('show')));

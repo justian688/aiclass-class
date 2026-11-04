@@ -2778,3 +2778,20 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 
 /* 文章閱讀進度條 */
 .read-bar{position:fixed;top:0;left:0;height:3px;width:0;z-index:9999;background:linear-gradient(90deg,var(--pri),var(--pink));transition:width .1s linear;pointer-events:none}
+
+/* ===== 列印樣式 ===== */
+@media print{
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;color:#1d1d1f;font-size:12pt}
+  .hdr,.mnav,.btt,.back-top,.sp-toast,.social-proof,.cookie-bar,.overlay,.vid-overlay,.kb-overlay,.nl-overlay,.read-bar,.cmp-bar,.cmp-overlay,#progress,.notif-panel,.mega-drop,.search-btn,.theme-toggle,.font-size-btn,.cart-btn,.user-menu-wrap,.recent-tip,.skip,footer .ft-social,footer .ft-app,footer .ft-bottom p,.topbar,.sticky-buy{display:none!important}
+  .wrap{max-width:100%;padding:0}
+  a{color:inherit;text-decoration:underline}
+  a[href]::after{content:" (" attr(href) ")";font-size:9pt;color:#666}
+  a[href^="#"]::after,a[href^="javascript"]::after,.logo a::after,nav a::after{content:none}
+  img,video{max-width:100%;page-break-inside:avoid}
+  h1,h2,h3{page-break-after:avoid}
+  .card,.course-info,.c-sec,.article-body,.cert-card{page-break-inside:avoid}
+  .grid{display:block}.grid .card{display:block;width:100%;margin-bottom:16pt;break-inside:avoid}
+  footer{border-top:1pt solid #ccc;padding-top:8pt;font-size:9pt;color:#666}
+  .cert-card{border:2pt solid #7c5cff;padding:24pt;text-align:center;page-break-inside:avoid}
+}
