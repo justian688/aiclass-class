@@ -683,6 +683,19 @@ function home() {
     </div>
   </div></section>`);
 
+  // 平台數據
+  if (window.PLATFORM_STATS) {
+    const ps = window.PLATFORM_STATS;
+    main.insertAdjacentHTML('beforeend', `<section class="stats-section"><div class="wrap">
+      <div class="stats-grid">
+        <div class="stat-item rv-up"><div class="stat-num" data-count="${ps.courses}" data-unit="">0</div><div class="stat-label">精選課程</div></div>
+        <div class="stat-item rv-up"><div class="stat-num" data-count="${ps.students}" data-unit="+">0</div><div class="stat-label">累計學員</div></div>
+        <div class="stat-item rv-up"><div class="stat-num" data-count="${ps.instructors}" data-unit="">0</div><div class="stat-label">業界講師</div></div>
+        <div class="stat-item rv-up"><div class="stat-num" data-count="${ps.completionRate}" data-unit="%">0</div><div class="stat-label">完課率</div></div>
+      </div>
+    </div></section>`);
+  }
+
   // 訓練營
   if (window.BOOTCAMPS) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="bootcamp"><div class="wrap"><div class="sec-head rv-up"><div><h2>訓練營</h2><div class="sub">免費報名，就業導向密集訓練</div></div></div>
