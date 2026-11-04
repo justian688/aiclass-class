@@ -263,6 +263,11 @@ function shell() {
 
   const prog = document.createElement('div'); prog.id = 'progress'; document.body.append(prog);
 
+  if (!$('.nl-sec')) {
+    const nl = document.createElement('section'); nl.className = 'nl-sec';
+    nl.innerHTML = `<div class="wrap"><div class="nl-inner"><div class="nl-left"><h2>訂閱 AI Class 電子報</h2><p>每週精選課程推薦、學習技巧與獨家優惠，直送你的信箱</p></div><form class="nl-form" onsubmit="event.preventDefault();toast('感謝訂閱！示範網站不會寄送郵件','success');this.querySelector('input').value='';"><input type="email" placeholder="輸入 Email" required aria-label="Email 訂閱"><button class="btn btn-pri" type="submit">免費訂閱</button></form></div></div>`;
+    document.body.append(nl);
+  }
   const ft = document.createElement('footer');
   ft.innerHTML = `<div class="wrap"><div class="cols">
     <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
@@ -1341,6 +1346,12 @@ function course() {
         <div class="c-inc-item"><span class="c-inc-icon">📱</span><span>手機、平板、電腦觀看</span></div>
         <div class="c-inc-item"><span class="c-inc-icon">🔄</span><span>免費課程更新</span></div>
         <div class="c-inc-item"><span class="c-inc-icon">🏆</span><span>結業證書</span></div>
+      </div>
+    </section>
+    <section class="c-sec c-downloads rv-up" id="downloads"><h2>📦 課程附件下載</h2>
+      <p class="c-dl-desc">購買後即可下載以下所有資源，搭配課程使用效果更佳</p>
+      <div class="c-dl-list">
+        ${[{icon:'📁',name:`${c.title.split('：')[0]}｜完整專案檔`,size:`${(c.hours * 12 + 80).toFixed(0)} MB`,type:'ZIP'},{icon:'📄',name:'課程講義 PDF',size:`${(chapters.length * 3 + 5).toFixed(0)} MB`,type:'PDF'},{icon:'🎨',name:'練習素材包',size:`${(c.hours * 8 + 20).toFixed(0)} MB`,type:'ZIP'},{icon:'📝',name:'課堂筆記模板',size:'2 MB',type:'PDF'},{icon:'🔗',name:'延伸學習資源清單',size:'500 KB',type:'PDF'}].map(f=>`<div class="c-dl-item"><span class="c-dl-icon">${f.icon}</span><div class="c-dl-info"><b>${f.name}</b><span>${f.size}・${f.type}</span></div><button class="c-dl-btn" onclick="toast('${isOwned?'示範網站：下載功能開發中':'請先購買課程再下載'}')"><span>${isOwned?'⬇ 下載':'🔒 購買後可下載'}</span></button></div>`).join('')}
       </div>
     </section>
     <div class="c-update-pledge rv-up">
