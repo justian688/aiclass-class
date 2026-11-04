@@ -695,7 +695,7 @@ function home() {
   const INS = window.INSTRUCTORS || [];
   if (INS.length) {
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div><a class="more" href="instructor.html">查看全部 →</a></div>
-      <div class="ins-grid">${INS.map((t, i) => `<div class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span><span>${(t.students / 1000).toFixed(1)}k 學員</span></div></div>`).join('')}</div></div></section>`);
+      <div class="ins-grid">${INS.map((t, i) => `<a href="instructor.html" class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms;text-decoration:none;color:inherit"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span><span>${(t.students / 1000).toFixed(1)}k 學員</span></div></a>`).join('')}</div></div></section>`);
   } else {
     const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div></div>
@@ -1045,7 +1045,7 @@ function course() {
 
   main.innerHTML = `<div class="c-hero"><div class="wrap"><div class="c-grid">
     <div>
-      <div class="crumb"><a href="index.html">首頁</a> › <a href="index.html#cat-${c.cat}">${cat.name}</a></div>
+      <div class="crumb"><a href="index.html">首頁</a> › <a href="category.html?cat=${c.cat}">${cat.name}</a> › <span>${c.title}</span></div>
       <div class="c-video" id="preview"><video src="${vid(c)}" poster="${img(c)}" muted loop playsinline preload="metadata"></video><button class="play" aria-label="播放試看"><span>▶</span></button></div>
       ${c.tag ? `<span class="badge ${c.tag}" style="position:static;display:inline-block;margin-top:24px">${c.tag}</span>` : ''}
       <h1 class="c-title">${c.title}</h1>
@@ -1135,7 +1135,10 @@ function course() {
     desc: c.desc || c.ai || '',
     url: `https://aiclass.tw/course.html?id=${c.id}`,
     img: `https://aiclass.tw/${img(c)}`,
-    jsonLd: { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, ratingCount: c.students }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H` } }
+    jsonLd: [
+      { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, ratingCount: c.students }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H` } },
+      { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: cat.name, item: `https://aiclass.tw/category.html?cat=${c.cat}` }, { '@type': 'ListItem', position: 3, name: c.title }] }
+    ]
   });
 
   const box = $('.c-video'), v = $('video', box);
@@ -3857,7 +3860,7 @@ function searchPage() {
   const initQ = params.get('q') || '';
   if (initQ) seo({ title: `搜尋「${initQ}」｜AI Class`, desc: `AI Class 課程搜尋結果：${initQ}`, url: `https://aiclass.tw/search.html?q=${encodeURIComponent(initQ)}` });
   const cats = window.CATS.slice(1);
-  const trending = ['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案'];
+  const trending = window.TRENDING_SEARCHES || ['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案'];
 
   const state = { q: initQ, cats: new Set(), priceRange: 'all', minRating: 0, sort: 'relevance' };
 
