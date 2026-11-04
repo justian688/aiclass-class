@@ -4486,6 +4486,14 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').cat
 if (!$('link[rel="manifest"]')) { const m = document.createElement('link'); m.rel = 'manifest'; m.href = '/manifest.json'; document.head.append(m); }
 if (!$('meta[name="apple-mobile-web-app-capable"]')) { const m = document.createElement('meta'); m.name = 'apple-mobile-web-app-capable'; m.content = 'yes'; document.head.append(m); }
 
+document.addEventListener('error', e => {
+  if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) {
+    e.target.dataset.fallback = '1';
+    e.target.style.background = 'linear-gradient(135deg, var(--pri), var(--pink))';
+    e.target.style.objectFit = 'contain';
+    e.target.alt = '';
+  }
+}, true);
 
 // ── 課程比較功能 ──
 const cmpList = JSON.parse(sessionStorage.getItem('aic-cmp') || '[]');
