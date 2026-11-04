@@ -1,4 +1,11 @@
 (() => {
+// ── GA4 placeholder (replace G-XXXXXXXXXX with real Measurement ID) ──
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+gtag('js', new Date());
+gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
+window.trackEvent = (name, params) => { if (typeof gtag === 'function') gtag('event', name, params); };
+
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const C = window.COURSES, byId = Object.fromEntries(C.map(c => [c.id, c]));
@@ -5415,6 +5422,7 @@ else if (page === 'achievement') achievementPage();
 else if (page === 'video') videoPage();
 else notFoundPage();
 reveal();
+gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
 tickCountdown(); setInterval(tickCountdown, 1000);
 document.body.classList.add('loaded');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -5774,12 +5782,5 @@ function openRecommendQuiz() {
   }
 }
 
-// ── Google Analytics 4 佔位（替換 G-XXXXXXXXXX 為真實 Measurement ID 即可啟用）──
-window.dataLayer = window.dataLayer || [];
-function gtag() { dataLayer.push(arguments); }
-gtag('js', new Date());
-gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
-gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
-window.trackEvent = (name, params) => { if (typeof gtag === 'function') gtag('event', name, params); };
 
 })();
