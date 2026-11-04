@@ -3705,15 +3705,24 @@ function pathPage() {
   const totalStudents = Math.min(...courses.map(c => c.students));
   document.title = `${p.name}｜AI Class 學習路徑`;
 
+  const ownedArr = JSON.parse(localStorage.getItem('aic-owned') || '[]');
+  const pathDone = courses.filter(c => ownedArr.includes(c.id)).length;
+  const pathPct = courses.length ? Math.round(pathDone / courses.length * 100) : 0;
+
   main.innerHTML = `
   <section class="pth-hero rv-up"><div class="wrap">
+    <div class="crumb"><a href="index.html">首頁</a> › <a href="index.html#paths">學習路徑</a> › ${p.name}</div>
     <div class="pth-badge">學習路徑</div>
     <h1>${p.name}</h1>
     <p class="pth-desc">${p.desc}</p>
+    <div class="pth-overall-progress rv-up">
+      <div class="pth-prog-bar"><div class="pth-prog-fill" style="width:${pathPct}%"></div></div>
+      <span class="pth-prog-txt">整體進度 ${pathPct}%（${pathDone}/${courses.length} 堂完成）</span>
+    </div>
     <div class="pth-meta">
       <span>📚 ${courses.length} 堂課程</span>
       <span>⏱ ${totalHours} 小時</span>
-      <span>📅 ${p.duration}</span>
+      <span>📅 預估 ${p.duration}</span>
       <span>📊 ${p.level}</span>
       <span>💰 預期年薪 ${p.salary}</span>
     </div>
@@ -3728,20 +3737,23 @@ function pathPage() {
       <h2>課程規劃</h2>
       <p class="pth-timeline-desc">按照以下順序學習，循序漸進掌握完整技能</p>
       <div class="pth-steps">
-        ${courses.map((c, i) => `<div class="pth-step rv-up" style="transition-delay:${i * 100}ms">
-          <div class="pth-step-num">${i + 1}</div>
+        ${courses.map((c, i) => {
+          const isDone = ownedArr.includes(c.id);
+          const ring = `<svg class="pth-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="var(--line)" stroke-width="3"/><circle cx="18" cy="18" r="15" fill="none" stroke="${isDone ? '#34c759' : 'var(--pri)'}" stroke-width="3" stroke-dasharray="94" stroke-dashoffset="${isDone ? 0 : 94}" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>`;
+          return `<div class="pth-step rv-up" style="transition-delay:${i * 100}ms">
+          <div class="pth-step-num ${isDone ? 'done' : ''}">${isDone ? '✓' : i + 1}${ring}</div>
           <div class="pth-step-content">
             <a href="course.html?id=${c.id}" class="pth-step-card">
-              <img src="${img(c)}" alt="">
+              <img src="${img(c)}" alt="" loading="lazy" decoding="async">
               <div class="pth-step-info">
-                <h3>${c.title}</h3>
+                <h3>${c.title}${isDone ? ' <span class="pth-done-tag">已完成</span>' : ''}</h3>
                 <p>${c.teacher} · ${c.hours} 小時 · ★ ${c.rating}</p>
                 <div class="pth-step-skills">${['核心觀念', '實作練習', '專案作品'][i % 3].split('').length ? `<span class="pth-skill">${['核心觀念', '實作練習', '專案作品'][i % 3]}</span>` : ''}</div>
               </div>
               <span class="pth-step-price">${fmt(c.price)}</span>
             </a>
           </div>
-        </div>`).join('')}
+        </div>`; }).join('')}
       </div>
     </div>
 
@@ -4147,6 +4159,7 @@ function communityPage() {
   const main = $('main');
   seo({ title: '學習社群｜AI Class', desc: '與同學交流學習心得、分享作品', url: 'https://aiclass.tw/community.html' });
   const posts = (window.COMMUNITY_POSTS || []).slice();
+  const cmyLiked = new Set(JSON.parse(localStorage.getItem('aic-cmy-likes') || '[]'));
   const tagSet = new Set(); posts.forEach(p => (p.tags||[]).forEach(t => tagSet.add(t)));
   const cats = ['全部', ...tagSet];
   const catColors = {'作品分享':'#7c5cff','心得分享':'#34c759','發問':'#ff9500','筆記分享':'#00b4d8','求回饋':'#ff5c8a','資源':'#a855f7','成果':'#f59e0b'};
@@ -4177,7 +4190,7 @@ function communityPage() {
           <h3 class="cmy-thread-title" style="cursor:pointer" onclick="this.closest('.cmy-thread').classList.toggle('expanded')">${p.title}</h3>
           <p class="cmy-thread-preview">${p.content}</p>
           ${c ? `<div class="cmy-course-link">📚 ${c.title}</div>` : ''}
-          <div class="cmy-thread-stats"><span>❤️ ${p.likes}</span><span>💬 ${p.replies}</span></div>
+          <div class="cmy-thread-stats"><button class="cmy-like-btn${cmyLiked.has(p.id) ? ' liked' : ''}" data-pid="${p.id}" data-likes="${p.likes}"><span class="cmy-heart">${cmyLiked.has(p.id) ? '❤️' : '🤍'}</span> <span class="cmy-like-count">${p.likes + (cmyLiked.has(p.id) ? 1 : 0)}</span></button><span>💬 ${p.replies}</span></div>
         </div>
       </div>
     </div>`;
@@ -4213,6 +4226,10 @@ function communityPage() {
           <div><b>${totalReplies}</b><span>回覆數</span></div>
           <div><b>${totalLikes.toLocaleString()}</b><span>按讚數</span></div>
         </div>
+      </div>
+      <div class="cmy-sb-card rv-up">
+        <h4>🔥 熱門話題</h4>
+        <div class="cmy-trending">${[...tagSet].map(t => `<span class="cmy-trend-tag" style="--tag-c:${catColors[t]||'var(--pri)'}">${t}</span>`).join('')}${(window.TRENDING_SEARCHES||[]).slice(0,6).map(s => `<span class="cmy-trend-tag">${s}</span>`).join('')}</div>
       </div>
     </aside>
   </div>
@@ -4250,6 +4267,18 @@ function communityPage() {
   $('#cmy-close').onclick = () => { modal.hidden = true; };
   $('#cmy-cancel').onclick = () => { modal.hidden = true; };
   $('.cmy-modal-bg', modal).onclick = () => { modal.hidden = true; };
+  main.addEventListener('click', e => {
+    const btn = e.target.closest('.cmy-like-btn');
+    if (!btn) return;
+    const pid = btn.dataset.pid, baseLikes = +btn.dataset.likes;
+    if (cmyLiked.has(pid)) { cmyLiked.delete(pid); } else { cmyLiked.add(pid); }
+    localStorage.setItem('aic-cmy-likes', JSON.stringify([...cmyLiked]));
+    const heart = btn.querySelector('.cmy-heart'), count = btn.querySelector('.cmy-like-count');
+    btn.classList.toggle('liked', cmyLiked.has(pid));
+    heart.textContent = cmyLiked.has(pid) ? '❤️' : '🤍';
+    count.textContent = baseLikes + (cmyLiked.has(pid) ? 1 : 0);
+    if (cmyLiked.has(pid)) { btn.style.transform = 'scale(1.15)'; setTimeout(() => btn.style.transform = '', 200); }
+  });
   reveal(main);
 }
 
@@ -4266,6 +4295,7 @@ function livePage() {
 
   main.innerHTML = `
   <section class="live-hero rv-up"><div class="wrap">
+    <div class="crumb"><a href="index.html">首頁</a> › 直播教室</div>
     <h1>直播教室</h1>
     <p>即時互動教學，業界講師線上開講，與講師和學員即時交流</p>
     <div class="live-hero-stats"><span><b>${events.length}</b> 場已排程</span><span><b>${events.reduce((s,e)=>s+e.enrolled,0).toLocaleString()}</b> 累計報名</span><span><b>${upcoming.length}</b> 場即將開播</span></div>
@@ -4289,7 +4319,7 @@ function livePage() {
         <div class="live-sched-date"><span class="live-sched-day">${fmtDate(u.date)}</span><span class="live-sched-time">${fmtTime(u.date)}</span></div>
         <div class="live-sched-info">
           <h4>${u.title}</h4>
-          <span class="live-sched-teacher">${u.host}・${u.duration} 分鐘</span>
+          <span class="live-sched-teacher">${u.host}・${u.duration} 分鐘・👁 ${(u.enrolled * 2 + Math.floor(Math.random() * 100)).toLocaleString()} 人關注</span>
           <div class="live-sched-bar"><div class="live-sched-fill" style="width:${pct}%"></div></div>
           <span class="live-sched-seats">${u.enrolled}/${u.max} 已預約</span>
         </div>
@@ -4304,7 +4334,7 @@ function livePage() {
         const c = byId[e.course];
         return `<div class="live-rec-card rv-up">
         <div class="live-rec-thumb"><img src="${c ? img(c) : ''}" alt="" loading="lazy"><div class="live-rec-dur">${e.duration} 分</div>${e.replay ? '<div class="live-replay-badge">可回放</div>' : ''}</div>
-        <div class="live-rec-info"><h4>${e.title}</h4><span>${e.host}・${e.enrolled} 人參與</span></div>
+        <div class="live-rec-info"><h4>${e.title}</h4><span>${e.host}・${e.enrolled} 人參與・▶ ${(e.enrolled * 3).toLocaleString()} 次觀看</span></div>
       </div>`;
       }).join('')}</div>
     </section>` : ''}
@@ -4344,12 +4374,26 @@ function quizPage() {
         <div class="qz-card-icon">${c ? '📚' : '🎯'}</div>
         <h3>${qz.title}</h3>
         ${c ? `<div class="qz-card-course">${c.title}</div>` : ''}
-        <div class="qz-card-info"><span>📝 ${qz.questions.length} 題</span><span>⏱ 約 ${qz.questions.length} 分鐘</span></div>
-        <div class="qz-card-diff"><span class="qz-diff-dot"></span>${qz.questions.length >= 5 ? '中等' : '入門'}</div>
+        <div class="qz-card-info"><span>📝 ${qz.questions.length} 題</span><span>⏱ 約 ${Math.max(2, Math.ceil(qz.questions.length * 1.5))} 分鐘</span></div>
+        <div class="qz-card-diff"><span class="qz-diff-dot" style="background:${qz.questions.length >= 6 ? '#ff5c8a' : qz.questions.length >= 4 ? '#ff9500' : '#34c759'}"></span>${qz.questions.length >= 6 ? '進階' : qz.questions.length >= 4 ? '中等' : '入門'}</div>
         ${done ? `<div class="qz-card-score">最高分：${done.score}/${done.total}</div>` : ''}
         <button class="btn btn-pri qz-start">${done ? '再次挑戰' : '開始測驗'}</button>
       </div>`;
     }).join('')}</div>
+    ${Object.keys(saved).length ? `<div class="qz-history rv-up">
+      <h3>📋 測驗記錄</h3>
+      <div class="qz-history-list">${Object.entries(saved).map(([id, r]) => {
+        const qz = quizzes.find(q => q.id === id);
+        const pctVal = r.pct || Math.round(r.score / r.total * 100);
+        const d = r.date ? new Date(r.date) : null;
+        const dateStr = d ? `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}` : '';
+        return `<div class="qz-hist-item">
+          <div class="qz-hist-icon">${pctVal >= 80 ? '🏆' : pctVal >= 60 ? '👍' : '💪'}</div>
+          <div class="qz-hist-info"><b>${qz ? qz.title : id}</b><span>${dateStr}・${r.score}/${r.total} 答對（${pctVal}%）・用時 ${Math.floor((r.time||0)/60)}:${String((r.time||0)%60).padStart(2,'0')}</span></div>
+          <div class="qz-hist-pct" style="--pct-c:${pctVal >= 80 ? '#34c759' : pctVal >= 60 ? '#ff9500' : '#ff5c8a'}">${pctVal}%</div>
+        </div>`;
+      }).join('')}</div>
+    </div>` : ''}
   </div>
   <div class="qz-modal" hidden>
     <div class="qz-modal-bg"></div>
