@@ -189,7 +189,7 @@ function shell() {
     </div>
     <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
-    <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程</button>
+    <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
       <button class="notif-btn" aria-label="通知">🔔<span class="notif-dot"></span></button>
       <div class="notif-panel">
@@ -349,6 +349,10 @@ function shell() {
     setTimeout(showProof, 8000);
     setInterval(showProof, 18000);
   }
+
+  // 圖片漸入
+  document.addEventListener('load', e => { if (e.target.tagName === 'IMG' && e.target.loading === 'lazy') e.target.classList.add('loaded'); }, true);
+  $$('img[loading="lazy"]').forEach(i => { if (i.complete) i.classList.add('loaded'); });
 }
 
 /* ---------- 搜尋 ---------- */
@@ -383,14 +387,14 @@ function searchOverlay() {
   ov.onclick = e => { if (e.target === ov) ov.classList.remove('on'); };
   addEventListener('keydown', e => {
     if (e.key === 'Escape') ov.classList.remove('on');
-    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') open(e);
+    if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')) { e.preventDefault(); open(e); }
   });
 }
 
 /* ---------- 快捷鍵 ---------- */
 (function shortcuts() {
   const keys = [
-    ['/', '開啟搜尋'],
+    ['⌘K / /', '開啟搜尋'],
     ['Escape', '關閉搜尋 / 彈窗'],
     ['?', '顯示快捷鍵'],
     ['H', '回首頁'],
@@ -1084,14 +1088,15 @@ function course() {
     progBar.style.width = h > 0 ? (scrollY / h * 100) + '%' : '0';
   }, { passive: true });
 
-  // Mobile sticky purchase bar
-  if (!isOwned && innerWidth <= 760) {
-    const bar = document.createElement('div'); bar.className = 'stk-bar';
-    bar.innerHTML = `<div class="stk-price"><span class="stk-now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div><button class="btn btn-pri stk-buy">立即購買</button>`;
-    document.body.append(bar);
+  // Sticky purchase bar (all viewports)
+  if (!isOwned) {
+    const sbar = document.createElement('div'); sbar.className = 'sticky-buy';
+    sbar.innerHTML = `<div class="wrap"><div class="sticky-buy-info"><img class="sticky-buy-thumb" src="${img(c)}" alt=""><span class="sticky-buy-title">${c.title}</span></div><span class="sticky-buy-origin">${fmt(c.origin)}</span><span class="sticky-buy-price">${fmt(c.price)}</span><button class="btn btn-ghost sticky-cart-btn">加入購物車</button><button class="btn btn-pri sticky-buy-btn">立即購買</button></div>`;
+    document.body.append(sbar);
     const buyAside = $('.buy');
-    addEventListener('scroll', () => { bar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }, { passive: true });
-    $('.stk-buy', bar).onclick = () => toast('示範網站：尚未串接金流');
+    addEventListener('scroll', () => { sbar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }, { passive: true });
+    $('.sticky-buy-btn', sbar).onclick = () => toast('示範網站：尚未串接金流');
+    $('.sticky-cart-btn', sbar).onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
   }
 
   bindNotes(c.id, main);
