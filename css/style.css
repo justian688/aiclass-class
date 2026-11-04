@@ -2820,10 +2820,13 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 @media(max-width:480px){.sp-toast{bottom:80px;left:12px;right:12px;max-width:none}}
 
 /* 回到頂部按鈕 */
-.btt{position:fixed;bottom:24px;right:24px;z-index:700;width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--pri),#a855f7);color:#fff;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(124,92,255,.3);opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .3s,visibility .3s,transform .3s}
+.btt{position:fixed;bottom:24px;right:24px;z-index:700;width:48px;height:48px;border-radius:50%;border:0;background:var(--bg);color:var(--pri);cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12);opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .3s,visibility .3s,transform .3s;padding:0;display:flex;align-items:center;justify-content:center}
+.btt .btt-ring{position:absolute;inset:0;width:100%;height:100%}
+.btt .btt-arrow{font-size:16px;font-weight:700;position:relative;z-index:1}
 .btt.show{opacity:1;visibility:visible;transform:translateY(0)}
-.btt:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,92,255,.4)}
-@media(max-width:480px){.btt{bottom:72px;right:12px;width:40px;height:40px;font-size:16px}}
+.btt:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+[data-theme="dark"] .btt{background:var(--bg2);box-shadow:0 4px 14px rgba(0,0,0,.4)}
+@media(max-width:480px){.btt{bottom:72px;right:12px;width:42px;height:42px}}
 
 /* 文章閱讀進度條 */
 .read-bar{position:fixed;top:0;left:0;height:3px;width:0;z-index:9999;background:linear-gradient(90deg,var(--pri),var(--pink));transition:width .1s linear;pointer-events:none}
@@ -2991,6 +2994,30 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 [data-theme="dark"] .art-toc-mob{border-color:var(--line)}
 [data-theme="dark"] .art-toc-mob-hd{background:var(--bg2);color:var(--tx)}
 [data-theme="dark"] .art-toc-mob .art-toc-link{border-left-color:var(--line)}
+
+/* ===== 講師「查看所有課程」連結 ===== */
+.t-all-courses{display:inline-block;margin-top:12px;color:var(--pri);font-weight:600;font-size:14px;text-decoration:none;transition:opacity .2s}
+.t-all-courses:hover{opacity:.7}
+.tprofile:hover{box-shadow:0 4px 24px rgba(0,0,0,.08);transform:translateY(-2px);transition:box-shadow .3s,transform .3s}
+
+/* ===== Blog 載入更多 ===== */
+.blog-hidden{display:none!important}
+.blog-load-more{text-align:center;margin:32px 0}
+.blog-card{transition:transform .3s,box-shadow .3s}
+.blog-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.08)}
+
+/* ===== 結帳步驟條 ===== */
+.ck-steps{display:flex;align-items:center;justify-content:center;gap:0;margin:32px 0 24px;padding:0 20px}
+.ck-step-item{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:60px}
+.ck-step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--line);color:var(--tx3);background:var(--bg)}
+.ck-step-item span:last-child{font-size:12px;color:var(--tx3);white-space:nowrap}
+.ck-step-item.done .ck-step-num{background:var(--pri);border-color:var(--pri);color:#fff}
+.ck-step-item.done span:last-child{color:var(--pri)}
+.ck-step-item.active .ck-step-num{border-color:var(--pri);color:var(--pri);background:rgba(124,92,255,.08)}
+.ck-step-item.active span:last-child{color:var(--tx);font-weight:600}
+.ck-step-line{flex:1;height:2px;background:var(--line);max-width:80px;margin:0 8px;margin-bottom:22px}
+.ck-step-line.done{background:var(--pri)}
+@media(max-width:480px){.ck-steps{gap:0;padding:0}.ck-step-num{width:28px;height:28px;font-size:11px}.ck-step-item span:last-child{font-size:10px}.ck-step-line{max-width:40px}}
 
 /* ===== 列印樣式 ===== */
 @media print{

@@ -1113,7 +1113,8 @@ function course() {
         <span class="chap-time">${l.time}</span>
       </li>`).join('')}</ul></div></div></div>`}).join('')}</section>
     <section class="c-sec" id="teacher"><h2 class="rv-up">講師介紹</h2><div class="tprofile rv-up"><img src="${img(c)}" alt=""><div><h3 style="font-size:22px">${c.teacher}</h3><div style="color:var(--pri);font-weight:700;margin:4px 0 10px">${c.role}</div><p style="color:var(--tx2)">擁有超過十年的業界經驗，合作過多個知名品牌與專案。希望把在第一線累積的經驗，用最好懂的方式分享給每一位想學習的人。</p>
-      <div class="t-stats"><span>📚 ${Math.ceil(c.hours / 3)} 堂課程</span><span>👥 ${(c.students * 3).toLocaleString()} 位學員</span><span>⭐ ${c.rating.toFixed(1)} 平均評分</span></div>
+      <div class="t-stats"><span>📚 ${C.filter(x=>x.teacher===c.teacher).length} 堂課程</span><span>👥 ${C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.students,0).toLocaleString()} 位學員</span><span>⭐ ${(C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.rating,0)/C.filter(x=>x.teacher===c.teacher).length).toFixed(1)} 平均評分</span></div>
+      <a href="instructor.html" class="t-all-courses">查看所有課程 →</a>
     </div></div></section>
     <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span style="color:var(--pri);font-size:18px">★ ${c.rating.toFixed(1)}</span> <span style="font-size:15px;color:var(--tx3);font-weight:400">(${c.students.toLocaleString()} 位學員)</span></h2>
       <div class="review-stats rv-up"><div class="rs-big"><b>${c.rating.toFixed(1)}</b><div class="rs-stars">★★★★★</div><div style="font-size:13px;color:var(--tx3)">${c.students.toLocaleString()} 則評價</div></div>
@@ -1906,16 +1907,17 @@ function blogPage() {
 
   <section class="sec"><div class="wrap">
     <div class="blog-grid" id="blog-grid">
-      ${posts.slice(1).map(p => `<a class="blog-card rv-up" href="article.html?id=${p.id}" data-cat="${p.cat}" data-kw="${(p.title + p.excerpt + (p.tags||[]).join('')).toLowerCase()}">
+      ${posts.slice(1).map((p, i) => `<a class="blog-card rv-up${i >= 6 ? ' blog-hidden' : ''}" href="article.html?id=${p.id}" data-cat="${p.cat}" data-kw="${(p.title + p.excerpt + (p.tags||[]).join('')).toLowerCase()}">
         <div class="blog-card-img"><img src="assets/img/v${p.v}.jpg" alt="" loading="lazy"></div>
         <div class="blog-card-body">
           <span class="blog-tag">${catMap[p.cat] || p.cat}</span>
           <h3>${p.title}</h3>
           <p>${p.excerpt}</p>
-          <div class="blog-meta">${p.author}・${p.date}・${p.readTime} 分鐘</div>
+          <div class="blog-meta">${p.author}・${p.date}・☕ ${p.readTime || Math.max(3, Math.ceil((p.excerpt||'').length / 100))} 分鐘閱讀</div>
         </div>
       </a>`).join('')}
     </div>
+    ${posts.length > 7 ? '<div class="blog-load-more rv-up" id="blog-more"><button class="btn btn-ghost blog-more-btn">載入更多文章</button></div>' : ''}
     <div class="blog-empty" id="blog-empty" style="display:none">
       <p>找不到符合的文章，試試其他關鍵字？</p>
     </div>
@@ -1961,6 +1963,13 @@ function blogPage() {
     $$('.blog-cats .chip', main).forEach(b => b.classList.toggle('on', b === btn));
     filterCards();
   });
+
+  const moreBtn = $('.blog-more-btn', main);
+  if (moreBtn) moreBtn.onclick = () => {
+    $$('#blog-grid .blog-hidden', main).forEach(c => { c.classList.remove('blog-hidden'); });
+    moreBtn.closest('.blog-load-more').style.display = 'none';
+    reveal(main);
+  };
 
   const nlBtn = $('#blog-nl-btn', main);
   if (nlBtn) nlBtn.onclick = () => {
@@ -3336,7 +3345,15 @@ function checkoutPage() {
   const saved = items.reduce((s, c) => s + (c.origin - c.price), 0);
 
   main.innerHTML = `<div class="wrap ck-wrap">
-    <a href="cart.html" class="ck-back">← 返回購物車</a>
+    <div class="ck-steps">
+      <div class="ck-step-item done"><span class="ck-step-num">✓</span><span>購物車</span></div>
+      <div class="ck-step-line done"></div>
+      <div class="ck-step-item active"><span class="ck-step-num">2</span><span>填寫資料</span></div>
+      <div class="ck-step-line"></div>
+      <div class="ck-step-item"><span class="ck-step-num">3</span><span>付款</span></div>
+      <div class="ck-step-line"></div>
+      <div class="ck-step-item"><span class="ck-step-num">4</span><span>完成</span></div>
+    </div>
     <h1 class="ck-title">結帳</h1>
     <div class="ck-layout">
       <div class="ck-left">
@@ -4790,12 +4807,18 @@ if (page === 'home') {
   });
 }
 
-// ── 回到頂部按鈕 ──
+// ── 回到頂部按鈕（含進度環）──
 {
-  const btt = document.createElement('button'); btt.className = 'btt'; btt.setAttribute('aria-label', '回到頂部'); btt.innerHTML = '↑';
+  const btt = document.createElement('button'); btt.className = 'btt'; btt.setAttribute('aria-label', '回到頂部');
+  btt.innerHTML = '<svg class="btt-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="rgba(124,92,255,.15)" stroke-width="2.5"/><circle class="btt-prog" cx="22" cy="22" r="20" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="125.66" stroke-dashoffset="125.66" stroke-linecap="round" transform="rotate(-90 22 22)"/></svg><span class="btt-arrow">↑</span>';
   document.body.append(btt);
   btt.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
-  addEventListener('scroll', () => { btt.classList.toggle('show', scrollY > 300); }, { passive: true });
+  const prog = btt.querySelector('.btt-prog');
+  addEventListener('scroll', () => {
+    const pct = scrollY / (document.documentElement.scrollHeight - innerHeight);
+    btt.classList.toggle('show', scrollY > 300);
+    if (prog) prog.style.strokeDashoffset = (125.66 * (1 - Math.min(pct, 1))).toFixed(1);
+  }, { passive: true });
 }
 
 // ── 文章頁閱讀進度條 ──
