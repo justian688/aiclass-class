@@ -2752,7 +2752,7 @@ function playerPage() {
   document.title = `${c.title}｜AI Class 播放器`;
   document.body.style.setProperty('--bg', '#070710');
 
-  const chapters = [
+  const fallbackChapters = [
     { name: '課程介紹與準備', lessons: [{ t: '講師介紹與課程地圖', dur: '08:24' }, { t: '工具安裝與環境設定', dur: '12:37' }, { t: '素材下載說明', dur: '05:12' }, { t: '課前暖身練習', dur: '09:45' }] },
     { name: '基礎觀念建立', lessons: [{ t: '核心原理完整拆解', dur: '18:30' }, { t: '常見錯誤與修正方式', dur: '14:22' }, { t: '基本操作演練', dur: '11:08' }, { t: '練習：第一個小作品', dur: '20:15' }, { t: '基礎觀念複習', dur: '06:40' }] },
     { name: '進階技巧', lessons: [{ t: '職人工作流程揭密', dur: '22:10' }, { t: '效率提升的五個祕訣', dur: '15:33' }, { t: '案例分析：品牌專案', dur: '19:47' }, { t: '進階工具與插件', dur: '13:25' }] },
@@ -2760,6 +2760,10 @@ function playerPage() {
     { name: '作品發表與職涯', lessons: [{ t: '作品集整理技巧', dur: '14:16' }, { t: '定價與接案策略', dur: '16:08' }, { t: '客戶溝通實戰', dur: '11:43' }, { t: '個人品牌經營', dur: '13:50' }] },
     { name: '加碼：業界趨勢', lessons: [{ t: '2026 趨勢觀察', dur: '10:28' }, { t: 'AI 輔助工作流程', dur: '18:35' }, { t: '講師推薦資源', dur: '07:12' }, { t: '結語與下一步', dur: '05:55' }] }
   ];
+  const randDur = () => { const m = 5 + Math.floor(Math.random() * 21), s = Math.floor(Math.random() * 60); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
+  const chapters = (window.CHAPTERS && window.CHAPTERS[c.id])
+    ? window.CHAPTERS[c.id].map(ch => ({ name: ch.title, lessons: ch.lessons.map(t => ({ t, dur: randDur() })) }))
+    : fallbackChapters;
 
   let curCh = 0, curLs = 0;
   const totalLessons = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
@@ -3395,15 +3399,12 @@ function orderCompletePage() {
 /* ---------- 優惠券 ---------- */
 function couponPage() {
   const main = $('main');
-  const coupons = [
-    { code: 'WELCOME20', desc: '新會員 8 折優惠', type: 'discount', amount: '8折', min: 3000, expire: '2026/12/31', used: false },
-    { code: 'DOUBLE11', desc: '雙 11 購課限定', type: 'amount', amount: 'NT$800', min: 5000, expire: '2026/11/15', used: false },
-    { code: 'BDAY500', desc: '生日禮金折抵', type: 'amount', amount: 'NT$500', min: 2000, expire: '2026/11/30', used: true },
-    { code: 'AI2026', desc: 'AI 系列課程專屬', type: 'discount', amount: '85折', min: 2000, expire: '2027/03/31', used: false },
-    { code: 'FREESHIP', desc: '免運費優惠', type: 'free', amount: '免運', min: 0, expire: '2026/12/31', used: false },
-  ];
   const now = new Date();
-  coupons.forEach(cp => { cp.expired = new Date(cp.expire) < now; });
+  const coupons = (window.COUPONS || []).map(cp => {
+    const amountTxt = cp.type === 'percent' ? `${cp.discount}% OFF` : `NT$${cp.discount}`;
+    const typeTxt = cp.type === 'percent' ? 'discount' : 'amount';
+    return { ...cp, amountTxt, typeTxt, expired: new Date(cp.expires) < now, used: false };
+  });
 
   const renderCoupons = filter => {
     let list = coupons;
@@ -3414,14 +3415,16 @@ function couponPage() {
     if (!list.length) { grid.innerHTML = '<div class="cpn-empty">目前沒有符合條件的優惠券</div>'; return; }
     grid.innerHTML = list.map(cp => `<div class="cpn-card ${cp.used ? 'used' : ''} ${cp.expired ? 'expired' : ''} rv-up">
       <div class="cpn-left">
-        <span class="cpn-badge ${cp.type}">${cp.type === 'discount' ? '折扣' : cp.type === 'amount' ? '折抵' : '免費'}</span>
+        <span class="cpn-badge ${cp.typeTxt}">${cp.type === 'percent' ? '折扣' : '折抵'}</span>
         <div class="cpn-desc">${cp.desc}</div>
         <div class="cpn-code-row"><span class="cpn-code">${cp.code}</span><button class="cpn-copy" onclick="navigator.clipboard.writeText('${cp.code}');toast('已複製優惠碼 ${cp.code}')">📋</button></div>
+        ${cp.cats ? `<div class="cpn-cats">${cp.cats.map(c => `<span class="cpn-cat-tag">${c}</span>`).join('')}</div>` : ''}
       </div>
       <div class="cpn-right">
-        <div class="cpn-amount">${cp.amount}</div>
+        <div class="cpn-amount">${cp.amountTxt}</div>
         ${cp.min > 0 ? `<div class="cpn-min">滿 NT$${cp.min.toLocaleString()} 可用</div>` : ''}
-        <div class="cpn-expire">有效期限 ${cp.expire}</div>
+        <div class="cpn-expire">有效期限 ${cp.expires}</div>
+        <div class="cpn-limit">限領 ${cp.limit} 張</div>
       </div>
     </div>`).join('');
     reveal(grid);
@@ -4528,4 +4531,39 @@ document.addEventListener('click', e => {
   scrollTo({ top: 0 });
   setTimeout(() => location.href = a.href, 300);
 });
+
+// ── 社群通知（Social Proof） ──
+if (page === 'home') {
+  const names = ['小明同學','設計女孩','AI 探索者','烘焙小廚','前端新手村','影像工作室','音樂創作者','理財小白','健身日記','插畫練習生'];
+  let spCount = 0;
+  const spTimer = setInterval(() => {
+    if (spCount >= 3) { clearInterval(spTimer); return; }
+    spCount++;
+    const name = names[Math.floor(Math.random() * names.length)];
+    const course = C[Math.floor(Math.random() * C.length)];
+    const el = document.createElement('div'); el.className = 'sp-toast';
+    el.innerHTML = `<img src="${img(course)}" alt=""><div><b>${name}</b> 剛剛購買了<br><span>${course.title.slice(0, 20)}</span></div>`;
+    document.body.append(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
+    setTimeout(() => { el.classList.remove('on'); setTimeout(() => el.remove(), 400); }, 3000);
+  }, 8000);
+}
+
+// ── 回到頂部按鈕 ──
+{
+  const btt = document.createElement('button'); btt.className = 'btt'; btt.setAttribute('aria-label', '回到頂部'); btt.innerHTML = '↑';
+  document.body.append(btt);
+  btt.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+  addEventListener('scroll', () => { btt.classList.toggle('show', scrollY > 300); }, { passive: true });
+}
+
+// ── 文章頁閱讀進度條 ──
+if (page === 'article') {
+  const bar = document.createElement('div'); bar.className = 'read-bar'; document.body.append(bar);
+  addEventListener('scroll', () => {
+    const pct = scrollY / (document.documentElement.scrollHeight - innerHeight) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+}
+
 })();
