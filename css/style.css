@@ -239,6 +239,16 @@ footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
 footer h4{color:var(--tx);font-size:15px;margin-bottom:12px}
 footer li{list-style:none;margin:6px 0}
 footer a:hover{color:var(--tx)}
+.ft-bottom{margin-top:40px;padding-top:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:20px;justify-content:space-between}
+.ft-social{display:flex;align-items:center;gap:10px}
+.ft-social span{font-weight:600;color:var(--tx2)}
+.ft-social a{font-size:20px;transition:transform .2s}
+.ft-social a:hover{transform:scale(1.2)}
+.ft-app{display:flex;align-items:center;gap:10px}
+.ft-app span{font-weight:600;color:var(--tx2)}
+.ft-app-btn{padding:6px 14px;border-radius:10px;background:rgba(124,92,255,.1);color:var(--pri);font-size:13px;font-weight:700;transition:.25s}
+.ft-app-btn:hover{background:rgba(124,92,255,.2)}
+.ft-bottom p{width:100%;text-align:center;margin-top:12px}
 
 /* 搜尋 overlay */
 .overlay{position:fixed;inset:0;z-index:300;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);opacity:0;visibility:hidden;transition:.35s}
@@ -1004,8 +1014,8 @@ body.hdr-hidden .tabs{top:0}
 .art-toc-link.on{border-left-color:var(--pri);color:var(--pri);font-weight:700;background:rgba(124,92,255,.06);border-radius:0 8px 8px 0}
 
 /* 文章 LINE 分享 */
-.c-share-btn{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;background:#06c755;color:#fff;font-size:14px;font-weight:600;transition:.25s;text-decoration:none}
-.c-share-btn:hover{opacity:.85}
+.c-share-line{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;background:#06c755;color:#fff;font-size:14px;font-weight:600;transition:.25s;text-decoration:none}
+.c-share-line:hover{opacity:.85}
 
 /* 文章 CTA 區 */
 .art-cta{text-align:center;padding:40px 32px;border-radius:22px;background:var(--bg2);border:1px solid var(--line);margin-top:32px}
@@ -1564,6 +1574,11 @@ body.loaded::before,body.loaded::after{opacity:0;visibility:hidden;pointer-event
 [data-theme="dark"] .login-options label{color:var(--tx2)}
 [data-theme="dark"] .login-footer{color:var(--tx2)}
 [data-theme="dark"] .login-logo img{filter:invert(1) hue-rotate(180deg)}
+[data-theme="dark"] .blog-nl-form input{background:rgba(255,255,255,.12);color:var(--tx)}
+[data-theme="dark"] .blog-search input,[data-theme="dark"] .ins-search input{background:var(--bg2);border-color:var(--line);color:var(--tx)}
+[data-theme="dark"] .abt-tl-dot{background:var(--bg);border-color:var(--pri)}
+[data-theme="dark"] .abt-tl-item:first-child .abt-tl-dot{background:var(--pri)}
+[data-theme="dark"] .abt-timeline::before{background:var(--line)}
 [data-theme="dark"] .ev-sticky-bar{background:rgba(11,11,16,.95);border-color:var(--line)}
 [data-theme="dark"] .cart-summary{background:var(--bg2);border-color:var(--line)}
 [data-theme="dark"] .cart-coupon-input input{background:var(--bg);border-color:var(--line);color:var(--tx)}
@@ -2212,6 +2227,16 @@ footer li a:hover::after{width:100%}
 .chip:hover{transform:translateY(-1px)}
 
 input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-text-fill-color:var(--tx)}
+
+/* Skeleton loading */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skeleton{background:linear-gradient(90deg,var(--bg2) 25%,rgba(124,92,255,.06) 50%,var(--bg2) 75%);background-size:800px 100%;animation:shimmer 1.5s infinite}
+
+/* Thread expand */
+.cmy-thread .cmy-thread-preview{max-height:2.4em;overflow:hidden;transition:max-height .3s}
+.cmy-thread.expanded .cmy-thread-preview{max-height:200px}
+.cmy-thread-title{color:var(--pri);transition:opacity .2s}
+.cmy-thread-title:hover{opacity:.75}
 [data-theme="dark"] input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px #14141e inset}
 
 .back-top{transition:opacity .3s,transform .3s,background .25s,box-shadow .25s}
@@ -2550,6 +2575,7 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
   .bootcamp{padding:18px}
   .bc-tag{font-size:11px}
   .ins-card{padding:20px}
+  .ins-grid{grid-template-columns:1fr}
   .qz-grid{grid-template-columns:1fr}
   .qz-card{padding:20px}
   .topbar{font-size:12px;padding:7px 12px}

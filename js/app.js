@@ -214,7 +214,12 @@ function shell() {
     <div><h4>課程分類</h4><ul>${window.CATS.slice(1, 6).map(c => `<li><a href="index.html#cat-${c.id}">${c.name}</a></li>`).join('')}</ul></div>
     <div><h4>關於</h4><ul><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li><li><a href="invite.html">邀請好友</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li><li><a href="leaderboard.html">排行榜</a></li></ul></div>
     <div><h4>支援</h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="coupon.html">優惠券</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li></ul></div>
-  </div><p style="margin-top:40px">© ${new Date().getFullYear()} AI Class. All rights reserved. 影片素材來源：Mixkit（免費授權）</p></div>`;
+  </div>
+  <div class="ft-bottom">
+    <div class="ft-social"><span>追蹤我們</span><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div>
+    <div class="ft-app"><span>下載 AI Class App</span><a href="#" class="ft-app-btn" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 iOS</a><a href="#" class="ft-app-btn" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Android</a></div>
+    <p>© ${new Date().getFullYear()} AI Class. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
+  </div></div>`;
   document.body.append(ft);
 
   const mn = document.createElement('nav'); mn.className = 'mnav';
@@ -922,7 +927,7 @@ function course() {
       <div class="c-share rv-up">
         <span>分享課程</span>
         <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>
-        <a class="c-share-btn" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="LINE 分享">💬 LINE</a>
+        <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="LINE 分享">💬 LINE</a>
       </div>
     </div>
     <aside class="buy">
@@ -1718,7 +1723,7 @@ function blogPage() {
   </div></section>
 
   <section class="sec"><div class="wrap">
-    <a class="blog-feat rv-up" href="article.html?id=${featured.id}">
+    <a class="blog-feat rv-up" id="blog-feat" href="article.html?id=${featured.id}" data-cat="${featured.cat}" data-kw="${(featured.title + featured.excerpt + (featured.tags||[]).join('')).toLowerCase()}">
       <div class="blog-feat-img"><img src="assets/img/v${featured.v}.jpg" alt="" loading="lazy"></div>
       <div class="blog-feat-body">
         <span class="blog-tag">${catMap[featured.cat] || featured.cat}</span>
@@ -1763,6 +1768,13 @@ function blogPage() {
     const activeCat = $('.blog-cats .chip.on', main)?.dataset.cat || 'all';
     const q = (blogQ.value || '').toLowerCase().trim();
     let visible = 0;
+    const feat = $('#blog-feat', main);
+    if (feat) {
+      const fCatOk = activeCat === 'all' || feat.dataset.cat === activeCat;
+      const fQOk = !q || (feat.dataset.kw || '').includes(q);
+      feat.closest('section').style.display = (fCatOk && fQOk) ? '' : 'none';
+      if (fCatOk && fQOk) visible++;
+    }
     $$('#blog-grid .blog-card', main).forEach(c => {
       const catOk = activeCat === 'all' || c.dataset.cat === activeCat;
       const qOk = !q || (c.dataset.kw || '').includes(q);
@@ -1853,7 +1865,7 @@ function articlePage() {
       <div class="art-share rv-up">
         <span>分享這篇文章</span>
         <button onclick="navigator.clipboard.writeText(location.href);toast('已複製連結')">📋 複製連結</button>
-        <a class="c-share-btn" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">💬 LINE</a>
+        <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">💬 LINE</a>
       </div>
       <div class="art-cta rv-up">
         <h3>想深入學習？</h3>
@@ -3825,7 +3837,7 @@ function communityPage() {
         <div class="cmy-avatar" style="--av-c:${catColors[t.cat]||'var(--pri)'}">${t.init}</div>
         <div class="cmy-thread-main">
           <div class="cmy-thread-meta"><span class="cmy-user">${t.user}</span><span class="cmy-tag" style="--tag-c:${catColors[t.cat]||'var(--pri)'}">${t.cat}</span><span class="cmy-time">${t.time}</span></div>
-          <h3 class="cmy-thread-title"><a href="#">${t.title}</a></h3>
+          <h3 class="cmy-thread-title" style="cursor:pointer" onclick="this.closest('.cmy-thread').classList.toggle('expanded');toast(this.closest('.cmy-thread').classList.contains('expanded')?'展開討論':'收合討論')">${t.title}</h3>
           <p class="cmy-thread-preview">${t.preview}</p>
           <div class="cmy-thread-stats"><span>👁 ${t.views.toLocaleString()}</span><span>💬 ${t.replies}</span><span>♡ ${t.likes}</span></div>
         </div>
