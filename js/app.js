@@ -1422,6 +1422,18 @@ function course() {
       <p class="cl-note">已購買的學員自動享有所有更新內容</p>
     </section>
     ${(() => { const lv = courseLevel(c); const wk = lv.weeks; const hpw = Math.ceil(c.hours / wk); const plans = []; for (let w = 0; w < Math.min(wk, 6); w++) { const from = Math.floor(w * chapters.length / wk); const to = Math.floor((w + 1) * chapters.length / wk); const names = chapters.slice(from, to).map(ch => ch.name).join('、'); plans.push({ week: w + 1, chapters: names || '複習與作品完善', hours: hpw }); } if (wk > 6) plans.push({ week: '7+', chapters: '進階練習與作品集整理', hours: hpw }); return `<section class="c-sec c-plan rv-up" id="plan"><h2>📅 建議學習計畫<span class="c-plan-badge">${wk} 週完成</span></h2><p class="c-plan-sub">每週投入約 ${hpw} 小時，${wk} 週完成全部課程</p><div class="c-plan-timeline">${plans.map(p => `<div class="c-plan-item"><div class="c-plan-week">第 ${p.week} 週</div><div class="c-plan-content"><b>${p.chapters}</b><span>${p.hours} 小時</span></div></div>`).join('')}</div><div class="c-plan-tip">💡 以上為建議進度，你可以依自己的節奏調整。重要的是持續學習！</div></section>`; })()}
+    ${(() => {
+      if (isOwned) return '';
+      const pair = C.filter(x => x.id !== c.id && x.cat === c.cat).sort((a, b) => b.rating - a.rating).slice(0, 2);
+      if (pair.length < 2) return '';
+      const combo = [c, ...pair];
+      const total = combo.reduce((s, x) => s + x.origin, 0);
+      const discounted = Math.round(combo.reduce((s, x) => s + x.price, 0) * 0.88);
+      const saved = total - discounted;
+      return `<div class="fbt-sec rv-up"><h3 class="fbt-head">🛒 搭配購買更划算</h3>
+        <div class="fbt-items">${combo.map((x, i) => `${i ? '<span class="fbt-plus">+</span>' : ''}<a class="fbt-card" href="course.html?id=${x.id}"><img src="${img(x)}" alt="${x.title}"><div class="fbt-card-info"><b>${x.title.length > 16 ? x.title.slice(0,16) + '…' : x.title}</b><span>${x.teacher}・${fmt(x.price)}</span></div></a>`).join('')}</div>
+        <div class="fbt-total"><div class="fbt-total-left"><del>${fmt(total)}</del><b>${fmt(discounted)}</b><span class="fbt-save">省下 ${fmt(saved)}（${Math.round((1 - discounted / total) * 100)}% OFF）</span></div><button class="btn btn-pri fbt-buy" onclick="toast('已將 ${combo.length} 門課程加入購物車 🛒')">一起加入購物車</button></div></div>`;
+    })()}
     <div class="c-guarantee rv-up">
       <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">購買後 7 天內，覺得不適合可全額退費，零風險。</div></div>
       <div class="c-guarantee-item"><div class="c-guarantee-icon">♾️</div><div class="c-guarantee-title">無限期觀看</div><div class="c-guarantee-desc">一次購買，終身觀看，隨時隨地複習。</div></div>
@@ -6072,7 +6084,7 @@ if (page === 'home' || page === 'course' || page === 'category') {
 }
 
 // ── 文章頁閱讀進度條 ──
-if (page === 'article') {
+if (page === 'article' || page === 'course') {
   const bar = document.createElement('div'); bar.className = 'read-bar'; document.body.append(bar);
   addEventListener('scroll', () => {
     const pct = scrollY / (document.documentElement.scrollHeight - innerHeight) * 100;
@@ -6190,6 +6202,35 @@ function openRecommendQuiz() {
   };
   resetBtn.onclick = () => { running = false; elapsed = 0; clearInterval(interval); timerState.running = false; timerState.elapsed = 0; timerState.start = 0; sessionStorage.setItem('aic-timer', JSON.stringify(timerState)); display.textContent = '00:00:00'; startBtn.textContent = '▶ 開始'; tw.classList.remove('active'); };
   tw.querySelector('.st-toggle').onclick = () => tw.classList.toggle('open');
+}
+
+// ── 圖片 Lightbox ──
+{
+  const lb = document.createElement('div'); lb.className = 'lb-overlay'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true'); lb.setAttribute('aria-label', '圖片檢視');
+  lb.innerHTML = `<button class="lb-close" aria-label="關閉">✕</button><button class="lb-nav lb-prev" aria-label="上一張">‹</button><img alt=""><button class="lb-nav lb-next" aria-label="下一張">›</button><div class="lb-counter"></div>`;
+  document.body.append(lb);
+  let lbImgs = [], lbIdx = 0;
+  const lbImg = lb.querySelector('img'), lbCtr = lb.querySelector('.lb-counter');
+  const showLb = i => { lbIdx = (i + lbImgs.length) % lbImgs.length; lbImg.src = lbImgs[lbIdx]; lbCtr.textContent = `${lbIdx + 1} / ${lbImgs.length}`; };
+  const closeLb = () => lb.classList.remove('on');
+  lb.querySelector('.lb-close').onclick = closeLb;
+  lb.querySelector('.lb-prev').onclick = () => showLb(lbIdx - 1);
+  lb.querySelector('.lb-next').onclick = () => showLb(lbIdx + 1);
+  lb.onclick = e => { if (e.target === lb) closeLb(); };
+  document.addEventListener('keydown', e => { if (!lb.classList.contains('on')) return; if (e.key === 'Escape') closeLb(); else if (e.key === 'ArrowLeft') showLb(lbIdx - 1); else if (e.key === 'ArrowRight') showLb(lbIdx + 1); });
+  document.addEventListener('click', e => {
+    const g = e.target.closest('.gallery');
+    if (!g) return;
+    const clicked = e.target.closest('.gallery div');
+    if (!clicked) return;
+    const imgEl = clicked.querySelector('img');
+    if (!imgEl) return;
+    e.preventDefault();
+    lbImgs = [...g.querySelectorAll('img')].map(i => i.src);
+    const ci = lbImgs.indexOf(imgEl.src);
+    lb.classList.add('on');
+    showLb(ci >= 0 ? ci : 0);
+  });
 }
 
 // ── 影片懶載入（IntersectionObserver） ──
