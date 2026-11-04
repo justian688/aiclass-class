@@ -1207,7 +1207,7 @@ function course() {
       </div>
     </aside>
   </div></div></div>
-  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a></div></nav>
+  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
       <div class="c-highlights rv-up">${['從零到一完整學習','業界實戰流程','可直接使用的專案檔','講師親自回覆問題','終身免費更新','完課證書'].map(t=>`<span class="c-hl">${t}</span>`).join('')}</div>
@@ -2246,7 +2246,10 @@ function articlePage() {
     url: `https://aiclass.tw/article.html?id=${post.id}`,
     img: `https://aiclass.tw/assets/img/v${post.v}.jpg`,
     ogType: 'article',
-    jsonLd: { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.excerpt, author: { '@type': 'Person', name: post.author }, datePublished: post.date, image: `https://aiclass.tw/assets/img/v${post.v}.jpg`, publisher: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' } }
+    jsonLd: [
+      { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.excerpt, author: { '@type': 'Person', name: post.author }, datePublished: post.date, image: `https://aiclass.tw/assets/img/v${post.v}.jpg`, publisher: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' } },
+      { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: '學習專欄', item: 'https://aiclass.tw/blog.html' }, { '@type': 'ListItem', position: 3, name: post.title }] }
+    ]
   });
 
   const body = `<p>在當今快速變化的時代，持續學習已經不再是選項，而是每個專業人士的必修課。${post.excerpt}</p>
