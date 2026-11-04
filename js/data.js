@@ -731,6 +731,209 @@ window.CHAPTERS = {
     { ch: 3, title: '搭配公式', lessons: ['配色三法則', '比例與層次', '材質混搭技巧', '配件點睛術', '實作：一週穿搭計畫'], duration: 55 },
     { ch: 4, title: '場合穿搭', lessons: ['職場正式穿搭', '休閒日常風格', '約會穿搭建議', '旅行膠囊衣櫥', '特殊場合穿著'], duration: 50 },
     { ch: 5, title: '風格進化', lessons: ['購物策略與預算', '品牌認識與選擇', '季節轉換技巧', '建立個人風格識別', '期末：風格指南手冊'], duration: 40 }
+  ],
+  c32: [
+    { ch: 1, title: '認識瑜伽', lessons: ['瑜伽的起源與流派', '裝備與空間準備', '呼吸法基礎', '暖身與收操'], duration: 40 },
+    { ch: 2, title: '基礎體位法', lessons: ['站姿系列', '坐姿與前彎', '後彎與扭轉', '平衡體位法', '倒立入門'], duration: 65 },
+    { ch: 3, title: '序列編排', lessons: ['拜日式 A/B', '20 分鐘晨間流動', '辦公室舒緩序列', '睡前放鬆序列'], duration: 55 },
+    { ch: 4, title: '進階練習', lessons: ['核心穩定訓練', '髖關節開展', '手平衡入門', '深度後彎', '冥想引導'], duration: 70 },
+    { ch: 5, title: '融入生活', lessons: ['建立每日練習習慣', '飲食與能量管理', '傷害預防與修復', '期末：設計你的 30 天計畫'], duration: 45 }
+  ],
+  c35: [
+    { ch: 1, title: '前製企劃', lessons: ['微電影 vs 短片差異', '故事發想與大綱', '劇本格式與寫作', '分鏡腳本繪製', '預算與團隊組建'], duration: 80 },
+    { ch: 2, title: '拍攝技術', lessons: ['攝影機設定與鏡頭', '打光基礎（三點布光）', '收音與現場錄音', '導演與演員溝通'], duration: 75 },
+    { ch: 3, title: '剪輯後製', lessons: ['Premiere 剪輯流程', '節奏與敘事剪接', '調色基礎（DaVinci）', '字幕與標題設計'], duration: 85 },
+    { ch: 4, title: '聲音設計', lessons: ['對白剪輯與處理', 'Foley 音效製作', '配樂選曲與授權', '混音與輸出規格', '5.1 聲道入門'], duration: 70 },
+    { ch: 5, title: '發行上映', lessons: ['影展投稿策略', 'YouTube / Vimeo 上架', '海報與預告片製作', '觀眾 Q&A 準備', '期末：完整短片發表'], duration: 60 }
+  ],
+  c37: [
+    { ch: 1, title: '故事原理', lessons: ['為什麼人需要故事', '三幕結構', '英雄旅程模型', '衝突與張力設計'], duration: 65 },
+    { ch: 2, title: '角色塑造', lessons: ['角色弧線設計', '對白寫作技巧', '動機與缺陷', '配角功能與群像', '角色履歷表練習'], duration: 75 },
+    { ch: 3, title: '場景與敘事', lessons: ['場景功能分析', '視角選擇', '時間軸操控', '伏筆與呼應', '實作：短篇故事'], duration: 80 },
+    { ch: 4, title: '劇本寫作', lessons: ['劇本格式規範', '場景描述技巧', '對白節奏', '改編與原創差異'], duration: 70 },
+    { ch: 5, title: '投稿與出版', lessons: ['自我編輯方法', '文學獎投稿指南', '出版社提案', '自出版流程', '期末：完整短篇或劇本'], duration: 55 }
+  ],
+  c39: [
+    { ch: 1, title: 'ZBrush 入門', lessons: ['介面與導航', 'ZSphere 基礎建模', '遮罩與提取', 'DynaMesh 工作流', '對稱雕塑'], duration: 90 },
+    { ch: 2, title: '角色雕塑', lessons: ['人體比例參考', '頭部與五官雕塑', '身體肌肉結構', '手腳細節', '衣物與裝備雕塑'], duration: 120 },
+    { ch: 3, title: '拓撲與 UV', lessons: ['ZRemesher 自動拓撲', '手動拓撲（Blender）', 'UV 展開策略', 'UDIM 多 UV 集', '低模 / 高模匹配'], duration: 100 },
+    { ch: 4, title: 'Substance Painter', lessons: ['材質圖層系統', '智能材質與遮罩', '手繪細節', '風格化 vs 寫實', '貼圖匯出設定'], duration: 110 },
+    { ch: 5, title: '作品整合', lessons: ['Marmoset Toolbag 展示', '骨架綁定基礎', '作品集 Turntable', 'ArtStation 上傳', '期末：完整角色作品'], duration: 80 }
+  ],
+  c40: [
+    { ch: 1, title: 'Aseprite 基礎', lessons: ['介面與工具列', '調色盤建立', '圖層與畫格', '基本筆刷技巧'], duration: 50 },
+    { ch: 2, title: '角色設計', lessons: ['角色比例（16x16 到 64x64）', '站立與行走動畫', '攻擊與受傷動畫', '表情與對話框'], duration: 70 },
+    { ch: 3, title: '場景繪製', lessons: ['Tile 拼接原理', '地形與建築繪製', '前景與背景層次', '動態元素（水/火/煙）', '光影與氛圍'], duration: 75 },
+    { ch: 4, title: 'UI 與特效', lessons: ['像素字體設計', '選單與 HUD', '粒子特效動畫', '轉場效果'], duration: 60 },
+    { ch: 5, title: '整合與輸出', lessons: ['Sprite Sheet 匯出', '匯入遊戲引擎', 'Itch.io 上架', '社群經營', '期末：完整像素遊戲素材包'], duration: 50 }
+  ],
+  c43: [
+    { ch: 1, title: '美甲基礎', lessons: ['工具與材料認識', '手部護理與前置', '甲面處理技巧', '凝膠上色基礎', '卸甲與保養'], duration: 55 },
+    { ch: 2, title: '單色與漸層', lessons: ['顯白色系選擇', '單色均勻上色', '暈染漸層技巧', '法式美甲', '鏡面美甲'], duration: 65 },
+    { ch: 3, title: '彩繪技巧', lessons: ['線條與幾何圖形', '花卉手繪', '大理石紋', '暈染水彩風', '貓眼膠運用'], duration: 75 },
+    { ch: 4, title: '立體與飾品', lessons: ['立體雕花入門', '金屬飾品配置', '貼紙與轉印', '寶石鑲嵌', '日式風格設計'], duration: 70 },
+    { ch: 5, title: '接案與經營', lessons: ['定價與成本計算', '作品拍攝技巧', '社群行銷', '客戶溝通', '期末：10 款設計作品集'], duration: 50 }
+  ],
+  c44: [
+    { ch: 1, title: '底妝基礎', lessons: ['膚質判斷與保養', '妝前準備與防曬', '粉底液選色與上法', '遮瑕技巧', '定妝與持妝'], duration: 60 },
+    { ch: 2, title: '眉眼妝容', lessons: ['眉型設計與修眉', '自然眉畫法', '眼影配色基礎', '眼線與睫毛', '韓系臥蠶妝'], duration: 70 },
+    { ch: 3, title: '唇頰與修容', lessons: ['腮紅位置與手法', '修容與打亮', '唇色選擇', '咬唇妝技巧', '光澤肌打造'], duration: 55 },
+    { ch: 4, title: '場合妝容', lessons: ['日常通勤妝', '約會甜美妝', '面試氣質妝', '派對亮眼妝', '拍照上鏡妝'], duration: 65 },
+    { ch: 5, title: '進階技巧', lessons: ['不同臉型修飾', '單眼皮放大術', '持妝補妝技巧', '化妝品收納', '期末：完整妝容作品'], duration: 45 }
+  ],
+  c46: [
+    { ch: 1, title: '咖啡入門', lessons: ['咖啡豆產區與風味', '烘焙度與研磨度', '水質與水溫', '基本萃取原理'], duration: 50 },
+    { ch: 2, title: '手沖技法', lessons: ['V60 手沖流程', '法蘭絨濾布沖泡', 'Kalita 蛋糕濾杯', '愛樂壓與虹吸壺', '萃取參數調整'], duration: 70 },
+    { ch: 3, title: '義式咖啡', lessons: ['濃縮萃取基礎', '磨豆機調整', '牛奶蒸氣打發', '拿鐵拉花基礎', '進階拉花圖形'], duration: 80 },
+    { ch: 4, title: '創意飲品', lessons: ['冰滴與冷萃', '特調風味設計', '季節限定飲品', '非咖啡因選項'], duration: 55 },
+    { ch: 5, title: '開店準備', lessons: ['設備採購清單', '菜單設計與定價', '空間規劃', '食安與證照', '期末：完整菜單企劃'], duration: 50 }
+  ],
+  c49: [
+    { ch: 1, title: 'AI 基礎操作', lessons: ['介面與工作區', '選取與路徑工具', '鋼筆工具精通', '形狀建構器', '圖層與外觀面板'], duration: 80 },
+    { ch: 2, title: '向量繪圖', lessons: ['幾何圖形組合', '漸層與網格填色', '筆刷與圖樣', '透視繪圖', '實作：向量插畫'], duration: 95 },
+    { ch: 3, title: '文字排版', lessons: ['文字工具進階', '段落樣式', '文字繞圖', '字體配對', '實作：海報設計'], duration: 75 },
+    { ch: 4, title: '品牌應用', lessons: ['Logo 設計流程', '名片與信封', '社群媒體模板', '包裝展開圖', 'Mockup 合成'], duration: 90 },
+    { ch: 5, title: '接案實務', lessons: ['作品集整理', '客戶提案流程', '檔案規格與輸出', '印刷注意事項', '期末：完整品牌設計'], duration: 65 }
+  ],
+  c50: [
+    { ch: 1, title: '品牌策略', lessons: ['品牌定位與價值主張', '目標受眾分析', '品牌人格與語調', '競爭者品牌分析', '品牌故事撰寫'], duration: 70 },
+    { ch: 2, title: '視覺識別', lessons: ['Logo 設計方法論', '色彩系統建立', '字體選擇與配對', '輔助圖形設計', '品牌圖庫建立'], duration: 90 },
+    { ch: 3, title: '應用系統', lessons: ['名片與文具', '簡報模板', '社群媒體套件', '包裝設計', '空間導視設計'], duration: 85 },
+    { ch: 4, title: '品牌規範', lessons: ['品牌手冊架構', 'Logo 使用規範', '色彩與字體規範', '攝影與插畫風格', '數位應用規範'], duration: 75 },
+    { ch: 5, title: '品牌管理', lessons: ['品牌一致性維護', '品牌延伸策略', '危機處理', '品牌價值評估', '期末：完整品牌手冊'], duration: 60 }
+  ],
+  c51: [
+    { ch: 1, title: '花藝入門', lessons: ['花材認識與季節', '工具與器材', '花材處理與保鮮', '色彩搭配原則'], duration: 45 },
+    { ch: 2, title: '花束製作', lessons: ['螺旋手綁花束', '韓式自然風花束', '迷你花束', '乾燥花束', '包裝與緞帶'], duration: 65 },
+    { ch: 3, title: '桌花與盆花', lessons: ['圓形桌花', '長形餐桌花藝', '投入式花藝', '多肉組盆', '觀葉植物搭配'], duration: 60 },
+    { ch: 4, title: '場合花藝', lessons: ['婚禮捧花', '胸花與手腕花', '花牆與拱門', '喪禮花籃', '節慶花藝'], duration: 70 },
+    { ch: 5, title: '花藝事業', lessons: ['定價與成本', '網路接單流程', '拍攝與社群', '開店準備', '期末：作品集完成'], duration: 45 }
+  ],
+  c52: [
+    { ch: 1, title: '空間診斷', lessons: ['小坪數常見問題', '動線規劃原則', '測量與平面圖', '風格定位'], duration: 50 },
+    { ch: 2, title: '色彩與材質', lessons: ['牆面配色策略', '地板材質選擇', '窗簾與軟裝', '燈光計畫', '材質拼接技巧'], duration: 65 },
+    { ch: 3, title: '收納系統', lessons: ['斷捨離實踐', '櫃體規劃', '開放式 vs 封閉式', '廚房收納', '衣櫃系統'], duration: 60 },
+    { ch: 4, title: '空間改造', lessons: ['客廳改造案例', '臥室舒適度提升', '廚房翻新', '浴室升級', '陽台利用'], duration: 70 },
+    { ch: 5, title: 'DIY 與採購', lessons: ['油漆 DIY', '簡易木工', 'IKEA 改造術', '採購清單與預算', '期末：改造計畫書'], duration: 55 }
+  ],
+  c54: [
+    { ch: 1, title: 'SEO 基礎', lessons: ['搜尋引擎運作原理', 'Google 演算法演進', 'SEO 三大支柱', '免費工具介紹'], duration: 60 },
+    { ch: 2, title: '關鍵字策略', lessons: ['關鍵字研究方法', '搜尋意圖分類', '長尾關鍵字策略', '競爭度分析', '關鍵字地圖'], duration: 75 },
+    { ch: 3, title: '站內 SEO', lessons: ['Title 與 Meta 優化', '標題結構（H1-H6）', '內部連結策略', '圖片 SEO', '結構化資料'], duration: 80 },
+    { ch: 4, title: '站外與技術 SEO', lessons: ['反向連結策略', 'Guest Post 操作', '網站速度優化', '行動裝置友善', 'Core Web Vitals'], duration: 85 },
+    { ch: 5, title: '進階策略', lessons: ['內容行銷整合', 'Google Search Console', '排名追蹤與報表', 'AI 時代的 SEO', '期末：SEO 稽核報告'], duration: 65 }
+  ],
+  c56: [
+    { ch: 1, title: '混音概論', lessons: ['混音在音樂製作中的角色', 'DAW 設定與模板', '音量平衡基礎', '聲相配置'], duration: 60 },
+    { ch: 2, title: 'EQ 與壓縮', lessons: ['頻率與 EQ 類型', '減法 EQ 技巧', '壓縮器原理', '壓縮參數設定', '並聯壓縮'], duration: 80 },
+    { ch: 3, title: '空間效果', lessons: ['Reverb 類型與選擇', 'Delay 創意應用', '自動化效果', '立體聲寬度', '深度營造'], duration: 75 },
+    { ch: 4, title: '進階處理', lessons: ['人聲混音流程', '鼓組處理', '吉他與貝斯', '合成器與電子元素', 'Bus 混音技巧'], duration: 90 },
+    { ch: 5, title: '母帶與發行', lessons: ['母帶處理基礎', 'LUFS 與響度標準', '各平台規格', '發行流程', '期末：混音一首完整歌曲'], duration: 65 }
+  ],
+  c58: [
+    { ch: 1, title: '設計思維導論', lessons: ['什麼是產品設計思維', '雙鑽石模型', '以人為本的設計', '商業與使用者平衡'], duration: 55 },
+    { ch: 2, title: '需求探索', lessons: ['使用者訪談技巧', '同理心地圖', '旅程地圖繪製', '痛點與機會分析', 'How Might We'], duration: 70 },
+    { ch: 3, title: '概念發想', lessons: ['腦力激盪方法', 'Crazy 8s 練習', '概念篩選矩陣', '故事板製作'], duration: 60 },
+    { ch: 4, title: '原型與驗證', lessons: ['低保真原型', 'Figma 互動原型', '易用性測試', 'A/B 測試設計', '數據驅動決策'], duration: 75 },
+    { ch: 5, title: 'MVP 落地', lessons: ['MVP 定義與範圍', '技術可行性評估', '上線後追蹤指標', '迭代策略', '期末：產品設計提案'], duration: 60 }
+  ],
+  c59: [
+    { ch: 1, title: 'Webflow 入門', lessons: ['帳號與專案建立', '介面導覽', 'Box Model 概念', 'Flexbox 排版', 'Grid 排版'], duration: 70 },
+    { ch: 2, title: '頁面設計', lessons: ['導覽列設計', 'Hero 區塊', '內容區塊組合', '表單設計', '頁尾設計'], duration: 80 },
+    { ch: 3, title: '動態與互動', lessons: ['滾動動畫', 'Hover 效果', '頁面轉場', 'Lottie 整合', '自訂游標'], duration: 75 },
+    { ch: 4, title: 'CMS 與動態內容', lessons: ['CMS 集合建立', '動態頁面模板', '篩選與排序', '部落格系統', '作品集系統'], duration: 85 },
+    { ch: 5, title: '上線與優化', lessons: ['自訂網域', 'SEO 設定', '表單串接', '效能優化', '期末：完整作品集網站'], duration: 60 }
+  ],
+  c60: [
+    { ch: 1, title: '動畫原理', lessons: ['12 法則概述', '時間與間距', '擠壓與伸展', '預備動作', '弧形運動'], duration: 65 },
+    { ch: 2, title: 'Spine 基礎', lessons: ['Spine 介面導覽', '骨架建立', '蒙皮與權重', 'IK 約束', '槽位與附件'], duration: 80 },
+    { ch: 3, title: '角色動畫', lessons: ['待機動畫', '行走循環', '跑步循環', '跳躍動畫', '攻擊動畫'], duration: 90 },
+    { ch: 4, title: '進階技巧', lessons: ['表情動畫', '衣物與頭髮', '特效骨骼', '動畫混合', '事件觸發'], duration: 85 },
+    { ch: 5, title: '遊戲整合', lessons: ['匯出到 Unity', '匯出到 Godot', '狀態機設定', '最佳化建議', '期末：完整角色動畫集'], duration: 60 }
+  ],
+  c61: [
+    { ch: 1, title: '麵包基礎', lessons: ['麵粉與酵母認識', '基礎揉麵技巧', '發酵判斷方法', '烤箱溫度與蒸氣', '基礎圓麵包'], duration: 70 },
+    { ch: 2, title: '鄉村麵包', lessons: ['高水量麵團處理', '免揉法拖拉折疊', '鑄鐵鍋烘烤', '割紋設計', '不同粉類搭配'], duration: 80 },
+    { ch: 3, title: '酸種培養', lessons: ['酸種起種養成', '餵養與維護', '酸種時間表', '酸種鄉村麵包', '酸種鬆餅與披薩'], duration: 85 },
+    { ch: 4, title: '歐式麵包', lessons: ['法式長棍', '巧巴達', '佛卡夏', '裸麥麵包', '全穀物麵包'], duration: 90 },
+    { ch: 5, title: '進階與販售', lessons: ['造型麵包', '內餡與抹醬', '保存與回烤', '定價與包裝', '期末：5 款麵包作品'], duration: 60 }
+  ],
+  c62: [
+    { ch: 1, title: '中式糕點基礎', lessons: ['油皮油酥原理', '材料與工具', '內餡製備', '基礎包餡手法'], duration: 60 },
+    { ch: 2, title: '月餅系列', lessons: ['廣式月餅皮', '蛋黃蓮蓉餡', '冰皮月餅', '台式綠豆椪', '模具與壓製'], duration: 80 },
+    { ch: 3, title: '鳳梨酥與蛋黃酥', lessons: ['土鳳梨餡熬煮', '鳳梨酥油皮調配', '蛋黃酥層次技巧', '蛋黃處理', '烘烤與上色'], duration: 85 },
+    { ch: 4, title: '其他糕點', lessons: ['太陽餅', '老婆餅', '牛舌餅', '芋頭酥', '綠豆糕'], duration: 75 },
+    { ch: 5, title: '包裝與販售', lessons: ['食品安全法規', '包裝設計', '保存期限管理', '網路販售通路', '期末：禮盒組合企劃'], duration: 50 }
+  ],
+  c63: [
+    { ch: 1, title: 'TypeScript 入門', lessons: ['為何選擇 TypeScript', '安裝與 tsconfig', '基礎型別', '型別推斷', '聯合與交集型別'], duration: 70 },
+    { ch: 2, title: '進階型別', lessons: ['泛型基礎', '泛型約束', '條件型別', 'Mapped Types', 'Template Literal Types'], duration: 90 },
+    { ch: 3, title: '實戰應用', lessons: ['React + TypeScript', 'API 型別定義', 'Zod 驗證整合', '型別安全的狀態管理', 'Prisma 型別'], duration: 95 },
+    { ch: 4, title: '工具與設定', lessons: ['ESLint + TypeScript', 'Path Alias 設定', '宣告檔案撰寫', 'Monorepo 型別共享', '效能最佳化'], duration: 75 },
+    { ch: 5, title: '大型專案', lessons: ['架構設計模式', '錯誤處理策略', '測試與型別', '遷移 JS 專案', '期末：全型別安全 App'], duration: 70 }
+  ],
+  c64: [
+    { ch: 1, title: '攝影基礎', lessons: ['相機設定與白平衡', '光圈快門 ISO', '商品攝影器材', '手機拍攝設定'], duration: 55 },
+    { ch: 2, title: '打光技巧', lessons: ['自然光運用', '單燈布光', '柔光箱與反光板', '透射光與輪廓光', '多燈組合'], duration: 75 },
+    { ch: 3, title: '商品類型', lessons: ['服飾平拍與穿搭', '食物攝影', '透明物品（玻璃/液體）', '金屬與反光物品', '小物與飾品'], duration: 80 },
+    { ch: 4, title: '後製修圖', lessons: ['Lightroom 基礎調色', '去背與合成', '修瑕與質感強化', '批次處理', '社群尺寸裁切'], duration: 70 },
+    { ch: 5, title: '電商應用', lessons: ['白底去背商品圖', '情境圖拍攝', '影片商品展示', '圖片 SEO', '期末：10 件商品攝影'], duration: 60 }
+  ],
+  c65: [
+    { ch: 1, title: 'Godot 入門', lessons: ['Godot 安裝與介面', '場景與節點系統', 'GDScript 基礎', '輸入與物理', '第一個小遊戲'], duration: 80 },
+    { ch: 2, title: '2D 遊戲開發', lessons: ['Tilemap 地圖編輯', '角色控制器', '敵人 AI', '碰撞與傷害', 'UI 系統'], duration: 100 },
+    { ch: 3, title: '3D 遊戲入門', lessons: ['3D 場景建立', '第一人稱控制', '第三人稱相機', '3D 物理', '材質與光源'], duration: 95 },
+    { ch: 4, title: '遊戲系統', lessons: ['存檔與讀檔', '音效管理器', '粒子特效', '場景切換', '對話系統'], duration: 85 },
+    { ch: 5, title: '發布與社群', lessons: ['匯出各平台', 'Steam 與 Itch.io', '遊戲測試', 'Game Jam 參與', '期末：完整迷你遊戲'], duration: 65 }
+  ],
+  c66: [
+    { ch: 1, title: '頻道定位', lessons: ['利基市場選擇', '頻道名稱與品牌', '競爭者分析', '觀眾人物誌', '內容策略規劃'], duration: 55 },
+    { ch: 2, title: '影片製作', lessons: ['腳本撰寫公式', '拍攝設備選擇', '收音與打光', '剪輯節奏', '字幕與特效'], duration: 80 },
+    { ch: 3, title: 'YouTube SEO', lessons: ['標題撰寫技巧', '縮圖設計', '標籤與描述優化', '演算法解析', '播放清單策略'], duration: 70 },
+    { ch: 4, title: '成長策略', lessons: ['前 1000 訂閱策略', '社群互動', 'Shorts 短影音', '跨平台導流', '合作與聯名'], duration: 65 },
+    { ch: 5, title: '變現模式', lessons: ['YouTube 合作夥伴', '品牌業配', '會員與超級感謝', '自有產品販售', '期末：頻道成長計畫'], duration: 55 }
+  ],
+  c67: [
+    { ch: 1, title: '寵物美容基礎', lessons: ['犬貓毛髮認識', '工具與設備', '安全與保定', '洗澡流程'], duration: 50 },
+    { ch: 2, title: '基礎護理', lessons: ['指甲修剪', '耳朵清潔', '牙齒保健', '肛門腺處理', '皮膚檢查'], duration: 55 },
+    { ch: 3, title: '洗護技巧', lessons: ['洗劑選擇', '吹乾與拉毛', '打結處理', '去味與除蚤', '敏感犬處理'], duration: 60 },
+    { ch: 4, title: '基礎修剪', lessons: ['剪刀持法', '腳底毛修剪', '臉部修型', '身體修剪', '尾巴造型'], duration: 65 },
+    { ch: 5, title: '居家護理', lessons: ['日常梳毛頻率', '季節換毛護理', '飲食與毛髮健康', '常見問題處理', '期末：完整護理流程'], duration: 40 }
+  ],
+  c68: [
+    { ch: 1, title: 'Webtoon 入門', lessons: ['Webtoon 市場概覽', '工具選擇（CSP/Procreate）', '直式閱讀構圖', '畫布尺寸設定'], duration: 55 },
+    { ch: 2, title: '故事與分鏡', lessons: ['短篇故事架構', '角色設計速寫', '分鏡節奏', '格與格之間的呼吸', '對白與音效字'], duration: 75 },
+    { ch: 3, title: '繪製技巧', lessons: ['線稿效率技巧', '上色工作流', '背景速繪', '特效與氛圍', '批量製作技巧'], duration: 85 },
+    { ch: 4, title: '連載經營', lessons: ['更新頻率規劃', 'Webtoon Canvas 上架', 'LINE Webtoon 投稿', '讀者互動', '數據分析'], duration: 65 },
+    { ch: 5, title: '職業之路', lessons: ['漫畫比賽參加', '編輯合作', '出版與周邊', '收入模式', '期末：3 話完整短篇'], duration: 55 }
+  ],
+  c69: [
+    { ch: 1, title: '股市基礎', lessons: ['股票市場運作', '開戶與下單', '股票代號與類股', '財報基本閱讀'], duration: 55 },
+    { ch: 2, title: 'K 線入門', lessons: ['K 線組成與意義', '常見 K 線型態', '多根 K 線組合', '跳空缺口', '實作：K 線判讀練習'], duration: 70 },
+    { ch: 3, title: '量價關係', lessons: ['成交量意義', '量價背離', '換手率分析', '籌碼面觀察', '主力進出判斷'], duration: 75 },
+    { ch: 4, title: '技術指標', lessons: ['均線系統', 'KD 與 RSI', 'MACD 判讀', '布林通道', '指標組合運用'], duration: 80 },
+    { ch: 5, title: '交易策略', lessons: ['停損停利設定', '資金管理', '交易日誌', '心態管理', '期末：模擬交易報告'], duration: 60 }
+  ],
+  c70: [
+    { ch: 1, title: '極簡思維', lessons: ['極簡主義的核心', '消費主義反思', '定義你的「夠」', '極簡生活案例'], duration: 40 },
+    { ch: 2, title: '斷捨離實踐', lessons: ['物品盤點方法', '去留判斷標準', '分類與處理', '情感物品處理', '數位斷捨離'], duration: 55 },
+    { ch: 3, title: '空間整理', lessons: ['玄關與客廳', '廚房與浴室', '臥室與衣櫃', '書房與工作區', '收納系統建立'], duration: 60 },
+    { ch: 4, title: '生活簡化', lessons: ['時間管理極簡版', '人際關係斷捨離', '財務極簡', '飲食簡單化'], duration: 45 },
+    { ch: 5, title: '持續實踐', lessons: ['一進一出法則', '定期回顧機制', '家人溝通', '極簡旅行', '期末：30 天極簡挑戰'], duration: 35 }
+  ],
+  c71: [
+    { ch: 1, title: '剪髮基礎', lessons: ['工具認識與保養', '分區與分線', '梳理與控制', '基本剪刀技法'], duration: 60 },
+    { ch: 2, title: '層次剪裁', lessons: ['零層次（One Length）', '均等層次', '漸增層次', '漸減層次', '混合層次'], duration: 80 },
+    { ch: 3, title: '日系風格', lessons: ['輕盈感打薄', '空氣感層次', '瀏海設計', '紋理剪裁', '束感造型'], duration: 75 },
+    { ch: 4, title: '造型吹整', lessons: ['圓梳吹整技巧', '電棒基本捲度', '直夾造型', '造型品選擇', '男士造型'], duration: 70 },
+    { ch: 5, title: '沙龍實務', lessons: ['顧客諮詢技巧', '臉型判斷與髮型建議', '溝通與提案', '效率與動線', '期末：3 款完整造型'], duration: 55 }
+  ],
+  c72: [
+    { ch: 1, title: 'VFX Graph 入門', lessons: ['粒子系統概念', 'VFX Graph vs Particle System', '介面與節點', '基礎發射器', '屬性與生命週期'], duration: 75 },
+    { ch: 2, title: '基礎特效', lessons: ['火焰特效', '煙霧與蒸氣', '電流與閃電', '水花與液體', '光束與光環'], duration: 90 },
+    { ch: 3, title: '技能特效', lessons: ['近戰揮砍軌跡', '遠程投射物', '範圍爆炸', 'Buff 光環', '治療與回復'], duration: 100 },
+    { ch: 4, title: '進階技巧', lessons: ['Shader Graph 整合', 'SDF 碰撞', '網格粒子', 'GPU Event 連鎖', '效能優化'], duration: 95 },
+    { ch: 5, title: '專案整合', lessons: ['Timeline 整合', '觸發與狀態機', '音效同步', '作品 Reel 製作', '期末：5 個技能特效組'], duration: 70 }
   ]
 };
 

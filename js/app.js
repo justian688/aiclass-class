@@ -791,7 +791,8 @@ function home() {
 
   // FAQ
   main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap faq"><div class="sec-head rv-up"><div><h2>常見問題</h2></div></div>
-    ${window.FAQ.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</div></section>`);
+    ${window.FAQ.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
+    <div style="text-align:center;margin-top:20px" class="rv-up"><a href="faq.html" class="btn btn-ghost">查看更多問題 →</a></div></div></section>`);
 
   bindCards(main);
   $$('.sec').forEach(s => $('.rail', s) && bindRail(s));
