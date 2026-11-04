@@ -467,17 +467,99 @@ window.CHAPTERS = {
     { ch: 5, title: '作品集整理', lessons: ['作品展示排版', '個人品牌建立', '接案報價策略', 'Behance / ArtStation 上架'], duration: 55 }
   ],
   c10: [
+    { ch: 1, title: '吉他入門', lessons: ['吉他種類與選購', '調音與基本姿勢', '右手刷弦節奏', '左手按弦練習', '第一首歌：小星星'], duration: 80 },
+    { ch: 2, title: '開放和弦', lessons: ['C、Am、G、Em 和弦', 'D、Dm、F 和弦', '和弦轉換練習法', '常見和弦進行', '5 首經典歌曲彈唱'], duration: 100 },
+    { ch: 3, title: '節奏與指法', lessons: ['8 Beat / 16 Beat 節奏', '分解和弦指法', '切音與悶音技巧', 'Shuffle 節奏', '5 首進階歌曲演練'], duration: 110 },
+    { ch: 4, title: '音階與即興', lessons: ['五聲音階（Am / Em）', '音階指型記憶法', '推弦與滑音技巧', '簡易 Solo 創作', '5 首 Solo 歌曲解析'], duration: 100 },
+    { ch: 5, title: '演奏進階', lessons: ['封閉和弦（F / Bm）', '移調夾使用', '簡易編曲概念', '錄音與發布', '自學路線規劃'], duration: 70 }
+  ],
+  c08: [
     { ch: 1, title: '攝影基礎', lessons: ['相機與鏡頭選擇', '曝光三角（光圈/快門/ISO）', '對焦模式與景深', '白平衡與色溫'], duration: 80 },
     { ch: 2, title: '構圖與光線', lessons: ['三分法與引導線', '自然光運用', '人工補光基礎', '黃金時刻拍攝'], duration: 85 },
     { ch: 3, title: '主題攝影', lessons: ['人像攝影與引導', '風景攝影長曝', '美食攝影打光', '街頭攝影快拍'], duration: 110 },
     { ch: 4, title: 'Lightroom 修圖', lessons: ['RAW 檔處理流程', '色調與色彩分級', '局部調整工具', '預設檔製作與批次處理'], duration: 95 },
     { ch: 5, title: '作品與接案', lessons: ['攝影集編排', '個人網站建置', '報價與合約', '客戶溝通技巧'], duration: 50 }
   ],
-  c08: [
+  c06: [
     { ch: 1, title: 'Blender 入門', lessons: ['介面與快捷鍵', '基本建模工具', 'Modifier 修改器', '場景管理與 Collection'], duration: 90 },
-    { ch: 2, title: '角色建模', lessons: ['人體參考與比例', '面部拓撲規劃', 'Sculpt 模式精修', 'Retopology 優化', 'UV 展開'], duration: 150 },
-    { ch: 3, title: '材質與貼圖', lessons: ['Shader Editor 節點', 'PBR 材質原理', 'Texture Paint 手繪貼圖', '程序性材質', 'HDRI 環境照明'], duration: 120 },
-    { ch: 4, title: '骨架與動畫', lessons: ['Armature 骨骼綁定', 'Weight Paint 權重', '關鍵影格動畫', 'NLA 動作混合', '臉部動畫 Shape Key'], duration: 140 },
-    { ch: 5, title: '渲染與輸出', lessons: ['Cycles 與 Eevee 選擇', '攝影機動畫', '合成節點後製', '輸出設定與格式', '作品展示發布'], duration: 80 }
+    { ch: 2, title: '硬表面建模', lessons: ['佈線原則與拓撲', 'Boolean 布林運算', '細分曲面建模', '實作：科幻武器建模', '實作：機械零件建模'], duration: 120 },
+    { ch: 3, title: '雕刻與有機建模', lessons: ['雕刻筆刷介紹', 'Dyntopo 動態拓撲', 'Remesh 與 Retopo', '實作：角色頭部雕刻', '實作：生物造型雕刻'], duration: 110 },
+    { ch: 4, title: '材質與燈光', lessons: ['UV 展開技巧', 'PBR 材質原理', 'Shader Editor 節點', 'HDRI 環境燈光', '三點打光法'], duration: 100 },
+    { ch: 5, title: '場景合成與算圖', lessons: ['場景構圖與配置', '攝影機設定', 'Cycles vs EEVEE', '降噪與後製合成', '期末：完整場景作品'], duration: 90 }
+  ],
+  c16: [
+    { ch: 1, title: '環境建置與基礎語法', lessons: ['Python 安裝與 IDE 設定', '變數與資料型別', '字串操作與格式化', '條件判斷與迴圈', '函數定義與模組化'], duration: 90 },
+    { ch: 2, title: '檔案與資料處理', lessons: ['讀寫文字檔', 'CSV 與 Excel 自動化', 'JSON 資料處理', '正則表達式入門', '實作：批量改檔名工具'], duration: 100 },
+    { ch: 3, title: '網路爬蟲實戰', lessons: ['requests 與 HTTP 基礎', 'BeautifulSoup 解析網頁', '處理分頁與動態載入', 'Selenium 模擬瀏覽器', '實作：自動比價爬蟲'], duration: 120 },
+    { ch: 4, title: '自動化辦公', lessons: ['自動寄信（SMTP）', '自動產生 PDF 報表', 'LINE Notify 推播通知', '排程執行（Task Scheduler）', '實作：每日股價通知'], duration: 110 },
+    { ch: 5, title: '進階應用', lessons: ['API 串接（OpenAI / Google）', '簡易 GUI 工具（tkinter）', 'Docker 打包執行環境', '部署到雲端排程', '期末：個人自動化工作流'], duration: 100 }
+  ],
+  c47: [
+    { ch: 1, title: 'AI 繪圖概論', lessons: ['生成式 AI 原理簡介', 'Midjourney 帳號與設定', 'Stable Diffusion 本地安裝', '第一張 AI 圖片生成', '版權與商用注意事項'], duration: 70 },
+    { ch: 2, title: 'Prompt 技巧大全', lessons: ['Prompt 結構拆解', '風格關鍵字庫', '負向 Prompt 策略', '參數調校（--ar、--s、--c）', '實作：10 種風格快速切換'], duration: 100 },
+    { ch: 3, title: 'ControlNet 精準控制', lessons: ['Canny 邊緣偵測', 'OpenPose 人體姿態', 'Depth Map 深度圖', 'Tile 圖片高清放大', '實作：照片轉指定風格插畫'], duration: 110 },
+    { ch: 4, title: 'LoRA 模型訓練', lessons: ['訓練資料集準備', 'Kohya 訓練環境設定', '參數調整與監控', '合併模型與測試', '實作：訓練專屬角色 LoRA'], duration: 130 },
+    { ch: 5, title: '商用工作流', lessons: ['品牌素材批量生成', '電商商品圖製作', '社群貼文模板', '接案報價與客戶溝通', '作品集建立與發布'], duration: 80 }
+  ],
+  c45: [
+    { ch: 1, title: '法式甜點基礎', lessons: ['工具與材料認識', '基礎麵糊與蛋糕體', '卡士達醬與甘納許', '糖漿與焦糖基礎', '溫度與時間的掌控'], duration: 85 },
+    { ch: 2, title: '泡芙與塔類', lessons: ['泡芙麵糊製作要點', '經典閃電泡芙', '巴黎布列斯特泡芙', '檸檬塔與巧克力塔', '塔皮盲烤技巧'], duration: 110 },
+    { ch: 3, title: '千層與酥皮', lessons: ['反摺千層酥皮', '拿破崙蛋糕', '蝴蝶酥與棕櫚葉', '國王派與杏仁奶油', '酥皮失敗排解'], duration: 120 },
+    { ch: 4, title: '蛋糕與慕斯', lessons: ['歌劇院蛋糕', '覆盆莓夏洛特', '巧克力慕斯蛋糕', '鏡面淋醬技巧', '蛋糕裝飾與擠花'], duration: 130 },
+    { ch: 5, title: '焦糖與糖藝', lessons: ['焦糖布蕾', '焦糖醬與太妃糖', '拉糖基礎', '糖霜裝飾', '期末：完整下午茶套組'], duration: 90 }
+  ],
+  c31: [
+    { ch: 1, title: '訓練基礎概念', lessons: ['肌肉解剖與動作模式', '暖身與收操', '訓練變數（組數/次數/休息）', '居家設備選擇', '制定你的訓練計畫'], duration: 75 },
+    { ch: 2, title: '上肢訓練', lessons: ['伏地挺身變化式', '彈力帶肩推與飛鳥', '壺鈴划船與硬舉', '核心抗旋轉訓練', '手臂孤立動作'], duration: 90 },
+    { ch: 3, title: '下肢訓練', lessons: ['深蹲變化式', '弓箭步與側蹲', '臀推與臀橋', '單腳穩定訓練', '小腿與足踝強化'], duration: 90 },
+    { ch: 4, title: '飲食與恢復', lessons: ['熱量與巨量營養素', '蛋白質攝取策略', '備餐規劃實作', '睡眠與壓力管理', '運動傷害預防'], duration: 80 },
+    { ch: 5, title: '12 週進階課表', lessons: ['第 1–4 週：基礎期', '第 5–8 週：增量期', '第 9–12 週：強化期', '體態紀錄與調整', '結業評估與持續計畫'], duration: 70 }
+  ],
+  c09: [
+    { ch: 1, title: '廚房準備與基本功', lessons: ['廚具選購建議', '刀工基礎練習', '火候判斷技巧', '調味比例公式', '備料流程優化'], duration: 60 },
+    { ch: 2, title: '快炒與煎類', lessons: ['蒜香空心菜', '番茄炒蛋', '乾煎雞腿排', '醬燒豬五花', '糖醋里肌'], duration: 55 },
+    { ch: 3, title: '燉滷與湯品', lessons: ['紅燒牛腩', '滷肉飯', '麻油雞湯', '蛤蜊絲瓜湯', '玉米排骨湯'], duration: 60 },
+    { ch: 4, title: '蒸煮與涼拌', lessons: ['清蒸鱸魚', '蒜泥白肉', '涼拌小黃瓜', '皮蛋豆腐', '日式茶碗蒸'], duration: 50 },
+    { ch: 5, title: '宴客菜與擺盤', lessons: ['三杯雞', '宮保蝦仁', '蔥爆牛肉', '鳳梨蝦球', '創意擺盤五種技法'], duration: 55 }
+  ],
+  c41: [
+    { ch: 1, title: '理財觀念建立', lessons: ['為什麼要理財？', '收入支出與儲蓄率', '緊急預備金的重要性', '複利的力量', '投資風險與報酬'], duration: 55 },
+    { ch: 2, title: '認識投資工具', lessons: ['股票基礎概念', '債券與固定收益', 'ETF 是什麼？', '基金與 ETF 比較', '開戶與下單實操'], duration: 65 },
+    { ch: 3, title: 'ETF 定期定額', lessons: ['台股 ETF 介紹（0050/006208）', '美股 ETF 介紹（VTI/VOO）', '定期定額策略', '再平衡時機', '實作：第一筆定期定額'], duration: 70 },
+    { ch: 4, title: '資產配置', lessons: ['風險承受度評估', '股債比配置', '全球分散投資', '不同人生階段的配置', '用 Excel 追蹤績效'], duration: 60 },
+    { ch: 5, title: '長期投資心法', lessons: ['避開常見投資陷阱', '市場波動時怎麼辦', '稅務基礎知識', '退休規劃試算', '打造你的被動收入計畫'], duration: 50 }
+  ],
+  c53: [
+    { ch: 1, title: '電商創業準備', lessons: ['市場趨勢分析', '選品策略與方法', '供應商開發與議價', '成本結構計算', '品牌定位與命名'], duration: 80 },
+    { ch: 2, title: '商品上架與文案', lessons: ['商品攝影基礎', '標題 SEO 關鍵字', '賣點文案撰寫', '蝦皮/MOMO 上架實操', '定價策略'], duration: 90 },
+    { ch: 3, title: '廣告投放', lessons: ['Facebook 廣告基礎', 'Google 購物廣告', '受眾設定與素材製作', '預算分配與出價', 'A/B 測試方法'], duration: 100 },
+    { ch: 4, title: '營運與客服', lessons: ['訂單處理流程', '物流與包裝', '客服話術與退換貨', '評價管理', '庫存與現金流控管'], duration: 80 },
+    { ch: 5, title: '規模化成長', lessons: ['數據分析與優化', '多通路佈局', '團隊組建與外包', '品牌官網建立', '從月入十萬到百萬'], duration: 70 }
+  ],
+  c38: [
+    { ch: 1, title: 'Unity 開發環境', lessons: ['Unity Hub 安裝與專案建立', '介面導覽與場景管理', 'C# 基礎語法', 'MonoBehaviour 生命週期', 'Debug 與主控台'], duration: 85 },
+    { ch: 2, title: '角色控制', lessons: ['Sprite 匯入與動畫', 'Rigidbody 2D 物理', '移動與跳躍控制', '地面偵測與 Coyote Time', '雙重跳躍與衝刺'], duration: 100 },
+    { ch: 3, title: '關卡設計', lessons: ['Tilemap 地圖編輯', '陷阱與機關設計', '收集物與計分系統', '檢查點與存檔', '關卡切換與載入畫面'], duration: 110 },
+    { ch: 4, title: '敵人與戰鬥', lessons: ['敵人 AI 巡邏路線', '追蹤與攻擊行為', 'Boss 戰設計', '生命值與傷害系統', '粒子特效與畫面震動'], duration: 120 },
+    { ch: 5, title: '打磨與上架', lessons: ['UI 系統（血條/對話框）', '音效與背景音樂', '遊戲手感（Game Feel）', 'Steam 上架流程', '行銷與社群推廣'], duration: 85 }
   ]
 };
+
+// ── 通知（模擬） ──
+window.NOTIFICATIONS = [
+  { id: 'n1', type: 'course', title: '你購買的課程有新章節上線', body: '「生成式 AI 應用開發」新增了第 6 章：Agent 框架與多步推理', time: '10 分鐘前', read: false, link: '/player.html?id=c03' },
+  { id: 'n2', type: 'promo', title: '雙 11 全站 85 折開跑！', body: '活動期間結帳輸入 DOUBLE11，所有課程享 85 折優惠', time: '1 小時前', read: false, link: '/coupon.html' },
+  { id: 'n3', type: 'community', title: '你的貼文收到新回覆', body: '「AI 探索者」回覆了你的 Midjourney Prompt 分享文', time: '3 小時前', read: false, link: '/community.html' },
+  { id: 'n4', type: 'achievement', title: '恭喜獲得新徽章！', body: '你已完成「連續學習 7 天」挑戰，獲得學習火焰徽章', time: '5 小時前', read: true, link: '/achievement.html' },
+  { id: 'n5', type: 'live', title: '直播即將開始', body: '「AI 繪圖工作坊：從零到商用」將於今晚 8:00 開始', time: '6 小時前', read: true, link: '/live.html' },
+  { id: 'n6', type: 'course', title: '課程作業已批改', body: '「前端工程師養成」第 3 章作業已收到講師回饋', time: '1 天前', read: true, link: '/player.html?id=c24' },
+  { id: 'n7', type: 'system', title: '系統維護通知', body: '平台將於 11/10（日）凌晨 2:00–4:00 進行例行維護', time: '2 天前', read: true },
+  { id: 'n8', type: 'promo', title: '推薦好友享 $50 折扣', body: '分享你的專屬推薦連結，每成功推薦一位好友雙方各得 $50', time: '3 天前', read: true, link: '/invite.html' }
+];
+
+// ── 平台公告 ──
+window.ANNOUNCEMENTS = [
+  { id: 'a1', text: '雙 11 全站限時 85 折，倒數中！', link: '/coupon.html', type: 'promo' },
+  { id: 'a2', text: '新課上架：LLM 微調實戰、歐式麵包全書', link: '/category.html?cat=ai', type: 'new' },
+  { id: 'a3', text: '2026 秋季學習挑戰賽開跑，完成任務抽 AirPods', link: '/achievement.html', type: 'event' }
+];

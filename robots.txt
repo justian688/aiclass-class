@@ -7,5 +7,6 @@ Disallow: /login.html
 Disallow: /my.html
 Disallow: /wishlist.html
 Disallow: /order-history.html
+Disallow: /cart.html
 
 Sitemap: https://aiclass.tw/sitemap.xml

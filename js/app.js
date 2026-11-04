@@ -191,14 +191,10 @@ function shell() {
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
-      <button class="notif-btn" aria-label="通知">🔔<span class="notif-dot"></span></button>
-      <div class="notif-panel">
-        <h4>通知</h4>
-        <div class="notif-item"><div class="ni-icon">🔥</div><div class="ni-body">你收藏的「Python 自動化」正在限時特價中！<div class="ni-time">10 分鐘前</div></div></div>
-        <div class="notif-item"><div class="ni-icon">📚</div><div class="ni-body">課程更新：「UI/UX 設計實戰」新增了 3 堂課<div class="ni-time">2 小時前</div></div></div>
-        <div class="notif-item"><div class="ni-icon">🎉</div><div class="ni-body">恭喜！你已完成「零基礎 Blender」課程，可領取結業證書<div class="ni-time">昨天</div></div></div>
-        <div class="notif-item"><div class="ni-icon">💬</div><div class="ni-body">講師回覆了你在「攝影入門」的提問<div class="ni-time">2 天前</div></div></div>
-        <div class="notif-item"><div class="ni-icon">🏆</div><div class="ni-body">學習連續 7 天！獲得「持之以恆」徽章<div class="ni-time">3 天前</div></div></div>
+      <button class="notif-btn" aria-label="通知">🔔${(window.NOTIFICATIONS||[]).filter(n=>!n.read).length?'<span class="notif-dot"></span>':''}</button>
+      <div class="notif-panel" role="dialog" aria-modal="false" aria-label="通知面板">
+        <div class="notif-hdr"><h4>通知</h4><button class="notif-read-all">全部已讀</button></div>
+        <div class="notif-list">${(window.NOTIFICATIONS||[]).map(n=>{const icons={course:'📚',promo:'🏷️',community:'💬',achievement:'🏆',live:'📡',system:'⚙️'};return `<${n.link?`a href="${n.link}"`:'div'} class="notif-item${n.read?'':' unread'}"><div class="ni-icon">${icons[n.type]||'🔔'}</div><div class="ni-body"><b>${n.title}</b><p>${n.body}</p><div class="ni-time">${n.time}</div></div></${n.link?'a':'div'}>`}).join('')}</div>
       </div>
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
@@ -580,6 +576,7 @@ const cdHTML = `<div class="cd" data-cd><div><b data-h>00</b><small>時</small><
 function home() {
   const main = $('main');
   main.innerHTML = '';
+  seo({ jsonLd: { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://aiclass.tw/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class' } } })) } });
   // Hero
   const slides = window.HERO.map(id => byId[id]);
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程">
@@ -1381,6 +1378,7 @@ function loginPage() {
 /* ---------- 企業培訓行銷頁 ---------- */
 function enterprisePage() {
   const main = $('main');
+  seo({ title: '企業方案｜AI Class', desc: 'AI Class 企業培訓方案，客製化課程與團隊管理', url: 'https://aiclass.tw/enterprise.html' });
   const features = [
     { icon: '🎯', title: '客製化課程', desc: '根據企業需求量身打造培訓內容，涵蓋 AI、設計、行銷、管理等領域。' },
     { icon: '📊', title: '學習數據追蹤', desc: '即時掌握每位員工的學習進度、完成率、測驗成績，讓培訓效果可視化。' },
@@ -1521,6 +1519,7 @@ function enterprisePage() {
 /* ---------- 企業培訓後台 ---------- */
 function trainingPage() {
   const main = $('main');
+  seo({ title: '訓練營｜AI Class', desc: '密集訓練營課程，有系統地學習新技能', url: 'https://aiclass.tw/training.html' });
   const demoCourses = [
     { id: 't1', title: '新人入職培訓', cat: '必修', progress: 85, employees: 48, hours: 4.5, status: '進行中' },
     { id: 't2', title: 'AI 工具實戰應用', cat: 'AI', progress: 62, employees: 32, hours: 8, status: '進行中' },
@@ -1800,6 +1799,7 @@ function trainingPage() {
 /* ---------- 部落格列表 ---------- */
 function blogPage() {
   const main = $('main');
+  seo({ title: '學習專欄｜AI Class', desc: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://aiclass.tw/blog.html' });
   const posts = window.POSTS;
   const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
   catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
@@ -2057,6 +2057,8 @@ function instructorPage() {
 
   const roles = [...new Set(teachers.map(t => t.role))];
 
+  seo({ title: '所有講師｜AI Class', desc: `${teachers.length} 位業界職人講師陣容`, url: 'https://aiclass.tw/instructor.html' });
+
   main.innerHTML = `
   <section class="ins-hero"><div class="wrap">
     <h1 class="ins-title rv-up">所有講師</h1>
@@ -2111,6 +2113,7 @@ function instructorPage() {
 /* ---------- 分類瀏覽 ---------- */
 function categoryPage() {
   const main = $('main');
+  seo({ title: '課程分類｜AI Class', desc: '探索所有課程分類：設計、繪畫、AI、攝影、料理等', url: 'https://aiclass.tw/category.html' });
   const catId = new URLSearchParams(location.search).get('cat');
   const cats = window.CATS.filter(c => c.id !== 'all');
 
@@ -2565,6 +2568,7 @@ function myPage() {
 /* ---------- 關於我們 ---------- */
 function aboutPage() {
   const main = $('main');
+  seo({ title: '關於我們｜AI Class', desc: '認識 AI Class 團隊與我們的使命', url: 'https://aiclass.tw/about.html' });
   const totalStudents = C.reduce((s, c) => s + c.students, 0);
   const teacherCount = [...new Set(C.map(c => c.teacher))].length;
 
@@ -2671,6 +2675,14 @@ function faqPage() {
     </div>
   </div></section>`;
 
+  const allQ = faqData.flatMap(g => g.items);
+  seo({
+    title: '常見問題｜AI Class',
+    desc: '關於 AI Class 課程、付款、退費等常見問題解答',
+    url: 'https://aiclass.tw/faq.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: allQ.slice(0, 20).map(q => ({ '@type': 'Question', name: q[0], acceptedAnswer: { '@type': 'Answer', text: q[1] } })) }
+  });
+
   $$('.qa button', main).forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
 
   $$('.faqp-cats .chip', main).forEach(btn => btn.onclick = () => {
@@ -2697,6 +2709,7 @@ function faqPage() {
 /* ---------- 成為講師 ---------- */
 function teachPage() {
   const main = $('main');
+  seo({ title: '成為講師｜AI Class', desc: '在 AI Class 開課，讓你的專業被看見', url: 'https://aiclass.tw/teach.html' });
   const totalStudents = C.reduce((s, c) => s + c.students, 0);
   const teacherCount = [...new Set(C.map(c => c.teacher))].length;
 
@@ -3411,6 +3424,7 @@ function orderCompletePage() {
 /* ---------- 優惠券 ---------- */
 function couponPage() {
   const main = $('main');
+  seo({ title: '優惠券中心｜AI Class', desc: '領取最新優惠券，享受課程折扣', url: 'https://aiclass.tw/coupon.html' });
   const now = new Date();
   const coupons = (window.COUPONS || []).map(cp => {
     const amountTxt = cp.type === 'percent' ? `${cp.discount}% OFF` : `NT$${cp.discount}`;
@@ -3594,6 +3608,7 @@ function pathPage() {
 /* ---------- 邀請好友 ---------- */
 function invitePage() {
   const main = $('main');
+  seo({ title: '邀請好友｜AI Class', desc: '邀請好友加入 AI Class，雙方各得優惠券', url: 'https://aiclass.tw/invite.html' });
   const code = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase();
   const link = 'https://aiclass.tw/invite?ref=' + code;
   const stats = { invited: 3, registered: 2, earned: 1000 };
@@ -3779,6 +3794,7 @@ function searchPage() {
   const main = $('main');
   const params = new URLSearchParams(location.search);
   const initQ = params.get('q') || '';
+  if (initQ) seo({ title: `搜尋「${initQ}」｜AI Class`, desc: `AI Class 課程搜尋結果：${initQ}`, url: `https://aiclass.tw/search.html?q=${encodeURIComponent(initQ)}` });
   const cats = window.CATS.slice(1);
   const trending = ['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案'];
 
@@ -3958,6 +3974,7 @@ function searchPage() {
 /* ---------- 學習社群 ---------- */
 function communityPage() {
   const main = $('main');
+  seo({ title: '學習社群｜AI Class', desc: '與同學交流學習心得、分享作品', url: 'https://aiclass.tw/community.html' });
   const posts = (window.COMMUNITY_POSTS || []).slice();
   const tagSet = new Set(); posts.forEach(p => (p.tags||[]).forEach(t => tagSet.add(t)));
   const cats = ['全部', ...tagSet];
@@ -4068,6 +4085,7 @@ function communityPage() {
 /* ---------- 直播教室 ---------- */
 function livePage() {
   const main = $('main');
+  seo({ title: '直播教室｜AI Class', desc: '即時直播課程與講師互動', url: 'https://aiclass.tw/live.html' });
   const events = (window.LIVE_EVENTS || []).slice();
   const upcoming = events.filter(e => e.status === 'upcoming').sort((a,b) => new Date(a.date) - new Date(b.date));
   const ended = events.filter(e => e.status === 'ended');
@@ -4138,6 +4156,7 @@ function livePage() {
 /* ---------- 技能測驗 ---------- */
 function quizPage() {
   const main = $('main');
+  seo({ title: '學習測驗｜AI Class', desc: '測驗你的學習成果，挑戰各科知識', url: 'https://aiclass.tw/quiz.html' });
   const quizzes = window.QUIZZES || [];
   const saved = JSON.parse(localStorage.getItem('aic-quiz-results') || '{}');
   const totalQ = quizzes.reduce((s, q) => s + q.questions.length, 0);
@@ -4250,6 +4269,7 @@ function quizPage() {
 /* ---------- 成就系統 ---------- */
 function achievementPage() {
   const main = $('main');
+  seo({ title: '學習成就｜AI Class', desc: '查看你的學習徽章與成就收藏', url: 'https://aiclass.tw/achievement.html' });
   const badges = window.BADGES || [];
   const owned = JSON.parse(localStorage.getItem('aic-owned') || '[]');
   const quizResults = JSON.parse(localStorage.getItem('aic-quiz-results') || '{}');
@@ -4315,6 +4335,7 @@ function achievementPage() {
 
 function leaderboardPage() {
   const main = $('main');
+  seo({ title: '學習排行榜｜AI Class', desc: '查看學習積分排行榜與本週之星', url: 'https://aiclass.tw/leaderboard.html' });
   const lb = window.LEADERBOARD || [];
   const medals = ['🥇','🥈','🥉'];
   const podiumColors = ['#ffd700','#c0c0c0','#cd7f32'];
