@@ -375,8 +375,17 @@ function cardHighlights(c) {
   return hl;
 }
 
+function courseLevel(c) {
+  const adv = /進階|實戰|專業|深入|高階|SaaS|React|RAG|Houdini|Nuke|CG|VFX/.test(c.title + (c.desc || ''));
+  const beg = /入門|基礎|零基礎|初學|第一/.test(c.title + (c.desc || ''));
+  if (beg) return { label: '入門', cls: 'lvl-beg', weeks: Math.ceil(c.hours / 5) };
+  if (adv || c.hours >= 24) return { label: '進階', cls: 'lvl-adv', weeks: Math.ceil(c.hours / 3) };
+  return { label: '中階', cls: 'lvl-mid', weeks: Math.ceil(c.hours / 4) };
+}
+
 function card(c, i, rank) {
   const hl = cardHighlights(c);
+  const lv = courseLevel(c);
   return `<a class="card rv-up" href="course.html?id=${c.id}" data-v="${vid(c)}" style="transition-delay:${(i % 5) * 70}ms">
     <div class="tw">${rank ? `<span class="num">${i + 1}</span>` : ''}<div class="thumb">
       ${c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
@@ -385,6 +394,7 @@ function card(c, i, rank) {
       <span class="hours">${c.hours} 小時</span>
     </div></div>
     <div class="meta">
+      <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-eta">約 ${lv.weeks} 週完成</span></div>
       <div class="teacher">${c.teacher}</div>
       <h3>${c.title}</h3>
       <div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div>
@@ -434,6 +444,10 @@ function bindCards(root = document) {
   $$('[data-qp]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
     quickPreview(b.dataset.qp);
+  });
+  $$('img[loading="lazy"]', root).forEach(img => {
+    if (img.complete) img.classList.add('loaded');
+    else img.onload = () => img.classList.add('loaded');
   });
   reveal(root);
 }
@@ -1905,6 +1919,7 @@ function myPage() {
       </div>
       <nav class="myp-nav">
         <button class="myp-nav-btn on" data-sec="courses">📚 我的課程</button>
+        <button class="myp-nav-btn" data-sec="dashboard">📊 學習儀表板</button>
         <button class="myp-nav-btn" data-sec="calendar">📅 學習紀錄</button>
         <button class="myp-nav-btn" data-sec="wishlist">♡ 心願清單</button>
         <a href="order-history.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🧾 訂單紀錄</a>
@@ -1951,6 +1966,44 @@ function myPage() {
               </div>
             </div>
           </div>`).join('')}
+        </div>
+      </section>
+
+      <!-- 學習儀表板 -->
+      <section class="myp-sec" id="myp-sec-dashboard" hidden>
+        <h2 class="myp-sec-title rv-up">📊 學習儀表板</h2>
+        <div class="dash-grid rv-up">
+          <div class="dash-card">
+            <div class="dash-card-head">累計學習時間</div>
+            <div class="dash-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--pri)" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="${327 - 327 * Math.min(1, totalHours / 100)}" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
+            <div class="dash-ring-text"><b>${totalHours}</b><span>/ 100 小時</span></div></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-head">完成率</div>
+            <div class="dash-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="#34c759" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="${327 - 327 * (completed / Math.max(1, enrolled.length))}" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
+            <div class="dash-ring-text"><b>${Math.round(completed / Math.max(1, enrolled.length) * 100)}%</b><span>${completed}/${enrolled.length} 堂</span></div></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-head">學習強度</div>
+            <div class="dash-bars">${['一','二','三','四','五','六','日'].map((d, i) => {
+              const h = [1.5, 2, 0.5, 1, 2.5, 3, 1.5][i];
+              return `<div class="dash-bar"><div class="dash-bar-fill" style="height:${h / 3 * 100}%"></div><span>${d}</span></div>`;
+            }).join('')}</div>
+            <div class="dash-bar-label">本週平均 1.7 小時/天</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-head">技能分佈</div>
+            <div class="dash-skills">${[
+              {name:'設計',pct:80},{name:'AI/科技',pct:65},{name:'繪畫',pct:45},{name:'攝影',pct:30},{name:'音樂',pct:20}
+            ].map(s => `<div class="dash-skill"><span>${s.name}</span><div class="dash-skill-bar"><div class="dash-skill-fill" style="width:${s.pct}%"></div></div><span>${s.pct}%</span></div>`).join('')}</div>
+          </div>
+        </div>
+        <div class="dash-streak rv-up">
+          <div class="dash-streak-chart">${Array.from({length:30}, (_, i) => {
+            const h = Math.random() < 0.7 ? (Math.random() * 3 + 0.5).toFixed(1) : 0;
+            return `<div class="dash-streak-day" style="--h:${h / 4 * 100}%" title="第 ${i+1} 天：${h} 小時"></div>`;
+          }).join('')}</div>
+          <div class="dash-streak-label">過去 30 天學習趨勢</div>
         </div>
       </section>
 
@@ -3839,15 +3892,6 @@ window.addCompare = id => {
 };
 updCmpUI();
 
-// ── Cookie 同意橫幅 ──
-if (!localStorage.getItem('aic-cookie-ok')) {
-  const ck = document.createElement('div'); ck.className = 'cookie-bar';
-  ck.innerHTML = `<p>我們使用 Cookie 來提升你的瀏覽體驗。繼續使用代表你同意我們的 <a href="privacy.html">隱私權政策</a>。</p><button class="btn btn-pri cookie-ok">我知道了</button>`;
-  document.body.append(ck);
-  requestAnimationFrame(() => requestAnimationFrame(() => ck.classList.add('show')));
-  ck.querySelector('.cookie-ok').onclick = () => { localStorage.setItem('aic-cookie-ok', '1'); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
-}
-
 // ── 電子報訂閱彈窗（首頁捲動 60% 後觸發一次） ──
 if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
   let triggered = false;
@@ -3867,4 +3911,13 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
     }
   }, { passive: true });
 }
+
+// ── 平滑頁面導航 ──
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href]');
+  if (!a || a.target === '_blank' || a.href.includes('#') || !a.href.startsWith(location.origin)) return;
+  e.preventDefault();
+  document.body.classList.add('page-exit');
+  setTimeout(() => location.href = a.href, 250);
+});
 })();
