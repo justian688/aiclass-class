@@ -663,6 +663,26 @@ function home() {
   main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="sort-bar"><button class="sort-btn on" data-sort="default">推薦</button><button class="sort-btn" data-sort="new">最新上架</button><button class="sort-btn" data-sort="students">最多學員</button><button class="sort-btn" data-sort="price">價格低到高</button></div></div>`);
   main.insertAdjacentHTML('beforeend', railSec('filtered', '為你推薦', '依照你選的分類即時篩選', C));
 
+  // 為什麼選擇 AI Class
+  main.insertAdjacentHTML('beforeend', `<section class="usp-section" id="why"><div class="wrap">
+    <h2 class="usp-title rv-up">為什麼超過 60,000 人選擇 AI Class</h2>
+    <p class="usp-sub rv-up">我們打造最好的線上學習體驗</p>
+    <div class="usp-grid">
+      ${[
+        { icon: '🎬', title: '業界講師親授', desc: '每堂課都由業界頂尖講師精心製作，把第一線實戰經驗毫無保留地分享給你。' },
+        { icon: '📚', title: '系統化課程設計', desc: '從入門到進階，循序漸進的學習路徑，讓你不再東學西湊、走冤枉路。' },
+        { icon: '💬', title: '講師親自回覆', desc: '學習遇到問題直接提問，講師親自回覆，不怕卡關沒人幫。' },
+        { icon: '🔄', title: '免費終身更新', desc: '一次購買永久觀看，課程持續更新不加價，永遠學到最新內容。' },
+        { icon: '🏆', title: '結業證書', desc: '完成課程後獲得 AI Class 認證證書，為你的履歷和作品集加分。' },
+        { icon: '🛡️', title: '七天退費保證', desc: '購買後七天內不滿意全額退費，讓你安心學習零風險。' }
+      ].map((u, i) => `<div class="usp-card rv-up" style="transition-delay:${(i % 3) * 80}ms">
+        <div class="usp-icon">${u.icon}</div>
+        <h3>${u.title}</h3>
+        <p>${u.desc}</p>
+      </div>`).join('')}
+    </div>
+  </div></section>`);
+
   // 訓練營
   if (window.BOOTCAMPS) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="bootcamp"><div class="wrap"><div class="sec-head rv-up"><div><h2>訓練營</h2><div class="sub">免費報名，就業導向密集訓練</div></div></div>
@@ -1050,7 +1070,7 @@ function course() {
   let chapters, totalLessonCount, numChaps;
   const _chData = window.CHAPTERS && window.CHAPTERS[c.id];
   if (_chData) {
-    chapters = _chData.map((ch, ci) => ({ name: ch.title, lessons: ch.lessons.map((name, j) => ({ name, time: `${8 + (j * 7 % 15)}:${String((j * 23) % 60).padStart(2, '0')}`, free: ci === 0 && j === 0 })) }));
+    chapters = _chData.map((ch, ci) => ({ name: ch.title, lessons: ch.lessons.map((name, j) => ({ name, time: `${8 + (j * 7 % 15)}:${String((j * 23) % 60).padStart(2, '0')}`, free: ci === 0 && j < 2 })) }));
     totalLessonCount = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
     numChaps = chapters.length;
   } else {
@@ -1074,7 +1094,7 @@ function course() {
       for (let j = 0; j < cnt; j++) {
         const mins = 8 + ((i * 3 + j * 7) % 15);
         const secs = String((i * 17 + j * 23) % 60).padStart(2, '0');
-        const free = i === 0 && j === 0;
+        const free = i === 0 && j < 2;
         lessons.push({ name: bank[j % bank.length], time: `${mins}:${secs}`, free });
         lessonIdx++;
       }
@@ -1256,6 +1276,15 @@ function course() {
       const isOpen = ch.classList.contains('open');
       ch.classList.toggle('open');
       b.querySelector('.chap-count').textContent = ch.querySelector('.a ul').children.length + ' 堂 ' + (isOpen ? '＋' : '－');
+    };
+  });
+  $$('.chap-free').forEach(em => {
+    const li = em.closest('li');
+    if (li) li.style.cursor = 'pointer';
+    if (li) li.onclick = e => {
+      if (e.target.closest('button')) return;
+      const box = $('.c-video'), v = $('video', box);
+      if (v && box) { v.play(); box.classList.add('playing'); box.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     };
   });
   $$('.qa button').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
@@ -3302,6 +3331,22 @@ function playerPage() {
             <button class="plr-nav-btn plr-nav-next" id="plr-nav-next" aria-label="下一課">下一課 →</button>
           </div>
         </div>
+      <div class="plr-shortcuts-overlay" id="plr-shortcuts" hidden role="dialog" aria-modal="true" aria-label="鍵盤快捷鍵">
+        <div class="plr-shortcuts-panel">
+          <div class="plr-shortcuts-head"><h3>⌨ 鍵盤快捷鍵</h3><button class="plr-shortcuts-close" aria-label="關閉">✕</button></div>
+          <div class="plr-shortcuts-grid">
+            <div class="plr-sc-item"><kbd>Space</kbd><span>播放 / 暫停</span></div>
+            <div class="plr-sc-item"><kbd>←</kbd><span>後退 10 秒</span></div>
+            <div class="plr-sc-item"><kbd>→</kbd><span>前進 10 秒</span></div>
+            <div class="plr-sc-item"><kbd>↑</kbd><span>增加音量</span></div>
+            <div class="plr-sc-item"><kbd>↓</kbd><span>降低音量</span></div>
+            <div class="plr-sc-item"><kbd>M</kbd><span>靜音切換</span></div>
+            <div class="plr-sc-item"><kbd>F</kbd><span>全螢幕</span></div>
+            <div class="plr-sc-item"><kbd>P</kbd><span>子母畫面</span></div>
+            <div class="plr-sc-item"><kbd>?</kbd><span>顯示此面板</span></div>
+          </div>
+        </div>
+      </div>
       </div>
       <div class="plr-sidebar-overlay" id="plr-sb-overlay"></div>
       <aside class="plr-sidebar" id="plr-sidebar">
@@ -3498,14 +3543,26 @@ function playerPage() {
     localStorage.setItem(noteKey, noteEl.value);
   };
 
+  // Shortcuts overlay
+  const scOverlay = $('#plr-shortcuts');
+  const toggleSc = () => { scOverlay.hidden = !scOverlay.hidden; };
+  $('#plr-keys').onclick = toggleSc;
+  $('.plr-shortcuts-close').onclick = toggleSc;
+  scOverlay.onclick = e => { if (e.target === scOverlay) toggleSc(); };
+
   // Keyboard shortcuts
   document.onkeydown = e => {
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
     if (e.code === 'Space') { e.preventDefault(); vid_el.paused ? vid_el.play() : vid_el.pause(); }
     if (e.code === 'ArrowLeft') { vid_el.currentTime = Math.max(0, vid_el.currentTime - 10); }
     if (e.code === 'ArrowRight') { vid_el.currentTime = Math.min(vid_el.duration, vid_el.currentTime + 10); }
+    if (e.code === 'ArrowUp') { e.preventDefault(); vid_el.volume = Math.min(1, vid_el.volume + 0.1); volSlider.value = vid_el.volume; muteBtn.textContent = vid_el.volume === 0 ? '🔇' : '🔊'; }
+    if (e.code === 'ArrowDown') { e.preventDefault(); vid_el.volume = Math.max(0, vid_el.volume - 0.1); volSlider.value = vid_el.volume; muteBtn.textContent = vid_el.volume === 0 ? '🔇' : '🔊'; }
+    if (e.code === 'KeyM') { vid_el.muted = !vid_el.muted; muteBtn.textContent = vid_el.muted ? '🔇' : '🔊'; }
     if (e.code === 'KeyF') { const w = $('.plr-video-wrap'); document.fullscreenElement ? document.exitFullscreen() : w.requestFullscreen(); }
     if (e.code === 'KeyP') { if (vid_el.requestPictureInPicture) { document.pictureInPictureElement ? document.exitPictureInPicture() : vid_el.requestPictureInPicture(); } }
+    if (e.key === '?' || (e.shiftKey && e.code === 'Slash')) toggleSc();
+    if (e.code === 'Escape' && !scOverlay.hidden) toggleSc();
   };
 }
 
