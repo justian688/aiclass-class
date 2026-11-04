@@ -228,17 +228,18 @@ function shell() {
 
   const ft = document.createElement('footer');
   ft.innerHTML = `<div class="wrap"><div class="cols">
-    <div><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p></div>
-    <div><h4>課程分類</h4><ul>${window.CATS.slice(1, 6).map(c => `<li><a href="index.html#cat-${c.id}">${c.name}</a></li>`).join('')}</ul></div>
-    <div><h4>關於</h4><ul><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li><li><a href="invite.html">邀請好友</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li><li><a href="video.html">影片專區</a></li><li><a href="leaderboard.html">排行榜</a></li></ul></div>
-    <div><h4>支援</h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="coupon.html">優惠券</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li></ul></div>
+    <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
+      <div class="ft-social"><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div></div>
+    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li></ul></div>
+    <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
+    <div class="ft-col"><h4 class="ft-col-hd">下載 App<i class="ft-arrow">›</i></h4><ul><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 App Store（iOS）</a></li><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Google Play（Android）</a></li></ul>
+      <div class="ft-lang"><select onchange="toast('語言切換功能開發中')"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
   </div>
   <div class="ft-bottom">
-    <div class="ft-social"><span>追蹤我們</span><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div>
-    <div class="ft-app"><span>下載 AI Class App</span><a href="#" class="ft-app-btn" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 iOS</a><a href="#" class="ft-app-btn" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Android</a></div>
     <p>© ${new Date().getFullYear()} AI Class. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
   </div></div>`;
   document.body.append(ft);
+  if (innerWidth <= 760) $$('.ft-col-hd', ft).forEach(h => { h.onclick = () => h.parentNode.classList.toggle('ft-open'); });
 
   const mn = document.createElement('nav'); mn.className = 'mnav';
   mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"><i>⌂</i>首頁</a><a href="#" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"><i>☺</i>我的</a>`;
@@ -2071,6 +2072,11 @@ function articlePage() {
         });
       }, { rootMargin: '-80px 0px -60% 0px' });
       headings.forEach(h => obs.observe(h));
+      const mobToc = document.createElement('div');
+      mobToc.className = 'art-toc-mob';
+      mobToc.innerHTML = `<div class="art-toc-mob-hd">📑 文章目錄<i>▼</i></div><div class="art-toc-mob-body">${[...headings].map((h, i) => `<a class="art-toc-link ${h.tagName === 'H3' ? 'sub' : ''}" href="#sec-${i}">${h.textContent}</a>`).join('')}</div>`;
+      bodyEl.before(mobToc);
+      $('.art-toc-mob-hd', mobToc).onclick = () => mobToc.classList.toggle('open');
     } else {
       $('#art-toc', main).style.display = 'none';
     }
