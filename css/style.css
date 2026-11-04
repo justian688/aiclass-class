@@ -58,8 +58,9 @@ header.hdr.hide{transform:translateY(-100%)}
 .mega-col{display:flex;flex-direction:column;gap:6px}
 .mega-title{font-weight:700;font-size:15px;color:var(--tx);padding:6px 0 4px;border-bottom:1px solid var(--line);margin-bottom:4px;transition:.25s}
 .mega-title:hover{color:var(--pri)}
-.mega-sub{font-size:13px;color:var(--tx2);padding:4px 0;transition:.2s}
-.mega-sub:hover{color:var(--tx);padding-left:4px}
+.mega-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 6px;border-radius:10px;background:rgba(124,92,255,.1);color:var(--pri);font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
+.mega-sub{font-size:13px;color:var(--tx2);padding:4px 8px;border-radius:6px;transition:.2s}
+.mega-sub:hover{color:var(--tx);background:var(--bg2);padding-left:12px}
 .cart-btn{font-size:18px;padding:0 12px}
 
 /* Hero 輪播 */
@@ -1645,6 +1646,8 @@ a.notif-item:hover{background:rgba(0,0,0,.03)}
 [data-theme="dark"] header.hdr.scrolled{border-color:var(--line);box-shadow:0 1px 12px rgba(0,0,0,.3)}
 [data-theme="dark"] footer{background:var(--bg2);border-color:var(--line)}
 [data-theme="dark"] .mega-drop{background:rgba(20,20,30,.97);box-shadow:0 24px 80px -12px rgba(0,0,0,.6)}
+[data-theme="dark"] .mega-count{background:rgba(124,92,255,.2)}
+[data-theme="dark"] .mega-sub:hover{background:rgba(255,255,255,.06)}
 [data-theme="dark"] .notif-panel{background:rgba(20,20,30,.97);box-shadow:0 16px 48px rgba(0,0,0,.4)}
 [data-theme="dark"] .notif-item{border-color:rgba(255,255,255,.06)}
 [data-theme="dark"] .notif-item.unread{background:rgba(124,92,255,.1)}

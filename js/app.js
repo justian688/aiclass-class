@@ -233,7 +233,7 @@ function shell() {
     <div class="mega-wrap">
       <button class="mega-btn" aria-expanded="false">☰ 所有分類</button>
       <div class="mega-drop" hidden>
-        <div class="mega-grid">${window.CATS.slice(1).map(c => `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}</a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`).join('')}</div>
+        <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
     <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
@@ -602,6 +602,7 @@ function bindCards(root = document) {
   $$('[data-addcart]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
     const cid = b.dataset.addcart; cart.add(cid); saveCart(); updateCartBadge(); toast('已加入購物車');
+    b.textContent = '✓ 已加入'; b.style.background = 'var(--pri)'; b.style.color = '#fff'; b.style.pointerEvents = 'none';
     window.trackEvent('add_to_cart', { item_id: cid });
   });
   $$('[data-addwish]', root).forEach(b => b.onclick = e => {
