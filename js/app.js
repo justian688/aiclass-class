@@ -647,6 +647,12 @@ function home() {
       <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
   </section>`);
 
+  // 學習連續橫幅
+  if (streakData.count > 1) {
+    const msgs = streakData.count >= 30 ? '太強了！你是學習達人 💪' : streakData.count >= 14 ? '太棒了！持續保持 🚀' : streakData.count >= 7 ? '學習習慣已養成！' : '保持下去！';
+    main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="streak-banner rv-up"><span class="streak-fire">🔥</span><span class="streak-text">你已經連續學習 <b>${streakData.count}</b> 天！${msgs}</span><a href="my.html" class="streak-link">查看學習紀錄 →</a></div></div>`);
+  }
+
   // 最近瀏覽（放在「為你推薦」上方）
   const recentIds = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
   if (recentIds.length > 0) {
@@ -1311,6 +1317,16 @@ function course() {
       <div class="c-guarantee-item"><div class="c-guarantee-icon">💬</div><div class="c-guarantee-title">講師親自回覆</div><div class="c-guarantee-desc">學習遇到問題可直接提問，講師親自回覆。</div></div>
     </div>
   </div>
+  ${(() => {
+    const P = window.POSTS || [];
+    const related = P.filter(p => p.cat === c.cat || (p.title && p.title.includes(c.teacher))).slice(0, 3);
+    if (!related.length) return '';
+    return `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>相關學習文章</h2><div class="sub">延伸閱讀，加深你的學習</div></div><a class="more" href="blog.html">查看全部 →</a></div>
+      <div class="rel-articles">${related.map(p => `<a class="rel-article rv-up" href="article.html?slug=${p.slug}">
+        <div class="rel-art-img"><img src="assets/img/v${(C.find(x => x.cat === p.cat) || C[0]).v}.jpg" alt="" loading="lazy"></div>
+        <div class="rel-art-body"><span class="rel-art-cat">${(window.CATS.find(x => x.id === p.cat) || {}).name || ''}</span><h3>${p.title}</h3><span class="rel-art-meta">${p.readTime || '5 分鐘'} 閱讀</span></div>
+      </a>`).join('')}</div></div></section>`;
+  })()}
   ${smartRecommend(c)}
   ${railSec('more', '你可能也會喜歡', '', others)}`;
 
