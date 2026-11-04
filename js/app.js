@@ -1112,7 +1112,7 @@ function course() {
       </div>
     </aside>
   </div></div></div>
-  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#faq">常見問題</a></div></nav>
+  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
       <div class="c-highlights rv-up">${['從零到一完整學習','業界實戰流程','可直接使用的專案檔','講師親自回覆問題','終身免費更新','完課證書'].map(t=>`<span class="c-hl">${t}</span>`).join('')}</div>
@@ -1159,6 +1159,27 @@ function course() {
       <div class="ur-user-list"></div>
     </section>
     ${notesWidget(c.id)}
+    <section class="c-sec" id="qa"><h2 class="rv-up">💬 學員問答 <span class="qa-count">${6 + (c.id.charCodeAt(2) % 8)} 則討論</span></h2>
+      <div class="qa-post rv-up">
+        <textarea class="qa-input" placeholder="在這裡提問，講師會親自回覆…" rows="3" aria-label="發問"></textarea>
+        <div class="qa-post-foot"><span class="qa-hint">提問前請先搜尋是否已有相似問題</span><button class="btn btn-pri btn-sm qa-submit">送出問題</button></div>
+      </div>
+      <div class="qa-list">
+        ${[
+          { init:'周', name:'周**', date:'3 天前', q:'請問第三章的專案檔在哪裡下載？找不到連結。', aName: c.teacher, a:'在第三章第一堂的「課程資源」區塊可以找到下載連結，如果還是找不到的話請截圖給我，我來協助！', likes:12, replies:2 },
+          { init:'謝', name:'謝**', date:'5 天前', q:'老師好，我照著步驟做但結果跟影片不一樣，是版本問題嗎？', aName: c.teacher, a:'有可能是版本差異，課程是用最新版錄製的，建議更新到最新版再試一次。如果問題持續，請把你的版本號和截圖貼上來。', likes:8, replies:1 },
+          { init:'蔡', name:'蔡**', date:'1 週前', q:'這堂課完成後，能力大概可以到什麼程度？可以直接接案嗎？', aName: c.teacher, a:'完成課程後你會具備獨立完成中型專案的能力。接案的話建議再多做 2-3 個個人專案練手，課程最後一章有分享接案的準備方向。', likes:22, replies:4 },
+          { init:'鄭', name:'鄭**', date:'1 週前', q:'第二章第三堂的素材解壓後檔案好像缺了，能確認一下嗎？', aName: c.teacher, a:'已經確認並更新了素材包，請重新下載一次應該就正常了。如有其他問題歡迎再提問！', likes:5, replies:1 },
+          { init:'許', name:'許**', date:'2 週前', q:'請問有推薦搭配的參考書籍或資源嗎？', aName: c.teacher, a:'我在第一章的講義有列出推薦書單，另外也建議追蹤我在課程簡介中分享的社群帳號，會不定期分享實用資源。', likes:15, replies:3 },
+          { init:'吳', name:'吳**', date:'2 週前', q:'老師會更新 2027 年的新內容嗎？', aName: c.teacher, a:'會的！我通常每季會更新一次內容，已購買的同學都會免費獲得更新。2027 年初預計加入 AI 輔助的新章節。', likes:31, replies:5 }
+        ].map((item, i) => `<div class="qa-item rv-up">
+          <div class="qa-item-head"><div class="qa-avatar">${item.init}</div><div class="qa-meta"><b>${item.name}</b><span>${item.date}</span></div></div>
+          <p class="qa-question">${item.q}</p>
+          <div class="qa-answer"><div class="qa-answer-head"><span class="qa-teacher-badge">講師</span><b>${item.aName}</b></div><p>${item.a}</p></div>
+          <div class="qa-actions"><button class="qa-like" data-qa-i="${i}"><span class="qa-like-icon">👍</span> <span class="qa-like-num">${item.likes}</span></button><span class="qa-reply-count">${item.replies} 則回覆</span></div>
+        </div>`).join('')}
+      </div>
+    </section>
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</section>
     <div class="c-guarantee rv-up">
       <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">購買後 7 天內，覺得不適合可全額退費，零風險。</div></div>
@@ -1233,6 +1254,27 @@ function course() {
 
   bindNotes(c.id, main);
   bindUserReview(c.id, main);
+
+  // Q&A bindings
+  const qaSubmit = $('.qa-submit', main);
+  if (qaSubmit) qaSubmit.onclick = () => {
+    const ta = $('.qa-input', main), txt = ta.value.trim();
+    if (!txt) { toast('請輸入問題內容'); return; }
+    const list = $('.qa-list', main);
+    const item = document.createElement('div'); item.className = 'qa-item rv-up in';
+    item.innerHTML = `<div class="qa-item-head"><div class="qa-avatar">學</div><div class="qa-meta"><b>學員</b><span>剛剛</span></div></div><p class="qa-question">${txt.replace(/</g,'&lt;')}</p><div class="qa-answer"><div class="qa-answer-head"><span class="qa-teacher-badge">講師</span><b>${c.teacher}</b></div><p>謝謝你的提問！我會在 24 小時內回覆，請稍候。</p></div><div class="qa-actions"><button class="qa-like"><span class="qa-like-icon">👍</span> <span class="qa-like-num">0</span></button><span class="qa-reply-count">0 則回覆</span></div>`;
+    list.prepend(item); ta.value = ''; toast('問題已送出，講師將盡快回覆');
+    reveal(list);
+  };
+  main.addEventListener('click', e => {
+    const like = e.target.closest('.qa-like');
+    if (!like) return;
+    like.classList.toggle('liked');
+    const num = like.querySelector('.qa-like-num');
+    const cur = parseInt(num.textContent);
+    num.textContent = like.classList.contains('liked') ? cur + 1 : cur - 1;
+  });
+
   bindCards(main); // for smart recommend rail
   const srRail = $('.sr-sec .rail'); if (srRail) bindRail($('.sr-sec'));
 
@@ -2639,24 +2681,47 @@ function myPage() {
         <h2 class="myp-sec-title rv-up">帳號設定</h2>
         <div class="myp-settings rv-up">
           <div class="myp-set-group">
-            <h3>個人資料</h3>
+            <h3>👤 個人資料</h3>
+            <div class="my-set-profile"><div class="my-set-avatar">學</div><button class="btn btn-ghost btn-sm" onclick="toast('示範網站：更換頭像功能開發中')">更換頭像</button></div>
             <div class="myp-set-row"><label>姓名</label><input value="學員" placeholder="你的姓名"></div>
             <div class="myp-set-row"><label>Email</label><input value="user@aiclass.tw" placeholder="Email"></div>
             <div class="myp-set-row"><label>手機</label><input placeholder="手機號碼（選填）"></div>
+            <div class="myp-set-row"><label>簡介</label><textarea placeholder="介紹一下自己…" rows="2" style="resize:vertical"></textarea></div>
             <button class="btn btn-pri btn-sm" onclick="toast('示範網站：設定功能開發中')">儲存變更</button>
           </div>
           <div class="myp-set-group">
-            <h3>密碼變更</h3>
+            <h3>🎨 外觀設定</h3>
+            <div class="myp-set-row toggle"><label>深色模式</label><label class="my-set-switch"><input type="checkbox" id="set-dark" ${document.documentElement.dataset.theme==='dark'?'checked':''}><span class="my-set-slider"></span></label></div>
+            <div class="myp-set-row"><label>字體大小</label><div class="my-set-font-btns"><button class="my-set-font" data-fs="s">小</button><button class="my-set-font on" data-fs="m">中</button><button class="my-set-font" data-fs="l">大</button></div></div>
+            <div class="myp-set-row"><label>語言</label><select disabled style="padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx)"><option>繁體中文</option></select></div>
+          </div>
+          <div class="myp-set-group">
+            <h3>🔑 密碼變更</h3>
             <div class="myp-set-row"><label>目前密碼</label><input type="password" placeholder="輸入目前密碼"></div>
             <div class="myp-set-row"><label>新密碼</label><input type="password" placeholder="輸入新密碼"></div>
             <div class="myp-set-row"><label>確認密碼</label><input type="password" placeholder="再次輸入新密碼"></div>
             <button class="btn btn-pri btn-sm" onclick="toast('示範網站：設定功能開發中')">更新密碼</button>
           </div>
           <div class="myp-set-group">
-            <h3>通知偏好</h3>
-            <div class="myp-set-row toggle"><label>課程更新通知</label><input type="checkbox" checked></div>
-            <div class="myp-set-row toggle"><label>促銷活動通知</label><input type="checkbox" checked></div>
-            <div class="myp-set-row toggle"><label>學習提醒</label><input type="checkbox"></div>
+            <h3>🔔 通知偏好</h3>
+            <div class="myp-set-row toggle"><label>課程更新通知<span class="my-set-desc">有新章節或內容更新時通知你</span></label><label class="my-set-switch"><input type="checkbox" data-notif="update" checked><span class="my-set-slider"></span></label></div>
+            <div class="myp-set-row toggle"><label>促銷活動通知<span class="my-set-desc">限時優惠和折扣資訊</span></label><label class="my-set-switch"><input type="checkbox" data-notif="promo" checked><span class="my-set-slider"></span></label></div>
+            <div class="myp-set-row toggle"><label>學習提醒<span class="my-set-desc">每日學習提醒，保持學習習慣</span></label><label class="my-set-switch"><input type="checkbox" data-notif="remind"><span class="my-set-slider"></span></label></div>
+            <div class="myp-set-row toggle"><label>社群互動通知<span class="my-set-desc">有人回覆你的問題或評論時通知</span></label><label class="my-set-switch"><input type="checkbox" data-notif="social" checked><span class="my-set-slider"></span></label></div>
+            <div class="myp-set-row toggle"><label>電子報訂閱<span class="my-set-desc">每週精選課程與學習資源</span></label><label class="my-set-switch"><input type="checkbox" data-notif="newsletter"><span class="my-set-slider"></span></label></div>
+          </div>
+          <div class="myp-set-group">
+            <h3>🔒 隱私設定</h3>
+            <div class="myp-set-row toggle"><label>公開學習進度<span class="my-set-desc">其他學員可以看到你的學習狀態</span></label><label class="my-set-switch"><input type="checkbox" data-priv="progress" checked><span class="my-set-slider"></span></label></div>
+            <div class="myp-set-row toggle"><label>顯示學習成就<span class="my-set-desc">在個人檔案顯示成就徽章</span></label><label class="my-set-switch"><input type="checkbox" data-priv="achievement" checked><span class="my-set-slider"></span></label></div>
+            <div class="myp-set-row toggle"><label>出現在排行榜<span class="my-set-desc">允許在排行榜中顯示你的名稱</span></label><label class="my-set-switch"><input type="checkbox" data-priv="leaderboard"><span class="my-set-slider"></span></label></div>
+          </div>
+          <div class="myp-set-group my-set-danger">
+            <h3>⚠️ 帳號操作</h3>
+            <div class="my-set-actions">
+              <button class="btn btn-ghost" onclick="toast('示範網站：已登出（模擬）')">登出帳號</button>
+              <button class="btn my-set-del-btn" onclick="toast('示範網站：帳號刪除功能開發中')">刪除帳號</button>
+            </div>
           </div>
         </div>
       </section>
@@ -2728,6 +2793,37 @@ function myPage() {
     const btn = $('[data-sec="courses"]', main);
     if (btn) { btn.click(); btn.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   };
+
+  // Settings: dark mode toggle
+  const darkCb = $('#set-dark', main);
+  if (darkCb) darkCb.onchange = () => {
+    document.documentElement.dataset.theme = darkCb.checked ? 'dark' : 'light';
+    localStorage.setItem('aic-theme', darkCb.checked ? 'dark' : 'light');
+    const hdrToggle = $('.theme-toggle');
+    if (hdrToggle) hdrToggle.textContent = darkCb.checked ? '☀️' : '🌙';
+  };
+  // Settings: font size
+  $$('.my-set-font', main).forEach(btn => btn.onclick = () => {
+    $$('.my-set-font', main).forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const sz = btn.dataset.fs;
+    document.documentElement.style.fontSize = sz === 's' ? '14px' : sz === 'l' ? '18px' : '';
+    toast(sz === 's' ? '字體大小：小' : sz === 'l' ? '字體大小：大' : '字體大小：中（預設）');
+  });
+  // Settings: notification prefs (localStorage)
+  $$('[data-notif]', main).forEach(cb => {
+    const key = 'aic-notif-' + cb.dataset.notif;
+    const saved = localStorage.getItem(key);
+    if (saved !== null) cb.checked = saved === '1';
+    cb.onchange = () => { localStorage.setItem(key, cb.checked ? '1' : '0'); toast(cb.checked ? '已開啟通知' : '已關閉通知'); };
+  });
+  // Settings: privacy prefs
+  $$('[data-priv]', main).forEach(cb => {
+    const key = 'aic-priv-' + cb.dataset.priv;
+    const saved = localStorage.getItem(key);
+    if (saved !== null) cb.checked = saved === '1';
+    cb.onchange = () => { localStorage.setItem(key, cb.checked ? '1' : '0'); toast('隱私設定已更新'); };
+  });
 
   bindCards(main);
 }
