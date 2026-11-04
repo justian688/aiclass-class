@@ -3487,6 +3487,7 @@ function couponPage() {
 /* ---------- 結業證書 ---------- */
 function certificatePage() {
   const main = $('main');
+  seo({ title: '結業證書｜AI Class', desc: '查看你的結業證書', url: 'https://aiclass.tw/certificate.html' });
   const owned = JSON.parse(localStorage.getItem('aic-owned') || '[]');
   const completed = C.slice(0, 5).filter((c, i) => [2].includes(i));
   const certificates = completed.map(c => ({
@@ -3537,6 +3538,7 @@ function pathPage() {
   const p = window.PATHS.find(x => x.id === pid) || window.PATHS[0];
   const courses = p.courses.map(id => byId[id]).filter(Boolean);
   const totalHours = courses.reduce((s, c) => s + c.hours, 0);
+  seo({ title: `${p.title}｜AI Class 學習路徑`, desc: p.desc || `${p.title} 學習路徑，${courses.length} 門課程，${totalHours} 小時`, url: `https://aiclass.tw/path.html?id=${p.id}` });
   const totalStudents = Math.min(...courses.map(c => c.students));
   document.title = `${p.name}｜AI Class 學習路徑`;
 
@@ -4481,6 +4483,8 @@ reveal();
 tickCountdown(); setInterval(tickCountdown, 1000);
 document.body.classList.add('loaded');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+if (!$('link[rel="manifest"]')) { const m = document.createElement('link'); m.rel = 'manifest'; m.href = '/manifest.json'; document.head.append(m); }
+if (!$('meta[name="apple-mobile-web-app-capable"]')) { const m = document.createElement('meta'); m.name = 'apple-mobile-web-app-capable'; m.content = 'yes'; document.head.append(m); }
 
 
 // ── 課程比較功能 ──
