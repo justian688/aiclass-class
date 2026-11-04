@@ -963,6 +963,8 @@ function course() {
         <span>分享課程</span>
         <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>
         <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="LINE 分享">💬 LINE</a>
+        <a class="c-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="Facebook 分享">📘 Facebook</a>
+        ${navigator.share ? `<button class="c-share-btn" data-native-share title="更多分享方式">📤 分享</button>` : ''}
       </div>
     </div>
     <aside class="buy">
@@ -1045,6 +1047,8 @@ function course() {
   if (cartBtn) cartBtn.onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
   const copyBtn = $('[data-copy-link]');
   if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); toast('已複製課程連結'); };
+  const nativeShare = $('[data-native-share]');
+  if (nativeShare) nativeShare.onclick = () => navigator.share({ title: c.title + '｜AI Class', url: location.href }).catch(() => {});
   $$('.chap>button').forEach(b => {
     b.onclick = () => {
       const ch = b.parentNode;

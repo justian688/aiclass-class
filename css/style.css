@@ -1023,6 +1023,8 @@ body.hdr-hidden .tabs{top:0}
 /* 文章 LINE 分享 */
 .c-share-line{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;background:#06c755;color:#fff;font-size:14px;font-weight:600;transition:.25s;text-decoration:none}
 .c-share-line:hover{opacity:.85}
+.c-share-fb{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;background:#1877f2;color:#fff;font-size:14px;font-weight:600;transition:.25s;text-decoration:none}
+.c-share-fb:hover{opacity:.85}
 
 /* 文章 CTA 區 */
 .art-cta{text-align:center;padding:40px 32px;border-radius:22px;background:var(--bg2);border:1px solid var(--line);margin-top:32px}
