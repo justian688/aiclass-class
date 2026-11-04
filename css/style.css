@@ -3123,6 +3123,23 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 .inv-copy-btn.copied{background:#34c759;border-color:#34c759}
 @media(max-width:760px){.lb-filter-row{flex-direction:column;align-items:stretch}.lb-time-tabs{justify-content:center}}
 
+/* ===== 搜尋結果高亮 ===== */
+.srch-hl{background:rgba(124,92,255,.18);color:var(--pri);border-radius:2px;padding:0 2px;font-style:normal}
+[data-theme="dark"] .srch-hl{background:rgba(124,92,255,.3)}
+
+/* ===== 證書增強 ===== */
+.cert-summary{margin-top:12px;font-size:.95rem;color:var(--tx2)}
+.cert-summary b{color:var(--pri);font-size:1.1rem}
+.cert-border{border:3px solid;border-image:linear-gradient(135deg,var(--pri),var(--pink)) 1;padding:28px;position:relative}
+.cert-subtitle{font-size:.7rem;letter-spacing:4px;color:var(--tx3);margin-top:-4px;margin-bottom:16px}
+.cert-footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:.72rem;color:var(--tx3)}
+.cert-id{font-family:monospace;letter-spacing:1px}
+.cert-empty{text-align:center;padding:80px 20px}
+.cert-empty-icon{font-size:64px;margin-bottom:16px}
+.cert-empty h3{font-size:1.3rem;margin-bottom:8px}
+.cert-empty p{color:var(--tx2);line-height:1.7}
+.cert-empty-actions{display:flex;gap:12px;justify-content:center;margin-top:20px}
+
 /* ===== 列印樣式 ===== */
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}

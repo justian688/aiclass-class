@@ -1275,6 +1275,7 @@ function eventPage() {
   <section class="ev-hero">
     <div class="ev-particles"></div>
     <div class="ev-hero-inner">
+      <div class="crumb" style="color:rgba(255,255,255,.7)"><a href="index.html" style="color:rgba(255,255,255,.7)">首頁</a> › 限時活動</div>
       <div class="ev-eyebrow">AI Class 年度最大優惠</div>
       <h1 class="ev-title">BLACK<br>FRIDAY</h1>
       <p class="ev-sub">全站課程最低 5 折起・限時搶購倒數中</p>
@@ -2735,6 +2736,7 @@ function aboutPage() {
 
   main.innerHTML = `
   <section class="abt-hero"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 關於我們</div>
     <h1 class="abt-title rv-up">關於 AI Class</h1>
     <p class="abt-sub rv-up">跟著業界職人，把熱情學成專業</p>
   </div></section>
@@ -2818,6 +2820,7 @@ function faqPage() {
 
   main.innerHTML = `
   <section class="faqp-hero"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 常見問題</div>
     <h1 class="faqp-title rv-up">常見問題</h1>
     <p class="faqp-sub rv-up">找不到答案？歡迎來信 hi@aiclass.tw，我們會在 24 小時內回覆</p>
     <div class="faqp-search rv-up"><input placeholder="搜尋問題…" id="faq-search" aria-label="搜尋常見問題"></div>
@@ -2876,6 +2879,7 @@ function teachPage() {
 
   main.innerHTML = `
   <section class="tch-hero"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 成為講師</div>
     <div class="tch-hero-inner rv-up">
       <span class="ent-eyebrow">JOIN US</span>
       <h1 class="tch-title">在 AI Class 開課<br>讓你的專業被看見</h1>
@@ -3225,6 +3229,7 @@ function termsPage() {
   const main = $('main');
   main.innerHTML = `
   <section class="legal-hero"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 服務條款</div>
     <h1 class="legal-title rv-up">服務條款</h1>
     <p class="legal-sub rv-up">最後更新日期：2026 年 11 月</p>
   </div></section>
@@ -3292,6 +3297,7 @@ function privacyPage() {
   const main = $('main');
   main.innerHTML = `
   <section class="legal-hero"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 隱私權政策</div>
     <h1 class="legal-title rv-up">隱私權政策</h1>
     <p class="legal-sub rv-up">最後更新日期：2026 年 11 月</p>
   </div></section>
@@ -3674,36 +3680,46 @@ function certificatePage() {
 
   main.innerHTML = `
   <section class="cert-hero rv-up"><div class="wrap">
+    <div class="crumb"><a href="index.html">首頁</a> › <a href="my.html">我的學習</a> › 結業證書</div>
     <h1>結業證書</h1>
     <p>完成課程後即可取得結業證書，證明你的學習成果</p>
+    <div class="cert-summary rv-up"><span>🏆 已取得 <b>${certificates.length}</b> 張證書</span></div>
   </div></section>
   <div class="wrap">
     ${certificates.length ? `<div class="cert-grid">
       ${certificates.map(c => `<div class="cert-card rv-up">
         <div class="cert-preview">
-          <div class="cert-logo">AI CLASS</div>
-          <div class="cert-title">結 業 證 書</div>
-          <div class="cert-cname">${c.title}</div>
-          <div class="cert-student">${c.student}</div>
-          <div class="cert-msg">已完成本課程全部內容，特此頒發結業證書以資證明。</div>
-          <div class="cert-date">發證日期：${c.completedDate}</div>
-          <div class="cert-seal">✓</div>
+          <div class="cert-border">
+            <div class="cert-logo">AI CLASS</div>
+            <div class="cert-title">結 業 證 書</div>
+            <div class="cert-subtitle">CERTIFICATE OF COMPLETION</div>
+            <div class="cert-cname">${c.title}</div>
+            <div class="cert-student">${c.student}</div>
+            <div class="cert-msg">已完成本課程全部內容，特此頒發結業證書以資證明。</div>
+            <div class="cert-footer"><span class="cert-date">發證日期：${new Date(c.completedDate).toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric'})}</span><span class="cert-id">${c.certId}</span></div>
+            <div class="cert-seal">✓</div>
+          </div>
         </div>
         <div class="cert-info">
           <h3>${c.title}</h3>
           <p class="teacher">${c.teacher} · ${c.hours} 小時</p>
           <div class="cert-actions">
-            <button class="btn btn-pri btn-sm" onclick="toast('示範網站：下載功能開發中')">下載證書</button>
-            <button class="btn btn-ghost btn-sm" onclick="toast('已複製分享連結')">分享</button>
+            <button class="btn btn-pri btn-sm" onclick="toast('示範網站：PDF 下載功能開發中')">📄 下載 PDF</button>
+            <button class="btn btn-ghost btn-sm cert-share-btn">🔗 分享證書</button>
           </div>
         </div>
       </div>`).join('')}
-    </div>` : `<div class="cert-empty">
-      <p>你還沒有結業證書</p>
-      <p>完成任一課程的所有章節即可取得結業證書</p>
-      <p style="margin-top:16px"><a href="index.html" class="btn btn-pri">探索課程</a></p>
+    </div>` : `<div class="cert-empty rv-up">
+      <div class="cert-empty-icon">🎓</div>
+      <h3>你還沒有結業證書</h3>
+      <p>完成任一課程的所有章節即可取得結業證書，<br>開始你的學習之旅吧！</p>
+      <div class="cert-empty-actions"><a href="index.html" class="btn btn-pri">探索課程</a><a href="my.html" class="btn btn-ghost">我的學習</a></div>
     </div>`}
   </div>`;
+  $$('.cert-share-btn', main).forEach(btn => btn.onclick = () => {
+    if (navigator.share) navigator.share({ title: 'AI Class 結業證書', text: '我在 AI Class 完成了課程！', url: location.href }).catch(() => {});
+    else { navigator.clipboard.writeText(location.href).then(() => toast('已複製分享連結', 'success')); }
+  });
 }
 
 /* ---------- 學習路徑詳情 ---------- */
@@ -3956,6 +3972,7 @@ function orderHistoryPage() {
 
   main.innerHTML = `
   <section class="oh-hero rv-up"><div class="wrap">
+    <div class="crumb"><a href="index.html">首頁</a> › <a href="my.html">我的學習</a> › 訂單紀錄</div>
     <h1>訂單紀錄</h1>
     <p>查看所有課程訂單與付款狀態</p>
   </div></section>
@@ -4006,6 +4023,7 @@ function searchPage() {
 
   main.innerHTML = `
   <div class="wrap srch-wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 搜尋${initQ ? `「${initQ}」` : ''}</div>
     <div class="srch-top rv-up">
       <div class="srch-input-wrap">
         <span class="srch-icon">⌕</span>
@@ -4110,6 +4128,12 @@ function searchPage() {
     countEl.textContent = `找到 ${list.length} 堂課程`;
     if (list.length) {
       grid.innerHTML = list.map((c, i) => card(c, i)).join('');
+      if (q) {
+        const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        $$('.card h3, .card .teacher', grid).forEach(el => {
+          if (re.test(el.textContent)) el.innerHTML = el.textContent.replace(re, '<mark class="srch-hl">$1</mark>');
+        });
+      }
       grid.style.display = '';
       emptyEl.style.display = 'none';
       bindCards(grid);
