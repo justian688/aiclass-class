@@ -33,7 +33,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}</a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="quiz.html">測驗</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程</button>
     <div class="notif-wrap">
@@ -109,6 +109,29 @@ function shell() {
   }, { passive: true });
 
   searchOverlay();
+
+  // 課程比較
+  const cmpKey = 'aic-compare';
+  const getCmp = () => JSON.parse(localStorage.getItem(cmpKey) || '[]');
+  const cmpFab = document.createElement('button'); cmpFab.className = 'cmp-fab'; cmpFab.style.display = 'none';
+  document.body.append(cmpFab);
+  window.toggleCompare = id => { let list = getCmp(); if (list.includes(id)) list = list.filter(x => x !== id); else if (list.length < 4) list.push(id); else { toast('最多比較 4 堂課程'); return; } localStorage.setItem(cmpKey, JSON.stringify(list)); updateCmpFab(); };
+  function updateCmpFab() { const list = getCmp(); cmpFab.style.display = list.length >= 2 ? '' : 'none'; cmpFab.textContent = `⚖ 比較 (${list.length})`; }
+  cmpFab.onclick = () => { const list = getCmp().map(id => byId[id]).filter(Boolean); if (list.length < 2) return;
+    const panel = document.createElement('div'); panel.className = 'cmp-panel'; panel.innerHTML = `<div class="cmp-bg"></div><div class="cmp-box"><div class="cmp-hdr"><h3>⚖ 課程比較</h3><button class="cmp-close">✕</button></div><div class="cmp-body"><table><thead><tr><th></th>${list.map(c=>`<th><img src="${img(c)}" alt=""><b>${c.title}</b></th>`).join('')}</tr></thead><tbody>
+    <tr><td>講師</td>${list.map(c=>`<td>${c.teacher}</td>`).join('')}</tr>
+    <tr><td>價格</td>${list.map(c=>`<td><b>${fmt(c.price)}</b></td>`).join('')}</tr>
+    <tr><td>原價</td>${list.map(c=>`<td><del>${fmt(c.origin)}</del></td>`).join('')}</tr>
+    <tr><td>時數</td>${list.map(c=>`<td>${c.hours} 小時</td>`).join('')}</tr>
+    <tr><td>評分</td>${list.map(c=>`<td>★ ${c.rating.toFixed(1)}</td>`).join('')}</tr>
+    <tr><td>學員</td>${list.map(c=>`<td>${c.students.toLocaleString()}</td>`).join('')}</tr>
+    <tr><td>分類</td>${list.map(c=>`<td>${(window.CATS.find(x=>x.id===c.cat)||{}).name||''}</td>`).join('')}</tr>
+    <tr><td></td>${list.map(c=>`<td><a href="course.html?id=${c.id}" class="btn btn-pri btn-sm">查看課程</a></td>`).join('')}</tr>
+    </tbody></table></div></div>`;
+    document.body.append(panel); document.body.style.overflow = 'hidden';
+    panel.querySelector('.cmp-close').onclick = panel.querySelector('.cmp-bg').onclick = () => { panel.remove(); document.body.style.overflow = ''; };
+  };
+  updateCmpFab();
 
   // Mega menu: hover on desktop, click on mobile
   const megaBtn = $('.mega-btn', hdr), megaDrop = $('.mega-drop', hdr), megaWrap = $('.mega-wrap', hdr);
@@ -214,7 +237,7 @@ function card(c, i, rank) {
       <div class="stars"><b>★ ${c.rating.toFixed(1)}</b>・${c.students.toLocaleString()} 位學員</div>
       ${c.ai ? '<div class="ai-summary"><span class="ai-tag">✦ AI 摘要</span>' + c.ai + '</div>' : ''}
     </div>
-    <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns"><button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button></div></div>
+    <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns"><button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button><button class="ch-cmp" data-addcmp="${c.id}">⚖ 比較</button></div></div>
   </a>`;
 }
 
@@ -249,6 +272,10 @@ function bindCards(root = document) {
     localStorage.setItem('aic-wish', JSON.stringify([...wish]));
     $$(`[data-wish="${id}"]`).forEach(x => { x.classList.add('on'); x.textContent = '♥'; });
     toast('已加入收藏 ♥');
+  });
+  $$('[data-addcmp]', root).forEach(b => b.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    if (window.toggleCompare) window.toggleCompare(b.dataset.addcmp);
   });
   reveal(root);
 }
@@ -380,9 +407,15 @@ function home() {
     <div class="in"><div><span class="eyebrow">限時優惠</span><h2>雙 11 全站最低 5 折<br>今天午夜結束</h2><p>任選兩堂再折 NT$500，結帳自動套用</p><a class="btn" style="background:#fff;color:#000;margin-top:20px" href="#top10">查看優惠課程 →</a></div>${cdHTML}</div></div></div>`);
 
   // 講師
-  const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
-  main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div></div>
-    <div class="teachers">${teachers.map((c, i) => `<a class="tc rv-up" style="transition-delay:${(i % 6) * 60}ms" href="course.html?id=${c.id}"><img src="${img(c)}" alt="" loading="lazy"><div class="n"><b>${c.teacher}</b><span>${c.role}</span></div></a>`).join('')}</div></div></section>`);
+  const INS = window.INSTRUCTORS || [];
+  if (INS.length) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div><a class="more" href="instructor.html">查看全部 →</a></div>
+      <div class="ins-grid">${INS.map((t, i) => `<div class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span><span>${(t.students / 1000).toFixed(1)}k 學員</span></div></div>`).join('')}</div></div></section>`);
+  } else {
+    const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div></div>
+      <div class="teachers">${teachers.map((c, i) => `<a class="tc rv-up" style="transition-delay:${(i % 6) * 60}ms" href="course.html?id=${c.id}"><img src="${img(c)}" alt="" loading="lazy"><div class="n"><b>${c.teacher}</b><span>${c.role}</span></div></a>`).join('')}</div></div></section>`);
+  }
 
   // 評價
   const R = window.REVIEWS;
@@ -754,6 +787,24 @@ function course() {
     let n = 0; secs.forEach((s, i) => { if (s.getBoundingClientRect().top < 180) n = i; });
     tabs.forEach((a, i) => a.classList.toggle('on', i === n));
   }, { passive: true });
+
+  // Reading progress bar
+  const progBar = document.createElement('div'); progBar.className = 'c-read-prog';
+  document.body.append(progBar);
+  addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    progBar.style.width = h > 0 ? (scrollY / h * 100) + '%' : '0';
+  }, { passive: true });
+
+  // Mobile sticky purchase bar
+  if (!isOwned && innerWidth <= 760) {
+    const bar = document.createElement('div'); bar.className = 'stk-bar';
+    bar.innerHTML = `<div class="stk-price"><span class="stk-now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div><button class="btn btn-pri stk-buy">立即購買</button>`;
+    document.body.append(bar);
+    const buyAside = $('.buy');
+    addEventListener('scroll', () => { bar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }, { passive: true });
+    $('.stk-buy', bar).onclick = () => toast('示範網站：尚未串接金流');
+  }
 }
 
 /* ---------- 活動頁 ---------- */
@@ -1655,6 +1706,8 @@ function myPage() {
         <a href="order-history.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🧾 訂單紀錄</a>
         <button class="myp-nav-btn" data-sec="coupons">🎟️ 優惠券</button>
         <button class="myp-nav-btn" data-sec="settings">⚙️ 帳號設定</button>
+        <button class="myp-nav-btn" data-sec="achievements">🏅 成就徽章</button>
+        <a href="quiz.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🎯 技能測驗</a>
         <a href="certificate.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🏆 結業證書</a>
       </nav>
       <div class="myp-aside-stats">
@@ -1794,6 +1847,44 @@ function myPage() {
         </div>
       </section>
 
+      <!-- 成就徽章 -->
+      <section class="myp-sec" id="myp-sec-achievements" hidden>
+        <h2 class="myp-sec-title rv-up">🏅 成就徽章</h2>
+        <div class="gm-level rv-up">
+          <div class="gm-level-info"><span class="gm-level-badge">Lv.${Math.min(12,Math.floor(totalHours/5)+1)}</span><span>${totalHours >= 60 ? '學習大師' : totalHours >= 30 ? '進階學員' : '新手學員'}</span></div>
+          <div class="gm-xp-wrap"><div class="gm-xp-bar"><div class="gm-xp-fill" style="width:${Math.min(100,(totalHours%10)*10)}%"></div></div><span class="gm-xp-text">${totalHours*60} / ${(Math.floor(totalHours/10)+1)*600} XP</span></div>
+        </div>
+        <div class="gm-streak rv-up">
+          <div class="gm-streak-fire">🔥</div>
+          <div><b>連續學習 7 天</b><p>保持每天學習，解鎖更多成就！</p></div>
+        </div>
+        <div class="gm-badges rv-up">
+          ${[
+            {icon:'🎯',name:'首次購課',desc:'購買第一堂課程',earned:true},
+            {icon:'📚',name:'收藏達人',desc:'收藏超過 5 堂課程',earned:true},
+            {icon:'🔥',name:'連續 7 天',desc:'連續學習 7 天不中斷',earned:true},
+            {icon:'🎓',name:'完課一門',desc:'完成一門完整課程',earned:completed>0},
+            {icon:'💬',name:'社群新手',desc:'在社群發表第一篇文章',earned:false},
+            {icon:'🏆',name:'測驗滿分',desc:'任一測驗取得滿分',earned:false},
+            {icon:'🌟',name:'學習百時',desc:'累計學習時數達 100 小時',earned:totalHours>=100},
+            {icon:'📝',name:'筆記達人',desc:'累計寫超過 10 則筆記',earned:false},
+            {icon:'👥',name:'邀請好友',desc:'成功邀請一位好友加入',earned:false},
+            {icon:'🛒',name:'購物專家',desc:'購買超過 10 堂課程',earned:enrolled.length>=10},
+            {icon:'⭐',name:'全五星評價',desc:'為所有已購課程給予五星',earned:false},
+            {icon:'🎪',name:'活動參與者',desc:'參加一次限時活動',earned:true}
+          ].map(b => `<div class="gm-badge${b.earned?' earned':''}"><div class="gm-badge-icon">${b.icon}</div><h4>${b.name}</h4><p>${b.desc}</p></div>`).join('')}
+        </div>
+        <div class="gm-leaderboard rv-up">
+          <h3>📊 本週排行榜</h3>
+          <div class="gm-lb-list">${[
+            {name:'王**',xp:2400,lv:8},{name:'陳**',xp:2180,lv:7},{name:'林**',xp:1960,lv:7},
+            {name:'你',xp:totalHours*60,lv:Math.min(12,Math.floor(totalHours/5)+1),me:true},
+            {name:'張**',xp:1200,lv:5},{name:'黃**',xp:980,lv:4},{name:'李**',xp:860,lv:4},
+            {name:'吳**',xp:720,lv:3},{name:'劉**',xp:580,lv:3},{name:'蔡**',xp:440,lv:2}
+          ].sort((a,b)=>b.xp-a.xp).map((u,i) => `<div class="gm-lb-row${u.me?' me':''}"><span class="gm-lb-rank">${i+1}</span><span class="gm-lb-name">${u.name}</span><span class="gm-lb-lv">Lv.${u.lv}</span><span class="gm-lb-xp">${u.xp.toLocaleString()} XP</span></div>`).join('')}</div>
+        </div>
+      </section>
+
       <section class="sec"><div class="wrap">
         <div class="sec-head rv-up"><h2>推薦你可能會喜歡</h2></div>
         <div class="rail">${C.slice(10, 18).map(c => card(c)).join('')}</div>
@@ -1854,7 +1945,7 @@ function aboutPage() {
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🏆</div><h3>品質堅持</h3><p>嚴格篩選講師資格，每堂課經過完整的課程設計審核、影片品質把關，確保學習體驗。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">♾️</div><h3>終身學習</h3><p>一次購買、無限期觀看、免費更新，我們相信持續學習不應該有時間壓力。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🤝</div><h3>社群共學</h3><p>每堂課設有討論區，讓你和講師、同學交流，學習路上不孤單。</p></div>
-      <div class="ent-feature rv-up"><div class="ent-feature-icon">🌏</div><h3>多元包容</h3><p>涵蓋 10 大領域、超過 37 堂課程，從技術到創作、從入門到進階，每個人都能找到適合的學習路徑。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🌏</div><h3>多元包容</h3><p>涵蓋 10 大領域、超過 ${C.length} 堂課程，從技術到創作、從入門到進階，每個人都能找到適合的學習路徑。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🚀</div><h3>持續創新</h3><p>緊跟 AI 時代的腳步，不斷推出最新技術課程，幫助學員保持市場競爭力。</p></div>
     </div>
   </div></section>
@@ -3293,6 +3384,152 @@ function livePage() {
   reveal(main);
 }
 
+/* ---------- 技能測驗 ---------- */
+function quizPage() {
+  const main = $('main');
+  const quizData = {
+    ai: {name:'AI 人工智慧',icon:'🤖',questions:[
+      {q:'Transformer 架構中 Self-Attention 的時間複雜度為？',o:['O(n²d)','O(nd²)','O(n²)','O(nd)'],a:0},
+      {q:'GPT 是哪種類型的模型？',o:['自回歸語言模型','雙向編碼器','生成對抗網路','擴散模型'],a:0},
+      {q:'CNN 中池化層的主要作用？',o:['降維與平移不變性','增加參數量','提高解析度','生成新特徵'],a:0},
+      {q:'哪個不是常用的正規化技術？',o:['Max Normalization','Batch Normalization','Layer Normalization','Dropout'],a:0},
+      {q:'遷移學習的核心概念是？',o:['利用預訓練模型的知識','從零訓練新模型','增加訓練數據量','改變模型架構'],a:0}
+    ]},
+    design: {name:'UI/UX 設計',icon:'🎨',questions:[
+      {q:'設計系統中 8px grid 的主要好處？',o:['統一間距保持視覺一致','減少檔案大小','加速渲染','降低開發難度'],a:0},
+      {q:'Nielsen 的可用性啟發法共有幾項？',o:['10 項','8 項','12 項','7 項'],a:0},
+      {q:'哪個不是 Gestalt 視覺法則？',o:['對比法則','接近法則','相似法則','封閉法則'],a:0},
+      {q:'色彩無障礙設計要求對比度至少？',o:['4.5:1','3:1','2:1','7:1'],a:0},
+      {q:'A/B 測試的樣本量通常建議至少？',o:['1000 以上','100','500','50'],a:0}
+    ]},
+    '3d': {name:'3D 建模',icon:'🧊',questions:[
+      {q:'Blender 中 Subdivision Surface 的快捷鍵？',o:['Ctrl+1/2/3','Alt+S','Shift+A','Tab'],a:0},
+      {q:'PBR 材質中 Roughness 值為 0 代表？',o:['完全光滑鏡面','完全粗糙','半透明','金屬質感'],a:0},
+      {q:'法線貼圖（Normal Map）的主要用途？',o:['模擬表面細節不增加面數','改變顏色','增加多邊形','控制透明度'],a:0},
+      {q:'三角面 vs 四角面，角色動畫推薦用？',o:['四角面','三角面','五角面','混用'],a:0},
+      {q:'HDRI 在 3D 場景中的作用是？',o:['提供環境光照和反射','增加多邊形','優化渲染速度','控制動畫'],a:0}
+    ]},
+    photo: {name:'攝影',icon:'📸',questions:[
+      {q:'光圈 f/1.4 與 f/8 相比，景深？',o:['f/1.4 景深更淺','f/8 景深更淺','兩者相同','無法比較'],a:0},
+      {q:'黃金時刻（Golden Hour）是指？',o:['日出/日落前後的柔和光線','正午陽光','陰天光線','人工燈光'],a:0},
+      {q:'RAW 格式相比 JPEG 的優勢？',o:['保留更多後製空間','檔案更小','分享更方便','色彩更鮮豔'],a:0},
+      {q:'構圖中的三分法建議將主體放在？',o:['九宮格交叉點','正中心','角落','邊緣'],a:0},
+      {q:'ISO 越高，影像品質？',o:['雜訊增加品質下降','品質上升','色彩更準確','無影響'],a:0}
+    ]},
+    cook: {name:'料理',icon:'🍳',questions:[
+      {q:'梅納反應（Maillard Reaction）發生在？',o:['高溫下胺基酸與糖反應','低溫慢煮','水煮過程','冷凍過程'],a:0},
+      {q:'法式料理五大母醬不包含？',o:['味噌醬','白醬','褐醬','荷蘭醬'],a:0},
+      {q:'舒肥法（Sous Vide）的溫度通常在？',o:['50-70°C','100°C以上','0-10°C','80-90°C'],a:0},
+      {q:'麵包發酵的主要微生物？',o:['酵母菌','乳酸菌','醋酸菌','麴菌'],a:0},
+      {q:'刀工中「julienne」是指？',o:['細絲切法','骰子切法','薄片切法','碎末切法'],a:0}
+    ]},
+    music: {name:'音樂製作',icon:'🎵',questions:[
+      {q:'DAW 代表什麼？',o:['Digital Audio Workstation','Digital Analog Waveform','Dynamic Audio Writer','Digital Audio Widget'],a:0},
+      {q:'MIDI 訊號傳遞的是？',o:['演奏指令（音符、力度等）','音訊波形','壓縮音檔','影像數據'],a:0},
+      {q:'混音中 EQ 的主要功能？',o:['調整頻率平衡','增加音量','加入回音','改變速度'],a:0},
+      {q:'壓縮器（Compressor）的作用是？',o:['縮小動態範圍','增加動態範圍','改變音高','增加失真'],a:0},
+      {q:'取樣率 44.1kHz 理論上能再現的最高頻率？',o:['22.05kHz','44.1kHz','20kHz','48kHz'],a:0}
+    ]}
+  };
+  const cats = Object.entries(quizData);
+  const saved = JSON.parse(localStorage.getItem('aic-quiz-results') || '{}');
+
+  main.innerHTML = `<div class="qz-hero rv-up">
+    <div class="wrap"><h1>🎯 技能測驗</h1><p>測試你的專業能力，獲得技能認證徽章</p>
+    <div class="qz-hero-stats"><div><b>${cats.length}</b>測驗分類</div><div><b>${cats.reduce((s,c)=>s+c[1].questions.length,0)}</b>題目總數</div><div><b>${Object.keys(saved).length}</b>已完成</div></div></div>
+  </div>
+  <div class="wrap" style="padding-bottom:80px">
+    <div class="qz-grid rv-up">${cats.map(([k,v]) => {
+      const done = saved[k];
+      return `<div class="qz-card" data-qk="${k}">
+        <div class="qz-card-icon">${v.icon}</div>
+        <h3>${v.name}</h3>
+        <div class="qz-card-info"><span>📝 ${v.questions.length} 題</span><span>⏱ 約 ${v.questions.length} 分鐘</span></div>
+        <div class="qz-card-diff"><span class="qz-diff-dot"></span>${v.questions.length >= 5 ? '中等' : '入門'}</div>
+        ${done ? `<div class="qz-card-score">最高分：${done.score}/${done.total}</div>` : ''}
+        <button class="btn btn-pri qz-start">${done ? '再次挑戰' : '開始測驗'}</button>
+      </div>`;
+    }).join('')}</div>
+  </div>
+  <div class="qz-modal" hidden>
+    <div class="qz-modal-bg"></div>
+    <div class="qz-modal-box">
+      <div class="qz-modal-hdr"><div class="qz-progress"><div class="qz-progress-fill"></div></div><div class="qz-hdr-info"><span class="qz-q-num"></span><span class="qz-timer">⏱ 00:00</span><button class="qz-close">✕</button></div></div>
+      <div class="qz-modal-body"><h3 class="qz-question"></h3><div class="qz-options"></div></div>
+      <div class="qz-modal-foot"><button class="btn btn-ghost qz-prev" disabled>← 上一題</button><button class="btn btn-pri qz-next">下一題 →</button></div>
+    </div>
+  </div>
+  <div class="qz-result" hidden>
+    <div class="qz-modal-bg"></div>
+    <div class="qz-result-box">
+      <div class="qz-result-icon"></div>
+      <h2 class="qz-result-title"></h2>
+      <div class="qz-result-score"></div>
+      <div class="qz-result-stats"></div>
+      <div class="qz-result-actions"><button class="btn btn-pri qz-retry">再試一次</button><button class="btn btn-ghost qz-share-btn">📤 分享成績</button><button class="btn btn-ghost qz-back-btn">返回列表</button></div>
+    </div>
+  </div>`;
+
+  let currentQuiz = null, currentQ = 0, answers = [], timerInt = null, elapsed = 0;
+
+  const modal = $('.qz-modal', main), result = $('.qz-result', main);
+
+  function startQuiz(key) {
+    const data = quizData[key];
+    currentQuiz = {key, data, shuffled: data.questions.map((q,i)=>({...q,idx:i})).sort(()=>Math.random()-.5)};
+    currentQ = 0; answers = new Array(data.questions.length).fill(-1); elapsed = 0;
+    modal.hidden = false; document.body.style.overflow = 'hidden';
+    if (timerInt) clearInterval(timerInt);
+    timerInt = setInterval(() => { elapsed++; $('.qz-timer', modal).textContent = '⏱ ' + String(Math.floor(elapsed/60)).padStart(2,'0') + ':' + String(elapsed%60).padStart(2,'0'); }, 1000);
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = currentQuiz.shuffled[currentQ], total = currentQuiz.shuffled.length;
+    $('.qz-progress-fill', modal).style.width = ((currentQ+1)/total*100)+'%';
+    $('.qz-q-num', modal).textContent = `第 ${currentQ+1}/${total} 題`;
+    $('.qz-question', modal).textContent = q.q;
+    $('.qz-options', modal).innerHTML = q.o.map((o,i) => `<label class="qz-opt${answers[currentQ]===i?' on':''}"><input type="radio" name="qopt" value="${i}"${answers[currentQ]===i?' checked':''}><span>${o}</span></label>`).join('');
+    $$('.qz-opt input', modal).forEach(r => r.onchange = () => { answers[currentQ] = +r.value; $$('.qz-opt', modal).forEach((el,j) => el.classList.toggle('on', j===+r.value)); });
+    $('.qz-prev', modal).disabled = currentQ === 0;
+    $('.qz-next', modal).textContent = currentQ === total - 1 ? '送出答案 ✓' : '下一題 →';
+  }
+
+  function finishQuiz() {
+    clearInterval(timerInt); modal.hidden = true;
+    const correct = currentQuiz.shuffled.reduce((s,q,i) => s + (answers[i] === q.a ? 1 : 0), 0);
+    const total = currentQuiz.shuffled.length;
+    const pctVal = Math.round(correct/total*100);
+    const res = {score:correct, total, time:elapsed, pct:pctVal, date:Date.now()};
+    saved[currentQuiz.key] = !saved[currentQuiz.key] || correct > saved[currentQuiz.key].score ? res : saved[currentQuiz.key];
+    localStorage.setItem('aic-quiz-results', JSON.stringify(saved));
+    const icon = pctVal >= 80 ? '🏆' : pctVal >= 60 ? '👍' : '💪';
+    const title = pctVal >= 80 ? '太厲害了！' : pctVal >= 60 ? '表現不錯！' : '繼續加油！';
+    result.hidden = false;
+    $('.qz-result-icon', result).textContent = icon;
+    $('.qz-result-title', result).textContent = title;
+    $('.qz-result-score', result).innerHTML = `<span class="qz-big-score">${correct}<small>/${total}</small></span><div class="qz-pct">${pctVal}%</div>`;
+    const mins = Math.floor(elapsed/60), secs = elapsed%60;
+    $('.qz-result-stats', result).innerHTML = `<div><b>✅ ${correct}</b>答對</div><div><b>❌ ${total-correct}</b>答錯</div><div><b>⏱ ${mins}:${String(secs).padStart(2,'0')}</b>用時</div>`;
+  }
+
+  $$('.qz-card', main).forEach(card => card.querySelector('.qz-start').onclick = () => startQuiz(card.dataset.qk));
+  const closeModal = () => { modal.hidden = true; clearInterval(timerInt); document.body.style.overflow = ''; };
+  const closeResult = () => { result.hidden = true; document.body.style.overflow = ''; };
+  modal.onclick = e => { e.stopPropagation();
+    if (e.target.classList.contains('qz-modal-bg') || e.target.closest('.qz-close')) closeModal();
+    if (e.target.closest('.qz-next')) { if (currentQ < currentQuiz.shuffled.length - 1) { currentQ++; renderQuestion(); } else finishQuiz(); }
+    if (e.target.closest('.qz-prev') && currentQ > 0) { currentQ--; renderQuestion(); }
+  };
+  result.onclick = e => { e.stopPropagation();
+    if (e.target.classList.contains('qz-modal-bg') || e.target.closest('.qz-close')) closeResult();
+    if (e.target.closest('.qz-retry')) { closeResult(); startQuiz(currentQuiz.key); }
+    if (e.target.closest('.qz-back-btn')) closeResult();
+    if (e.target.closest('.qz-share-btn') && currentQuiz) { const txt = `我在 AI Class 的「${currentQuiz.data.name}」測驗中答對了 ${saved[currentQuiz.key].score}/${saved[currentQuiz.key].total} 題！`; if (navigator.share) navigator.share({title:'AI Class 測驗成績',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt).then(()=>toast('成績已複製')).catch(()=>{}); } }
+  };
+  reveal(main);
+}
+
 /* ---------- 啟動 ---------- */
 if (page !== 'training' && page !== 'player') shell();
 if (page === 'home') home();
@@ -3324,6 +3561,7 @@ else if (page === 'community') communityPage();
 else if (page === 'live') livePage();
 else if (page === 'order-history') orderHistoryPage();
 else if (page === 'search') searchPage();
+else if (page === 'quiz') quizPage();
 reveal();
 tickCountdown(); setInterval(tickCountdown, 1000);
 document.body.classList.add('loaded');
