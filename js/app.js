@@ -2510,6 +2510,14 @@ function articlePage() {
     toast(has ? '已取消收藏' : '已收藏文章');
   };
 
+  // 閱讀位置記憶
+  const artPos = JSON.parse(localStorage.getItem('aic-art-pos') || '{}');
+  if (artPos[post.id]) setTimeout(() => scrollTo({ top: artPos[post.id], behavior: 'instant' }), 80);
+  let scrollTimer;
+  const saveScroll = () => { artPos[post.id] = scrollY; localStorage.setItem('aic-art-pos', JSON.stringify(artPos)); };
+  addEventListener('scroll', () => { clearTimeout(scrollTimer); scrollTimer = setTimeout(saveScroll, 400); }, { passive: true });
+  addEventListener('beforeunload', saveScroll);
+
   reveal(main);
 }
 
@@ -2556,7 +2564,10 @@ function instructorPage() {
             <div class="insd-stat"><b>⭐ ${t.avgRating}</b><span>平均評分</span></div>
             <div class="insd-stat"><b>${totalHrs}</b><span>小時內容</span></div>
           </div>
-          <button class="follow-btn ${follows.has(t.name) ? 'following' : ''}" data-follow="${t.name}">${follows.has(t.name) ? '✓ 已追蹤' : '＋ 追蹤講師'}</button>
+          <div class="insd-follow-row">
+            <button class="follow-btn ${follows.has(t.name) ? 'following' : ''}" data-follow="${t.name}">${follows.has(t.name) ? '✓ 已追蹤' : '＋ 追蹤講師'}</button>
+            <span class="insd-follower-count" id="insd-fc">${(() => { const ins = (window.INSTRUCTORS || []).find(x => x.name === t.name); const base = ins ? ins.followers : 800; return (base + (follows.has(t.name) ? 1 : 0)).toLocaleString(); })()} 人追蹤</span>
+          </div>
         </div>
       </div>
     </div></section>
@@ -2591,6 +2602,7 @@ function instructorPage() {
       if (follows.has(name)) { follows.delete(name); followBtn.classList.remove('following'); followBtn.textContent = '＋ 追蹤講師'; toast(`已取消追蹤 ${name}`); }
       else { follows.add(name); followBtn.classList.add('following'); followBtn.textContent = '✓ 已追蹤'; toast(`已追蹤 ${name}`); }
       saveFollows();
+      const fc = $('#insd-fc'); if (fc) { const ins = (window.INSTRUCTORS || []).find(x => x.name === name); const base = ins ? ins.followers : 800; fc.textContent = (base + (follows.has(name) ? 1 : 0)).toLocaleString() + ' 人追蹤'; }
     };
     reveal(main);
     return;
@@ -2624,7 +2636,7 @@ function instructorPage() {
           <div><b>⭐ ${t.avgRating}</b><span>評分</span></div>
         </div>
         <div class="ins-courses">${t.courses.slice(0, 2).map(c => `<span class="ins-course-link">${c.title}</span>`).join('')}</div>
-        ${follows.has(t.name) ? '<span class="ins-follow-badge">已追蹤</span>' : ''}
+        <div class="ins-follow-row"><button class="ins-follow-btn ${follows.has(t.name) ? 'following' : ''}" data-ifollow="${t.name}">${follows.has(t.name) ? '✓ 已追蹤' : '＋ 追蹤'}</button><span class="ins-fc">${(() => { const ins = (window.INSTRUCTORS || []).find(x => x.name === t.name); return ((ins ? ins.followers : 800) + (follows.has(t.name) ? 1 : 0)).toLocaleString(); })()} 追蹤</span></div>
       </a>`).join('')}
     </div>
     <div class="blog-empty" id="ins-empty" style="display:none"><p>找不到符合的講師</p></div>
@@ -2649,6 +2661,16 @@ function instructorPage() {
   $$('.ins-filters .chip', main).forEach(btn => btn.onclick = () => {
     $$('.ins-filters .chip', main).forEach(b => b.classList.toggle('on', b === btn));
     filterIns();
+  });
+
+  $$('[data-ifollow]', main).forEach(btn => btn.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    const name = btn.dataset.ifollow;
+    if (follows.has(name)) { follows.delete(name); btn.classList.remove('following'); btn.textContent = '＋ 追蹤'; toast(`已取消追蹤 ${name}`); }
+    else { follows.add(name); btn.classList.add('following'); btn.textContent = '✓ 已追蹤'; toast(`已追蹤 ${name}`); }
+    saveFollows();
+    const fc = btn.parentElement.querySelector('.ins-fc');
+    if (fc) { const ins = (window.INSTRUCTORS || []).find(x => x.name === name); fc.textContent = ((ins ? ins.followers : 800) + (follows.has(name) ? 1 : 0)).toLocaleString() + ' 追蹤'; }
   });
 
   reveal(main);

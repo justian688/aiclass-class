@@ -3609,7 +3609,15 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .follow-btn:hover{background:var(--pri);color:#fff;transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,92,255,.3)}
 .follow-btn.following{background:var(--pri);color:#fff;border-color:var(--pri)}
 .follow-btn.following:hover{background:transparent;color:var(--pri)}
-.ins-follow-badge{display:inline-block;background:var(--pri);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:8px;margin-top:8px}
+.insd-follow-row{display:flex;align-items:center;gap:16px;margin-top:12px}
+.insd-follower-count{font-size:.85rem;color:var(--tx2);font-weight:600}
+.ins-follow-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.ins-follow-btn{display:inline-flex;align-items:center;padding:6px 16px;border-radius:10px;border:1.5px solid var(--pri);background:transparent;color:var(--pri);font-weight:700;font-size:.78rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.ins-follow-btn:hover{background:var(--pri);color:#fff}
+.ins-follow-btn.following{background:var(--pri);color:#fff;border-color:var(--pri)}
+.ins-follow-btn.following:hover{background:transparent;color:var(--pri)}
+.ins-fc{font-size:.75rem;color:var(--tx3);white-space:nowrap}
+[data-theme="dark"] .ins-follow-btn{border-color:var(--pri)}
 [data-theme="dark"] .follow-btn{border-color:var(--pri)}
 
 /* ===== 評價投票 ===== */

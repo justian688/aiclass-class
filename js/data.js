@@ -271,18 +271,18 @@ window.POSTS = [
 
 // ── 講師陣容 ──
 window.INSTRUCTORS = [
-  { id: 'i1', name: '黃士誠', role: 'AI 工程師', courses: 2, students: 13010, avatar: '👨‍💻', bio: '前 Google AI 研究員，專注生成式 AI 應用開發與教學' },
-  { id: 'i2', name: '張雨萱', role: '插畫家・角色設計師', courses: 1, students: 4470, avatar: '🎨', bio: '作品散見於 Netflix 動畫與國際繪本，擅長角色 IP 開發' },
-  { id: 'i3', name: '趙宥翔', role: '影像創作者', courses: 3, students: 11740, avatar: '🎬', bio: 'YouTube 百萬訂閱，專注影片製作與短影音內容創作' },
-  { id: 'i4', name: '蔡承恩', role: '全端工程師', courses: 2, students: 7500, avatar: '💻', bio: '前 LINE 資深工程師，擅長 React 生態系與前端架構設計' },
-  { id: 'i5', name: '蔡明哲', role: '餐廳主廚', courses: 2, students: 7890, avatar: '👨‍🍳', bio: '米其林餐廳主廚經歷，致力讓家庭料理也能有專業水準' },
-  { id: 'i6', name: '劉怡君', role: '品牌策略顧問', courses: 3, students: 11460, avatar: '📢', bio: '協助超過 200 個品牌建立線上影響力，自由工作者社群主理人' },
-  { id: 'i7', name: '許家豪', role: '3D 美術總監', courses: 2, students: 5460, avatar: '🎮', bio: '參與多款 AAA 遊戲開發，Blender 與 C4D 雙棲創作者' },
-  { id: 'i8', name: '郭書瑜', role: '理財規劃師', courses: 2, students: 13130, avatar: '💰', bio: 'CFP 國際認證理財規劃師，幫助超過 5000 人建立理財觀念' },
-  { id: 'i9', name: '張馨予', role: '甜點主廚', courses: 2, students: 6150, avatar: '🧁', bio: 'Le Cordon Bleu 畢業，曾任法國米其林餐廳甜點房，致力在家烘焙教學' },
-  { id: 'i10', name: '陳威宏', role: '獨立遊戲開發者', courses: 3, students: 6410, avatar: '🕹️', bio: 'Steam 上架三款獨立遊戲，Unity / Godot 雙棲，推動台灣獨立遊戲文化' },
-  { id: 'i11', name: '李承翰', role: '商業攝影師', courses: 2, students: 6790, avatar: '📷', bio: '合作品牌超過百家，擅長人像與商品攝影，作品刊登於 Vogue、GQ' },
-  { id: 'i12', name: '陳思涵', role: '造型師・生活風格作家', courses: 2, students: 7210, avatar: '✨', bio: '出版三本暢銷書，專注穿搭美學與極簡生活，IG 粉絲超過 20 萬' }
+  { id: 'i1', name: '黃士誠', role: 'AI 工程師', courses: 2, students: 13010, followers: 4230, avatar: '👨‍💻', bio: '前 Google AI 研究員，專注生成式 AI 應用開發與教學' },
+  { id: 'i2', name: '張雨萱', role: '插畫家・角色設計師', courses: 1, students: 4470, followers: 1890, avatar: '🎨', bio: '作品散見於 Netflix 動畫與國際繪本，擅長角色 IP 開發' },
+  { id: 'i3', name: '趙宥翔', role: '影像創作者', courses: 3, students: 11740, followers: 3750, avatar: '🎬', bio: 'YouTube 百萬訂閱，專注影片製作與短影音內容創作' },
+  { id: 'i4', name: '蔡承恩', role: '全端工程師', courses: 2, students: 7500, followers: 2640, avatar: '💻', bio: '前 LINE 資深工程師，擅長 React 生態系與前端架構設計' },
+  { id: 'i5', name: '蔡明哲', role: '餐廳主廚', courses: 2, students: 7890, followers: 3120, avatar: '👨‍🍳', bio: '米其林餐廳主廚經歷，致力讓家庭料理也能有專業水準' },
+  { id: 'i6', name: '劉怡君', role: '品牌策略顧問', courses: 3, students: 11460, followers: 4580, avatar: '📢', bio: '協助超過 200 個品牌建立線上影響力，自由工作者社群主理人' },
+  { id: 'i7', name: '許家豪', role: '3D 美術總監', courses: 2, students: 5460, followers: 2210, avatar: '🎮', bio: '參與多款 AAA 遊戲開發，Blender 與 C4D 雙棲創作者' },
+  { id: 'i8', name: '郭書瑜', role: '理財規劃師', courses: 2, students: 13130, followers: 5060, avatar: '💰', bio: 'CFP 國際認證理財規劃師，幫助超過 5000 人建立理財觀念' },
+  { id: 'i9', name: '張馨予', role: '甜點主廚', courses: 2, students: 6150, followers: 2470, avatar: '🧁', bio: 'Le Cordon Bleu 畢業，曾任法國米其林餐廳甜點房，致力在家烘焙教學' },
+  { id: 'i10', name: '陳威宏', role: '獨立遊戲開發者', courses: 3, students: 6410, followers: 1930, avatar: '🕹️', bio: 'Steam 上架三款獨立遊戲，Unity / Godot 雙棲，推動台灣獨立遊戲文化' },
+  { id: 'i11', name: '李承翰', role: '商業攝影師', courses: 2, students: 6790, followers: 2850, avatar: '📷', bio: '合作品牌超過百家，擅長人像與商品攝影，作品刊登於 Vogue、GQ' },
+  { id: 'i12', name: '陳思涵', role: '造型師・生活風格作家', courses: 2, students: 7210, followers: 3640, avatar: '✨', bio: '出版三本暢銷書，專注穿搭美學與極簡生活，IG 粉絲超過 20 萬' }
 ];
 
 // ── 平台數據 ──
