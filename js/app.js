@@ -2415,7 +2415,10 @@ function articlePage() {
       <div class="art-share rv-up">
         <span>分享這篇文章</span>
         <button onclick="navigator.clipboard.writeText(location.href);toast('已複製連結')">📋 複製連結</button>
-        <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">💬 LINE</a>
+        <a href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">💬 LINE</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">📘 Facebook</a>
+        <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener">🐦 Twitter</a>
+        ${navigator.share ? `<button onclick="navigator.share({title:'${post.title.replace(/'/g,"\\'")}',url:location.href}).catch(()=>{})">📤 更多</button>` : ''}
       </div>
       <div class="art-cta rv-up">
         <h3>想深入學習？</h3>
@@ -3628,13 +3631,22 @@ function playerPage() {
   vid_el.onclick = () => { vid_el.paused ? vid_el.play() : vid_el.pause(); };
   vid_el.onplay = () => { playBtn.textContent = '⏸'; };
   vid_el.onpause = () => { playBtn.textContent = '▶'; };
+  const posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
   vid_el.ontimeupdate = () => {
     if (!vid_el.duration) return;
     const pctVal = vid_el.currentTime / vid_el.duration * 100;
     pfill.style.width = pctVal + '%';
     phandle.style.left = pctVal + '%';
     timeEl.textContent = fmtTime(vid_el.currentTime) + ' / ' + fmtTime(vid_el.duration);
+    if (Math.floor(vid_el.currentTime) % 5 === 0) localStorage.setItem(posKey, vid_el.currentTime.toFixed(1));
   };
+  vid_el.addEventListener('loadedmetadata', () => {
+    const saved = +localStorage.getItem(posKey);
+    if (saved > 5 && saved < vid_el.duration - 5) {
+      vid_el.currentTime = saved;
+      toast(`已恢復上次播放位置 ${fmtTime(saved)}`);
+    }
+  }, { once: true });
 
   pbar.onclick = e => {
     const r = pbar.getBoundingClientRect();
@@ -3783,6 +3795,17 @@ function playerPage() {
     if (e.key === '?' || (e.shiftKey && e.code === 'Slash')) toggleSc();
     if (e.code === 'Escape' && !scOverlay.hidden) toggleSc();
   };
+
+  // 學習休息提醒（每 25 分鐘）
+  let studyMins = 0;
+  const restTimer = setInterval(() => {
+    if (!vid_el.paused) studyMins++;
+    if (studyMins >= 25) {
+      studyMins = 0;
+      toast('⏰ 你已連續學習 25 分鐘，建議起來走走休息一下！', 'info');
+    }
+  }, 60000);
+  window.addEventListener('beforeunload', () => clearInterval(restTimer));
 }
 
 /* ---------- 服務條款 ---------- */
