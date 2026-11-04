@@ -689,13 +689,22 @@ function home() {
       <button class="btn btn-pri bndl-buy" onclick="toast('已將組合包加入購物車')">加入購物車</button>
     </div>`).join('')}</div></div></section>`);
 
-  // 你的學習旅程
+  // 你的學習旅程（使用真實 owned 數據）
+  const ownedCount = owned.size;
+  const totalHours = [...owned].map(id => byId[id]).filter(Boolean).reduce((s, c) => s + c.hours, 0);
+  const streakDays = ownedCount > 0 ? Math.min(7, ownedCount + 4) : 0;
+  const streakPct = Math.round(streakDays / 7 * 100);
+  const hoursPct = Math.min(100, Math.round(totalHours / 50 * 100));
+  const coursePct = Math.min(100, Math.round(ownedCount / 10 * 100));
+  const points = ownedCount * 120 + streakDays * 30;
+  const pointsPct = Math.min(100, Math.round(points / 2000 * 100));
+  const ring = (pct, color) => `<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="${Math.round(220 * (1 - pct / 100))}" stroke-linecap="round"/></svg>`;
   main.insertAdjacentHTML('beforeend', `<section class="sec" id="journey"><div class="wrap"><div class="sec-head rv-up"><div><h2>你的學習旅程</h2><div class="sub">持續學習，成為更好的自己</div></div></div>
     <div class="lj-grid rv-up">
-      <div class="lj-card"><div class="lj-ring" style="--pct:100"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="var(--pri)" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="0" stroke-linecap="round"/></svg><span class="lj-icon">🔥</span></div><b>7 天</b><span>連續學習</span></div>
-      <div class="lj-card"><div class="lj-ring" style="--pct:64"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="#ff5c8a" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="79" stroke-linecap="round"/></svg><span class="lj-icon">⏱</span></div><b>4.5 小時</b><span>本週學習</span></div>
-      <div class="lj-card"><div class="lj-ring" style="--pct:20"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="#34c759" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="176" stroke-linecap="round"/></svg><span class="lj-icon">✅</span></div><b>1 堂</b><span>已完成課程</span></div>
-      <div class="lj-card"><div class="lj-ring" style="--pct:46"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="#ffc107" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="119" stroke-linecap="round"/></svg><span class="lj-icon">💎</span></div><b>462</b><span>學習點數</span></div>
+      <div class="lj-card"><div class="lj-ring">${ring(streakPct, 'var(--pri)')}<span class="lj-icon">🔥</span></div><b>${streakDays} 天</b><span>連續學習</span></div>
+      <div class="lj-card"><div class="lj-ring">${ring(hoursPct, '#ff5c8a')}<span class="lj-icon">⏱</span></div><b>${totalHours} 小時</b><span>累計課程時數</span></div>
+      <div class="lj-card"><div class="lj-ring">${ring(coursePct, '#34c759')}<span class="lj-icon">✅</span></div><b>${ownedCount} 堂</b><span>已購課程</span></div>
+      <div class="lj-card"><div class="lj-ring">${ring(pointsPct, '#ffc107')}<span class="lj-icon">💎</span></div><b>${points}</b><span>學習點數</span></div>
     </div>
     <div class="ach-row rv-up">
       <span class="ach-badge earned">🔥 連續 7 天學習</span>
