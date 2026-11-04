@@ -1307,7 +1307,9 @@ function course() {
     <section class="c-sec" id="teacher"><h2 class="rv-up">講師介紹</h2><div class="tprofile rv-up"><img src="${img(c)}" alt=""><div><h3 style="font-size:22px">${c.teacher}</h3><div style="color:var(--pri);font-weight:700;margin:4px 0 10px">${c.role}</div><p style="color:var(--tx2)">擁有超過十年的業界經驗，合作過多個知名品牌與專案。希望把在第一線累積的經驗，用最好懂的方式分享給每一位想學習的人。</p>
       <div class="t-stats"><span>📚 ${C.filter(x=>x.teacher===c.teacher).length} 堂課程</span><span>👥 ${C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.students,0).toLocaleString()} 位學員</span><span>⭐ ${(C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.rating,0)/C.filter(x=>x.teacher===c.teacher).length).toFixed(1)} 平均評分</span></div>
       <a href="instructor.html" class="t-all-courses">查看所有課程 →</a>
-    </div></div></section>
+    </div></div>
+    ${(() => { const tc = C.filter(x => x.teacher === c.teacher && x.id !== c.id).slice(0, 4); if (!tc.length) return ''; return `<div class="t-other-courses"><h4>${c.teacher} 的其他課程</h4><div class="t-oc-grid">${tc.map(x => `<a href="course.html?id=${x.id}" class="t-oc-card"><img src="${img(x)}" alt="" loading="lazy"><div><b>${x.title}</b><span>★ ${x.rating} ・ ${fmt(x.price)}</span></div></a>`).join('')}</div></div>`; })()}
+    </section>
     <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span style="color:var(--pri);font-size:18px">★ ${c.rating.toFixed(1)}</span> <span style="font-size:15px;color:var(--tx3);font-weight:400">(${c.students.toLocaleString()} 位學員)</span></h2>
       <div class="review-stats rv-up"><div class="rs-big"><b>${c.rating.toFixed(1)}</b><div class="rs-stars">★★★★★</div><div style="font-size:13px;color:var(--tx3)">${c.students.toLocaleString()} 則評價</div></div>
       <div class="rs-bars">${distPcts.map((p, i) => `<div class="rs-bar"><span>${5 - i}</span><div class="rs-track"><i style="width:${p}%"></i></div><span>${p}%</span></div>`).join('')}</div></div>
@@ -5451,6 +5453,25 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
       nlInput.addEventListener('keydown', e => { if (e.key === 'Enter') nl.querySelector('.nl-form button').click(); });
     }
   }, { passive: true });
+}
+
+// ── 離站挽留（桌面：滑鼠移出視窗；每 session 最多一次）──
+if (!sessionStorage.getItem('aic-exit-shown') && !('ontouchstart' in window)) {
+  let exitFired = false;
+  document.addEventListener('mouseout', e => {
+    if (exitFired || e.relatedTarget || e.toElement) return;
+    if (e.clientY > 10) return;
+    exitFired = true; sessionStorage.setItem('aic-exit-shown', '1');
+    const hotPick = C.sort((a, b) => b.students - a.students)[0];
+    const ex = document.createElement('div'); ex.className = 'exit-overlay'; ex.setAttribute('role', 'dialog'); ex.setAttribute('aria-modal', 'true');
+    ex.innerHTML = `<div class="exit-box"><button class="exit-close" aria-label="關閉">✕</button><div class="exit-emoji">🎓</div><h3>等一下！別錯過限時優惠</h3><p>全站課程最低 5 折起，還有專屬新學員折扣碼</p><a class="exit-pick" href="course.html?id=${hotPick.id}"><img src="${img(hotPick)}" alt=""><div><b>${hotPick.title}</b><span>★ ${hotPick.rating} ・ ${fmt(hotPick.price)}</span></div></a><div class="exit-coupon"><span class="exit-code">WELCOME300</span><span>輸入折扣碼現折 NT$300</span></div><a href="category.html" class="btn btn-pri" style="width:100%;margin-top:16px">逛逛課程 →</a><button class="exit-skip">不了，謝謝</button></div>`;
+    document.body.append(ex);
+    requestAnimationFrame(() => requestAnimationFrame(() => ex.classList.add('show')));
+    const closeExit = () => { ex.classList.remove('show'); setTimeout(() => ex.remove(), 300); };
+    ex.querySelector('.exit-close').onclick = closeExit;
+    ex.querySelector('.exit-skip').onclick = closeExit;
+    ex.onclick = e => { if (e.target === ex) closeExit(); };
+  });
 }
 
 // ── 鍵盤無障礙：chip / qa 可用 Enter/Space 操作 ──

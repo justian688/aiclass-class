@@ -3691,3 +3691,32 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .sres-item mark{background:color-mix(in srgb,var(--pri) 25%,transparent);color:var(--tx);border-radius:2px;padding:0 1px}
 .sres-star{color:#fbbf24;font-size:13px;font-weight:600;margin-right:6px}
 .sres-info{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--tx2)}
+
+/* ── 講師其他課程 ── */
+.t-other-courses{margin-top:24px;padding-top:20px;border-top:1px solid color-mix(in srgb,var(--tx) 8%,transparent)}
+.t-other-courses h4{font-size:15px;font-weight:700;margin:0 0 14px;color:var(--tx)}
+.t-oc-grid{display:flex;flex-direction:column;gap:12px}
+.t-oc-card{display:flex;gap:12px;text-decoration:none;color:inherit;padding:10px;border-radius:12px;transition:background .2s}
+.t-oc-card:hover{background:color-mix(in srgb,var(--pri) 6%,transparent)}
+.t-oc-card img{width:80px;height:50px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.t-oc-card b{font-size:14px;line-height:1.4;display:block;margin-bottom:4px}
+.t-oc-card span{font-size:12px;color:var(--tx2)}
+
+/* ── 離站挽留彈窗 ── */
+.exit-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;backdrop-filter:blur(4px)}
+.exit-overlay.show{opacity:1}
+.exit-box{background:var(--bg);border-radius:20px;padding:36px 32px;max-width:420px;width:90%;text-align:center;transform:translateY(20px) scale(.95);transition:transform .3s;position:relative}
+.exit-overlay.show .exit-box{transform:none}
+.exit-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;color:var(--tx2);cursor:pointer}
+.exit-emoji{font-size:48px;margin-bottom:12px}
+.exit-box h3{font-size:20px;font-weight:900;margin:0 0 8px}
+.exit-box p{font-size:14px;color:var(--tx2);margin:0 0 20px;line-height:1.6}
+.exit-pick{display:flex;gap:12px;text-align:left;text-decoration:none;color:inherit;padding:12px;border-radius:12px;background:var(--bg2);margin-bottom:16px}
+.exit-pick img{width:80px;height:56px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.exit-pick b{font-size:14px;display:block;margin-bottom:4px;line-height:1.4}
+.exit-pick span{font-size:12px;color:var(--tx2)}
+.exit-coupon{display:flex;align-items:center;gap:12px;justify-content:center;padding:12px;background:color-mix(in srgb,var(--pri) 8%,transparent);border-radius:12px;border:1px dashed var(--pri)}
+.exit-code{font-family:monospace;font-size:18px;font-weight:900;color:var(--pri);letter-spacing:2px}
+.exit-coupon span:last-child{font-size:13px;color:var(--tx2)}
+.exit-skip{background:none;border:none;color:var(--tx2);font-size:13px;cursor:pointer;margin-top:12px;padding:8px}
+.exit-skip:hover{color:var(--tx)}
