@@ -492,9 +492,12 @@ body.hdr-hidden .tabs{top:0}
   .mega-btn::before{content:"☰";font-size:22px}
   .mega-grid{grid-template-columns:repeat(2,1fr);gap:20px 16px}
   .mega-drop{padding:24px 20px;width:calc(100vw - 16px);left:-8px}
-  .hero{height:78vh}
-  .slide .txt{bottom:24%}
-  .slide::after{background:linear-gradient(0deg,#fff 5%,rgba(5,5,10,.55) 55%,rgba(5,5,10,.2))}
+  .hero{height:68vh;min-height:360px}
+  .slide .txt{bottom:auto;top:50%;transform:translateY(-50%);text-align:center;padding:0 18px}
+  .slide.on .txt{transform:translateY(-50%)}
+  .slide::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(5,5,10,.7) 30%,rgba(5,5,10,.5) 100%)}
+  .slide h1{white-space:normal}
+  .slide .cta{justify-content:center}
   .dot span{display:none}
   .hero-arrows{display:none}
   .rail,.rail.rank{grid-auto-columns:72%;gap:14px}
@@ -527,6 +530,19 @@ body.hdr-hidden .tabs{top:0}
   .paths-rail{grid-auto-columns:85%}
   .bootcamp{padding:24px}
   .topbar .x{display:none}
+  .notif-wrap{display:none}
+  .font-size-btn{display:none}
+  .theme-toggle{font-size:18px;padding:0 4px}
+  .hdr .wrap{gap:10px}
+  .hdr .btn-pri{font-size:12px;padding:0 10px;height:32px}
+  .slide .eyebrow{font-size:11px;padding:4px 12px}
+  .slide h2{font-size:clamp(22px,6vw,32px)}
+  .slide .desc{font-size:13px}
+  .slide .acts .btn{height:36px;font-size:13px}
+  .cat-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:8px;gap:8px}
+  .cat-tabs .chip{flex-shrink:0;font-size:13px}
+  .sec h2{font-size:clamp(20px,5vw,28px)}
+  [data-theme="dark"] .mnav{background:rgba(28,28,30,.92)}
 }
 /* ===== 購物車 Badge ===== */
 .cart-btn{position:relative}
@@ -992,6 +1008,82 @@ body.hdr-hidden .tabs{top:0}
 .wish-rm:hover{background:rgba(255,92,138,.15);color:var(--pink)}
 
 /* ===== 我的學習 ===== */
+/* ===== 個人檔案 Hero ===== */
+.my-hero{position:relative;overflow:hidden;padding:48px 0 36px;margin-bottom:0}
+.my-hero-bg{position:absolute;inset:0;background:var(--grad);opacity:.12}
+.my-hero-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative}
+.my-hero-left{display:flex;align-items:center;gap:24px}
+.my-avatar-lg{width:88px;height:88px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#fff;position:relative;flex-shrink:0;box-shadow:0 8px 24px -4px rgba(124,92,255,.4)}
+.my-avatar-badge{position:absolute;bottom:-4px;right:-4px;background:var(--bg);border:2px solid var(--pri);color:var(--pri);font-size:11px;font-weight:800;padding:2px 8px;border-radius:12px}
+.my-hero-name{font-size:clamp(22px,3vw,30px);font-weight:900;margin-bottom:4px}
+.my-hero-sub{font-size:14px;color:var(--tx2);margin-bottom:10px}
+.my-hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+.my-tag{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;background:rgba(124,92,255,.1);color:var(--pri);font-size:12px;font-weight:600}
+[data-theme="dark"] .my-tag{background:rgba(124,92,255,.2)}
+.my-hero-right{flex-shrink:0}
+.my-xp-ring{position:relative;width:80px;height:80px}
+.my-xp-ring svg{width:100%;height:100%}
+.my-xp-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.my-xp-text b{font-size:16px;font-weight:900;color:var(--pri)}
+.my-xp-text span{font-size:10px;color:var(--tx3)}
+
+/* ===== 快捷入口 ===== */
+.my-quick{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;padding-top:24px;padding-bottom:24px}
+.my-qlink{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 12px;border-radius:16px;background:var(--card);border:1px solid var(--line);text-decoration:none;color:var(--tx);font-size:13px;font-weight:600;transition:transform .25s var(--ease),box-shadow .25s}
+.my-qlink:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.my-ql-icon{font-size:24px;display:block}
+[data-theme="dark"] .my-qlink{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .my-qlink:hover{box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+/* ===== 繼續學習 ===== */
+.my-resume{padding-bottom:32px}
+.my-resume-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.my-resume-head h2{font-size:clamp(20px,2.5vw,26px);font-weight:900}
+.my-resume-all{font-size:14px;color:var(--pri);font-weight:600}
+.my-resume-all:hover{text-decoration:underline}
+.my-resume-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.my-resume-card{display:flex;gap:16px;padding:16px;border-radius:16px;background:var(--card);border:1px solid var(--line);text-decoration:none;color:inherit;transition:box-shadow .25s,transform .25s}
+.my-resume-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-2px)}
+[data-theme="dark"] .my-resume-card{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .my-resume-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.my-rc-thumb{position:relative;width:120px;flex-shrink:0;border-radius:12px;overflow:hidden;aspect-ratio:16/10}
+.my-rc-thumb img{width:100%;height:100%;object-fit:cover}
+.my-rc-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);color:#fff;font-size:24px;opacity:0;transition:opacity .25s}
+.my-resume-card:hover .my-rc-play{opacity:1}
+.my-rc-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.my-rc-body h3{font-size:15px;font-weight:700;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.my-rc-teacher{font-size:12px;color:var(--tx3);margin-bottom:8px}
+.my-rc-bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:4px}
+.my-rc-fill{height:100%;border-radius:3px;background:var(--grad)}
+.my-rc-pct{font-size:11px;color:var(--tx2);font-weight:600}
+
+/* ===== 最近動態 Timeline ===== */
+.my-timeline{position:relative;padding-left:32px}
+.my-timeline::before{content:'';position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.my-tl-item{display:flex;align-items:flex-start;gap:14px;padding:14px 0;position:relative}
+.my-tl-item:not(:last-child){border-bottom:1px solid transparent}
+.my-tl-dot{position:absolute;left:-32px;top:18px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;z-index:1;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.my-tl-body{flex:1;min-width:0}
+.my-tl-text{display:block;font-size:14px;font-weight:500;line-height:1.5;margin-bottom:2px}
+.my-tl-time{font-size:12px;color:var(--tx3)}
+@media(max-width:760px){
+  .my-hero-inner{flex-direction:column;text-align:center}
+  .my-hero-left{flex-direction:column}
+  .my-hero-tags{justify-content:center}
+  .my-quick{grid-template-columns:repeat(3,1fr);gap:8px}
+  .my-qlink{padding:14px 8px;font-size:12px}
+  .my-ql-icon{font-size:20px}
+  .my-resume-list{grid-template-columns:1fr}
+  .my-rc-thumb{width:90px}
+}
+@media(max-width:480px){
+  .my-hero{padding:28px 0 20px}
+  .my-avatar-lg{width:64px;height:64px;font-size:26px}
+  .my-hero-name{font-size:20px}
+  .my-quick{grid-template-columns:repeat(3,1fr);gap:6px}
+  .my-qlink{padding:10px 6px;font-size:11px;border-radius:10px}
+}
+
 .myp-layout{display:flex;gap:0;min-height:calc(100vh - 60px)}
 .myp-aside{width:260px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);padding:32px 20px;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
 .myp-profile{text-align:center;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--line)}
@@ -1219,6 +1311,13 @@ body.loaded::before,body.loaded::after{opacity:0;visibility:hidden;pointer-event
 @media (max-width:760px){
   .card-hover{display:none!important}
   .notif-panel{right:-60px;width:300px}
+  .wish{opacity:1;transform:none}
+  .card:hover .thumb{transform:none;box-shadow:none}
+  .card:active .thumb{transform:scale(.98);transition:.1s}
+}
+@media(hover:none){
+  .wish{opacity:1;transform:none}
+  .card:hover .thumb{transform:none;box-shadow:none}
 }
 
 /* ===== 課程播放器 ===== */
@@ -2150,6 +2249,8 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .slide .eyebrow,.slide h1,.slide p,.slide .cta{opacity:1!important;transform:none!important;transition-delay:0s!important}
+  .rv-up{opacity:1!important;transform:none!important}
   .marquee .track{animation-duration:40s!important}
   .reviews{animation-duration:50s!important}
   .af-list{animation-duration:20s!important}
@@ -2307,3 +2408,44 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
 [data-fontsize="xlarge"] .c-sec p,[data-fontsize="xlarge"] .c-desc{font-size:18px;line-height:1.9}
 [data-fontsize="xlarge"] .card h3{font-size:19px}
 [data-fontsize="xlarge"] .c-title{font-size:32px}
+
+/* ===== 480px 超小螢幕 ===== */
+@media(max-width:480px){
+  .wrap{padding:0 14px}
+  .hdr .wrap{gap:6px}
+  .logo svg{height:24px}
+  .mega-btn{display:none}
+  .hdr .btn-pri{font-size:11px;padding:0 8px;height:30px;border-radius:8px}
+  .hero{height:60vh;min-height:320px}
+  .slide h2,.slide h1{font-size:clamp(18px,5vw,26px)!important;line-height:1.3}
+  .slide .desc,.slide p{font-size:12px;-webkit-line-clamp:2}
+  .slide .eyebrow{font-size:10px;padding:3px 10px}
+  .slide .cta .btn,.slide .acts .btn{height:32px;font-size:12px;padding:0 12px}
+  .dot{min-width:0;padding:0;flex:1}
+  .dot span{display:none}
+  .rail,.rail.rank{grid-auto-columns:82%;gap:10px}
+  .sec h2{font-size:clamp(18px,4.5vw,24px)}
+  .sec .sub{font-size:13px}
+  .card h3{font-size:14px}
+  .card .price{font-size:13px}
+  .card .stars{font-size:12px}
+  .stat b{font-size:clamp(28px,7vw,36px)}
+  .promo .in{padding:24px 16px}
+  .promo h2{font-size:clamp(18px,4.5vw,22px)}
+  footer .cols{grid-template-columns:1fr}
+  footer h4{margin-top:20px}
+  .cat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .cat-card{min-height:80px;border-radius:12px}
+  .bndl-card{padding:20px}
+  .lj-grid{grid-template-columns:repeat(2,1fr)}
+  .lj-card{padding:16px 10px}
+  .ach-row{gap:6px}
+  .ach-badge{font-size:11px;padding:4px 8px}
+  .teachers{grid-template-columns:repeat(2,1fr);gap:10px}
+  .bootcamp{padding:18px}
+  .bc-tag{font-size:11px}
+  .ins-card{padding:20px}
+  .qz-grid{grid-template-columns:1fr}
+  .qz-card{padding:20px}
+  .topbar{font-size:12px;padding:7px 12px}
+}

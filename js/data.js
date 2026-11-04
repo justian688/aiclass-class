@@ -106,7 +106,27 @@ window.COURSES = [
 
   // ── 創業/職涯 ──
   { id: 'c53', v: '36721', cat: 'career', sub: '創業/電商經營', title: '電商創業全攻略：從選品到月入十萬', teacher: '邱冠宇', role: '電商顧問・蝦皮百萬賣家', price: 4280, origin: 7600, rating: 4.8, students: 5320, tag: 'HOT', hours: 16, desc: '選品策略、商品攝影、文案撰寫、廣告投放到客服流程，建立完整的電商獲利系統。', ai: '從選品到月入十萬，建立完整的電商獲利系統' },
-  { id: 'c54', v: '24567', cat: 'career', sub: '內容/行銷', title: 'SEO 完全攻略：讓 Google 幫你帶流量', teacher: '劉怡君', role: '數位行銷顧問', price: 3680, origin: 6600, rating: 4.8, students: 3780, tag: 'NEW', hours: 13, desc: '關鍵字研究、網站架構、內容策略到技術 SEO，讓你的網站排名穩定在第一頁。' }
+  { id: 'c54', v: '24567', cat: 'career', sub: '內容/行銷', title: 'SEO 完全攻略：讓 Google 幫你帶流量', teacher: '劉怡君', role: '數位行銷顧問', price: 3680, origin: 6600, rating: 4.8, students: 3780, tag: 'NEW', hours: 13, desc: '關鍵字研究、網站架構、內容策略到技術 SEO，讓你的網站排名穩定在第一頁。' },
+
+  // ── 新增課程 c55–c72 ──
+  { id: 'c55', v: '46635', cat: 'ai', sub: 'AI 訓練營', title: 'LLM 微調實戰：用自己的資料訓練專屬模型', teacher: '黃士誠', role: 'AI 工程師・前 Google', price: 6480, origin: 11600, rating: 4.9, students: 2340, tag: 'NEW', hours: 22, desc: 'LoRA、QLoRA、資料清洗到部署推論，用企業資料微調出專屬的大型語言模型。', ai: '用 LoRA 微調 LLM，打造企業專屬 AI 模型' },
+  { id: 'c56', v: '42824', cat: 'creative', sub: '作曲/音樂', title: '混音工程入門：讓你的音樂聽起來像專業發行', teacher: '蘇奕凡', role: '混音工程師・金曲獎入圍', price: 4880, origin: 8800, rating: 4.8, students: 1670, tag: '', hours: 19, desc: 'EQ、壓縮、空間效果到母帶處理，從 DAW 設定到完成一首可發行品質的混音。' },
+  { id: 'c57', v: '33936', cat: 'drawing', sub: 'iPad 繪畫', title: 'Procreate 完全攻略：iPad 數位繪畫從零到接案', teacher: '張雨萱', role: '插畫家・角色設計師', price: 3880, origin: 6800, rating: 4.9, students: 5130, tag: 'HOT', hours: 15, desc: '筆刷設定、圖層技巧、色彩理論到作品輸出，用 iPad 畫出商用等級的插畫。', ai: '用 iPad + Procreate 畫出商用等級插畫' },
+  { id: 'c58', v: '50598', cat: 'design', sub: '產品設計', title: '產品設計思維：從需求洞察到 MVP 落地', teacher: '方翊倫', role: '產品設計總監', price: 4580, origin: 8200, rating: 4.8, students: 2450, tag: '', hours: 16, desc: '用戶訪談、競品分析、功能定義到 MVP 驗證，產品經理與設計師都該學的方法論。' },
+  { id: 'c59', v: '13228', cat: 'design', sub: '網頁/前端', title: 'Webflow 無程式碼建站：設計師也能做出互動網站', teacher: '蘇敏慧', role: '網頁設計總監', price: 3680, origin: 6600, rating: 4.7, students: 2870, tag: 'NEW', hours: 14, desc: '視覺化操作、CMS 模板、互動動畫到 SEO 設定，不寫程式碼也能建出專業網站。' },
+  { id: 'c60', v: '29997', cat: 'video', sub: '動畫', title: '角色動畫基礎：12 法則與 Spine 2D 實作', teacher: '林奕辰', role: '動畫師・遊戲業', price: 4280, origin: 7600, rating: 4.8, students: 1890, tag: '', hours: 17, desc: '擠壓拉伸、預備動作、弧線運動，用 Spine 做出流暢的 2D 角色動畫。' },
+  { id: 'c61', v: '40534', cat: 'baking', sub: '麵包', title: '歐式麵包全書：從鄉村到酸種的烘焙之道', teacher: '張馨予', role: '烘焙講師・Le Cordon Bleu', price: 3880, origin: 6800, rating: 4.9, students: 2680, tag: 'HOT', hours: 14, desc: '酸種培養、高水量操作、蒸氣烘烤到割紋藝術，做出外脆內軟的歐式麵包。' },
+  { id: 'c62', v: '49231', cat: 'baking', sub: '中式糕點', title: '中式糕點職人課：月餅、鳳梨酥到蛋黃酥', teacher: '蔡明哲', role: '餐廳主廚・中餐烘焙', price: 3280, origin: 5800, rating: 4.8, students: 3120, tag: '', hours: 12, desc: '油皮油酥、內餡調配到包餡手法，做出外皮酥鬆、層次分明的經典中式糕點。' },
+  { id: 'c63', v: '47321', cat: 'ai', sub: '程式開發', title: 'TypeScript 完全指南：寫出更安全的 JavaScript', teacher: '蔡承恩', role: '全端工程師', price: 4180, origin: 7400, rating: 4.8, students: 3210, tag: '', hours: 18, desc: '型別系統、泛型、裝飾器到專案實戰，從 JS 無痛升級到 TS 的完整路線。' },
+  { id: 'c64', v: '34408', cat: 'creative', sub: '攝影', title: '商品攝影實戰：電商與社群的拍攝技巧', teacher: '李承翰', role: '商業攝影師', price: 3480, origin: 6200, rating: 4.8, students: 3780, tag: 'BEST', hours: 11, desc: '燈光架設、白底去背、情境擺拍到後製修圖，拍出讓買家想下單的商品照。', ai: '拍出讓買家想下單的商品照，電商賣家必學' },
+  { id: 'c65', v: '5381', cat: 'game', sub: '遊戲程式', title: 'Godot 遊戲開發：開源引擎的 2D/3D 全攻略', teacher: '陳威宏', role: '獨立遊戲開發者', price: 3980, origin: 7200, rating: 4.7, students: 1980, tag: 'NEW', hours: 20, desc: 'GDScript 語法、場景樹、物理引擎到輸出多平台，用免費引擎做出獨立遊戲。' },
+  { id: 'c66', v: '25362', cat: 'career', sub: '內容/行銷', title: 'YouTube 經營攻略：從 0 到 10 萬訂閱的成長策略', teacher: '趙宥翔', role: '影像創作者・百萬訂閱', price: 3880, origin: 6800, rating: 4.9, students: 4560, tag: 'HOT', hours: 13, desc: '選題策略、標題縮圖、演算法運作到業配定價，系統化經營 YouTube 頻道。', ai: '系統化經營 YouTube，從 0 到 10 萬訂閱的完整策略' },
+  { id: 'c67', v: '23327', cat: 'beauty', sub: '寵物美容', title: '寵物美容入門：居家護理與基礎修剪', teacher: '林芷萱', role: '寵物美容師・C 級認證', price: 2680, origin: 4800, rating: 4.7, students: 2140, tag: '', hours: 10, desc: '洗澡技巧、吹毛手法、指甲修剪到基礎造型，在家也能幫毛小孩維持好狀態。' },
+  { id: 'c68', v: '32085', cat: 'drawing', sub: '漫畫/Webtoon', title: 'Webtoon 漫畫創作：從分鏡到連載的完整流程', teacher: '何俊廷', role: '漫畫家・Webtoon 連載中', price: 4580, origin: 8200, rating: 4.8, students: 2670, tag: 'NEW', hours: 20, desc: '劇本架構、分鏡節奏、CLIP STUDIO 操作到平台上架，開始你的 Webtoon 連載之旅。' },
+  { id: 'c69', v: '9339', cat: 'finance', sub: '理財投資', title: '股市技術分析入門：看懂 K 線與量價關係', teacher: '郭書瑜', role: '理財規劃師・CFP', price: 3480, origin: 6200, rating: 4.7, students: 4890, tag: '', hours: 12, desc: 'K 線型態、均線系統、成交量判讀到進出場策略，建立有紀律的交易系統。' },
+  { id: 'c70', v: '47208', cat: 'creative', sub: '生活風格', title: '極簡生活實踐：斷捨離與空間整理術', teacher: '陳思涵', role: '整理收納師・生活風格作家', price: 2280, origin: 4000, rating: 4.8, students: 3450, tag: '', hours: 8, desc: '物品篩選、收納動線、數位整理到心態轉換，過上輕鬆自在的極簡生活。' },
+  { id: 'c71', v: '33066', cat: 'beauty', sub: '美髮', title: '日系剪髮技術：層次剪裁與造型吹整', teacher: '林柏翰', role: '髮型設計師・日本進修', price: 4980, origin: 8800, rating: 4.9, students: 1870, tag: '', hours: 16, desc: '髮質判斷、分區技巧、層次設計到吹整造型，學會日系沙龍的剪髮流程。' },
+  { id: 'c72', v: '30232', cat: 'game', sub: '動畫/特效', title: '遊戲特效設計：用 Unity VFX Graph 做出華麗技能', teacher: '陳威宏', role: '技術美術・遊戲業', price: 4680, origin: 8400, rating: 4.8, students: 1560, tag: '', hours: 18, desc: '粒子系統、Shader 基礎、時間軸控制到技能連招，做出 ARPG 等級的戰鬥特效。' }
 ];
 
 window.HERO = ['c47', 'c03', 'c05', 'c45', 'c31', 'c53'];
@@ -139,7 +159,16 @@ window.REVIEWS = [
   ['張**', '法式甜點全書', '閃電泡芙成功了！拍照發 IG 被朋友們轟炸問食譜，超有成就感。'],
   ['陳**', '電商創業全攻略', '跟著選品策略走，第二個月蝦皮就開始穩定出單了，回本超快。'],
   ['劉**', 'Unity 2D 遊戲開發', '花了一個月做出第一款遊戲 demo，雖然簡單但真的能玩，太感動了。'],
-  ['方**', '手沖咖啡與拉花', '以前覺得手沖很玄，原來水溫和手法有公式可循，現在泡的比外面好喝。']
+  ['方**', '手沖咖啡與拉花', '以前覺得手沖很玄，原來水溫和手法有公式可循，現在泡的比外面好喝。'],
+  ['楊**', 'LLM 微調實戰', '公司的客服機器人用自家資料微調後，回答正確率從 60% 跳到 92%，主管超滿意。'],
+  ['徐**', 'Procreate 完全攻略', '通勤時用 iPad 練習，三個月後開始在社群接插畫委託，課程回本了好幾倍。'],
+  ['曹**', '歐式麵包全書', '酸種養成那段超詳細，第一次做出真正外脆內彈的鄉村麵包，家人都驚呆了。'],
+  ['馬**', 'Webtoon 漫畫創作', '一直想連載但不知道怎麼分鏡，上完課後第一話就被平台推薦上首頁！'],
+  ['洪**', '商品攝影實戰', '蝦皮商品照換成課程教的拍法後，點擊率直接漲了 40%，太值得了。'],
+  ['謝**', 'TypeScript 完全指南', '之前一直逃避 TS 覺得太複雜，講師用漸進式教法讓我無痛轉換，現在回不去 JS 了。'],
+  ['鄧**', 'YouTube 經營攻略', '照著選題和縮圖策略調整，三個月從 800 訂閱漲到 12000，演算法終於推了。'],
+  ['葉**', '極簡生活實踐', '清掉了家裡一半的東西，空間變大心情變好，每天回家都覺得很舒服。'],
+  ['廖**', '股市技術分析入門', '終於看懂 K 線了，不再亂追高殺低，建立了自己的進出場 SOP。']
 ];
 
 window.FAQ = [
@@ -249,14 +278,18 @@ window.INSTRUCTORS = [
   { id: 'i5', name: '蔡明哲', role: '餐廳主廚', courses: 2, students: 7890, avatar: '👨‍🍳', bio: '米其林餐廳主廚經歷，致力讓家庭料理也能有專業水準' },
   { id: 'i6', name: '劉怡君', role: '品牌策略顧問', courses: 3, students: 11460, avatar: '📢', bio: '協助超過 200 個品牌建立線上影響力，自由工作者社群主理人' },
   { id: 'i7', name: '許家豪', role: '3D 美術總監', courses: 2, students: 5460, avatar: '🎮', bio: '參與多款 AAA 遊戲開發，Blender 與 C4D 雙棲創作者' },
-  { id: 'i8', name: '郭書瑜', role: '理財規劃師', courses: 1, students: 8240, avatar: '💰', bio: 'CFP 國際認證理財規劃師，幫助超過 5000 人建立理財觀念' }
+  { id: 'i8', name: '郭書瑜', role: '理財規劃師', courses: 2, students: 13130, avatar: '💰', bio: 'CFP 國際認證理財規劃師，幫助超過 5000 人建立理財觀念' },
+  { id: 'i9', name: '張馨予', role: '甜點主廚', courses: 2, students: 6150, avatar: '🧁', bio: 'Le Cordon Bleu 畢業，曾任法國米其林餐廳甜點房，致力在家烘焙教學' },
+  { id: 'i10', name: '陳威宏', role: '獨立遊戲開發者', courses: 3, students: 6410, avatar: '🕹️', bio: 'Steam 上架三款獨立遊戲，Unity / Godot 雙棲，推動台灣獨立遊戲文化' },
+  { id: 'i11', name: '李承翰', role: '商業攝影師', courses: 2, students: 6790, avatar: '📷', bio: '合作品牌超過百家，擅長人像與商品攝影，作品刊登於 Vogue、GQ' },
+  { id: 'i12', name: '陳思涵', role: '造型師・生活風格作家', courses: 2, students: 7210, avatar: '✨', bio: '出版三本暢銷書，專注穿搭美學與極簡生活，IG 粉絲超過 20 萬' }
 ];
 
 // ── 平台數據 ──
 window.PLATFORM_STATS = {
-  courses: 54,
-  students: 180000,
-  instructors: 28,
+  courses: 72,
+  students: 240000,
+  instructors: 35,
   satisfaction: 4.85,
   completionRate: 78,
   countries: 12

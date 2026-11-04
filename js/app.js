@@ -1899,9 +1899,10 @@ function wishlistPage() {
 /* ---------- 我的學習 ---------- */
 function myPage() {
   const main = $('main');
-  const enrolled = C.slice(0, 5).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62][i], lastWatch: ['2 小時前', '昨天', '3 天前', '5 分鐘前', '1 天前'][i] }));
+  const enrolled = C.slice(0, 7).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62, 33, 91][i], lastWatch: ['2 小時前', '昨天', '3 天前', '5 分鐘前', '1 天前', '4 小時前', '剛剛'][i] }));
   const totalHours = enrolled.reduce((s, c) => s + c.hours, 0);
   const completed = enrolled.filter(c => c.progress === 100).length;
+  const inProgress = enrolled.filter(c => c.progress > 0 && c.progress < 100).sort((a, b) => b.progress - a.progress);
   const wishlist = C.slice(8, 12);
   const orders = [
     { id: 'ORD-20261028-001', date: '2026/10/28', items: [C[0]], total: 4980, status: '已完成' },
@@ -1913,6 +1914,16 @@ function myPage() {
     { code: 'DOUBLE11', desc: '雙 11 滿 5,000 折 800', expire: '2026/11/15', min: 5000, used: false },
     { code: 'BDAY500', desc: '生日禮 $500 折抵', expire: '2026/11/30', min: 2000, used: true },
   ];
+  const activity = [
+    { icon: '▶', text: '繼續觀看「' + enrolled[0].title.slice(0,12) + '…」第 7 章', time: '2 小時前', color: 'var(--pri)' },
+    { icon: '✓', text: '完成「' + enrolled[2].title.slice(0,12) + '…」全部課程', time: '3 天前', color: '#34c759' },
+    { icon: '📝', text: '為「' + enrolled[1].title.slice(0,12) + '…」新增了學習筆記', time: '4 天前', color: '#ff9500' },
+    { icon: '⭐', text: '給予「' + enrolled[2].title.slice(0,12) + '…」五星好評', time: '4 天前', color: '#ffc107' },
+    { icon: '🎓', text: '獲得結業證書：' + enrolled[2].title.slice(0,10), time: '4 天前', color: 'var(--pink)' },
+    { icon: '🛒', text: '購買了「' + enrolled[5].title.slice(0,12) + '…」', time: '5 天前', color: 'var(--pri)' },
+    { icon: '🏆', text: '解鎖成就徽章「連續 7 天學習」', time: '1 週前', color: '#ff5c8a' },
+    { icon: '♡', text: '收藏了「' + C[15].title.slice(0,12) + '…」', time: '1 週前', color: '#ff5c8a' },
+  ];
 
   // Learning calendar (last 30 days)
   const today = new Date();
@@ -1922,8 +1933,60 @@ function myPage() {
     const mins = active ? [15,30,45,60,90,120][Math.floor(Math.random() * 6)] : 0;
     return { date: d, mins, dow: d.getDay() };
   });
+  const memberSince = '2026 年 3 月';
+  const streakDays = 7;
+  const totalPts = 462;
+  const level = Math.min(12, Math.floor(totalHours / 5) + 1);
+  const levelTitle = totalHours >= 60 ? '學習大師' : totalHours >= 30 ? '進階學員' : '新手學員';
 
   main.innerHTML = `
+  <!-- 個人檔案 Hero Banner -->
+  <div class="my-hero rv-up">
+    <div class="my-hero-bg"></div>
+    <div class="wrap my-hero-inner">
+      <div class="my-hero-left">
+        <div class="my-avatar-lg">學<span class="my-avatar-badge">Lv.${level}</span></div>
+        <div class="my-hero-info">
+          <h1 class="my-hero-name">學員你好 👋</h1>
+          <p class="my-hero-sub">${levelTitle}・${memberSince}加入・已學 ${totalHours} 小時</p>
+          <div class="my-hero-tags">
+            <span class="my-tag">🔥 連續 ${streakDays} 天</span>
+            <span class="my-tag">💎 ${totalPts} 點數</span>
+            <span class="my-tag">📚 ${enrolled.length} 堂課程</span>
+            <span class="my-tag">🏆 ${completed} 堂完成</span>
+          </div>
+        </div>
+      </div>
+      <div class="my-hero-right">
+        <div class="my-xp-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/><circle cx="40" cy="40" r="34" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="214" stroke-dashoffset="${214 - 214 * Math.min(1, (totalHours % 10) / 10)}" stroke-linecap="round" transform="rotate(-90 40 40)"/></svg><div class="my-xp-text"><b>${totalHours * 60}</b><span>XP</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 快捷入口 -->
+  <div class="wrap my-quick rv-up">
+    <a class="my-qlink" href="order-history.html"><span class="my-ql-icon">🧾</span><span>訂單紀錄</span></a>
+    <a class="my-qlink" href="wishlist.html"><span class="my-ql-icon">♡</span><span>我的收藏</span></a>
+    <a class="my-qlink" href="coupon.html"><span class="my-ql-icon">🎟️</span><span>優惠券</span></a>
+    <a class="my-qlink" href="certificate.html"><span class="my-ql-icon">🏆</span><span>結業證書</span></a>
+    <a class="my-qlink" href="quiz.html"><span class="my-ql-icon">🎯</span><span>技能測驗</span></a>
+    <a class="my-qlink" href="invite.html"><span class="my-ql-icon">🎁</span><span>邀請好友</span></a>
+  </div>
+
+  ${inProgress.length ? `<!-- 繼續學習 -->
+  <div class="wrap my-resume rv-up">
+    <div class="my-resume-head"><h2>繼續學習</h2><a href="#" class="my-resume-all" data-goto-courses>查看全部 →</a></div>
+    <div class="my-resume-list">${inProgress.slice(0, 3).map(c => `<a class="my-resume-card" href="player.html?id=${c.id}">
+      <div class="my-rc-thumb"><img src="assets/img/v${c.v}.jpg" alt="" loading="lazy"><div class="my-rc-play">▶</div></div>
+      <div class="my-rc-body">
+        <h3>${c.title}</h3>
+        <p class="my-rc-teacher">${c.teacher}・${c.lastWatch}</p>
+        <div class="my-rc-bar"><div class="my-rc-fill" style="width:${c.progress}%"></div></div>
+        <span class="my-rc-pct">已完成 ${c.progress}%</span>
+      </div>
+    </a>`).join('')}</div>
+  </div>` : ''}
+
   <div class="myp-layout">
     <aside class="myp-aside rv-up">
       <div class="myp-profile">
@@ -1935,6 +1998,7 @@ function myPage() {
         <button class="myp-nav-btn on" data-sec="courses">📚 我的課程</button>
         <button class="myp-nav-btn" data-sec="dashboard">📊 學習儀表板</button>
         <button class="myp-nav-btn" data-sec="calendar">📅 學習紀錄</button>
+        <button class="myp-nav-btn" data-sec="activity">⏰ 最近動態</button>
         <button class="myp-nav-btn" data-sec="wishlist">♡ 心願清單</button>
         <a href="order-history.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🧾 訂單紀錄</a>
         <button class="myp-nav-btn" data-sec="coupons">🎟️ 優惠券</button>
@@ -1946,7 +2010,7 @@ function myPage() {
       <div class="myp-aside-stats">
         <div><b>${enrolled.length}</b><span>課程</span></div>
         <div><b>${totalHours}</b><span>時數</span></div>
-        <div><b>462</b><span>點數</span></div>
+        <div><b>${totalPts}</b><span>點數</span></div>
       </div>
     </aside>
     <div class="myp-main">
@@ -1957,7 +2021,7 @@ function myPage() {
           <div class="myp-stat"><b>${enrolled.length}</b><span>已購課程</span></div>
           <div class="myp-stat"><b>${completed}</b><span>已完成</span></div>
           <div class="myp-stat"><b>${totalHours}</b><span>總時數</span></div>
-          <div class="myp-stat"><b>462</b><span>學習點數</span></div>
+          <div class="myp-stat"><b>${totalPts}</b><span>學習點數</span></div>
         </div>
         <div class="myp-tabs rv-up">
           <button class="chip on" data-tab="all">全部課程</button>
@@ -2043,6 +2107,17 @@ function myPage() {
             <div class="myp-stat"><b>${Math.round(calDays.reduce((s, d) => s + d.mins, 0) / 60)}</b><span>累計時數</span></div>
             <div class="myp-stat"><b>7</b><span>連續天數</span></div>
           </div>
+        </div>
+      </section>
+
+      <!-- 最近動態 -->
+      <section class="myp-sec" id="myp-sec-activity" hidden>
+        <h2 class="myp-sec-title rv-up">⏰ 最近動態</h2>
+        <div class="my-timeline rv-up">
+          ${activity.map(a => `<div class="my-tl-item">
+            <div class="my-tl-dot" style="background:${a.color}">${a.icon}</div>
+            <div class="my-tl-body"><span class="my-tl-text">${a.text}</span><span class="my-tl-time">${a.time}</span></div>
+          </div>`).join('')}
         </div>
       </section>
 
@@ -2177,6 +2252,15 @@ function myPage() {
       c.style.display = (tab === 'all' || c.dataset.status === tab) ? '' : 'none';
     });
   });
+
+  // "繼續學習" 查看全部 → 跳到課程 tab
+  const gotoBtn = $('[data-goto-courses]', main);
+  if (gotoBtn) gotoBtn.onclick = e => {
+    e.preventDefault();
+    const btn = $('[data-sec="courses"]', main);
+    if (btn) { btn.click(); btn.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  };
+
   bindCards(main);
 }
 
