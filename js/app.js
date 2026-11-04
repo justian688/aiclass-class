@@ -1280,7 +1280,7 @@ function course() {
     <aside class="buy">
       ${isOwned ? `
         <div class="c-owned-badge">✓ 已購買</div>
-        ${(() => { const prog = progress[c.id]; const pctDone = prog ? Math.round(prog.done.length / 28 * 100) : 0; return `<div class="c-owned-progress"><div class="c-owned-bar"><div class="c-owned-fill" style="width:${pctDone}%"></div></div><span>${pctDone}% 完成</span></div>`; })()}
+        ${(() => { const prog = progress[c.id]; const doneCnt = prog ? prog.done.length : 0; const pctDone = totalLessonCount > 0 ? Math.round(doneCnt / totalLessonCount * 100) : 0; const remain = totalLessonCount - doneCnt; const remMin = Math.round(remain * c.hours * 60 / totalLessonCount); return `<div class="c-owned-progress" id="side-prog"><div class="c-owned-bar"><div class="c-owned-fill" id="side-prog-fill" style="width:${pctDone}%"></div></div><span id="side-prog-txt">${pctDone}% 完成（${doneCnt}/${totalLessonCount}）</span>${remain > 0 ? `<div class="c-remain-time" id="side-remain">⏱ 預估剩餘 ${remMin >= 60 ? Math.floor(remMin/60) + ' 小時 ' + (remMin%60) + ' 分鐘' : remMin + ' 分鐘'}</div>` : `<div class="c-remain-time c-done-badge">🎉 已完成全部課程！</div>`}</div>`; })()}
         <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">${progress[c.id] ? '繼續學習 →' : '開始上課 →'}</a>
       ` : `
         <div class="c-live-view"><span class="c-live-dot"></span>${12 + (c.id.charCodeAt(1) % 30)} 人正在瀏覽此課程</div>
@@ -1342,7 +1342,7 @@ function course() {
     </div>
     <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${chapters.length} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
       <div class="curri-bar rv-up"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div>
-      ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
+      ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><button class="chap-done-all" data-chap="${i}" title="標記本章全部完成">☐ 全完成</button><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
         <span><span class="chap-play">${l.free ? '▶' : '🔒'}</span>${i + 1}-${j + 1} ${l.name}${l.free ? '<em class="chap-free">免費試看</em>' : ''}</span>
         <span class="chap-time">${l.time}</span>
       </li>`).join('')}</ul></div></div></div>`}).join('')}</section>
@@ -1562,12 +1562,19 @@ function course() {
   const prog = getCourseProg(c.id);
   const curriBarFill = $('.curri-bar-fill', main);
   const curriBarTxt = $('.curri-bar-txt', main);
+  const sideProgFill = $('#side-prog-fill');
+  const sideProgTxt = $('#side-prog-txt');
+  const sideRemain = $('#side-remain');
   const updateCurriBar = () => {
     const p = getCourseProg(c.id);
     const done = p.done.length;
     const pctVal = totalLessonCount > 0 ? Math.round(done / totalLessonCount * 100) : 0;
     if (curriBarFill) curriBarFill.style.width = pctVal + '%';
     if (curriBarTxt) curriBarTxt.textContent = `${done} / ${totalLessonCount} 堂已完成（${pctVal}%）`;
+    if (sideProgFill) sideProgFill.style.width = pctVal + '%';
+    if (sideProgTxt) sideProgTxt.textContent = `${pctVal}% 完成（${done}/${totalLessonCount}）`;
+    if (sideRemain) { const remain = totalLessonCount - done; if (remain > 0) { const remMin = Math.round(remain * c.hours * 60 / totalLessonCount); sideRemain.textContent = `⏱ 預估剩餘 ${remMin >= 60 ? Math.floor(remMin/60) + ' 小時 ' + (remMin%60) + ' 分鐘' : remMin + ' 分鐘'}`; sideRemain.className = 'c-remain-time'; } else { sideRemain.textContent = '🎉 已完成全部課程！'; sideRemain.className = 'c-remain-time c-done-badge'; } }
+    $$('.chap-done-all', main).forEach(btn => { const ci = +btn.dataset.chap; const chLessons = chapters[ci].lessons; const allDone = chLessons.every((_, j) => p.done.includes(`${ci}-${j}`)); btn.textContent = allDone ? '☑ 已完成' : '☐ 全完成'; btn.classList.toggle('checked', allDone); });
   };
   updateCurriBar();
   $$('.chap', main).forEach((chEl, ci) => {
@@ -1575,10 +1582,19 @@ function course() {
       const key = `${ci}-${li2}`;
       const cb = document.createElement('input');
       cb.type = 'checkbox'; cb.className = 'lesson-cb'; cb.checked = prog.done.includes(key);
-      cb.onchange = () => { if (cb.checked) markLesson(c.id, ci, li2); else { const p = getCourseProg(c.id); p.done = p.done.filter(k => k !== key); saveProgress(); } updateCurriBar(); };
+      cb.onchange = () => { if (cb.checked) markLesson(c.id, ci, li2); else if (progress[c.id]) { progress[c.id].done = progress[c.id].done.filter(k => k !== key); saveProgress(); } updateCurriBar(); };
       li.querySelector('span').prepend(cb);
     });
   });
+  $$('.chap-done-all', main).forEach(btn => {
+    btn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); const ci = +btn.dataset.chap; if (!progress[c.id]) progress[c.id] = { done: [], lastAt: 0 }; const p = progress[c.id]; const chLessons = chapters[ci].lessons; const allDone = chLessons.every((_, j) => p.done.includes(`${ci}-${j}`));
+      if (allDone) { chLessons.forEach((_, j) => { p.done = p.done.filter(k => k !== `${ci}-${j}`); }); } else { chLessons.forEach((_, j) => { const key = `${ci}-${j}`; if (!p.done.includes(key)) p.done.push(key); }); p.lastAt = Date.now(); }
+      saveProgress(); $$('.lesson-cb', $$('.chap', main)[ci]).forEach((cb, j) => { cb.checked = !allDone; }); updateCurriBar(); toast(allDone ? '已取消本章完成標記' : `第 ${ci+1} 章已全部標記完成 ✓`); };
+  });
+
+  // Tab 鍵盤導航（左右箭頭）
+  const tabNav = $('.tabs', main);
+  if (tabNav) { const tabLinks = $$('a', tabNav); tabNav.addEventListener('keydown', e => { if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return; const cur = tabLinks.findIndex(a => a.classList.contains('on')); let next = cur; if (e.key === 'ArrowRight') next = (cur + 1) % tabLinks.length; else next = (cur - 1 + tabLinks.length) % tabLinks.length; tabLinks[next].click(); tabLinks[next].focus(); e.preventDefault(); }); tabLinks.forEach(a => { a.setAttribute('tabindex', '0'); a.setAttribute('role', 'tab'); }); tabNav.setAttribute('role', 'tablist'); }
 }
 
 /* ---------- 活動頁 ---------- */

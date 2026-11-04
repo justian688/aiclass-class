@@ -425,6 +425,11 @@ body.hdr-hidden .tabs{top:0}
 .c-owned-bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:6px}
 .c-owned-fill{height:100%;background:var(--grad);border-radius:3px;transition:width .6s var(--ease)}
 .c-owned-progress span{font-size:.8rem;color:var(--tx2);font-weight:600}
+.c-remain-time{font-size:.75rem;color:var(--tx3);margin-top:6px}
+.c-done-badge{color:var(--pri) !important;font-weight:700}
+.chap-done-all{display:inline-flex;align-items:center;padding:3px 10px;border-radius:8px;border:1.5px solid var(--line);background:transparent;color:var(--tx2);font-size:.72rem;cursor:pointer;transition:all .2s;white-space:nowrap;margin-left:auto}
+.chap-done-all:hover{border-color:var(--pri);color:var(--pri)}
+.chap-done-all.checked{background:var(--pri);color:#fff;border-color:var(--pri)}
 .c-curri-meta{font-size:15px;color:var(--tx3);font-weight:400}
 .chap-count{font-size:14px;color:var(--tx3);white-space:nowrap}
 .chap-play{font-size:11px;margin-right:8px}
