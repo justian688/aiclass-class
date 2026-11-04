@@ -50,10 +50,11 @@ function bindNotes(courseId, main) {
     allNotes[courseId].unshift({ text: txt, ts: Date.now() });
     saveNotes(); ta.value = '';
     const list = $('.notes-list', main);
-    const item = document.createElement('div'); item.className = 'note-item rv-up';
+    const item = document.createElement('div'); item.className = 'note-item rv-up in';
     item.innerHTML = `<div class="note-date">${new Date().toLocaleDateString('zh-TW')} ${new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${txt}</p><button class="note-del" data-ni="0">刪除</button>`;
     const empty = $('.notes-empty', list); if (empty) empty.remove();
     list.prepend(item);
+    reveal(list);
     toast('筆記已儲存');
   };
   main.addEventListener('click', e => {
@@ -78,6 +79,89 @@ function markLesson(cid, chapIdx, lessonIdx) {
   progress[cid].lastAt = Date.now();
   saveProgress();
 }
+
+/* ---------- 使用者評價 ---------- */
+const userReviews = JSON.parse(localStorage.getItem('aic-reviews') || '{}');
+function saveReviews() { localStorage.setItem('aic-reviews', JSON.stringify(userReviews)); }
+function bindUserReview(courseId, main) {
+  const stars = $$('[data-ur]', main);
+  const txt = $('.ur-text', main);
+  const btn = $('.ur-submit', main);
+  const list = $('.ur-user-list', main);
+  if (!stars.length || !txt || !btn) return;
+  let rating = 0;
+  stars.forEach(s => {
+    s.onmouseenter = () => { const v = +s.dataset.ur; stars.forEach((x, i) => x.textContent = i < v ? '★' : '☆'); };
+    s.onclick = () => { rating = +s.dataset.ur; stars.forEach((x, i) => { x.textContent = i < rating ? '★' : '☆'; x.classList.toggle('sel', i < rating); }); checkSubmit(); };
+  });
+  const starsWrap = $('.ur-stars', main);
+  if (starsWrap) starsWrap.onmouseleave = () => { stars.forEach((x, i) => x.textContent = i < rating ? '★' : '☆'); };
+  txt.oninput = checkSubmit;
+  function checkSubmit() { btn.disabled = !(rating > 0 && txt.value.trim().length >= 10); }
+  btn.onclick = () => {
+    if (!userReviews[courseId]) userReviews[courseId] = [];
+    const r = { rating, text: txt.value.trim(), ts: Date.now() };
+    userReviews[courseId].unshift(r);
+    saveReviews();
+    txt.value = ''; rating = 0; stars.forEach(s => { s.textContent = '☆'; s.classList.remove('sel'); }); btn.disabled = true;
+    renderUserReviews(courseId, list);
+    toast('感謝你的評價！');
+  };
+  renderUserReviews(courseId, list);
+}
+function renderUserReviews(courseId, container) {
+  const reviews = userReviews[courseId] || [];
+  if (!reviews.length) { container.innerHTML = ''; return; }
+  container.innerHTML = `<h4 style="margin:24px 0 12px;font-size:16px">我的評價</h4>` + reviews.map((r, i) => `<div class="review-item ur-mine">
+    <div class="ri-head"><div class="ri-avatar" style="background:var(--pri)">我</div><div class="ri-meta"><b>我的評價</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${new Date(r.ts).toLocaleDateString('zh-TW')}</span></div></div><button class="ur-del" data-uri="${i}">刪除</button></div>
+    <p>${r.text}</p></div>`).join('');
+  $$('.ur-del', container).forEach(b => b.onclick = () => {
+    userReviews[courseId].splice(+b.dataset.uri, 1); saveReviews(); renderUserReviews(courseId, container); toast('評價已刪除');
+  });
+}
+
+/* ---------- 智慧推薦 ---------- */
+function smartRecommend(current) {
+  const recentIds = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(id => id !== current.id);
+  if (!recentIds.length) return '';
+  const base = byId[recentIds[0]];
+  if (!base) return '';
+  const recs = C.filter(c => c.id !== current.id && c.id !== base.id && (c.cat === base.cat || c.cat === current.cat)).slice(0, 4);
+  if (!recs.length) return '';
+  return `<section class="sec sr-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>因為你看過「${base.title.slice(0, 15)}${base.title.length > 15 ? '…' : ''}」</h2><div class="sub">為你精選相關課程</div></div></div>
+    <div class="rail">${recs.map((c, i) => card(c, i)).join('')}</div></div></section>`;
+}
+
+/* ---------- 快速預覽彈窗 ---------- */
+function quickPreview(courseId) {
+  const c = byId[courseId]; if (!c) return;
+  const cat = window.CATS.find(x => x.id === c.cat) || { name: '' };
+  const ov = document.createElement('div'); ov.className = 'qp-overlay';
+  ov.innerHTML = `<div class="qp-box">
+    <button class="qp-close">×</button>
+    <div class="qp-vid"><video src="${vid(c)}" poster="${img(c)}" muted loop playsinline preload="metadata"></video><button class="qp-play">▶</button></div>
+    <div class="qp-body">
+      <span class="qp-cat">${cat.name}</span>
+      <h2 class="qp-title">${c.title}</h2>
+      <p class="qp-teacher">${c.teacher}・${c.role}</p>
+      <div class="qp-stats"><span>★ ${c.rating.toFixed(1)}</span><span>${c.students.toLocaleString()} 學員</span><span>${c.hours} 小時</span></div>
+      ${c.ai ? `<p class="qp-ai"><span class="ai-tag">✦ AI 摘要</span> ${c.ai}</p>` : ''}
+      <div class="qp-price"><span class="qp-now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del><span class="qp-pct">${pct(c)}% OFF</span></div>
+      <div class="qp-actions">
+        <a class="btn btn-pri" href="course.html?id=${c.id}">查看完整課程</a>
+        <button class="btn btn-ghost qp-cart">加入購物車</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.append(ov);
+  requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
+  ov.querySelector('.qp-close').onclick = () => { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); };
+  ov.onclick = e => { if (e.target === ov) { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); } };
+  ov.querySelector('.qp-play').onclick = () => { const v = ov.querySelector('video'); v.play(); ov.querySelector('.qp-play').style.display = 'none'; };
+  ov.querySelector('.qp-cart').onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
+  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); document.removeEventListener('keydown', esc); } });
+}
+window.quickPreview = quickPreview;
 
 /* ---------- 共用：公告、頁首、頁尾、手機導覽 ---------- */
 const deadline = (() => { // 每天午夜重置的限時優惠
@@ -178,28 +262,7 @@ function shell() {
 
   searchOverlay();
 
-  // 課程比較
-  const cmpKey = 'aic-compare';
-  const getCmp = () => JSON.parse(localStorage.getItem(cmpKey) || '[]');
-  const cmpFab = document.createElement('button'); cmpFab.className = 'cmp-fab'; cmpFab.style.display = 'none';
-  document.body.append(cmpFab);
-  window.toggleCompare = id => { let list = getCmp(); if (list.includes(id)) list = list.filter(x => x !== id); else if (list.length < 4) list.push(id); else { toast('最多比較 4 堂課程'); return; } localStorage.setItem(cmpKey, JSON.stringify(list)); updateCmpFab(); };
-  function updateCmpFab() { const list = getCmp(); cmpFab.style.display = list.length >= 2 ? '' : 'none'; cmpFab.textContent = `⚖ 比較 (${list.length})`; }
-  cmpFab.onclick = () => { const list = getCmp().map(id => byId[id]).filter(Boolean); if (list.length < 2) return;
-    const panel = document.createElement('div'); panel.className = 'cmp-panel'; panel.innerHTML = `<div class="cmp-bg"></div><div class="cmp-box"><div class="cmp-hdr"><h3>⚖ 課程比較</h3><button class="cmp-close">✕</button></div><div class="cmp-body"><table><thead><tr><th></th>${list.map(c=>`<th><img src="${img(c)}" alt=""><b>${c.title}</b></th>`).join('')}</tr></thead><tbody>
-    <tr><td>講師</td>${list.map(c=>`<td>${c.teacher}</td>`).join('')}</tr>
-    <tr><td>價格</td>${list.map(c=>`<td><b>${fmt(c.price)}</b></td>`).join('')}</tr>
-    <tr><td>原價</td>${list.map(c=>`<td><del>${fmt(c.origin)}</del></td>`).join('')}</tr>
-    <tr><td>時數</td>${list.map(c=>`<td>${c.hours} 小時</td>`).join('')}</tr>
-    <tr><td>評分</td>${list.map(c=>`<td>★ ${c.rating.toFixed(1)}</td>`).join('')}</tr>
-    <tr><td>學員</td>${list.map(c=>`<td>${c.students.toLocaleString()}</td>`).join('')}</tr>
-    <tr><td>分類</td>${list.map(c=>`<td>${(window.CATS.find(x=>x.id===c.cat)||{}).name||''}</td>`).join('')}</tr>
-    <tr><td></td>${list.map(c=>`<td><a href="course.html?id=${c.id}" class="btn btn-pri btn-sm">查看課程</a></td>`).join('')}</tr>
-    </tbody></table></div></div>`;
-    document.body.append(panel); document.body.style.overflow = 'hidden';
-    panel.querySelector('.cmp-close').onclick = panel.querySelector('.cmp-bg').onclick = () => { panel.remove(); document.body.style.overflow = ''; };
-  };
-  updateCmpFab();
+  // 課程比較（舊版 fab 已移至底部新版 cmp-bar）
 
   // Mega menu: hover on desktop, click on mobile
   const megaBtn = $('.mega-btn', hdr), megaDrop = $('.mega-drop', hdr), megaWrap = $('.mega-wrap', hdr);
@@ -212,6 +275,29 @@ function shell() {
     megaBtn.onclick = () => { if (innerWidth <= 760) megaDrop.hidden ? openMenu() : closeMenu(); };
     document.addEventListener('click', e => { if (!megaDrop.hidden && !e.target.closest('.mega-wrap')) closeMenu(); });
     megaDrop.addEventListener('click', e => { if (e.target.closest('a')) closeMenu(); });
+  }
+
+  // Cookie 同意橫幅
+  if (!localStorage.getItem('aic-cookie-ok')) {
+    const ck = document.createElement('div'); ck.className = 'cookie-bar';
+    ck.innerHTML = `<p>我們使用 Cookie 來提供更好的瀏覽體驗。繼續使用代表你同意我們的 <a href="privacy.html">隱私權政策</a>。</p><button class="btn btn-pri cookie-ok">我知道了</button>`;
+    document.body.append(ck);
+    requestAnimationFrame(() => requestAnimationFrame(() => ck.classList.add('show')));
+    $('.cookie-ok', ck).onclick = () => { localStorage.setItem('aic-cookie-ok', '1'); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
+  }
+
+  // 最近瀏覽浮動提示
+  const rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
+  if (rv.length && page !== 'course' && page !== 'player') {
+    const last = byId[rv[0]];
+    if (last) {
+      const tip = document.createElement('div'); tip.className = 'recent-tip';
+      tip.innerHTML = `<img src="${img(last)}" alt=""><div><small>最近瀏覽</small><b>${last.title.length > 20 ? last.title.slice(0,20) + '…' : last.title}</b></div><a href="course.html?id=${last.id}" class="btn btn-pri btn-sm">繼續查看</a><button class="recent-tip-x">×</button>`;
+      document.body.append(tip);
+      setTimeout(() => tip.classList.add('show'), 2000);
+      $('.recent-tip-x', tip).onclick = () => { tip.classList.remove('show'); setTimeout(() => tip.remove(), 400); };
+      setTimeout(() => { if (tip.parentNode) { tip.classList.remove('show'); setTimeout(() => tip.remove(), 400); } }, 10000);
+    }
   }
 }
 
@@ -305,7 +391,7 @@ function card(c, i, rank) {
       <div class="stars"><b>★ ${c.rating.toFixed(1)}</b>・${c.students.toLocaleString()} 位學員</div>
       ${c.ai ? '<div class="ai-summary"><span class="ai-tag">✦ AI 摘要</span>' + c.ai + '</div>' : ''}
     </div>
-    <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns"><button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button><button class="ch-cmp" data-addcmp="${c.id}">⚖ 比較</button></div></div>
+    <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns"><button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button><button class="ch-cmp" data-addcmp="${c.id}">⚖ 比較</button><button class="ch-qp" data-qp="${c.id}">👁 預覽</button></div></div>
   </a>`;
 }
 
@@ -344,6 +430,10 @@ function bindCards(root = document) {
   $$('[data-addcmp]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
     if (window.addCompare) window.addCompare(b.dataset.addcmp);
+  });
+  $$('[data-qp]', root).forEach(b => b.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    quickPreview(b.dataset.qp);
   });
   reveal(root);
 }
@@ -823,10 +913,18 @@ function course() {
       <div class="review-list">${reviewData.map(r => `<div class="review-item rv-up">
         <div class="ri-head"><div class="ri-avatar">${r.initial}</div><div class="ri-meta"><b>${r.name}</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${r.date}</span></div></div></div>
         <p>${r.text}</p>
-      </div>`).join('')}</div></section>
+      </div>`).join('')}</div>
+      <div class="ur-form rv-up"><h3>撰寫你的評價</h3>
+        <div class="ur-stars"><span data-ur="1">☆</span><span data-ur="2">☆</span><span data-ur="3">☆</span><span data-ur="4">☆</span><span data-ur="5">☆</span></div>
+        <textarea class="ur-text" placeholder="分享你的學習心得…（至少 10 個字）" rows="4"></textarea>
+        <button class="btn btn-pri ur-submit" disabled>送出評價</button>
+      </div>
+      <div class="ur-user-list"></div>
+    </section>
     ${notesWidget(c.id)}
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</section>
   </div>
+  ${smartRecommend(c)}
   ${railSec('more', '你可能也會喜歡', '', others)}`;
 
   seo({
@@ -884,6 +982,14 @@ function course() {
   }
 
   bindNotes(c.id, main);
+  bindUserReview(c.id, main);
+  bindCards(main); // for smart recommend rail
+  const srRail = $('.sr-sec .rail'); if (srRail) bindRail($('.sr-sec'));
+
+  // 記錄最近瀏覽
+  const recentView = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(id => id !== c.id);
+  recentView.unshift(c.id);
+  localStorage.setItem('aic-recent-view', JSON.stringify(recentView.slice(0, 20)));
 
   // 課程進度 checkboxes
   const prog = getCourseProg(c.id);
@@ -3628,6 +3734,34 @@ function quizPage() {
   reveal(main);
 }
 
+/* ---------- 404 ---------- */
+function notFoundPage() {
+  const main = $('main');
+  document.title = '找不到頁面｜AI Class';
+  main.innerHTML = `<section class="nf-hero"><div class="wrap" style="text-align:center;padding:120px 32px">
+    <div class="nf-icon rv-up">🔍</div>
+    <h1 class="rv-up" style="font-size:clamp(2rem,5vw,3.5rem);margin:24px 0 12px">找不到頁面</h1>
+    <p class="rv-up" style="color:var(--tx2);font-size:18px;max-width:480px;margin:0 auto 32px">你要找的頁面可能已被移除、改名，或暫時無法使用。</p>
+    <div class="rv-up" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-pri" href="index.html" style="height:48px;padding:0 32px;font-size:16px">回到首頁</a>
+      <a class="btn btn-ghost" href="blog.html" style="height:48px;padding:0 32px;font-size:16px">瀏覽學習專欄</a>
+    </div>
+    <div class="rv-up" style="margin-top:48px"><h3 style="margin-bottom:16px">熱門課程推薦</h3></div>
+  </div></section>
+  ${railSec('nf-rec', '', '', C.filter(c => c.tag === 'BEST' || c.tag === 'HOT').slice(0, 8))}`;
+  bindCards(main); bindRail($('#nf-rec'));
+}
+
+/* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const ov = $('.overlay.on'); if (ov) { ov.classList.remove('on'); document.body.style.overflow = ''; }
+    const cmpOv = $('.cmp-overlay'); if (cmpOv) cmpOv.remove();
+    const qzModal = $('.qz-modal:not([hidden])'); if (qzModal) { qzModal.hidden = true; document.body.style.overflow = ''; }
+    const qzResult = $('.qz-result:not([hidden])'); if (qzResult) { qzResult.hidden = true; document.body.style.overflow = ''; }
+  }
+});
+
 /* ---------- 啟動 ---------- */
 if (page !== 'training' && page !== 'player') shell();
 if (page === 'home') home();
@@ -3704,4 +3838,33 @@ window.addCompare = id => {
   cmpList.push(id); saveCmp(); toast('已加入比較');
 };
 updCmpUI();
+
+// ── Cookie 同意橫幅 ──
+if (!localStorage.getItem('aic-cookie-ok')) {
+  const ck = document.createElement('div'); ck.className = 'cookie-bar';
+  ck.innerHTML = `<p>我們使用 Cookie 來提升你的瀏覽體驗。繼續使用代表你同意我們的 <a href="privacy.html">隱私權政策</a>。</p><button class="btn btn-pri cookie-ok">我知道了</button>`;
+  document.body.append(ck);
+  requestAnimationFrame(() => requestAnimationFrame(() => ck.classList.add('show')));
+  ck.querySelector('.cookie-ok').onclick = () => { localStorage.setItem('aic-cookie-ok', '1'); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
+}
+
+// ── 電子報訂閱彈窗（首頁捲動 60% 後觸發一次） ──
+if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
+  let triggered = false;
+  addEventListener('scroll', function nlCheck() {
+    if (triggered) return;
+    const pctScroll = scrollY / (document.documentElement.scrollHeight - innerHeight) * 100;
+    if (pctScroll >= 60) {
+      triggered = true; sessionStorage.setItem('aic-nl-shown', '1');
+      removeEventListener('scroll', nlCheck);
+      const nl = document.createElement('div'); nl.className = 'nl-overlay';
+      nl.innerHTML = `<div class="nl-box"><button class="nl-close">×</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址"><button class="btn btn-pri">免費訂閱</button></div><small>隨時可取消訂閱，我們不會寄送垃圾信。</small></div>`;
+      document.body.append(nl);
+      requestAnimationFrame(() => requestAnimationFrame(() => nl.classList.add('show')));
+      nl.querySelector('.nl-close').onclick = () => { nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
+      nl.onclick = e => { if (e.target === nl) { nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); } };
+      nl.querySelector('.nl-form button').onclick = () => { toast('感謝訂閱！📬'); nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
+    }
+  }, { passive: true });
+}
 })();
