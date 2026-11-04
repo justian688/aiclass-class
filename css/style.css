@@ -3087,6 +3087,42 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 .qz-diff-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
 @media(max-width:480px){.qz-hist-item{flex-wrap:wrap}.qz-hist-pct{width:100%;text-align:right}}
 
+/* ===== 優惠券戳章 ===== */
+.cpn-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-15deg);font-size:1.8rem;font-weight:900;color:rgba(220,53,69,.6);border:4px solid rgba(220,53,69,.5);border-radius:12px;padding:6px 20px;z-index:3;pointer-events:none;text-transform:uppercase;letter-spacing:2px}
+.cpn-stamp.expired-stamp{color:rgba(108,117,125,.6);border-color:rgba(108,117,125,.5)}
+.cpn-card.used,.cpn-card.expired{pointer-events:auto}
+.cpn-card.used .cpn-left,.cpn-card.expired .cpn-left,.cpn-card.used .cpn-right,.cpn-card.expired .cpn-right{opacity:.4}
+.cpn-card.used::after{content:none}
+.cpn-rules{max-width:960px;margin:32px auto 60px;background:var(--bg2);border-radius:16px;padding:24px 28px}
+.cpn-rules h3{font-size:1rem;margin-bottom:12px;color:var(--tx)}
+.cpn-rules ul{list-style:none;padding:0;margin:0}
+.cpn-rules li{padding:6px 0;font-size:.88rem;color:var(--tx2);border-bottom:1px solid var(--line)}
+.cpn-rules li:last-child{border:none}
+.cpn-rules li::before{content:'• ';color:var(--pri)}
+
+/* ===== 成就分區標題 ===== */
+.ach-section-title{font-size:1.15rem;font-weight:700;margin:32px 0 16px;color:var(--tx)}
+.ach-icon-wrap{position:relative;flex-shrink:0}
+.ach-lock{position:absolute;bottom:-2px;right:-4px;font-size:14px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}
+
+/* ===== 排行榜篩選列 ===== */
+.lb-filter-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.lb-time-tabs{display:flex;gap:4px}
+.lb-time{padding:6px 16px;border-radius:20px;border:1px solid var(--line);background:var(--bg);font-size:.82rem;cursor:pointer;color:var(--tx2);transition:all .25s}
+.lb-time.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.lb-time:hover:not(.on){border-color:var(--pri);color:var(--pri)}
+
+/* ===== 邀請進度條 ===== */
+.inv-progress{background:var(--bg);border:1.5px solid var(--line);border-radius:16px;padding:24px 28px;margin-bottom:28px}
+.inv-prog-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
+.inv-prog-label b{color:var(--pri);font-size:18px}
+.inv-prog-bar{height:10px;background:var(--bg2);border-radius:10px;overflow:hidden}
+.inv-prog-fill{height:100%;background:linear-gradient(90deg,var(--pri),var(--pink));border-radius:10px;transition:width .6s ease}
+.inv-prog-hint{font-size:12px;color:var(--tx2);margin-top:6px;text-align:center}
+.inv-step-icon{font-size:28px;margin-bottom:6px}
+.inv-copy-btn.copied{background:#34c759;border-color:#34c759}
+@media(max-width:760px){.lb-filter-row{flex-direction:column;align-items:stretch}.lb-time-tabs{justify-content:center}}
+
 /* ===== 列印樣式 ===== */
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}

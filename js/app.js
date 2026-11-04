@@ -3609,10 +3609,11 @@ function couponPage() {
     const grid = $('#cpn-grid');
     if (!list.length) { grid.innerHTML = '<div class="cpn-empty">目前沒有符合條件的優惠券</div>'; return; }
     grid.innerHTML = list.map(cp => `<div class="cpn-card ${cp.used ? 'used' : ''} ${cp.expired ? 'expired' : ''} rv-up">
+      ${cp.used ? '<div class="cpn-stamp">已使用</div>' : ''}${cp.expired ? '<div class="cpn-stamp expired-stamp">已過期</div>' : ''}
       <div class="cpn-left">
         <span class="cpn-badge ${cp.typeTxt}">${cp.type === 'percent' ? '折扣' : '折抵'}</span>
         <div class="cpn-desc">${cp.desc}</div>
-        <div class="cpn-code-row"><span class="cpn-code">${cp.code}</span><button class="cpn-copy" onclick="navigator.clipboard.writeText('${cp.code}');toast('已複製優惠碼 ${cp.code}')">📋</button></div>
+        <div class="cpn-code-row"><span class="cpn-code">${cp.code}</span><button class="cpn-copy" onclick="navigator.clipboard.writeText('${cp.code}');this.textContent='✓';setTimeout(()=>this.textContent='📋',1500);toast('已複製優惠碼 ${cp.code}')">📋</button></div>
         ${cp.cats ? `<div class="cpn-cats">${cp.cats.map(c => `<span class="cpn-cat-tag">${c}</span>`).join('')}</div>` : ''}
       </div>
       <div class="cpn-right">
@@ -3627,17 +3628,28 @@ function couponPage() {
 
   main.innerHTML = `
   <section class="cpn-hero rv-up"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 優惠券</div>
     <h1>我的優惠券</h1>
     <p>查看你的優惠券，結帳時輸入優惠碼即可享受折扣</p>
   </div></section>
   <div class="wrap">
     <div class="cpn-tabs">
-      <button class="chip on" data-cpn="all">全部</button>
-      <button class="chip" data-cpn="active">可使用</button>
-      <button class="chip" data-cpn="used">已使用</button>
-      <button class="chip" data-cpn="expired">已過期</button>
+      <button class="chip on" data-cpn="all">全部 (${coupons.length})</button>
+      <button class="chip" data-cpn="active">可使用 (${coupons.filter(c=>!c.used&&!c.expired).length})</button>
+      <button class="chip" data-cpn="used">已使用 (${coupons.filter(c=>c.used).length})</button>
+      <button class="chip" data-cpn="expired">已過期 (${coupons.filter(c=>c.expired).length})</button>
     </div>
     <div class="cpn-grid" id="cpn-grid"></div>
+    <div class="cpn-rules rv-up">
+      <h3>使用規則</h3>
+      <ul>
+        <li>每筆訂單限用一張優惠券，不可合併使用</li>
+        <li>優惠券需在有效期限內使用，逾期自動失效</li>
+        <li>部分優惠券有最低消費金額限制，請注意使用條件</li>
+        <li>優惠券不可兌換現金，折抵金額不找零</li>
+        <li>AI Class 保留優惠券活動的最終解釋權</li>
+      </ul>
+    </div>
   </div>`;
 
   renderCoupons('all');
@@ -3796,21 +3808,30 @@ function invitePage() {
   const link = 'https://aiclass.tw/invite?ref=' + code;
   const stats = { invited: 3, registered: 2, earned: 1000 };
 
+  const goal = 5;
+  const invPct = Math.round(stats.invited / goal * 100);
+
   main.innerHTML = `
   <section class="inv-hero rv-up"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 邀請好友</div>
     <h1>邀請好友一起學</h1>
     <p>每成功邀請一位好友註冊並購課，你和好友各獲得 <b>NT$500</b> 折價券</p>
   </div></section>
   <div class="wrap inv-wrap">
+    <div class="inv-progress rv-up">
+      <div class="inv-prog-label"><span>邀請進度</span><b>${stats.invited} / ${goal} 人</b></div>
+      <div class="inv-prog-bar"><div class="inv-prog-fill" style="width:${Math.min(invPct, 100)}%"></div></div>
+      <div class="inv-prog-hint">${stats.invited >= goal ? '🎉 目標達成！繼續邀請可獲得額外獎勵' : `再邀請 ${goal - stats.invited} 位即可獲得額外 NT$1,000 獎勵`}</div>
+    </div>
     <div class="inv-card rv-up">
       <h2>你的專屬推薦連結</h2>
       <div class="inv-link-row">
-        <input type="text" value="${link}" readonly class="inv-link">
-        <button class="btn btn-pri" onclick="navigator.clipboard.writeText('${link}');toast('已複製邀請連結')">複製連結</button>
+        <input type="text" value="${link}" readonly class="inv-link" aria-label="推薦連結">
+        <button class="btn btn-pri inv-copy-btn" onclick="navigator.clipboard.writeText('${link}');this.textContent='✓ 已複製';this.classList.add('copied');setTimeout(()=>{this.textContent='複製連結';this.classList.remove('copied')},2000);toast('已複製邀請連結')">複製連結</button>
       </div>
       <div class="inv-code-row">
         <span>推薦碼：</span><code class="inv-code">${code}</code>
-        <button class="inv-copy" onclick="navigator.clipboard.writeText('${code}');toast('已複製推薦碼')">📋</button>
+        <button class="inv-copy" onclick="navigator.clipboard.writeText('${code}');this.textContent='✓';setTimeout(()=>this.textContent='📋',1500);toast('已複製推薦碼')">📋</button>
       </div>
       <div class="inv-share">
         <span>分享至：</span>
@@ -3823,10 +3844,10 @@ function invitePage() {
     <div class="inv-steps rv-up">
       <h2>如何運作？</h2>
       <div class="inv-step-grid">
-        <div class="inv-step"><div class="inv-step-num">1</div><h3>分享邀請連結</h3><p>將你的專屬推薦連結分享給朋友</p></div>
-        <div class="inv-step"><div class="inv-step-num">2</div><h3>好友註冊</h3><p>好友透過你的連結註冊 AI Class 帳號</p></div>
-        <div class="inv-step"><div class="inv-step-num">3</div><h3>好友購課</h3><p>好友完成第一筆課程購買</p></div>
-        <div class="inv-step"><div class="inv-step-num">4</div><h3>雙方獲獎</h3><p>你和好友各獲得 NT$500 折價券</p></div>
+        <div class="inv-step"><div class="inv-step-icon">🔗</div><div class="inv-step-num">1</div><h3>分享邀請連結</h3><p>將你的專屬推薦連結分享給朋友</p></div>
+        <div class="inv-step"><div class="inv-step-icon">👤</div><div class="inv-step-num">2</div><h3>好友註冊</h3><p>好友透過你的連結註冊 AI Class 帳號</p></div>
+        <div class="inv-step"><div class="inv-step-icon">🛒</div><div class="inv-step-num">3</div><h3>好友購課</h3><p>好友完成第一筆課程購買</p></div>
+        <div class="inv-step"><div class="inv-step-icon">🎁</div><div class="inv-step-num">4</div><h3>雙方獲獎</h3><p>你和好友各獲得 NT$500 折價券</p></div>
       </div>
     </div>
 
@@ -4511,13 +4532,19 @@ function achievementPage() {
   const earnedCount = achievements.filter(a => a.earned).length;
   const totalXp = achievements.filter(a => a.earned).reduce((s,a) => s + a.xp, 0);
 
+  const earnedList = achievements.filter(a => a.earned);
+  const lockedList = achievements.filter(a => !a.earned);
+  const completePct = Math.round(earnedCount / badges.length * 100);
+
   main.innerHTML = `
   <section class="ach-hero rv-up"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 學習成就</div>
     <h1>🏅 學習成就</h1>
     <p>解鎖徽章、追蹤里程碑，見證你的學習旅程</p>
     <div class="ach-hero-stats">
       <div><b>${earnedCount}</b><span>已解鎖</span></div>
       <div><b>${badges.length}</b><span>總成就數</span></div>
+      <div><b>${completePct}%</b><span>完成率</span></div>
       <div><b>${totalXp}</b><span>獲得 XP</span></div>
     </div>
   </div></section>
@@ -4533,17 +4560,30 @@ function achievementPage() {
       <div class="ach-xp-track"><div class="ach-xp-fill" style="width:${Math.min(totalXp / 1500 * 100, 100)}%"></div></div>
       <div class="ach-xp-next">下一等級：${1500 - totalXp > 0 ? `還需 ${1500 - totalXp} XP` : '已達成！'}</div>
     </div>
+    ${earnedList.length ? `<h2 class="ach-section-title rv-up">✨ 已獲得 (${earnedList.length})</h2>
     <div class="ach-grid">
-      ${achievements.map(a => `<div class="ach-card rv-up ${a.earned ? 'earned' : 'locked'}">
+      ${earnedList.map(a => `<div class="ach-card rv-up earned">
         <div class="ach-icon">${a.icon}</div>
         <div class="ach-card-body">
           <h3>${a.name}</h3>
           <p>${a.desc}</p>
           <div class="ach-xp-badge">+${a.xp} XP</div>
-          ${a.earned ? `<div class="ach-earned-date">✓ 已解鎖</div>` : `<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round(a.prog/a.total*100)}%"></div></div><div class="ach-prog-txt">${a.prog} / ${a.total}</div>`}
+          <div class="ach-earned-date">✓ 已解鎖</div>
         </div>
       </div>`).join('')}
-    </div>
+    </div>` : ''}
+    ${lockedList.length ? `<h2 class="ach-section-title rv-up">🔒 未解鎖 (${lockedList.length})</h2>
+    <div class="ach-grid">
+      ${lockedList.map(a => `<div class="ach-card rv-up locked">
+        <div class="ach-icon-wrap"><div class="ach-icon">${a.icon}</div><span class="ach-lock">🔒</span></div>
+        <div class="ach-card-body">
+          <h3>${a.name}</h3>
+          <p>${a.desc}</p>
+          <div class="ach-xp-badge">+${a.xp} XP</div>
+          <div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round(a.prog/a.total*100)}%"></div></div><div class="ach-prog-txt">${a.prog} / ${a.total}</div>
+        </div>
+      </div>`).join('')}
+    </div>` : ''}
   </div>`;
   reveal(main);
 }
@@ -4586,6 +4626,7 @@ function leaderboardPage() {
 
   main.innerHTML = `
   <section class="lb-hero rv-up"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 學習排行榜</div>
     <h1>🏆 學習排行榜</h1>
     <p>與全站 240,000 名學員一起競爭，激發學習動力</p>
     <div class="lb-hero-stats">
@@ -4603,7 +4644,10 @@ function leaderboardPage() {
         <span>${d.xp.toLocaleString()} XP</span>
       </div>`).join('')}
     </div>
-    <div class="lb-tabs">${tabs.map((t, i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-lbtab="${i}">${t}</button>`).join('')}</div>
+    <div class="lb-filter-row rv-up">
+      <div class="lb-tabs">${tabs.map((t, i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-lbtab="${i}">${t}</button>`).join('')}</div>
+      <div class="lb-time-tabs"><button class="lb-time on" data-lbt="all">全部</button><button class="lb-time" data-lbt="month">本月</button><button class="lb-time" data-lbt="week">本週</button></div>
+    </div>
     <div class="lb-my rv-up">
       <span class="lb-rank">--</span>
       <div class="lb-avatar" style="background:var(--pri)">你</div>
@@ -4617,6 +4661,12 @@ function leaderboardPage() {
     $$('.lb-tabs .chip', main).forEach(b => b.classList.remove('on'));
     btn.classList.add('on');
     activeTab = +btn.dataset.lbtab;
+    $('#lbList').innerHTML = renderBoard(activeTab);
+    reveal($('#lbList'));
+  });
+  $$('.lb-time', main).forEach(btn => btn.onclick = () => {
+    $$('.lb-time', main).forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
     $('#lbList').innerHTML = renderBoard(activeTab);
     reveal($('#lbList'));
   });
