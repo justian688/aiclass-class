@@ -3832,3 +3832,40 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .bdl-course:hover{background:rgba(124,92,255,.1)}
 @media(max-width:1100px){.bdl-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.bdl-hero-stats{gap:24px}.bdl-hero-stats b{font-size:22px}.bdl-card{padding:24px}.bdl-card-head h2{font-size:18px}.bdl-final{font-size:26px}}
+
+/* ---------- Success Stories ---------- */
+.scs-hero{text-align:center;padding:40px 0 20px}
+.scs-eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--pri);margin-bottom:16px}
+.scs-hero h1{font-size:clamp(28px,5vw,42px);font-weight:900;margin:0 0 16px;background:linear-gradient(135deg,var(--pri),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.scs-hero p{color:var(--tx2);font-size:16px;line-height:1.7;max-width:560px;margin:0 auto 28px}
+.scs-hero-stats{display:flex;justify-content:center;gap:48px;margin-top:32px}
+.scs-hero-stats>div{text-align:center}
+.scs-hero-stats b{display:block;font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--pri),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.scs-hero-stats span{font-size:13px;color:var(--tx3)}
+.scs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:48px}
+.scs-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;transition:transform .3s,box-shadow .3s}
+.scs-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px -18px rgba(124,92,255,.25)}
+.scs-card-head{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.scs-avatar{font-size:48px;line-height:1}
+.scs-info h3{font-size:18px;font-weight:700;margin:0 0 4px}
+.scs-info p{font-size:13px;color:var(--tx2);margin:0}
+.scs-salary{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(255,92,168,.06));border-radius:10px;margin-bottom:16px}
+.scs-salary-label{font-size:12px;font-weight:600;color:var(--pri);white-space:nowrap}
+.scs-salary-val{font-size:15px;font-weight:700;color:var(--tx)}
+.scs-story{font-size:14px;line-height:1.8;color:var(--tx2);margin:0 0 16px}
+.scs-meta{font-size:12px;color:var(--tx3);margin-bottom:16px}
+.scs-courses{border-top:1px solid var(--line);padding-top:16px}
+.scs-courses-label{display:block;font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.scs-course-link{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--tx);font-size:13px;transition:background .2s}
+.scs-course-link:hover{background:rgba(124,92,255,.08)}
+.scs-course-link img{width:40px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.scs-cta-box{text-align:center;padding:56px 32px;background:linear-gradient(135deg,rgba(124,92,255,.06),rgba(255,92,168,.04));border:1px solid var(--line);border-radius:20px}
+.scs-cta-box h2{font-size:clamp(22px,4vw,30px);font-weight:800;margin:0 0 12px}
+.scs-cta-box p{color:var(--tx2);font-size:15px;margin:0 0 28px}
+[data-theme="dark"] .scs-card{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .scs-card:hover{box-shadow:0 20px 50px -18px rgba(124,92,255,.35)}
+[data-theme="dark"] .scs-salary{background:linear-gradient(135deg,rgba(124,92,255,.15),rgba(255,92,168,.1))}
+[data-theme="dark"] .scs-course-link:hover{background:rgba(124,92,255,.15)}
+[data-theme="dark"] .scs-cta-box{background:linear-gradient(135deg,rgba(124,92,255,.1),rgba(255,92,168,.06));border-color:var(--line)}
+@media(max-width:1100px){.scs-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.scs-hero-stats{gap:24px}.scs-hero-stats b{font-size:22px}.scs-card{padding:24px}.scs-avatar{font-size:36px}.scs-info h3{font-size:16px}}

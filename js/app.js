@@ -236,7 +236,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -5588,6 +5588,67 @@ function bundlePage() {
   reveal(main);
 }
 
+/* ---------- 學員成功故事頁面 ---------- */
+function successPage() {
+  seo({ title: '學員成功故事', desc: '看看 AI Class 學員如何透過線上學習轉職加薪、創業圓夢，真實故事激勵你的學習之路。', ogType: 'website' });
+  const stories = window.SUCCESS_STORIES || [];
+  const main = $('#main');
+  const totalSalaryUp = stories.filter(s => s.salary.includes('→')).length;
+  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+    <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>學員成功故事</span></nav>
+    <div class="scs-hero rv-up">
+      <span class="scs-eyebrow">Success Stories</span>
+      <h1>他們的故事，你的未來</h1>
+      <p>每一位學員都從零開始，透過 AI Class 的課程一步步實現目標<br>這些真實故事，證明學習的力量</p>
+      <div class="scs-hero-stats">
+        <div><b>${stories.length}</b><span>位學員</span></div>
+        <div><b>${totalSalaryUp}</b><span>成功轉職</span></div>
+        <div><b>100%</b><span>推薦課程</span></div>
+      </div>
+    </div>
+    <div class="scs-grid">
+      ${stories.map((s, i) => {
+        const courses = s.courses.map(id => byId[id]).filter(Boolean);
+        return `<div class="scs-card rv-up" style="transition-delay:${(i % 2) * 100}ms">
+          <div class="scs-card-head">
+            <div class="scs-avatar">${s.avatar}</div>
+            <div class="scs-info">
+              <h3>${s.name}</h3>
+              <p>${s.role}</p>
+            </div>
+          </div>
+          <div class="scs-salary">
+            <span class="scs-salary-label">薪資成長</span>
+            <span class="scs-salary-val">${s.salary}</span>
+          </div>
+          <p class="scs-story">${s.story}</p>
+          <div class="scs-meta">
+            <span>⏱ 學習時間：${s.duration}</span>
+          </div>
+          <div class="scs-courses">
+            <span class="scs-courses-label">修習課程</span>
+            ${courses.map(c => `<a href="course.html?id=${c.id}" class="scs-course-link">
+              <img src="${img(c)}" alt="${c.title}" loading="lazy">
+              <span>${c.title}</span>
+            </a>`).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <section class="scs-cta rv-up" style="margin-top:60px">
+      <div class="scs-cta-box">
+        <h2>準備好開始你的故事了嗎？</h2>
+        <p>超過 ${C.length} 堂課程等你探索，現在就踏出第一步</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="category.html" class="btn btn-pri">探索課程 →</a>
+          <a href="quiz.html" class="btn btn-ghost">課程推薦測驗</a>
+        </div>
+      </div>
+    </section>
+  </div>`;
+  reveal(main);
+}
+
 /* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
@@ -5634,6 +5695,7 @@ else if (page === 'leaderboard') leaderboardPage();
 else if (page === 'achievement') achievementPage();
 else if (page === 'video') videoPage();
 else if (page === 'bundle') bundlePage();
+else if (page === 'success') successPage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
