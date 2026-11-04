@@ -1093,6 +1093,7 @@ function course() {
         <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">開始上課 →</a>
       ` : `
         <div class="c-live-view"><span class="c-live-dot"></span>${12 + (c.id.charCodeAt(1) % 30)} 人正在瀏覽此課程</div>
+        <div class="c-recent-buy">🔥 過去 24 小時內有 ${38 + (c.id.charCodeAt(2) % 45)} 人購買</div>
         <div><span class="pct">${pct(c)}%</span> <del>${fmt(c.origin)}</del></div>
         <div class="big">${fmt(c.price)}</div>
         <div style="color:var(--tx2);font-size:14px">或 3 期 0 利率，每期 ${fmt(Math.ceil(c.price / 3))}</div>
@@ -3045,16 +3046,23 @@ function playerPage() {
             <span class="plr-lb-sep">›</span>
             <span class="plr-lb-title">1-1　${chapters[0].lessons[0].t}</span>
           </div>
+          <div class="plr-nav-row">
+            <button class="plr-nav-btn" id="plr-nav-prev" aria-label="上一課">← 上一課</button>
+            <button class="plr-nav-btn plr-nav-next" id="plr-nav-next" aria-label="下一課">下一課 →</button>
+          </div>
         </div>
       </div>
+      <div class="plr-sidebar-overlay" id="plr-sb-overlay"></div>
       <aside class="plr-sidebar" id="plr-sidebar">
         <div class="plr-sb-tabs">
           <button class="plr-sb-tab on" data-tab="chapters">章節目錄</button>
           <button class="plr-sb-tab" data-tab="notes">筆記</button>
           <button class="plr-sb-tab" data-tab="qa">Q&A</button>
+          <button class="plr-sb-tab" data-tab="downloads">下載</button>
         </div>
         <div class="plr-sb-panel" id="plr-panel-chapters">
           <div class="plr-sb-head">
+            <div class="plr-sb-count" id="plr-sb-count">${doneSet.size}/${totalLessons} 課完成</div>
             <div class="plr-sb-progress"><div class="plr-sb-bar"><div class="plr-sb-fill" style="width:${progress()}%"></div></div><span>${progress()}%</span></div>
           </div>
           <div class="plr-sb-list" id="plr-sb-list">${renderSidebar()}</div>
@@ -3080,6 +3088,13 @@ function playerPage() {
               <textarea placeholder="輸入你的問題…" rows="3" aria-label="提問內容"></textarea>
               <button class="btn btn-pri" onclick="toast('示範網站：提問功能開發中')">送出提問</button>
             </div>
+          </div>
+        </div>
+        <div class="plr-sb-panel" id="plr-panel-downloads" hidden>
+          <div class="plr-dl-list">
+            <div class="plr-dl-item"><span class="plr-dl-icon">📁</span><div class="plr-dl-info"><b>課程專案原始檔</b><span>包含完整專案檔案與素材</span></div><button class="btn btn-ghost" onclick="toast('示範網站：下載功能開發中')">下載</button></div>
+            <div class="plr-dl-item"><span class="plr-dl-icon">📄</span><div class="plr-dl-info"><b>課程講義 PDF</b><span>講師整理的重點筆記</span></div><button class="btn btn-ghost" onclick="toast('示範網站：下載功能開發中')">下載</button></div>
+            <div class="plr-dl-item"><span class="plr-dl-icon">🖼️</span><div class="plr-dl-info"><b>參考素材包</b><span>練習用圖片與素材</span></div><button class="btn btn-ghost" onclick="toast('示範網站：下載功能開發中')">下載</button></div>
           </div>
         </div>
       </aside>
@@ -3139,9 +3154,22 @@ function playerPage() {
     else vid_el.requestPictureInPicture && vid_el.requestPictureInPicture();
   };
 
-  // Sidebar toggle
+  // Sidebar toggle + overlay
   const sidebar = $('#plr-sidebar');
-  $('.plr-sidebar-toggle').onclick = () => sidebar.classList.toggle('open');
+  const sbOverlay = $('#plr-sb-overlay');
+  const toggleSb = () => { sidebar.classList.toggle('open'); sbOverlay.classList.toggle('on'); };
+  $('.plr-sidebar-toggle').onclick = toggleSb;
+  sbOverlay.onclick = toggleSb;
+
+  // Lesson nav below video
+  $('#plr-nav-prev').onclick = () => {
+    if (curLs > 0) goLesson(curCh, curLs - 1);
+    else if (curCh > 0) goLesson(curCh - 1, chapters[curCh - 1].lessons.length - 1);
+  };
+  $('#plr-nav-next').onclick = () => {
+    if (curLs < chapters[curCh].lessons.length - 1) goLesson(curCh, curLs + 1);
+    else if (curCh < chapters.length - 1) goLesson(curCh + 1, 0);
+  };
 
   // Sidebar tabs
   $$('.plr-sb-tab').forEach(tab => tab.onclick = () => {
@@ -3171,6 +3199,8 @@ function playerPage() {
     $('.plr-prog-txt').textContent = p + '% 完成';
     $('.plr-sb-fill').style.width = p + '%';
     $('.plr-sb-progress span').textContent = p + '%';
+    const countEl = $('#plr-sb-count');
+    if (countEl) countEl.textContent = `${doneSet.size}/${totalLessons} 課完成`;
   }
 
   function bindSidebar() {
