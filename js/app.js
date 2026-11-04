@@ -1338,6 +1338,11 @@ function course() {
         <div><span>🔒</span> 安全加密付款</div>
         <div><span>⭐</span> ${c.rating.toFixed(1)} 超高評價</div>
       </div>
+      <div class="c-side-info">
+        <div class="c-side-row"><span>💬</span><span>講師回覆：平均 ${1 + (c.id.charCodeAt(1) % 3)} 小時內</span></div>
+        <div class="c-side-row"><span>📅</span><span>最後更新：2026/10/${10 + (c.id.charCodeAt(2) % 20)}</span></div>
+        <div class="c-side-row"><span>🌐</span><span>語言：繁體中文・附字幕</span></div>
+      </div>
       <div class="c-completion"><b>${75 + (c.id.charCodeAt(2) % 20)}%</b><span>學員完成率</span><div class="c-completion-bar"><div class="c-completion-fill" style="width:${75 + (c.id.charCodeAt(2) % 20)}%"></div></div></div>
       <div class="c-mini-reviews">
         <h4>學員怎麼說</h4>
@@ -1456,6 +1461,17 @@ function course() {
         <div class="fbt-items">${combo.map((x, i) => `${i ? '<span class="fbt-plus">+</span>' : ''}<a class="fbt-card" href="course.html?id=${x.id}"><img src="${img(x)}" alt="${x.title}"><div class="fbt-card-info"><b>${x.title.length > 16 ? x.title.slice(0,16) + '…' : x.title}</b><span>${x.teacher}・${fmt(x.price)}</span></div></a>`).join('')}</div>
         <div class="fbt-total"><div class="fbt-total-left"><del>${fmt(total)}</del><b>${fmt(discounted)}</b><span class="fbt-save">省下 ${fmt(saved)}（${Math.round((1 - discounted / total) * 100)}% OFF）</span></div><button class="btn btn-pri fbt-buy" onclick="toast('已將 ${combo.length} 門課程加入購物車 🛒')">一起加入購物車</button></div></div>`;
     })()}
+    <div class="c-stats-card rv-up">
+      <h3>📊 課程數據一覽</h3>
+      <div class="c-stats-grid">
+        <div class="c-stat-item"><div class="c-stat-num" data-count="${c.students}">${c.students.toLocaleString()}</div><div class="c-stat-label">位學員</div></div>
+        <div class="c-stat-item"><div class="c-stat-num">${c.hours}</div><div class="c-stat-label">小時內容</div></div>
+        <div class="c-stat-item"><div class="c-stat-num">${chapters.length}</div><div class="c-stat-label">個章節</div></div>
+        <div class="c-stat-item"><div class="c-stat-num">${totalLessonCount}</div><div class="c-stat-label">堂課</div></div>
+        <div class="c-stat-item"><div class="c-stat-num">★ ${c.rating.toFixed(1)}</div><div class="c-stat-label">學員評分</div></div>
+        <div class="c-stat-item"><div class="c-stat-num">${75 + (c.id.charCodeAt(2) % 20)}%</div><div class="c-stat-label">完成率</div></div>
+      </div>
+    </div>
     <div class="c-guarantee rv-up">
       <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">購買後 7 天內，覺得不適合可全額退費，零風險。</div></div>
       <div class="c-guarantee-item"><div class="c-guarantee-icon">♾️</div><div class="c-guarantee-title">無限期觀看</div><div class="c-guarantee-desc">一次購買，終身觀看，隨時隨地複習。</div></div>

@@ -4072,3 +4072,19 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .c-completion-fill{height:100%;background:linear-gradient(90deg,#34c759,#30d158);border-radius:3px;transition:width 1s ease-out}
 .c-completion b{color:var(--tx);font-size:14px}
 [data-theme="dark"] .c-completion{background:var(--card)}
+
+/* ---------- Course Sidebar Info ---------- */
+.c-side-info{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-top:1px solid var(--line);margin-top:10px}
+.c-side-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2)}
+.c-side-row span:first-child{flex-shrink:0;width:20px;text-align:center}
+
+/* ---------- Course Stats Card ---------- */
+.c-stats-card{margin:32px 0;padding:28px;background:var(--bg2);border-radius:16px;border:1px solid var(--line)}
+.c-stats-card h3{font-size:18px;font-weight:800;margin:0 0 20px}
+.c-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.c-stat-item{text-align:center;padding:16px 8px;background:var(--bg);border-radius:12px;border:1px solid var(--line)}
+.c-stat-num{font-size:24px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.c-stat-label{font-size:12px;color:var(--tx3);font-weight:600}
+[data-theme="dark"] .c-stats-card{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .c-stat-item{background:var(--bg2);border-color:var(--line)}
+@media(max-width:480px){.c-stats-grid{grid-template-columns:repeat(2,1fr)}}
