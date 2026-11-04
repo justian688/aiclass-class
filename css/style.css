@@ -1364,6 +1364,10 @@ body.loaded::before,body.loaded::after{opacity:0;visibility:hidden;pointer-event
 .plr-ctrl-left,.plr-ctrl-right{display:flex;align-items:center;gap:8px}
 .plr-ctrl-btn{background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:4px 8px;border-radius:4px;line-height:1}
 .plr-ctrl-btn:hover{background:rgba(255,255,255,.12)}
+.plr-autoplay{display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,.7);cursor:pointer;user-select:none}
+.plr-autoplay input{accent-color:var(--pri);width:14px;height:14px}
+.plr-ctrl-btn[title]{position:relative}
+.plr-ctrl-btn[title]:hover::after{content:attr(title);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#fff;font-size:11px;padding:6px 10px;border-radius:6px;white-space:pre-line;width:max-content;max-width:200px;pointer-events:none;z-index:10}
 .plr-vol-wrap{display:flex;align-items:center;gap:4px}
 .plr-vol-slider{width:70px;accent-color:var(--pri);cursor:pointer}
 .plr-time{font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap}
@@ -1630,6 +1634,7 @@ body.loaded::before,body.loaded::after{opacity:0;visibility:hidden;pointer-event
 .ck-submit{width:100%;height:54px;font-size:16px;margin-top:20px;display:flex;align-items:center;justify-content:center}
 .ck-submit:disabled{opacity:.6;cursor:wait}
 .ck-perks{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--tx2)}
+.ck-installment{margin-top:14px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(124,92,255,.06),rgba(255,92,138,.06));border:1px solid rgba(124,92,255,.15);font-size:13px;color:var(--pri);font-weight:600;display:flex;align-items:center;gap:6px}
 @media(max-width:1100px){.ck-layout{grid-template-columns:1fr;gap:24px}.ck-right{position:static;order:-1}}
 @media(max-width:760px){.ck-wrap{padding:24px 0 60px}.ck-section{padding:20px}.ck-field-row{grid-template-columns:1fr}.ck-pay-methods{flex-direction:column}.ck-order-summary{padding:20px}}
 
@@ -2076,6 +2081,14 @@ body:not(.loaded) main{min-height:100vh}
 .recent-tip-x{position:absolute;top:6px;right:10px;font-size:16px;color:var(--tx3);line-height:1}
 [data-theme="dark"] .cookie-bar{background:var(--card);border-color:var(--line)}
 [data-theme="dark"] .recent-tip{background:var(--card);border-color:var(--line)}
+.social-proof{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:12px;z-index:9989;box-shadow:0 8px 32px rgba(0,0,0,.12);transform:translateX(120%);transition:transform .5s var(--ease),opacity .5s;opacity:0;max-width:340px;cursor:pointer}
+.social-proof.show{transform:translateX(0);opacity:1}
+.social-proof img{width:48px;height:48px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.social-proof div{flex:1;min-width:0}
+.social-proof b{font-size:14px;display:block;color:var(--tx)}
+.social-proof small{font-size:12px;color:var(--tx3);display:block;margin:2px 0}
+.social-proof span{font-size:13px;color:var(--pri);font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+[data-theme="dark"] .social-proof{background:var(--card);border-color:var(--line)}
 
 /* ===== 404 頁 ===== */
 .nf-icon{font-size:80px;line-height:1;animation:nfFloat 3s ease-in-out infinite}
@@ -2268,7 +2281,9 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
 @media(max-width:760px){.qz-grid{grid-template-columns:1fr}.qz-modal-body{padding:24px 18px}.qz-big-score{font-size:48px}}
 @media(max-width:760px){
   .cookie-bar{flex-direction:column;gap:10px;padding:14px 20px;text-align:center}
-  .recent-tip{left:12px;right:12px;max-width:none;bottom:16px}
+  .recent-tip{left:12px;right:12px;max-width:none;bottom:72px}
+  .social-proof{right:12px;left:12px;bottom:12px;max-width:none;padding:10px 14px}
+  .social-proof img{width:40px;height:40px}
   .notes-add{flex-direction:column}
   .notes-save{width:100%}
 }
@@ -2509,3 +2524,34 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
 .lb-info span b{display:inline;font-weight:700;color:var(--pri);font-size:inherit}
 .lb-streak{font-size:12px;color:var(--tx3);white-space:nowrap}
 @media(max-width:760px){.lb-top3{gap:10px}.lb-podium{min-width:90px;padding:14px 12px 12px}.lb-podium.gold{transform:scale(1.05)}.lb-row{padding:12px 14px;gap:10px}.lb-streak{display:none}}
+
+/* ===== 成就系統 ===== */
+.ach-hero{padding:100px 0 48px;text-align:center;background:var(--bg2)}
+.ach-hero h1{font-size:clamp(28px,4vw,42px);font-weight:900;margin-bottom:12px}
+.ach-hero p{color:var(--tx2);font-size:17px;max-width:560px;margin:0 auto}
+.ach-hero-stats{display:flex;gap:32px;justify-content:center;margin-top:24px}
+.ach-hero-stats div{text-align:center}
+.ach-hero-stats b{display:block;font-size:24px;font-weight:800;color:var(--tx)}
+.ach-hero-stats span{font-size:13px;color:var(--tx3)}
+.ach-wrap{max-width:900px;margin:0 auto;padding-bottom:80px}
+.ach-progress-ring{position:relative;width:140px;height:140px;margin:40px auto 32px}
+.ach-progress-ring svg{width:100%;height:100%;transform:rotate(0)}
+.ach-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ach-ring-text b{font-size:24px;font-weight:900}
+.ach-ring-text span{font-size:12px;color:var(--tx3)}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.ach-card{display:flex;gap:16px;padding:20px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);transition:transform .2s}
+.ach-card:hover{transform:translateY(-2px)}
+.ach-card.earned{border-color:rgba(124,92,255,.3);background:linear-gradient(135deg,rgba(124,92,255,.04),rgba(255,92,138,.02))}
+.ach-card.locked{opacity:.65}
+.ach-icon{font-size:36px;flex-shrink:0;width:48px;height:48px;display:grid;place-items:center}
+.ach-card.locked .ach-icon{filter:grayscale(1)}
+.ach-card-body{flex:1;min-width:0}
+.ach-card-body h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.ach-card-body p{font-size:13px;color:var(--tx2);margin-bottom:8px}
+.ach-earned-date{font-size:12px;color:var(--pri);font-weight:600}
+.ach-prog-bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:4px}
+.ach-prog-fill{height:100%;background:var(--grad);border-radius:3px}
+.ach-prog-txt{font-size:11px;color:var(--tx3)}
+.ach-rarity{font-size:11px;color:var(--tx3);margin-top:4px}
+@media(max-width:760px){.ach-grid{grid-template-columns:1fr}}

@@ -313,6 +313,27 @@ function shell() {
       setTimeout(() => { if (tip.parentNode) { tip.classList.remove('show'); setTimeout(() => tip.remove(), 400); } }, 10000);
     }
   }
+
+  // 社交證明通知
+  if (page === 'home' || page === 'course' || page === 'category') {
+    const names = ['小明','Emily','阿豪','小美','Jason','品涵','子軒','宜芳','Kevin','雅婷','志偉','思妤','Ryan','佳慧','冠宇','詩涵','Andy','怡君','柏翰','心怡'];
+    const cities = ['台北','台中','高雄','新竹','台南','桃園','嘉義','花蓮'];
+    const sp = document.createElement('div'); sp.className = 'social-proof';
+    document.body.append(sp);
+    let spIdx = 0;
+    const showProof = () => {
+      const rc = C[Math.floor(Math.random() * C.length)];
+      const n = names[spIdx % names.length];
+      const city = cities[Math.floor(Math.random() * cities.length)];
+      const mins = Math.floor(Math.random() * 25) + 1;
+      sp.innerHTML = `<img src="${img(rc)}" alt=""><div><b>${n}</b><small>${city}・${mins} 分鐘前購買</small><span>${rc.title.length > 18 ? rc.title.slice(0,18) + '…' : rc.title}</span></div>`;
+      sp.classList.add('show');
+      spIdx++;
+      setTimeout(() => sp.classList.remove('show'), 4500);
+    };
+    setTimeout(showProof, 8000);
+    setInterval(showProof, 18000);
+  }
 }
 
 /* ---------- 搜尋 ---------- */
@@ -1992,6 +2013,8 @@ function myPage() {
     <a class="my-qlink" href="certificate.html"><span class="my-ql-icon">🏆</span><span>結業證書</span></a>
     <a class="my-qlink" href="quiz.html"><span class="my-ql-icon">🎯</span><span>技能測驗</span></a>
     <a class="my-qlink" href="invite.html"><span class="my-ql-icon">🎁</span><span>邀請好友</span></a>
+    <a class="my-qlink" href="achievement.html"><span class="my-ql-icon">🏅</span><span>學習成就</span></a>
+    <a class="my-qlink" href="leaderboard.html"><span class="my-ql-icon">📊</span><span>排行榜</span></a>
   </div>
 
   ${inProgress.length ? `<!-- 繼續學習 -->
@@ -2540,8 +2563,10 @@ function playerPage() {
                     <button data-spd="0.5">0.5x</button><button data-spd="0.75">0.75x</button><button data-spd="1" class="on">1x</button><button data-spd="1.25">1.25x</button><button data-spd="1.5">1.5x</button><button data-spd="2">2x</button>
                   </div>
                 </div>
+                <label class="plr-autoplay"><input type="checkbox" id="plr-auto" checked><span>自動播放</span></label>
                 <button id="plr-pip" class="plr-ctrl-btn" aria-label="子母畫面">⧉</button>
                 <button id="plr-fs" class="plr-ctrl-btn" aria-label="全螢幕">⛶</button>
+                <button id="plr-keys" class="plr-ctrl-btn" aria-label="快捷鍵" title="Space: 播放/暫停\n←→: 前/後 10 秒\nF: 全螢幕\nP: 子母畫面">⌨</button>
               </div>
             </div>
           </div>
@@ -2691,9 +2716,12 @@ function playerPage() {
     $('.plr-prog-txt').textContent = p + '% 完成';
     $('.plr-sb-fill').style.width = p + '%';
     $('.plr-sb-progress span').textContent = p + '%';
-    if (curLs < chapters[curCh].lessons.length - 1) goLesson(curCh, curLs + 1);
-    else if (curCh < chapters.length - 1) goLesson(curCh + 1, 0);
-    else toast('恭喜完成所有課程！🎉');
+    const auto = $('#plr-auto');
+    if (!auto || auto.checked) {
+      if (curLs < chapters[curCh].lessons.length - 1) goLesson(curCh, curLs + 1);
+      else if (curCh < chapters.length - 1) goLesson(curCh + 1, 0);
+      else toast('恭喜完成所有課程！🎉');
+    }
   };
 
   $('#plr-prev-ls').onclick = () => {
@@ -2957,7 +2985,8 @@ function checkoutPage() {
           <div class="ck-divider"></div>
           <div class="ck-row ck-total"><span>應付金額</span><span>${fmt(subtotal)}</span></div>
           <button class="btn btn-pri ck-submit" id="ckSubmit">確認付款 ${fmt(subtotal)}</button>
-          <ul class="ck-perks"><li>🔒 SSL 加密安全付款</li><li>✓ 7 天無條件退費保證</li><li>✓ 付款後立即開通課程</li></ul>
+          <ul class="ck-perks"><li>🔒 SSL 加密安全付款</li><li>✓ 7 天無條件退費保證</li><li>✓ 付款後立即開通課程</li><li>🎓 含完課結業證書</li></ul>
+          ${subtotal >= 3000 ? `<div class="ck-installment"><span>🏦</span> 可分 3 期 0 利率，每期 ${fmt(Math.ceil(subtotal / 3))}</div>` : ''}
         </div>
       </aside>
     </div>
@@ -3924,6 +3953,57 @@ function quizPage() {
 }
 
 /* ---------- 排行榜 ---------- */
+/* ---------- 成就系統 ---------- */
+function achievementPage() {
+  const main = $('main');
+  const achievements = [
+    { id:'a1', icon:'🔥', name:'熱血學員', desc:'連續學習 7 天', req:'連續登入 7 天', earned:true, date:'2026-10-28', rarity:85 },
+    { id:'a2', icon:'⭐', name:'初體驗', desc:'完成第一堂課', req:'完成任一堂課的所有章節', earned:true, date:'2026-10-25', rarity:72 },
+    { id:'a3', icon:'📝', name:'分享家', desc:'撰寫第一則評價', req:'在任一課程留下評價', earned:true, date:'2026-10-30', rarity:45 },
+    { id:'a4', icon:'🎯', name:'測驗達人', desc:'通過 3 項測驗', req:'任意 3 項測驗達到 60 分以上', earned:false, progress:1, total:3, rarity:28 },
+    { id:'a5', icon:'💎', name:'收藏家', desc:'購買 5 堂課程', req:'累計購買 5 堂以上課程', earned:false, progress:2, total:5, rarity:35 },
+    { id:'a6', icon:'🏆', name:'學習百時', desc:'累計學習 100 小時', req:'總學習時數達 100 小時', earned:false, progress:24, total:100, rarity:12 },
+    { id:'a7', icon:'🎓', name:'結業生', desc:'取得第一張證書', req:'完成任一課程並下載證書', earned:false, progress:0, total:1, rarity:38 },
+    { id:'a8', icon:'💬', name:'社群之星', desc:'發表 10 篇社群貼文', req:'在學習社群發表 10 篇討論', earned:false, progress:3, total:10, rarity:15 },
+    { id:'a9', icon:'🌟', name:'全勤獎', desc:'連續學習 30 天', req:'連續 30 天每天至少學習 10 分鐘', earned:false, progress:7, total:30, rarity:8 },
+    { id:'a10', icon:'📚', name:'博學者', desc:'瀏覽 50 堂課程', req:'查看 50 堂不同課程的詳情頁', earned:false, progress:18, total:50, rarity:22 },
+    { id:'a11', icon:'🤝', name:'伯樂', desc:'邀請 3 位好友加入', req:'透過邀請連結帶來 3 位新會員', earned:false, progress:0, total:3, rarity:10 },
+    { id:'a12', icon:'🎪', name:'直播常客', desc:'參加 5 場直播', req:'加入 5 場不同的直播教室', earned:false, progress:1, total:5, rarity:18 },
+  ];
+  const earnedCount = achievements.filter(a => a.earned).length;
+
+  main.innerHTML = `
+  <section class="ach-hero rv-up"><div class="wrap">
+    <h1>🏅 學習成就</h1>
+    <p>解鎖徽章、追蹤里程碑，見證你的學習旅程</p>
+    <div class="ach-hero-stats">
+      <div><b>${earnedCount}</b><span>已解鎖</span></div>
+      <div><b>${achievements.length}</b><span>總成就數</span></div>
+      <div><b>${Math.round(earnedCount / achievements.length * 100)}%</b><span>完成率</span></div>
+    </div>
+  </div></section>
+  <div class="wrap ach-wrap">
+    <div class="ach-progress-ring rv-up">
+      <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="url(#achGrad)" stroke-width="8" stroke-dasharray="${2*Math.PI*52}" stroke-dashoffset="${2*Math.PI*52*(1 - earnedCount/achievements.length)}" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+      <defs><linearGradient id="achGrad"><stop offset="0%" stop-color="var(--pri)"/><stop offset="100%" stop-color="var(--pink)"/></linearGradient></defs></svg>
+      <div class="ach-ring-text"><b>${earnedCount}/${achievements.length}</b><span>已解鎖</span></div>
+    </div>
+    <div class="ach-grid">
+      ${achievements.map(a => `<div class="ach-card rv-up ${a.earned ? 'earned' : 'locked'}">
+        <div class="ach-icon">${a.icon}</div>
+        <div class="ach-card-body">
+          <h3>${a.name}</h3>
+          <p>${a.desc}</p>
+          ${a.earned ? `<div class="ach-earned-date">✓ ${a.date} 解鎖</div>` : `<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round((a.progress||0)/(a.total||1)*100)}%"></div></div><div class="ach-prog-txt">${a.progress||0} / ${a.total}</div>`}
+          <div class="ach-rarity">${a.rarity}% 學員已解鎖</div>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+  reveal(main);
+}
+
 function leaderboardPage() {
   const main = $('main');
   const names = ['方鈺倫','許志豪','李美玲','蘇敏慧','張雅琪','陳柏睿','黃俊傑','王建宏','林予安','趙怡君','鄭凱文','吳佳蓉','劉心怡','何承翰','呂芷涵','楊博文','蔡宜臻','謝明哲','周彥廷','馮雅慧'];
@@ -4059,6 +4139,7 @@ else if (page === 'order-history') orderHistoryPage();
 else if (page === 'search') searchPage();
 else if (page === 'quiz') quizPage();
 else if (page === 'leaderboard') leaderboardPage();
+else if (page === 'achievement') achievementPage();
 else notFoundPage();
 reveal();
 tickCountdown(); setInterval(tickCountdown, 1000);
