@@ -173,7 +173,17 @@ function shell() {
   const top = document.createElement('div');
   if (!sessionStorage.getItem('aic-topbar')) {
     top.className = 'topbar';
-    top.innerHTML = `🎉 雙 11 全站課程最低 5 折，今日倒數 <b data-cd-inline>--:--:--</b><button class="x" aria-label="關閉">×</button>`;
+    const anns = window.ANNOUNCEMENTS || [{ text: '雙 11 全站課程最低 5 折，今日倒數', link: '/coupon.html' }];
+    let annIdx = 0;
+    const annText = () => anns[annIdx].text + (anns[annIdx].link ? '' : '') + `・今日倒數 <b data-cd-inline>--:--:--</b>`;
+    top.innerHTML = `<span class="topbar-txt">${annText()}</span><button class="topbar-prev" aria-label="上一則">‹</button><button class="topbar-next" aria-label="下一則">›</button><button class="x" aria-label="關閉">×</button>`;
+    const txt = $('.topbar-txt', top);
+    const cycle = dir => { annIdx = (annIdx + dir + anns.length) % anns.length; txt.style.opacity = 0; setTimeout(() => { txt.innerHTML = annText(); txt.style.opacity = 1; }, 200); };
+    if (anns.length > 1) { let autoAnn = setInterval(() => cycle(1), 5000); top.addEventListener('mouseenter', () => clearInterval(autoAnn)); top.addEventListener('mouseleave', () => { autoAnn = setInterval(() => cycle(1), 5000); }); }
+    $('.topbar-prev', top).onclick = () => cycle(-1);
+    $('.topbar-next', top).onclick = () => cycle(1);
+    txt.onclick = () => { if (anns[annIdx].link) location.href = anns[annIdx].link; };
+    txt.style.cursor = 'pointer';
     document.body.prepend(top);
     $('.x', top).onclick = () => { top.remove(); sessionStorage.setItem('aic-topbar', 1); };
   }
@@ -187,7 +197,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}</a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -218,7 +228,7 @@ function shell() {
   ft.innerHTML = `<div class="wrap"><div class="cols">
     <div><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p></div>
     <div><h4>課程分類</h4><ul>${window.CATS.slice(1, 6).map(c => `<li><a href="index.html#cat-${c.id}">${c.name}</a></li>`).join('')}</ul></div>
-    <div><h4>關於</h4><ul><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li><li><a href="invite.html">邀請好友</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li><li><a href="leaderboard.html">排行榜</a></li></ul></div>
+    <div><h4>關於</h4><ul><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li><li><a href="invite.html">邀請好友</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li><li><a href="video.html">影片專區</a></li><li><a href="leaderboard.html">排行榜</a></li></ul></div>
     <div><h4>支援</h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="coupon.html">優惠券</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li></ul></div>
   </div>
   <div class="ft-bottom">
@@ -4434,6 +4444,47 @@ function notFoundPage() {
   bindCards(main); bindRail($('#nf-rec'));
 }
 
+/* ---------- 影片內容 ---------- */
+function videoPage() {
+  const main = $('main');
+  seo({ title: '影片專區｜AI Class', desc: '學員作品、講師訪談、幕後花絮、新課預告', url: 'https://aiclass.tw/video.html' });
+  const vcs = window.VIDEO_CONTENT || [];
+  const cats = ['全部', ...new Set(vcs.map(v => v.cat))];
+  main.innerHTML = `<div class="wrap" style="padding-top:100px">
+    <h1 class="rv-up" style="font-weight:900;margin-bottom:8px">影片專區</h1>
+    <p class="rv-up" style="color:var(--tx2);margin-bottom:32px">學員作品、講師訪談、幕後花絮與新課預告</p>
+    <div class="chips rv-up" id="vid-chips">${cats.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-vcat="${c}">${c}</button>`).join('')}</div>
+    <div class="vid-grid" id="vid-grid">${vcs.map(v => {
+      const cc = byId[v.course];
+      const thumb = cc ? img(cc) : '';
+      const videoSrc = cc ? vid(cc) : '';
+      return `<div class="vid-card rv-up" data-vcat="${v.cat}" data-video="${videoSrc}" data-poster="${thumb}">
+        <div class="vid-card-thumb"><img src="${thumb}" alt="" loading="lazy"><span class="vid-play-icon">▶</span><span class="vid-views">${(v.views/1000).toFixed(1)}K 觀看</span></div>
+        <div class="vid-card-info"><span class="vid-cat-tag">${v.cat}</span><h3>${v.title}</h3>${cc ? `<a class="vid-course-link" href="course.html?id=${cc.id}">${cc.title}</a>` : ''}</div></div>`;
+    }).join('')}</div></div>`;
+
+  $$('#vid-chips .chip').forEach(btn => btn.onclick = () => {
+    $$('#vid-chips .chip').forEach(b => b.classList.toggle('on', b === btn));
+    const cat = btn.dataset.vcat;
+    $$('#vid-grid .vid-card').forEach(c => { c.style.display = cat === '全部' || c.dataset.vcat === cat ? '' : 'none'; });
+  });
+
+  $$('.vid-card').forEach(el => el.onclick = e => {
+    if (e.target.closest('.vid-course-link')) return;
+    const src = el.dataset.video, poster = el.dataset.poster, title = $('h3', el).textContent;
+    const trigger = document.activeElement;
+    const ov = document.createElement('div'); ov.className = 'vid-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', title);
+    ov.innerHTML = `<div class="vid-modal"><button class="vid-modal-close" aria-label="關閉">×</button><video src="${src}" poster="${poster}" controls autoplay></video><h3>${title}</h3></div>`;
+    document.body.append(ov);
+    requestAnimationFrame(() => { requestAnimationFrame(() => ov.classList.add('on')); $('.vid-modal-close', ov).focus(); });
+    const close = () => { ov.classList.remove('on'); setTimeout(() => { ov.remove(); if (trigger) trigger.focus(); }, 300); };
+    $('.vid-modal-close', ov).onclick = close;
+    ov.onclick = e2 => { if (e2.target === ov) close(); };
+    document.addEventListener('keydown', function esc(e2) { if (e2.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
+  });
+  reveal(main);
+}
+
 /* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
@@ -4478,6 +4529,7 @@ else if (page === 'search') searchPage();
 else if (page === 'quiz') quizPage();
 else if (page === 'leaderboard') leaderboardPage();
 else if (page === 'achievement') achievementPage();
+else if (page === 'video') videoPage();
 else notFoundPage();
 reveal();
 tickCountdown(); setInterval(tickCountdown, 1000);
@@ -4520,12 +4572,12 @@ function updCmpUI() {
         <tr><td>價格</td>${courses.map((c, i) => `<td${hi(bPrice,i)}>${fmt(c.price)}</td>`).join('')}</tr>
         <tr><td>原價</td>${courses.map(c => `<td><del>${fmt(c.origin)}</del></td>`).join('')}</tr>
         <tr><td>折扣</td>${courses.map((c, i) => `<td${hi(bDisc,i)}>${pct(c)}% OFF</td>`).join('')}</tr>
-        <tr><td>評分</td>${courses.map((c, i) => `<td${hi(bRate,i)}>★ ${c.rating}</td>`).join('')}</tr>
+        <tr><td>評分</td>${courses.map((c, i) => `<td${hi(bRate,i)}><span class="cmp-stars">${'★'.repeat(Math.round(c.rating))}${'☆'.repeat(5-Math.round(c.rating))}</span> ${c.rating}</td>`).join('')}</tr>
         <tr><td>學員數</td>${courses.map((c, i) => `<td${hi(bStu,i)}>${c.students.toLocaleString()}</td>`).join('')}</tr>
         <tr><td>時數</td>${courses.map((c, i) => `<td${hi(bHrs,i)}>${c.hours} 小時</td>`).join('')}</tr>
         <tr><td>講師</td>${courses.map(c => `<td>${c.teacher}</td>`).join('')}</tr>
         <tr><td>分類</td>${courses.map(c => `<td>${c.sub}</td>`).join('')}</tr>
-        <tr><td></td>${courses.map(c => `<td><button class="btn btn-pri cmp-add-cart" data-id="${c.id}" style="height:36px;font-size:13px">加入購物車</button></td>`).join('')}</tr>
+        <tr><td></td>${courses.map(c => `<td><a class="btn btn-ghost cmp-view" href="course.html?id=${c.id}" style="height:36px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;text-decoration:none">查看課程</a><button class="btn btn-pri cmp-add-cart" data-id="${c.id}" style="height:36px;font-size:13px">加入購物車</button></td>`).join('')}</tr>
       </tbody></table></div></div>`;
     document.body.append(ov);
     $$('.cmp-add-cart', ov).forEach(b => b.onclick = () => { cart.add(b.dataset.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); });
