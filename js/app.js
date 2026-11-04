@@ -695,7 +695,15 @@ function home() {
   main.insertAdjacentHTML('beforeend', `<div class="wrap" id="cat-all"><div class="chips">${window.CATS.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-cat="${c.id}">${c.name}</button>`).join('')}</div></div>`);
   // 排序按鈕
   main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="sort-bar"><button class="sort-btn on" data-sort="default">推薦</button><button class="sort-btn" data-sort="new">最新上架</button><button class="sort-btn" data-sort="students">最多學員</button><button class="sort-btn" data-sort="price">價格低到高</button></div></div>`);
-  main.insertAdjacentHTML('beforeend', railSec('filtered', '為你推薦', '依照你選的分類即時篩選', C));
+  // 個人化排序：優先顯示最近瀏覽過的分類課程
+  const personalizedC = (() => {
+    const rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
+    if (!rv.length) return C;
+    const catFreq = {};
+    rv.forEach(id => { const cc = byId[id]; if (cc) catFreq[cc.cat] = (catFreq[cc.cat] || 0) + 1; });
+    return [...C].sort((a, b) => (catFreq[b.cat] || 0) - (catFreq[a.cat] || 0) || b.rating - a.rating);
+  })();
+  main.insertAdjacentHTML('beforeend', railSec('filtered', '為你推薦', recentIds.length ? '根據你的瀏覽紀錄推薦' : '依照你選的分類即時篩選', personalizedC));
 
   // 為什麼選擇 AI Class
   main.insertAdjacentHTML('beforeend', `<section class="usp-section" id="why"><div class="wrap">
@@ -1272,7 +1280,8 @@ function course() {
     <aside class="buy">
       ${isOwned ? `
         <div class="c-owned-badge">✓ 已購買</div>
-        <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">開始上課 →</a>
+        ${(() => { const prog = progress[c.id]; const pctDone = prog ? Math.round(prog.done.length / 28 * 100) : 0; return `<div class="c-owned-progress"><div class="c-owned-bar"><div class="c-owned-fill" style="width:${pctDone}%"></div></div><span>${pctDone}% 完成</span></div>`; })()}
+        <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">${progress[c.id] ? '繼續學習 →' : '開始上課 →'}</a>
       ` : `
         <div class="c-live-view"><span class="c-live-dot"></span>${12 + (c.id.charCodeAt(1) % 30)} 人正在瀏覽此課程</div>
         <div class="c-recent-buy">🔥 過去 24 小時內有 ${38 + (c.id.charCodeAt(2) % 45)} 人購買</div>
@@ -3636,6 +3645,7 @@ function playerPage() {
             <div class="plr-note-actions">
               <span class="plr-note-info">筆記自動儲存在本機</span>
               <button class="plr-note-stamp" id="plr-stamp">+ 加入時間戳記</button>
+              <button class="plr-note-export" id="plr-note-export">📥 匯出筆記</button>
             </div>
           </div>
         </div>
@@ -3817,6 +3827,17 @@ function playerPage() {
     noteEl.value += (noteEl.value ? '\n' : '') + `[${ts}] `;
     noteEl.focus();
     localStorage.setItem(noteKey, noteEl.value);
+  };
+
+  // Export notes
+  $('#plr-note-export').onclick = () => {
+    const txt = noteEl.value.trim();
+    if (!txt) { toast('還沒有筆記可匯出'); return; }
+    const content = `# ${c.title} — 播放器筆記\n匯出時間：${new Date().toLocaleString('zh-TW')}\n${'─'.repeat(40)}\n\n${txt}`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI-Class-筆記-${c.title.slice(0,20)}.txt`; a.click();
+    URL.revokeObjectURL(a.href);
+    toast('筆記已匯出');
   };
 
   // Shortcuts overlay

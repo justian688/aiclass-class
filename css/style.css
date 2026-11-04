@@ -421,6 +421,10 @@ body.hdr-hidden .tabs{top:0}
 .c-share-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);font-size:13px;color:var(--tx2);cursor:pointer;text-decoration:none;transition:.2s}
 .c-share-btn:hover{border-color:var(--pri);color:var(--pri)}
 .c-owned-badge{background:linear-gradient(135deg,#4cff8a,#06d6a0);color:#000;font-weight:800;font-size:15px;text-align:center;padding:10px;border-radius:12px;margin-bottom:12px}
+.c-owned-progress{margin-bottom:14px;text-align:center}
+.c-owned-bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.c-owned-fill{height:100%;background:var(--grad);border-radius:3px;transition:width .6s var(--ease)}
+.c-owned-progress span{font-size:.8rem;color:var(--tx2);font-weight:600}
 .c-curri-meta{font-size:15px;color:var(--tx3);font-weight:400}
 .chap-count{font-size:14px;color:var(--tx3);white-space:nowrap}
 .chap-play{font-size:11px;margin-right:8px}
@@ -1559,8 +1563,8 @@ a.notif-item:hover{background:rgba(0,0,0,.03)}
 .plr-notes-sb textarea:focus{border-color:var(--pri)}
 .plr-note-actions{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 .plr-note-info{font-size:11px;color:var(--tx3)}
-.plr-note-stamp{background:none;border:none;color:var(--pri);font:inherit;font-size:12px;cursor:pointer;font-weight:600}
-.plr-note-stamp:hover{text-decoration:underline}
+.plr-note-stamp,.plr-note-export{background:none;border:none;color:var(--pri);font:inherit;font-size:12px;cursor:pointer;font-weight:600}
+.plr-note-stamp:hover,.plr-note-export:hover{text-decoration:underline}
 /* Q&A */
 .plr-qa-list{padding:12px 16px;display:flex;flex-direction:column;gap:12px}
 .plr-qa-item{padding:14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
