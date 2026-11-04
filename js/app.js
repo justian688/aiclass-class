@@ -1175,6 +1175,7 @@ function course() {
       ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。'], ['04', '持續精進', '加碼業界趨勢與 AI 工具應用，讓你保持競爭力。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div>
       ${(()=>{const lv=courseLevel(c);const targets=lv.label==='入門'?['完全沒有相關經驗的初學者','想轉職但不知從何開始的人','對這個領域有興趣，想建立系統性知識的人','希望有人帶著做，不想自己摸索的人']:lv.label==='進階'?['已有基礎，想提升到專業水準的人','想學業界實戰流程與技巧的人','需要完成作品集或升級技能的在職者','想接案或建立個人品牌的創作者']:['有一定基礎，想更深入學習的人','希望系統化整理知識的自學者','想學更多實務技巧的在職人士','準備升級技能、拓展職涯的人'];return `<div class="c-target rv-up"><h3>🎯 適合對象</h3><ul>${targets.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;})()}
       ${(()=>{const chs=window.CHAPTERS&&window.CHAPTERS[c.id];if(!chs)return '';const outcomes=chs.flatMap(ch=>ch.lessons.slice(0,2)).slice(0,8);return `<div class="c-outcomes rv-up"><h3>✅ 完成這堂課，你將能夠</h3><div class="c-outcomes-grid">${outcomes.map(o=>`<div class="c-outcome-item"><span class="c-outcome-check">✓</span>${o}</div>`).join('')}</div></div>`;})()}
+      ${(()=>{const lv=courseLevel(c);const prereqs=lv.label==='入門'?['不需要任何先備知識，從零開始','準備一台電腦（Windows / Mac 皆可）','對本領域有興趣和學習熱忱']:lv.label==='進階'?['建議先完成相關入門課程或有半年以上經驗','了解基本操作和常用工具','具備自主練習和解決問題的能力']:['建議有基礎概念和初步操作經驗','準備對應的軟體或工具（課程內會說明版本）','願意花時間練習和完成作業'];return `<div class="c-prereq rv-up"><h3>📋 學習前需要</h3><div class="c-prereq-list">${prereqs.map(p=>`<div class="c-prereq-item"><span class="c-prereq-icon">${lv.label==='入門'?'✅':'📌'}</span>${p}</div>`).join('')}</div><div class="c-prereq-level"><span class="lvl-badge ${lv.cls}">${lv.label}</span><span>建議學習時間 ${lv.weeks} 週（每週 ${lv.label==='入門'?'5':'3-4'} 小時）</span></div></div>`;})()}
     </section>
     <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
       <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}" aria-hidden="true"></video></div>
@@ -4599,6 +4600,7 @@ function communityPage() {
 
   main.innerHTML = `
   <section class="cmy-hero rv-up"><div class="wrap">
+    <div class="crumb rv-up" style="color:rgba(255,255,255,.7);margin-bottom:12px"><a href="index.html" style="color:rgba(255,255,255,.7)">首頁</a> › 學習社群</div>
     <h1>學習社群</h1>
     <p>分享作品、討論課程、交流經驗，與超過 60,000 名學員一起成長</p>
     <div class="cmy-hero-stats"><span><b>${posts.length}</b> 篇討論</span><span><b>${totalLikes.toLocaleString()}</b> 個讚</span><span><b>${totalReplies}</b> 則回覆</span></div>
@@ -4760,7 +4762,7 @@ function quizPage() {
   const totalQ = quizzes.reduce((s, q) => s + q.questions.length, 0);
 
   main.innerHTML = `<div class="qz-hero rv-up">
-    <div class="wrap"><h1>🎯 技能測驗</h1><p>測試你的專業能力，獲得技能認證徽章</p>
+    <div class="wrap"><div class="crumb rv-up" style="margin-bottom:12px"><a href="index.html">首頁</a> › 技能測驗</div><h1>🎯 技能測驗</h1><p>測試你的專業能力，獲得技能認證徽章</p>
     <div class="qz-hero-stats"><div><b>${quizzes.length}</b>測驗分類</div><div><b>${totalQ}</b>題目總數</div><div><b>${Object.keys(saved).length}</b>已完成</div></div></div>
   </div>
   <div class="wrap" style="padding-bottom:80px">
@@ -5074,6 +5076,7 @@ function videoPage() {
   const vcs = window.VIDEO_CONTENT || [];
   const cats = ['全部', ...new Set(vcs.map(v => v.cat))];
   main.innerHTML = `<div class="wrap" style="padding-top:100px">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 影片專區</div>
     <h1 class="rv-up" style="font-weight:900;margin-bottom:8px">影片專區</h1>
     <p class="rv-up" style="color:var(--tx2);margin-bottom:32px">學員作品、講師訪談、幕後花絮與新課預告</p>
     <div class="chips rv-up" id="vid-chips">${cats.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-vcat="${c}">${c}</button>`).join('')}</div>
