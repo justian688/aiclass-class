@@ -236,7 +236,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="upcoming.html">即將開課</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -5649,6 +5649,64 @@ function successPage() {
   reveal(main);
 }
 
+/* ---------- 即將開課頁面 ---------- */
+function upcomingPage() {
+  seo({ title: '即將開課', desc: '搶先預覽 AI Class 即將推出的新課程，登記早鳥優惠第一時間開課通知。', ogType: 'website' });
+  const upcoming = window.UPCOMING_COURSES || [];
+  const main = $('#main');
+  const catMap = {};
+  C.forEach(c => { if (!catMap[c.cat]) catMap[c.cat] = CATS.find(ct => ct.id === c.cat); });
+  const totalInterest = upcoming.reduce((s, u) => s + u.interest, 0);
+  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+    <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>即將開課</span></nav>
+    <div class="upc-hero rv-up">
+      <span class="upc-eyebrow">Coming Soon</span>
+      <h1>即將開課預告</h1>
+      <p>這些課程正在緊鑼密鼓準備中，登記早鳥搶先享優惠價<br>開課時第一時間通知你</p>
+      <div class="upc-hero-stats">
+        <div><b>${upcoming.length}</b><span>籌備中課程</span></div>
+        <div><b>${totalInterest.toLocaleString()}</b><span>人期待中</span></div>
+        <div><b>最高 35%</b><span>早鳥折扣</span></div>
+      </div>
+    </div>
+    <div class="upc-grid">
+      ${upcoming.map((u, i) => {
+        const catObj = CATS.find(ct => ct.id === u.cat);
+        const catLabel = catObj ? catObj.name : u.cat;
+        const saved = Math.round((1 - u.earlybird / (u.earlybird * 1.35)) * 100);
+        return `<div class="upc-card rv-up" style="transition-delay:${(i % 2) * 100}ms">
+          <div class="upc-badge">${u.expected}</div>
+          <div class="upc-cat">${catLabel}</div>
+          <h2>${u.title}</h2>
+          <p class="upc-teacher">講師：${u.teacher}</p>
+          <div class="upc-interest">
+            <div class="upc-interest-bar"><div style="width:${Math.min(u.interest / 25, 100)}%"></div></div>
+            <span>${u.interest.toLocaleString()} 人感興趣</span>
+          </div>
+          <div class="upc-price-row">
+            <span class="upc-earlybird">早鳥價 ${fmt(u.earlybird)}</span>
+          </div>
+          <div class="upc-actions">
+            <button class="btn btn-pri" onclick="toast('已登記早鳥通知，開課時將第一時間通知您！')">🔔 登記早鳥通知</button>
+            <button class="btn btn-ghost" onclick="toast('已加入願望清單')">♡ 收藏</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <section class="upc-cta rv-up" style="margin-top:60px">
+      <div class="upc-cta-box">
+        <h2>想看更多課程？</h2>
+        <p>目前已有 ${C.length} 堂課程上架，涵蓋 ${CATS.length} 大領域</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="category.html" class="btn btn-pri">瀏覽所有課程 →</a>
+          <a href="bundle.html" class="btn btn-ghost">超值組合包</a>
+        </div>
+      </div>
+    </section>
+  </div>`;
+  reveal(main);
+}
+
 /* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
@@ -5696,6 +5754,7 @@ else if (page === 'achievement') achievementPage();
 else if (page === 'video') videoPage();
 else if (page === 'bundle') bundlePage();
 else if (page === 'success') successPage();
+else if (page === 'upcoming') upcomingPage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
