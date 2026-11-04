@@ -9,6 +9,7 @@ const page = document.body.dataset.page;
 const wish = new Set(JSON.parse(localStorage.getItem('aic-wish') || '[]'));
 const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
 const aicUser = JSON.parse(localStorage.getItem('aic-user') || 'null');
+const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) b.textContent = cart.size || ''; if (b) b.style.display = cart.size ? 'flex' : 'none'; }
 
@@ -435,9 +436,12 @@ function courseLevel(c) {
 function card(c, i, rank) {
   const hl = cardHighlights(c);
   const lv = courseLevel(c);
-  return `<a class="card rv-up" href="course.html?id=${c.id}" data-v="${vid(c)}" style="transition-delay:${(i % 5) * 70}ms">
+  const isOwned = owned.has(c.id);
+  const prog = progress[c.id];
+  const pctDone = prog ? Math.round(prog.done.length / 28 * 100) : 0;
+  return `<a class="card rv-up ${isOwned ? 'card-owned' : ''}" href="${isOwned ? 'player.html' : 'course.html'}?id=${c.id}" data-v="${vid(c)}" style="transition-delay:${(i % 5) * 70}ms">
     <div class="tw">${rank ? `<span class="num">${i + 1}</span>` : ''}<div class="thumb">
-      ${c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
+      ${isOwned ? '<span class="badge owned-badge">已購買</span>' : c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
       <button class="wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" aria-label="收藏">${wish.has(c.id) ? '♥' : '♡'}</button>
       <img src="${img(c)}" alt="" loading="lazy">
       <span class="hours">${c.hours} 小時</span>
@@ -446,11 +450,11 @@ function card(c, i, rank) {
       <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-eta">約 ${lv.weeks} 週完成</span></div>
       <div class="teacher">${c.teacher}</div>
       <h3>${c.title}</h3>
-      <div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div>
+      ${isOwned ? `<div class="card-prog-row"><div class="card-prog-bar"><div class="card-prog-fill" style="width:${pctDone}%"></div></div><span class="card-prog-txt">${pctDone}% 完成</span></div>` : `<div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div>`}
       <div class="stars"><b>★ ${c.rating.toFixed(1)}</b>・${c.students.toLocaleString()} 位學員</div>
       ${c.ai ? '<div class="ai-summary"><span class="ai-tag">✦ AI 摘要</span>' + c.ai + '</div>' : ''}
     </div>
-    <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns"><button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button><button class="ch-cmp" data-addcmp="${c.id}">⚖ 比較</button><button class="ch-qp" data-qp="${c.id}">👁 預覽</button></div></div>
+    <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns">${isOwned ? `<button class="ch-cart" style="background:var(--pri)">繼續學習 →</button>` : `<button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button>`}<button class="ch-cmp" data-addcmp="${c.id}">⚖ 比較</button><button class="ch-qp" data-qp="${c.id}">👁 預覽</button></div></div>
   </a>`;
 }
 

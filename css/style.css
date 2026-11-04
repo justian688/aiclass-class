@@ -126,6 +126,13 @@ section.sec{padding:64px 0 10px}
 .badge{position:absolute;z-index:2;top:12px;left:12px;font-size:11px;font-weight:800;letter-spacing:.06em;padding:4px 9px;border-radius:7px;background:#fff;color:#000}
 .badge.HOT{background:var(--pink);color:#fff}
 .badge.NEW{background:var(--pri);color:#fff}
+.badge.owned-badge{background:#34c759;color:#fff}
+.card-owned{border-color:rgba(52,199,89,.3)}
+.card-owned .thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(52,199,89,.08),transparent);pointer-events:none}
+.card-prog-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.card-prog-bar{flex:1;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.card-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#34c759,#7c5cff)}
+.card-prog-txt{font-size:12px;font-weight:600;color:#34c759;white-space:nowrap}
 .wish{position:absolute;z-index:2;top:10px;right:10px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.8);backdrop-filter:blur(6px);font-size:16px;opacity:0;transform:scale(.8);transition:.3s var(--ease);color:#333}
 .card:hover .wish,.wish.on{opacity:1;transform:none}
 .wish.on{color:var(--pink)}
