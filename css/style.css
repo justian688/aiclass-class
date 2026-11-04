@@ -695,8 +695,14 @@ body.hdr-hidden .tabs{top:0}
 .login-logo img{filter:brightness(0)}
 .login-form h1{font-size:28px;font-weight:900;color:#111;margin-bottom:8px}
 .login-form p{color:#666;margin-bottom:28px}
-.login-line{width:100%;height:50px;border-radius:12px;background:#06C755;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;transition:.25s}
+.login-socials{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
+.login-social{width:100%;height:48px;border-radius:12px;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .25s;border:1px solid transparent}
+.login-google{background:#fff;color:#333;border-color:#ddd}
+.login-google:hover{background:#f7f7f7;border-color:#ccc}
+.login-line{background:#06C755;color:#fff}
 .login-line:hover{background:#05b34a}
+.login-apple{background:#000;color:#fff}
+.login-apple:hover{background:#222}
 .login-divider{display:flex;align-items:center;gap:16px;margin:24px 0;color:#999;font-size:14px}
 .login-divider::before,.login-divider::after{content:"";flex:1;height:1px;background:#e0e0e0}
 .login-field{margin-bottom:16px}
@@ -1653,7 +1659,11 @@ a.notif-item:hover{background:rgba(0,0,0,.03)}
 [data-theme="dark"] .login-form p{color:var(--tx2)}
 [data-theme="dark"] .login-field label{color:var(--tx)}
 [data-theme="dark"] .login-field input{background:var(--bg2);border-color:var(--line);color:var(--tx)}
+[data-theme="dark"] .login-google{background:var(--card);color:var(--tx);border-color:var(--line)}
+[data-theme="dark"] .login-google:hover{background:var(--bg2)}
 [data-theme="dark"] .login-line{background:#06C755}
+[data-theme="dark"] .login-apple{background:#fff;color:#000}
+[data-theme="dark"] .login-apple:hover{background:#e8e8ec}
 [data-theme="dark"] .login-divider{color:var(--tx3)}
 [data-theme="dark"] .login-divider::before,[data-theme="dark"] .login-divider::after{background:var(--line)}
 [data-theme="dark"] .login-options label{color:var(--tx2)}
@@ -2844,6 +2854,7 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 .sp-toast.on{transform:translateX(0);opacity:1}
 .sp-toast img{width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0}
 .sp-toast b{font-size:13px;color:var(--tx)}
+.sp-toast small{font-size:11px;color:var(--tx3);margin-left:6px;font-weight:400}
 .sp-toast span{font-size:12px;color:var(--pri);font-weight:600}
 @media(max-width:480px){.sp-toast{bottom:80px;left:12px;right:12px;max-width:none}}
 
