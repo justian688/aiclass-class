@@ -40,7 +40,7 @@ function saveNotes() { localStorage.setItem('aic-notes', JSON.stringify(allNotes
 function notesWidget(courseId) {
   const notes = allNotes[courseId] || [];
   return `<section class="c-sec" id="notes"><h2 class="rv-up">📝 我的學習筆記</h2>
-    <div class="notes-add rv-up"><textarea class="notes-input" placeholder="記錄你的學習重點..." rows="3"></textarea><button class="btn btn-pri notes-save">儲存筆記</button></div>
+    <div class="notes-add rv-up"><textarea class="notes-input" placeholder="記錄你的學習重點..." rows="3" aria-label="學習筆記"></textarea><button class="btn btn-pri notes-save">儲存筆記</button></div>
     <div class="notes-list">${notes.map((n, i) => `<div class="note-item rv-up"><div class="note-date">${new Date(n.ts).toLocaleDateString('zh-TW')} ${new Date(n.ts).toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${n.text}</p><button class="note-del" data-ni="${i}">刪除</button></div>`).join('')}${!notes.length ? '<p class="notes-empty">還沒有筆記，開始記錄你的學習心得吧！</p>' : ''}</div></section>`;
 }
 function bindNotes(courseId, main) {
@@ -172,6 +172,11 @@ const deadline = (() => { // 每天午夜重置的限時優惠
   const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime();
 })();
 function shell() {
+  // Skip-to-content (inject on every page)
+  const main = $('main');
+  if (main && !main.id) main.id = 'main-content';
+  if (!$('.skip')) { const sk = document.createElement('a'); sk.className = 'skip'; sk.href = '#main-content'; sk.textContent = '跳至主要內容'; document.body.prepend(sk); }
+
   const top = document.createElement('div');
   if (!sessionStorage.getItem('aic-topbar')) {
     top.className = 'topbar';
@@ -233,7 +238,7 @@ function shell() {
     <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">下載 App<i class="ft-arrow">›</i></h4><ul><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 App Store（iOS）</a></li><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Google Play（Android）</a></li></ul>
-      <div class="ft-lang"><select onchange="toast('語言切換功能開發中')"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
+      <div class="ft-lang"><select onchange="toast('語言切換功能開發中')" aria-label="語言選擇"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
   </div>
   <div class="ft-bottom">
     <p>© ${new Date().getFullYear()} AI Class. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
@@ -601,7 +606,7 @@ function home() {
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程">
     ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
       <img class="poster" src="${img(c)}" alt="">
-      <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}"></video>
+      <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
       <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span><h1>${h}</h1><p>${p}</p>
       <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">立即了解 →</a> <a class="btn btn-ghost" href="course.html?id=${c.id}#preview" style="margin-left:8px">▶ 試看</a></div></div></div></div>`; }).join('')}
     <div class="hero-ctrl"><div class="wrap">${slides.map((c, i) => `<button class="dot ${i ? '' : 'on'}"><div class="bar"><i></i></div><span>${c.title}</span></button>`).join('')}
@@ -656,7 +661,7 @@ function home() {
                  ['03 / 無限期觀看', '一次購買\n隨時隨地重溫', '電腦、手機、平板都能看，支援倍速與字幕，課程更新內容免費開放。']];
   main.insertAdjacentHTML('beforeend', `<section class="story"><div class="pin">
     <div class="steps">${steps.map((s, i) => `<div class="step ${i ? '' : 'on'}"><div class="k">${s[0]}</div><h2>${s[1].replace('\n', '<br>')}</h2><p>${s[2]}</p></div>`).join('')}<div class="pager">${steps.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div></div>
-    <div class="media">${storyV.map((c, i) => `<video class="${i ? '' : 'on'}" src="${vid(c)}" muted loop playsinline preload="metadata" poster="${img(c)}"></video>`).join('')}</div>
+    <div class="media">${storyV.map((c, i) => `<video class="${i ? '' : 'on'}" src="${vid(c)}" muted loop playsinline preload="metadata" poster="${img(c)}" aria-hidden="true"></video>`).join('')}</div>
   </div></section>`);
 
   main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="stats">
@@ -689,7 +694,7 @@ function home() {
   }
 
   // 限時優惠
-  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="promo"><div class="promo rv-up"><video src="${vid(byId.c12)}" autoplay muted loop playsinline poster="${img(byId.c12)}"></video>
+  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="promo"><div class="promo rv-up"><video src="${vid(byId.c12)}" autoplay muted loop playsinline poster="${img(byId.c12)}" aria-hidden="true"></video>
     <div class="in"><div><span class="eyebrow">限時優惠</span><h2>雙 11 全站最低 5 折<br>今天午夜結束</h2><p>任選兩堂再折 NT$500，結帳自動套用</p><a class="btn" style="background:#fff;color:#000;margin-top:20px" href="#top10">查看優惠課程 →</a></div>${cdHTML}</div></div></div>`);
 
   // 講師
@@ -915,7 +920,12 @@ function heroSlider() {
   dots.forEach((d, i) => d.onclick = () => i !== cur && go(i));
   $('[data-hn]').onclick = () => go(cur + 1);
   $('[data-hp]').onclick = () => go(cur - 1);
-  $('[data-hpause]').onclick = e => { paused = !paused; hero.classList.toggle('paused', paused); e.currentTarget.textContent = paused ? '▶' : '❚❚'; paused ? (clearTimeout(timer), $('video', slides[cur]).pause()) : (go(cur + 1)); };
+  const pauseBtn = $('[data-hpause]');
+  pauseBtn.onclick = e => { paused = !paused; hero.classList.toggle('paused', paused); e.currentTarget.textContent = paused ? '▶' : '❚❚'; e.currentTarget.setAttribute('aria-pressed', paused); paused ? (clearTimeout(timer), $('video', slides[cur]).pause()) : (go(cur + 1)); };
+  pauseBtn.setAttribute('aria-pressed', 'false');
+  // 鍵盤左右切換
+  hero.setAttribute('tabindex', '0');
+  hero.addEventListener('keydown', e => { if (e.key === 'ArrowRight') { go(cur + 1); e.preventDefault(); } else if (e.key === 'ArrowLeft') { go(cur - 1); e.preventDefault(); } });
   // 觸控滑動
   let sx = null;
   hero.addEventListener('touchstart', e => sx = e.touches[0].clientX, { passive: true });
@@ -1094,7 +1104,7 @@ function course() {
       ${(()=>{const chs=window.CHAPTERS&&window.CHAPTERS[c.id];if(!chs)return '';const outcomes=chs.flatMap(ch=>ch.lessons.slice(0,2)).slice(0,8);return `<div class="c-outcomes rv-up"><h3>✅ 完成這堂課，你將能夠</h3><div class="c-outcomes-grid">${outcomes.map(o=>`<div class="c-outcome-item"><span class="c-outcome-check">✓</span>${o}</div>`).join('')}</div></div>`;})()}
     </section>
     <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
-      <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}"></video></div>
+      <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}" aria-hidden="true"></video></div>
       ${others.slice(0, 4).map(o => `<div class="rv-up"><img src="${img(o)}" alt="" loading="lazy"></div>`).join('')}</div></section>
     <section class="c-sec c-includes rv-up" id="includes"><h2>這堂課包含</h2>
       <div class="c-inc-grid">
@@ -1125,7 +1135,7 @@ function course() {
       </div>`).join('')}</div>
       <div class="ur-form rv-up"><h3>撰寫你的評價</h3>
         <div class="ur-stars"><span data-ur="1">☆</span><span data-ur="2">☆</span><span data-ur="3">☆</span><span data-ur="4">☆</span><span data-ur="5">☆</span></div>
-        <textarea class="ur-text" placeholder="分享你的學習心得…（至少 10 個字）" rows="4"></textarea>
+        <textarea class="ur-text" placeholder="分享你的學習心得…（至少 10 個字）" rows="4" aria-label="課程評價"></textarea>
         <button class="btn btn-pri ur-submit" disabled>送出評價</button>
       </div>
       <div class="ur-user-list"></div>
@@ -1384,7 +1394,7 @@ function cartPage() {
           <div class="cart-summary-divider"></div>
           <div class="cart-summary-row cart-total"><span>合計</span><span>${fmt(total)}</span></div>
           <a class="btn btn-pri" href="checkout.html" style="display:flex;align-items:center;justify-content:center;width:100%;height:52px;font-size:16px;margin-top:16px;text-decoration:none">前往結帳</a>
-          <div class="cart-coupon-input"><input placeholder="輸入優惠碼"><button onclick="toast('示範網站：優惠碼功能開發中')">套用</button></div>
+          <div class="cart-coupon-input"><input placeholder="輸入優惠碼" aria-label="優惠碼"><button onclick="toast('示範網站：優惠碼功能開發中')">套用</button></div>
           <ul class="cart-perks"><li>✓ 7 天無條件退費</li><li>✓ 無限期觀看</li><li>✓ 附講師專案檔</li></ul>
         </aside>
       </div>
@@ -1570,9 +1580,9 @@ function enterprisePage() {
         <h2>立即開始企業培訓之旅</h2>
         <p>留下聯絡方式，專屬顧問將在 24 小時內與您聯繫</p>
         <div class="ent-cta-form">
-          <input type="text" placeholder="公司名稱">
-          <input type="email" placeholder="Email">
-          <input type="tel" placeholder="聯絡電話">
+          <input type="text" placeholder="公司名稱" aria-label="公司名稱">
+          <input type="email" placeholder="Email" aria-label="Email">
+          <input type="tel" placeholder="聯絡電話" aria-label="聯絡電話">
           <button class="btn btn-pri" style="height:52px;padding:0 32px" onclick="toast('示範網站：諮詢功能開發中')">預約諮詢 →</button>
         </div>
       </div>
@@ -1873,7 +1883,9 @@ function trainingPage() {
 /* ---------- 部落格列表 ---------- */
 function blogPage() {
   const main = $('main');
-  seo({ title: '學習專欄｜AI Class', desc: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://aiclass.tw/blog.html' });
+  seo({ title: '學習專欄｜AI Class', desc: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://aiclass.tw/blog.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學習專欄', description: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://aiclass.tw/blog.html', publisher: { '@type': 'Organization', name: 'AI Class' }, mainEntity: { '@type': 'ItemList', itemListElement: window.POSTS.slice(0, 10).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://aiclass.tw/article.html?id=${p.id}` })) } }
+  });
   const posts = window.POSTS;
   const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
   catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
@@ -1885,7 +1897,7 @@ function blogPage() {
     <h1 class="blog-title rv-up">學習專欄</h1>
     <p class="blog-sub rv-up">深度好文，幫你掌握學習方法與產業趨勢</p>
     <div class="blog-search rv-up">
-      <input type="text" id="blog-q" placeholder="搜尋文章..." autocomplete="off">
+      <input type="text" id="blog-q" placeholder="搜尋文章..." autocomplete="off" aria-label="搜尋文章">
     </div>
     <div class="blog-cats rv-up">
       <button class="chip on" data-cat="all">全部</button>
@@ -1928,7 +1940,7 @@ function blogPage() {
       <h2>📬 訂閱學習電子報</h2>
       <p>每週精選好文直送信箱，掌握最新學習趨勢</p>
       <div class="blog-nl-form">
-        <input type="email" id="blog-nl-email" placeholder="your@email.com">
+        <input type="email" id="blog-nl-email" placeholder="your@email.com" aria-label="訂閱 Email">
         <button class="btn btn-pri" id="blog-nl-btn">免費訂閱</button>
       </div>
       <span class="blog-nl-hint">我們尊重你的隱私，隨時可以取消訂閱</span>
@@ -2144,13 +2156,15 @@ function instructorPage() {
 
   const roles = [...new Set(teachers.map(t => t.role))];
 
-  seo({ title: '所有講師｜AI Class', desc: `${teachers.length} 位業界職人講師陣容`, url: 'https://aiclass.tw/instructor.html' });
+  seo({ title: '所有講師｜AI Class', desc: `${teachers.length} 位業界職人講師陣容`, url: 'https://aiclass.tw/instructor.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '所有講師', description: `${teachers.length} 位業界職人講師陣容`, url: 'https://aiclass.tw/instructor.html', mainEntity: { '@type': 'ItemList', itemListElement: teachers.slice(0, 12).map((t, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Person', name: t.name, jobTitle: t.role } })) } }
+  });
 
   main.innerHTML = `
   <section class="ins-hero"><div class="wrap">
     <h1 class="ins-title rv-up">所有講師</h1>
     <p class="ins-sub rv-up">業界頂尖職人親授，${teachers.length} 位講師帶你把熱情學成專業</p>
-    <div class="ins-search rv-up"><input type="text" id="ins-q" placeholder="搜尋講師名稱或專業..." autocomplete="off"></div>
+    <div class="ins-search rv-up"><input type="text" id="ins-q" placeholder="搜尋講師名稱或專業..." autocomplete="off" aria-label="搜尋講師"></div>
     <div class="ins-filters rv-up">
       <button class="chip on" data-role="all">全部</button>
       ${roles.slice(0, 8).map(r => `<button class="chip" data-role="${r}">${r}</button>`).join('')}
@@ -2776,7 +2790,7 @@ function faqPage() {
   <section class="faqp-hero"><div class="wrap">
     <h1 class="faqp-title rv-up">常見問題</h1>
     <p class="faqp-sub rv-up">找不到答案？歡迎來信 hi@aiclass.tw，我們會在 24 小時內回覆</p>
-    <div class="faqp-search rv-up"><input placeholder="搜尋問題…" id="faq-search"></div>
+    <div class="faqp-search rv-up"><input placeholder="搜尋問題…" id="faq-search" aria-label="搜尋常見問題"></div>
   </div></section>
 
   <section class="sec"><div class="wrap">
@@ -2878,9 +2892,9 @@ function teachPage() {
       <h2>準備好開始了嗎？</h2>
       <p>填寫你的資訊，我們的課程顧問會在 2 個工作天內與你聯繫</p>
       <div class="ent-cta-form">
-        <input placeholder="你的姓名">
-        <input placeholder="Email">
-        <input placeholder="你的專業領域">
+        <input placeholder="你的姓名" aria-label="姓名">
+        <input placeholder="Email" aria-label="Email">
+        <input placeholder="你的專業領域" aria-label="專業領域">
         <button class="btn btn-pri" style="height:52px;flex:none;padding:0 28px" onclick="toast('示範網站：申請功能開發中')">送出申請</button>
       </div>
     </div>
@@ -3009,7 +3023,7 @@ function playerPage() {
         </div>
         <div class="plr-sb-panel" id="plr-panel-notes" hidden>
           <div class="plr-notes-sb">
-            <textarea id="plr-note" placeholder="在這裡記下學習重點…" rows="12"></textarea>
+            <textarea id="plr-note" placeholder="在這裡記下學習重點…" rows="12" aria-label="學習筆記"></textarea>
             <div class="plr-note-actions">
               <span class="plr-note-info">筆記自動儲存在本機</span>
               <button class="plr-note-stamp" id="plr-stamp">+ 加入時間戳記</button>
@@ -3025,7 +3039,7 @@ function playerPage() {
               <div class="plr-qa-foot"><button class="plr-qa-like">♡ ${q.likes}</button></div>
             </div>`).join('')}
             <div class="plr-qa-input">
-              <textarea placeholder="輸入你的問題…" rows="3"></textarea>
+              <textarea placeholder="輸入你的問題…" rows="3" aria-label="提問內容"></textarea>
               <button class="btn btn-pri" onclick="toast('示範網站：提問功能開發中')">送出提問</button>
             </div>
           </div>
@@ -3377,7 +3391,7 @@ function checkoutPage() {
 
         <section class="ck-section">
           <h2><span class="ck-step">2</span>優惠碼</h2>
-          <div class="ck-coupon-row"><input id="ckCoupon" placeholder="輸入優惠碼"><button class="btn btn-ghost" id="ckCouponBtn">套用</button></div>
+          <div class="ck-coupon-row"><input id="ckCoupon" placeholder="輸入優惠碼" aria-label="優惠碼"><button class="btn btn-ghost" id="ckCouponBtn">套用</button></div>
         </section>
 
         <section class="ck-section">
@@ -3391,7 +3405,7 @@ function checkoutPage() {
 
         <section class="ck-section">
           <h2><span class="ck-step">4</span>Email 確認</h2>
-          <div class="ck-field"><input type="email" placeholder="your@email.com" value=""></div>
+          <div class="ck-field"><label>Email</label><input type="email" placeholder="your@email.com" value=""></div>
           <p class="ck-hint">訂單確認信與發票將寄送至此 Email</p>
         </section>
       </div>
@@ -3897,7 +3911,7 @@ function orderHistoryPage() {
         <button class="chip" data-ohf="cancelled">已取消</button>
       </div>
       <div class="oh-search">
-        <input type="text" id="oh-search" placeholder="搜尋訂單編號或課程名稱…">
+        <input type="text" id="oh-search" placeholder="搜尋訂單編號或課程名稱…" aria-label="搜尋訂單">
       </div>
     </div>
     <div class="oh-list" id="oh-list"></div>
@@ -3932,7 +3946,7 @@ function searchPage() {
     <div class="srch-top rv-up">
       <div class="srch-input-wrap">
         <span class="srch-icon">⌕</span>
-        <input class="srch-input" type="text" value="${initQ.replace(/"/g, '&quot;')}" placeholder="搜尋課程、講師、關鍵字…" autofocus>
+        <input class="srch-input" type="text" value="${initQ.replace(/"/g, '&quot;')}" placeholder="搜尋課程、講師、關鍵字…" autofocus aria-label="搜尋課程">
         <button class="srch-clear" style="display:${initQ ? 'flex' : 'none'}">✕</button>
       </div>
     </div>
@@ -4179,8 +4193,8 @@ function communityPage() {
       <div class="cmy-modal-hdr"><h3>發起新討論</h3><button class="cmy-modal-close" id="cmy-close">×</button></div>
       <div class="cmy-modal-body">
         <select class="cmy-select"><option value="">選擇分類</option>${cats.slice(1).map(c => `<option>${c}</option>`).join('')}</select>
-        <input class="cmy-input" placeholder="討論標題">
-        <textarea class="cmy-textarea" rows="6" placeholder="分享你的想法、作品或問題…"></textarea>
+        <input class="cmy-input" placeholder="討論標題" aria-label="討論標題">
+        <textarea class="cmy-textarea" rows="6" placeholder="分享你的想法、作品或問題…" aria-label="討論內容"></textarea>
       </div>
       <div class="cmy-modal-foot">
         <button class="btn btn-ghost" id="cmy-cancel">取消</button>
@@ -4711,7 +4725,7 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
       triggered = true; sessionStorage.setItem('aic-nl-shown', '1');
       removeEventListener('scroll', nlCheck);
       const nl = document.createElement('div'); nl.className = 'nl-overlay'; nl.setAttribute('role', 'dialog'); nl.setAttribute('aria-modal', 'true'); nl.setAttribute('aria-label', '訂閱電子報');
-      nl.innerHTML = `<div class="nl-box"><button class="nl-close">×</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址"><button class="btn btn-pri">免費訂閱</button></div><small>隨時可取消訂閱，我們不會寄送垃圾信。</small></div>`;
+      nl.innerHTML = `<div class="nl-box"><button class="nl-close" aria-label="關閉">×</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址" aria-label="Email 地址"><button class="btn btn-pri">免費訂閱</button></div><small>隨時可取消訂閱，我們不會寄送垃圾信。</small></div>`;
       document.body.append(nl);
       requestAnimationFrame(() => requestAnimationFrame(() => nl.classList.add('show')));
       nl.querySelector('.nl-close').onclick = () => { nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
