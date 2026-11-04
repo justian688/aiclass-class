@@ -1093,7 +1093,19 @@ body.hdr-hidden .tabs{top:0}
 .catp-title{font-size:clamp(32px,5vw,56px);font-weight:900;margin-bottom:8px}
 .catp-count{color:var(--tx2);font-size:16px;margin-bottom:20px}
 .catp-subs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.catp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.catp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;transition:opacity .25s}
+.catp-filters{margin-bottom:24px;display:flex;flex-direction:column;gap:12px}
+.catp-frow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.catp-flabel{font-size:13px;font-weight:700;color:var(--tx2);min-width:40px}
+.catp-fbtns{display:flex;gap:6px;flex-wrap:wrap}
+.catp-empty{text-align:center;color:var(--tx3);padding:60px 0}
+
+/* ===== 課程包含 ===== */
+.c-includes{background:rgba(124,92,255,.04);border:1px solid rgba(124,92,255,.1);border-radius:var(--r);padding:28px 32px}
+.c-inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;margin-top:16px}
+.c-inc-item{display:flex;align-items:center;gap:10px;font-size:15px}
+.c-inc-icon{font-size:20px;flex:none}
+[data-theme="dark"] .c-includes{background:rgba(124,92,255,.08);border-color:rgba(124,92,255,.18)}
 
 /* ===== 收藏頁 ===== */
 .wish-hero{padding:48px 0 0}
@@ -1351,6 +1363,9 @@ body.hdr-hidden .tabs{top:0}
   .ins-card{padding:20px}
   .ins-avatar{width:72px;height:72px}
   .catp-grid{grid-template-columns:1fr 1fr}
+  .catp-frow{flex-direction:column;align-items:flex-start;gap:6px}
+  .c-inc-grid{grid-template-columns:1fr}
+  .c-includes{padding:20px}
   .wish-item{flex-wrap:wrap}
   .wish-thumb{width:100%}
   .wish-actions{width:100%;flex-direction:row}

@@ -487,7 +487,7 @@ function card(c, i, rank) {
     <div class="tw">${rank ? `<span class="num">${i + 1}</span>` : ''}<div class="thumb">
       ${isOwned ? '<span class="badge owned-badge">已購買</span>' : c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
       <button class="wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" aria-label="收藏">${wish.has(c.id) ? '♥' : '♡'}</button>
-      <img src="${img(c)}" alt="" loading="lazy">
+      <img src="${img(c)}" alt="" loading="lazy" decoding="async">
       <span class="hours">${c.hours} 小時</span>
     </div></div>
     <div class="meta">
@@ -1096,6 +1096,16 @@ function course() {
     <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
       <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}"></video></div>
       ${others.slice(0, 4).map(o => `<div class="rv-up"><img src="${img(o)}" alt="" loading="lazy"></div>`).join('')}</div></section>
+    <section class="c-sec c-includes rv-up" id="includes"><h2>這堂課包含</h2>
+      <div class="c-inc-grid">
+        <div class="c-inc-item"><span class="c-inc-icon">📹</span><span>${c.hours} 小時影片內容</span></div>
+        <div class="c-inc-item"><span class="c-inc-icon">📝</span><span>${chapters.length} 個章節・${totalLessonCount} 堂課</span></div>
+        <div class="c-inc-item"><span class="c-inc-icon">📁</span><span>專案檔案下載</span></div>
+        <div class="c-inc-item"><span class="c-inc-icon">📱</span><span>手機、平板、電腦觀看</span></div>
+        <div class="c-inc-item"><span class="c-inc-icon">🔄</span><span>免費課程更新</span></div>
+        <div class="c-inc-item"><span class="c-inc-icon">🏆</span><span>結業證書</span></div>
+      </div>
+    </section>
     <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${chapters.length} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
       <div class="curri-bar rv-up"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div>
       ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
@@ -2189,17 +2199,47 @@ function categoryPage() {
     const cat = cats.find(c => c.id === catId) || cats[0];
     const courses = C.filter(c => c.cat === catId);
     document.title = cat.name + '｜AI Class 課程分類';
+    const levelOf = c => c.hours < 10 ? '入門' : c.hours <= 20 ? '進階' : '專業';
     main.innerHTML = `
     <section class="catp-hero"><div class="wrap">
       <div class="crumb rv-up"><a href="index.html">首頁</a> / <a href="category.html">分類</a> / ${cat.name}</div>
       <h1 class="catp-title rv-up">${cat.name}</h1>
-      <p class="catp-count rv-up">共 ${courses.length} 堂課程</p>
+      <p class="catp-count rv-up" id="catp-total">共 ${courses.length} 堂課程</p>
       ${cat.subs ? `<div class="catp-subs rv-up">${cat.subs.map(s => `<span class="chip">${s}</span>`).join('')}</div>` : ''}
     </div></section>
     <section class="sec"><div class="wrap">
-      <div class="catp-grid">${courses.map(c => card(c)).join('')}</div>
-      ${courses.length === 0 ? '<p style="text-align:center;color:var(--tx3);padding:60px 0">此分類尚無課程</p>' : ''}
+      <div class="catp-filters rv-up">
+        <div class="catp-frow"><span class="catp-flabel">價格</span><div class="catp-fbtns" data-fg="price"><button class="chip on" data-fv="all">全部</button><button class="chip" data-fv="0-2000">NT$0–2,000</button><button class="chip" data-fv="2000-5000">NT$2,000–5,000</button><button class="chip" data-fv="5000+">NT$5,000+</button></div></div>
+        <div class="catp-frow"><span class="catp-flabel">難度</span><div class="catp-fbtns" data-fg="level"><button class="chip on" data-fv="all">全部</button><button class="chip" data-fv="入門">入門</button><button class="chip" data-fv="進階">進階</button><button class="chip" data-fv="專業">專業</button></div></div>
+        <div class="catp-frow"><span class="catp-flabel">排序</span><div class="catp-fbtns" data-fg="sort"><button class="chip on" data-fv="default">推薦</button><button class="chip" data-fv="new">最新</button><button class="chip" data-fv="students">最多學員</button><button class="chip" data-fv="price-asc">價格低到高</button><button class="chip" data-fv="rating">評分最高</button></div></div>
+      </div>
+      <div class="catp-grid" id="catp-grid">${courses.map(c => card(c)).join('')}</div>
+      <p class="catp-empty" id="catp-empty" style="display:none;text-align:center;color:var(--tx3);padding:60px 0">沒有符合條件的課程</p>
     </div></section>`;
+    const getF = fg => $(`[data-fg="${fg}"] .chip.on`, main)?.dataset.fv || 'all';
+    const filterCat = () => {
+      const pf = getF('price'), lf = getF('level'), sf = getF('sort');
+      let list = courses.filter(c => {
+        if (pf === '0-2000' && c.price > 2000) return false;
+        if (pf === '2000-5000' && (c.price < 2000 || c.price > 5000)) return false;
+        if (pf === '5000+' && c.price < 5000) return false;
+        if (lf !== 'all' && levelOf(c) !== lf) return false;
+        return true;
+      });
+      if (sf === 'new') list = list.filter(c => c.tag === 'NEW').concat(list.filter(c => c.tag !== 'NEW'));
+      else if (sf === 'students') list.sort((a, b) => b.students - a.students);
+      else if (sf === 'price-asc') list.sort((a, b) => a.price - b.price);
+      else if (sf === 'rating') list.sort((a, b) => b.rating - a.rating);
+      const grid = $('#catp-grid', main);
+      grid.style.opacity = '0'; grid.style.transition = 'opacity .25s';
+      setTimeout(() => { grid.innerHTML = list.map(c => card(c)).join(''); bindCards(grid); reveal(grid); grid.style.opacity = '1'; }, 250);
+      $('#catp-total', main).textContent = `共 ${list.length} 堂課程`;
+      $('#catp-empty', main).style.display = list.length ? 'none' : '';
+    };
+    $$('.catp-fbtns', main).forEach(g => $$('.chip', g).forEach(btn => btn.onclick = () => {
+      $$('.chip', g).forEach(b => b.classList.toggle('on', b === btn));
+      filterCat();
+    }));
   } else {
     main.innerHTML = `
     <section class="catp-hero"><div class="wrap">
