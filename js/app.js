@@ -237,7 +237,13 @@ function shell() {
   document.body.append(mn);
 
   const toast = document.createElement('div'); toast.className = 'toast'; document.body.append(toast);
-  window.toast = msg => { toast.textContent = msg; toast.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => toast.classList.remove('on'), 1800); };
+  window.toast = (msg, type) => {
+    const icon = type === 'success' ? '✓ ' : type === 'error' ? '✕ ' : type === 'info' ? 'ℹ ' : '';
+    toast.className = 'toast' + (type ? ' toast-' + type : '');
+    toast.textContent = icon + msg;
+    toast.classList.add('on');
+    clearTimeout(toast.t); toast.t = setTimeout(() => toast.classList.remove('on'), 1800);
+  };
   const wBtn = $('[data-wishlist]');
   if (wBtn) wBtn.onclick = e => { e.preventDefault(); toast(`已收藏 ${wish.size} 堂課程`); };
 
