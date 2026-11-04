@@ -708,6 +708,19 @@ function home() {
       <div class="bootcamps">${window.BOOTCAMPS.map(b => `<div class="bootcamp rv-up"><span class="bc-badge">${b.badge}</span><span class="bc-tag">${b.tag}</span><h3>${b.name}</h3><p class="bc-desc">${b.desc}</p><div class="bc-meta"><span>📚 ${b.courses.length} 堂課程</span></div><div class="bc-price"><span class="free">NT$0</span><del>NT$${b.original.toLocaleString()}</del></div><button class="bc-enroll" onclick="toast('示範網站：報名功能開發中')">立即報名 →</button></div>`).join('')}</div></div></section>`);
   }
 
+  // 限時免費體驗
+  if (window.FREE_COURSES && window.FREE_COURSES.length) {
+    const freeCourses = window.FREE_COURSES.map(fc => ({ ...byId[fc.id], reason: fc.reason, endsIn: fc.endsIn })).filter(c => c.id);
+    if (freeCourses.length) {
+      main.insertAdjacentHTML('beforeend', `<section class="sec free-sec" id="free"><div class="wrap"><div class="sec-head rv-up"><div><h2>🎁 限時免費體驗</h2><div class="sub">精選課程免費開放，把握機會</div></div></div>
+        <div class="free-grid">${freeCourses.map(c => `<a class="free-card rv-up" href="course.html?id=${c.id}">
+          <div class="free-card-img"><img src="${img(c)}" alt="" loading="lazy"><span class="free-badge">FREE</span><span class="free-timer">${c.endsIn}</span></div>
+          <div class="free-card-body"><span class="free-reason">${c.reason}</span><h3>${c.title}</h3><div class="free-card-meta"><span>${c.teacher}</span><span>★ ${c.rating}</span><span>${c.hours} 小時</span></div>
+          <div class="free-card-price"><span class="free-now">NT$0</span><del>${fmt(c.origin)}</del></div></div>
+        </a>`).join('')}</div></div></section>`);
+    }
+  }
+
   const sortBy = (k) => [...C].sort((a, b) => b[k] - a[k]);
   // TOP 10 + 時段切換
   main.insertAdjacentHTML('beforeend', `<section class="sec" id="top10"><div class="wrap">

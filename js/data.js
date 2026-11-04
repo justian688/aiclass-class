@@ -1058,3 +1058,10 @@ window.ANNOUNCEMENTS = [
   { id: 'a2', text: '新課上架：LLM 微調實戰、歐式麵包全書', link: '/category.html?cat=ai', type: 'new' },
   { id: 'a3', text: '2026 秋季學習挑戰賽開跑，完成任務抽 AirPods', link: '/achievement.html', type: 'event' }
 ];
+
+// ── 限時免費體驗 ──
+window.FREE_COURSES = [
+  { id: 'c07', reason: '新手入門精選', endsIn: '3 天後截止' },
+  { id: 'c22', reason: '藝術月限定免費', endsIn: '5 天後截止' },
+  { id: 'c42', reason: '職涯發展週', endsIn: '2 天後截止' },
+];
