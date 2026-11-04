@@ -1335,7 +1335,7 @@ function course() {
     const related = P.filter(p => p.cat === c.cat || (p.title && p.title.includes(c.teacher))).slice(0, 3);
     if (!related.length) return '';
     return `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>相關學習文章</h2><div class="sub">延伸閱讀，加深你的學習</div></div><a class="more" href="blog.html">查看全部 →</a></div>
-      <div class="rel-articles">${related.map(p => `<a class="rel-article rv-up" href="article.html?slug=${p.slug}">
+      <div class="rel-articles">${related.map(p => `<a class="rel-article rv-up" href="article.html?id=${p.id}">
         <div class="rel-art-img"><img src="assets/img/v${(C.find(x => x.cat === p.cat) || C[0]).v}.jpg" alt="" loading="lazy"></div>
         <div class="rel-art-body"><span class="rel-art-cat">${(window.CATS.find(x => x.id === p.cat) || {}).name || ''}</span><h3>${p.title}</h3><span class="rel-art-meta">${p.readTime || '5 分鐘'} 閱讀</span></div>
       </a>`).join('')}</div></div></section>`;
@@ -5532,6 +5532,44 @@ function openRecommendQuiz() {
   renderStep();
   ov.onclick = e => { if (e.target === ov) closeQuiz(); };
   document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { closeQuiz(); document.removeEventListener('keydown', esc); } });
+}
+
+// ── 學習計時器浮動 widget ──
+{
+  const timerState = JSON.parse(sessionStorage.getItem('aic-timer') || '{"running":false,"elapsed":0,"start":0}');
+  const tw = document.createElement('div'); tw.className = 'study-timer';
+  tw.innerHTML = `<button class="st-toggle" aria-label="學習計時器">⏱</button>
+    <div class="st-panel">
+      <div class="st-head">學習計時器</div>
+      <div class="st-display">00:00:00</div>
+      <div class="st-btns"><button class="st-start">▶ 開始</button><button class="st-reset">↺ 重置</button></div>
+      <div class="st-today">今日累計：<b class="st-total">0</b> 分鐘</div>
+    </div>`;
+  document.body.append(tw);
+  const display = tw.querySelector('.st-display');
+  const startBtn = tw.querySelector('.st-start');
+  const resetBtn = tw.querySelector('.st-reset');
+  const totalEl = tw.querySelector('.st-total');
+  let running = timerState.running;
+  let elapsed = timerState.elapsed;
+  let startTs = timerState.start;
+  if (running && startTs) elapsed += (Date.now() - startTs) / 1000;
+  const todayKey = 'aic-study-' + new Date().toISOString().slice(0, 10);
+  let todayMins = +(localStorage.getItem(todayKey) || 0);
+  totalEl.textContent = todayMins;
+  const fmtTime = s => { const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = Math.floor(s % 60); return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`; };
+  display.textContent = fmtTime(elapsed);
+  let interval;
+  function tick() { if (running) { elapsed = timerState.elapsed + (Date.now() - startTs) / 1000; display.textContent = fmtTime(elapsed); } }
+  if (running) { startTs = Date.now(); timerState.elapsed = elapsed; timerState.start = startTs; sessionStorage.setItem('aic-timer', JSON.stringify(timerState)); interval = setInterval(tick, 1000); startBtn.textContent = '⏸ 暫停'; tw.classList.add('active'); }
+  startBtn.onclick = () => {
+    if (running) { running = false; elapsed = timerState.elapsed + (Date.now() - startTs) / 1000; timerState.elapsed = elapsed; timerState.running = false; timerState.start = 0; clearInterval(interval); startBtn.textContent = '▶ 開始'; tw.classList.remove('active');
+      const addedMins = Math.floor(elapsed / 60); todayMins += addedMins; localStorage.setItem(todayKey, todayMins); totalEl.textContent = todayMins;
+    } else { running = true; startTs = Date.now(); timerState.running = true; timerState.start = startTs; timerState.elapsed = elapsed; interval = setInterval(tick, 1000); startBtn.textContent = '⏸ 暫停'; tw.classList.add('active'); }
+    sessionStorage.setItem('aic-timer', JSON.stringify(timerState));
+  };
+  resetBtn.onclick = () => { running = false; elapsed = 0; clearInterval(interval); timerState.running = false; timerState.elapsed = 0; timerState.start = 0; sessionStorage.setItem('aic-timer', JSON.stringify(timerState)); display.textContent = '00:00:00'; startBtn.textContent = '▶ 開始'; tw.classList.remove('active'); };
+  tw.querySelector('.st-toggle').onclick = () => tw.classList.toggle('open');
 }
 
 // ── 影片懶載入（IntersectionObserver） ──

@@ -3476,6 +3476,28 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 @media(max-width:480px){.stats-section{padding:56px 0}.stats-grid{gap:12px}.stat-num{font-size:1.8rem}}
 @media(prefers-reduced-motion:reduce){.stat-num{transition:none}}
 
+/* ===== 學習計時器 ===== */
+.study-timer{position:fixed;bottom:90px;left:20px;z-index:999}
+.st-toggle{width:48px;height:48px;border-radius:50%;border:0;background:var(--pri);color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(124,92,255,.3);transition:transform .2s,box-shadow .2s;display:flex;align-items:center;justify-content:center}
+.st-toggle:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(124,92,255,.4)}
+.study-timer.active .st-toggle{animation:st-pulse 2s ease-in-out infinite;background:linear-gradient(135deg,var(--pri),var(--pink))}
+@keyframes st-pulse{0%,100%{box-shadow:0 4px 16px rgba(124,92,255,.3)}50%{box-shadow:0 4px 24px rgba(124,92,255,.5)}}
+.st-panel{position:absolute;bottom:56px;left:0;width:220px;background:var(--bg);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 36px rgba(0,0,0,.15);padding:20px;opacity:0;transform:translateY(10px) scale(.95);pointer-events:none;transition:opacity .25s,transform .25s}
+.study-timer.open .st-panel{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.st-head{font-size:.85rem;font-weight:700;color:var(--tx2);margin-bottom:12px}
+.st-display{font-size:2rem;font-weight:900;font-variant-numeric:tabular-nums;text-align:center;margin-bottom:16px;font-family:system-ui,monospace;color:var(--tx);letter-spacing:2px}
+.st-btns{display:flex;gap:8px;margin-bottom:12px}
+.st-btns button{flex:1;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);color:var(--tx);font-size:.82rem;font-weight:600;cursor:pointer;transition:background .2s,border-color .2s}
+.st-btns button:hover{border-color:var(--pri);background:rgba(124,92,255,.06)}
+.st-start{background:var(--pri)!important;color:#fff!important;border-color:var(--pri)!important}
+.st-start:hover{opacity:.9}
+.st-today{font-size:.78rem;color:var(--tx3);text-align:center}
+.st-today b{color:var(--pri);font-weight:700}
+[data-theme="dark"] .st-panel{background:var(--card);border-color:var(--line);box-shadow:0 12px 36px rgba(0,0,0,.4)}
+[data-theme="dark"] .st-btns button{background:var(--bg2)}
+@media(max-width:480px){.study-timer{bottom:80px;left:12px}.st-toggle{width:42px;height:42px;font-size:1rem}.st-panel{width:200px;padding:16px}}
+@media(prefers-reduced-motion:reduce){.st-toggle{transition:none}.st-toggle:hover{transform:none}.st-panel{transition:none}.study-timer.active .st-toggle{animation:none}}
+
 /* ===== 限時免費體驗 ===== */
 .free-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .free-card{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--bg2);border:2px solid transparent;text-decoration:none;color:inherit;transition:transform .3s,border-color .3s,box-shadow .3s;position:relative}
