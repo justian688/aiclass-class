@@ -1120,6 +1120,12 @@ function course() {
     </section>
     ${notesWidget(c.id)}
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</section>
+    <div class="c-guarantee rv-up">
+      <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">購買後 7 天內，覺得不適合可全額退費，零風險。</div></div>
+      <div class="c-guarantee-item"><div class="c-guarantee-icon">♾️</div><div class="c-guarantee-title">無限期觀看</div><div class="c-guarantee-desc">一次購買，終身觀看，隨時隨地複習。</div></div>
+      <div class="c-guarantee-item"><div class="c-guarantee-icon">🔄</div><div class="c-guarantee-title">免費課程更新</div><div class="c-guarantee-desc">課程內容持續更新，舊學員自動享有新內容。</div></div>
+      <div class="c-guarantee-item"><div class="c-guarantee-icon">💬</div><div class="c-guarantee-title">講師親自回覆</div><div class="c-guarantee-desc">學習遇到問題可直接提問，講師親自回覆。</div></div>
+    </div>
   </div>
   ${smartRecommend(c)}
   ${railSec('more', '你可能也會喜歡', '', others)}`;
@@ -4687,6 +4693,52 @@ if (page === 'home') {
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
     setTimeout(() => { el.classList.remove('on'); setTimeout(() => el.remove(), 400); }, 3000);
   }, 8000);
+}
+
+// ── 手機底部導航列 ──
+{
+  const mn = document.createElement('nav');
+  mn.className = 'mob-nav';
+  mn.setAttribute('aria-label', '手機導航');
+  const links = [
+    { href: '/', icon: '🏠', label: '首頁', page: 'home' },
+    { href: '/hot.html', icon: '🔥', label: '探索', page: 'hot' },
+    { href: '/search.html', icon: '🔍', label: '搜尋', page: 'search' },
+    { href: '/cart.html', icon: '🛒', label: '購物車', page: 'cart' },
+    { href: '/my.html', icon: '👤', label: '我的', page: 'my' },
+  ];
+  mn.innerHTML = `<div class="mob-nav-inner">${links.map(l =>
+    `<a href="${l.href}" class="${page === l.page ? 'on' : ''}"><span class="mn-icon">${l.icon}</span>${l.label}</a>`
+  ).join('')}</div>`;
+  document.body.append(mn);
+}
+
+// ── 數字計數動畫 ──
+{
+  const countIO = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      countIO.unobserve(el);
+      const target = parseInt(el.dataset.count || el.textContent.replace(/[^\d]/g, ''), 10);
+      if (isNaN(target) || target === 0) return;
+      const suffix = el.textContent.replace(/[\d,]/g, '');
+      const dur = 1200;
+      const start = performance.now();
+      const step = now => {
+        const p = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * ease).toLocaleString() + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  }, { threshold: 0.3 });
+  requestAnimationFrame(() => {
+    $$('.myp-stat b, .dash-card-head + .dash-ring .dash-ring-text b, .myp-aside-stats b').forEach(el => {
+      if (/\d/.test(el.textContent)) countIO.observe(el);
+    });
+  });
 }
 
 // ── 回到頂部按鈕 ──

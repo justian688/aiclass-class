@@ -2924,6 +2924,34 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 .skel-card .skel-line{margin:12px 16px 0}
 .skel-card .skel-line:last-child{margin-bottom:16px}
 
+/* ===== 手機底部導航列 ===== */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--bg);border-top:1px solid var(--line);z-index:101;padding:0 8px env(safe-area-inset-bottom,0)}
+.mob-nav-inner{display:flex;align-items:center;justify-content:space-around;height:100%;max-width:500px;margin:0 auto}
+.mob-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--tx3);text-decoration:none;padding:6px 12px;border-radius:10px;transition:color .2s}
+.mob-nav a .mn-icon{font-size:22px;line-height:1}
+.mob-nav a.on,.mob-nav a:hover{color:var(--pri)}
+.mob-nav a.on .mn-icon{transform:scale(1.1)}
+@media(max-width:760px){
+  .mob-nav{display:block}
+  body{padding-bottom:60px}
+  .btt{bottom:70px}
+  .sp-toast{bottom:74px}
+  .cmp-bar{bottom:60px}
+}
+[data-theme="dark"] .mob-nav{background:var(--bg);border-color:var(--line)}
+
+/* ===== 數字計數動畫 ===== */
+.count-up{transition:none}
+
+/* ===== 課程保證區塊 ===== */
+.c-guarantee{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin:40px 0;padding:32px;border-radius:var(--r);background:rgba(124,92,255,.04);border:1px solid rgba(124,92,255,.1)}
+.c-guarantee-item{text-align:center;padding:16px}
+.c-guarantee-icon{font-size:32px;margin-bottom:8px}
+.c-guarantee-title{font-weight:700;font-size:15px;margin-bottom:4px}
+.c-guarantee-desc{font-size:13px;color:var(--tx2);line-height:1.5}
+@media(max-width:760px){.c-guarantee{grid-template-columns:repeat(2,1fr);gap:12px;padding:20px}}
+@media(max-width:480px){.c-guarantee{grid-template-columns:1fr}}
+
 /* ===== 列印樣式 ===== */
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
