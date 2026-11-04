@@ -826,6 +826,16 @@ function home() {
       </div>`).join('')}</div></div></section>`);
   }
 
+  // 學員作品牆
+  const showcaseCourses = C.filter(c => ['drawing','video','design','game'].includes(c.cat)).slice(0, 8);
+  main.insertAdjacentHTML('beforeend', `<section class="sec showcase-section"><div class="wrap">
+    <div class="sec-head rv-up"><div><h2>學員作品精選</h2><div class="sub">看看學員們學完課程後的成果</div></div></div>
+    <div class="showcase-grid">${showcaseCourses.map((sc, i) => `<div class="showcase-item rv-up" style="transition-delay:${(i % 4) * 60}ms">
+      <img src="${img(sc)}" alt="" loading="lazy">
+      <div class="showcase-overlay"><span class="showcase-course">${sc.title}</span><span class="showcase-author">${sc.teacher} 的學員</span></div>
+    </div>`).join('')}</div>
+  </div></section>`);
+
   // 即將上架
   if (window.UPCOMING_COURSES) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="upcoming"><div class="wrap"><div class="sec-head rv-up"><div><h2>即將上架</h2><div class="sub">搶先登記，開課通知第一手</div></div></div>
@@ -1328,6 +1338,21 @@ function course() {
       setTimeout(() => { txt.hidden = false; ok.hidden = true; sbCartBtn.classList.remove('sb-added'); }, 1500);
       toast('已加入購物車 🛒', 'success');
     };
+  }
+
+  // Social proof popups
+  if (!isOwned) {
+    const names = ['台北的學員','新竹的學員','台中的學員','高雄的學員','台南的學員','桃園的學員'];
+    const actions = ['剛剛購買了這堂課','把這堂課加入了購物車','正在觀看這堂課'];
+    let spTimer;
+    const showSP = () => {
+      const name = names[Math.floor(Math.random() * names.length)];
+      const action = actions[Math.floor(Math.random() * actions.length)];
+      toast(`📍 ${name}${action}`, 'info');
+      spTimer = setTimeout(showSP, 15000 + Math.random() * 20000);
+    };
+    spTimer = setTimeout(showSP, 8000 + Math.random() * 7000);
+    addEventListener('beforeunload', () => clearTimeout(spTimer));
   }
 
   bindNotes(c.id, main);
@@ -5059,13 +5084,21 @@ function notFoundPage() {
     <div class="nf-icon rv-up">🔍</div>
     <h1 class="rv-up" style="font-size:clamp(2rem,5vw,3.5rem);margin:24px 0 12px">找不到頁面</h1>
     <p class="rv-up" style="color:var(--tx2);font-size:18px;max-width:480px;margin:0 auto 32px">你要找的頁面可能已被移除、改名，或暫時無法使用。</p>
-    <div class="rv-up" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <div class="nf-search rv-up">
+      <input type="text" class="nf-search-input" placeholder="搜尋課程或文章…" aria-label="搜尋">
+      <button class="btn btn-pri nf-search-btn">搜尋</button>
+    </div>
+    <div class="rv-up" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px">
       <a class="btn btn-pri" href="index.html" style="height:48px;padding:0 32px;font-size:16px">回到首頁</a>
       <a class="btn btn-ghost" href="blog.html" style="height:48px;padding:0 32px;font-size:16px">瀏覽學習專欄</a>
     </div>
     <div class="rv-up" style="margin-top:48px"><h3 style="margin-bottom:16px">熱門課程推薦</h3></div>
   </div></section>
   ${railSec('nf-rec', '', '', C.filter(c => c.tag === 'BEST' || c.tag === 'HOT').slice(0, 8))}`;
+  const nfInput = $('.nf-search-input', main), nfBtn = $('.nf-search-btn', main);
+  const doSearch = () => { const q = nfInput.value.trim(); if (q) location.href = 'search.html?q=' + encodeURIComponent(q); };
+  if (nfBtn) nfBtn.onclick = doSearch;
+  if (nfInput) nfInput.onkeydown = e => { if (e.key === 'Enter') doSearch(); };
   bindCards(main); bindRail($('#nf-rec'));
 }
 
