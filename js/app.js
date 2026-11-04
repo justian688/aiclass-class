@@ -400,6 +400,27 @@ function shell() {
     $('.cookie-ok', ck).onclick = () => { localStorage.setItem('aic-cookie-ok', '1'); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
   }
 
+  // 首次訪客歡迎導覽
+  if (!localStorage.getItem('aic-toured') && page === 'home') {
+    const steps = [
+      { icon: '🎓', title: '歡迎來到 AI Class', text: '跟著業界頂尖職人，把你的熱情學成專業。72+ 堂精選課程，涵蓋設計、插畫、AI、攝影等 9 大領域。' },
+      { icon: '🎬', title: '業界職人親自授課', text: '每堂課由業界講師精心製作，提供完整專案檔、練習素材與 PDF 講義，學完就能產出作品。' },
+      { icon: '🚀', title: '開始你的學習之旅', text: '按 ⌘K 搜尋課程、按 ? 查看快捷鍵。首購享折扣碼 WELCOME — 現在就探索適合你的課程！' }
+    ];
+    let si = 0;
+    const tov = document.createElement('div'); tov.className = 'tour-overlay';
+    const render = () => { const s = steps[si]; tov.innerHTML = `<div class="tour-card"><button class="tour-skip">略過</button><div class="tour-icon">${s.icon}</div><h2>${s.title}</h2><p>${s.text}</p><div class="tour-dots">${steps.map((_,i) => `<div class="tour-dot ${i===si?'on':''}"></div>`).join('')}</div><button class="btn btn-pri tour-next" style="width:100%">${si < steps.length - 1 ? '下一步 →' : '開始探索 →'}</button></div>`; };
+    render();
+    document.body.append(tov);
+    requestAnimationFrame(() => requestAnimationFrame(() => tov.classList.add('on')));
+    const closeTour = () => { localStorage.setItem('aic-toured', '1'); tov.classList.remove('on'); setTimeout(() => tov.remove(), 300); };
+    tov.addEventListener('click', e => {
+      if (e.target.closest('.tour-skip')) { closeTour(); return; }
+      if (e.target.closest('.tour-next')) { si++; if (si >= steps.length) closeTour(); else render(); }
+      if (e.target === tov) closeTour();
+    });
+  }
+
   // 最近瀏覽浮動提示
   const rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
   if (rv.length && page !== 'course' && page !== 'player') {
@@ -1317,6 +1338,7 @@ function course() {
         <div><span>🔒</span> 安全加密付款</div>
         <div><span>⭐</span> ${c.rating.toFixed(1)} 超高評價</div>
       </div>
+      <div class="c-completion"><b>${75 + (c.id.charCodeAt(2) % 20)}%</b><span>學員完成率</span><div class="c-completion-bar"><div class="c-completion-fill" style="width:${75 + (c.id.charCodeAt(2) % 20)}%"></div></div></div>
       <div class="c-mini-reviews">
         <h4>學員怎麼說</h4>
         ${reviewData.slice(0, 2).map(r => `<div class="c-mini-rv"><div class="c-mini-av">${r.initial}</div><div><div class="c-mini-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div><p>${r.text.length > 50 ? r.text.slice(0, 50) + '…' : r.text}</p><span class="c-mini-name">${r.name}</span></div></div>`).join('')}

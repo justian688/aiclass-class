@@ -4046,3 +4046,29 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .fbt-card{background:var(--bg2);border-color:var(--line)}
 [data-theme="dark"] .fbt-card:hover{box-shadow:0 6px 20px -8px rgba(124,92,255,.2)}
 @media(max-width:760px){.fbt-items{flex-direction:column}.fbt-plus{transform:rotate(90deg)}.fbt-card{width:100%}}
+
+/* ---------- Confetti ---------- */
+.confetti-piece{position:fixed;width:10px;height:10px;top:-20px;z-index:99999;border-radius:2px;pointer-events:none;animation:confetti-fall 3s linear forwards}
+@keyframes confetti-fall{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(100vh) rotate(720deg)}}
+
+/* ---------- Welcome Tour ---------- */
+.tour-overlay{position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.tour-overlay.on{opacity:1;pointer-events:auto}
+.tour-card{background:var(--bg);border-radius:20px;max-width:440px;width:92vw;padding:40px 36px;text-align:center;box-shadow:0 24px 80px -12px rgba(0,0,0,.25);transform:translateY(20px) scale(.96);transition:transform .35s var(--ease);position:relative}
+.tour-overlay.on .tour-card{transform:none}
+.tour-icon{font-size:48px;margin-bottom:16px}
+.tour-card h2{font-size:22px;font-weight:800;margin:0 0 10px}
+.tour-card p{font-size:14px;color:var(--tx2);line-height:1.7;margin:0 0 24px}
+.tour-dots{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.tour-dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .25s,width .25s}
+.tour-dot.on{background:var(--pri);width:20px;border-radius:4px}
+.tour-skip{position:absolute;top:16px;right:20px;border:none;background:none;color:var(--tx3);font-size:13px;cursor:pointer}
+.tour-skip:hover{color:var(--tx)}
+[data-theme="dark"] .tour-card{background:var(--card);box-shadow:0 24px 80px -12px rgba(0,0,0,.6)}
+
+/* ---------- Completion Rate ---------- */
+.c-completion{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-top:12px;font-size:13px;color:var(--tx2)}
+.c-completion-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.c-completion-fill{height:100%;background:linear-gradient(90deg,#34c759,#30d158);border-radius:3px;transition:width 1s ease-out}
+.c-completion b{color:var(--tx);font-size:14px}
+[data-theme="dark"] .c-completion{background:var(--card)}
