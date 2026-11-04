@@ -11,6 +11,74 @@ const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) b.textContent = cart.size || ''; if (b) b.style.display = cart.size ? 'flex' : 'none'; }
 
+/* ---------- SEO：動態 meta / JSON-LD ---------- */
+function seo(opts = {}) {
+  const base = 'https://aiclass.tw/';
+  const dTitle = opts.title || document.title;
+  const dDesc = opts.desc || '';
+  const dUrl = opts.url || base;
+  const dImg = opts.img || base + 'assets/img/og-cover.jpg';
+  function setMeta(attr, val, content) { let el = $(`meta[${attr}="${val}"]`); if (!el) { el = document.createElement('meta'); el.setAttribute(attr, val); document.head.append(el); } el.content = content; }
+  setMeta('property', 'og:title', dTitle);
+  setMeta('property', 'og:description', dDesc);
+  setMeta('property', 'og:url', dUrl);
+  setMeta('property', 'og:image', dImg);
+  setMeta('name', 'twitter:title', dTitle);
+  setMeta('name', 'twitter:description', dDesc);
+  setMeta('name', 'twitter:image', dImg);
+  setMeta('name', 'description', dDesc);
+  const canon = $('link[rel="canonical"]'); if (canon) canon.href = dUrl;
+  if (opts.jsonLd) { let s = $('#seo-jsonld'); if (!s) { s = document.createElement('script'); s.id = 'seo-jsonld'; s.type = 'application/ld+json'; document.head.append(s); } s.textContent = JSON.stringify(opts.jsonLd); }
+}
+
+/* ---------- 學習筆記 ---------- */
+const allNotes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
+function saveNotes() { localStorage.setItem('aic-notes', JSON.stringify(allNotes)); }
+function notesWidget(courseId) {
+  const notes = allNotes[courseId] || [];
+  return `<section class="c-sec" id="notes"><h2 class="rv-up">📝 我的學習筆記</h2>
+    <div class="notes-add rv-up"><textarea class="notes-input" placeholder="記錄你的學習重點..." rows="3"></textarea><button class="btn btn-pri notes-save">儲存筆記</button></div>
+    <div class="notes-list">${notes.map((n, i) => `<div class="note-item rv-up"><div class="note-date">${new Date(n.ts).toLocaleDateString('zh-TW')} ${new Date(n.ts).toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${n.text}</p><button class="note-del" data-ni="${i}">刪除</button></div>`).join('')}${!notes.length ? '<p class="notes-empty">還沒有筆記，開始記錄你的學習心得吧！</p>' : ''}</div></section>`;
+}
+function bindNotes(courseId, main) {
+  const saveBtn = $('.notes-save', main);
+  if (!saveBtn) return;
+  saveBtn.onclick = () => {
+    const ta = $('.notes-input', main), txt = ta.value.trim();
+    if (!txt) return;
+    if (!allNotes[courseId]) allNotes[courseId] = [];
+    allNotes[courseId].unshift({ text: txt, ts: Date.now() });
+    saveNotes(); ta.value = '';
+    const list = $('.notes-list', main);
+    const item = document.createElement('div'); item.className = 'note-item rv-up';
+    item.innerHTML = `<div class="note-date">${new Date().toLocaleDateString('zh-TW')} ${new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${txt}</p><button class="note-del" data-ni="0">刪除</button>`;
+    const empty = $('.notes-empty', list); if (empty) empty.remove();
+    list.prepend(item);
+    toast('筆記已儲存');
+  };
+  main.addEventListener('click', e => {
+    const del = e.target.closest('.note-del');
+    if (!del) return;
+    const idx = +del.dataset.ni;
+    if (allNotes[courseId]) { allNotes[courseId].splice(idx, 1); saveNotes(); }
+    del.closest('.note-item').remove();
+    if (!allNotes[courseId]?.length) { const list = $('.notes-list', main); list.innerHTML = '<p class="notes-empty">還沒有筆記，開始記錄你的學習心得吧！</p>'; }
+    toast('筆記已刪除');
+  });
+}
+
+/* ---------- 課程進度追蹤 ---------- */
+const progress = JSON.parse(localStorage.getItem('aic-progress') || '{}');
+function saveProgress() { localStorage.setItem('aic-progress', JSON.stringify(progress)); }
+function getCourseProg(cid) { return progress[cid] || { done: [], lastAt: 0 }; }
+function markLesson(cid, chapIdx, lessonIdx) {
+  if (!progress[cid]) progress[cid] = { done: [], lastAt: 0 };
+  const key = `${chapIdx}-${lessonIdx}`;
+  if (!progress[cid].done.includes(key)) progress[cid].done.push(key);
+  progress[cid].lastAt = Date.now();
+  saveProgress();
+}
+
 /* ---------- 共用：公告、頁首、頁尾、手機導覽 ---------- */
 const deadline = (() => { // 每天午夜重置的限時優惠
   const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime();
@@ -275,7 +343,7 @@ function bindCards(root = document) {
   });
   $$('[data-addcmp]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
-    if (window.toggleCompare) window.toggleCompare(b.dataset.addcmp);
+    if (window.addCompare) window.addCompare(b.dataset.addcmp);
   });
   reveal(root);
 }
@@ -736,7 +804,7 @@ function course() {
       <ul><li>✓ 無限期觀看</li><li>✓ ${c.hours} 小時・${numChaps} 章節・${totalLessonCount} 堂課</li><li>✓ 附講師專案檔與素材</li><li>✓ 7 天內未滿 20% 可退費</li></ul>
     </aside>
   </div></div></div>
-  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#faq">常見問題</a></div></nav>
+  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#faq">常見問題</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2><div class="points">
       ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div></section>
@@ -756,9 +824,18 @@ function course() {
         <div class="ri-head"><div class="ri-avatar">${r.initial}</div><div class="ri-meta"><b>${r.name}</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${r.date}</span></div></div></div>
         <p>${r.text}</p>
       </div>`).join('')}</div></section>
+    ${notesWidget(c.id)}
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}</section>
   </div>
   ${railSec('more', '你可能也會喜歡', '', others)}`;
+
+  seo({
+    title: `${c.title}｜AI Class`,
+    desc: c.desc || c.ai || '',
+    url: `https://aiclass.tw/course.html?id=${c.id}`,
+    img: `https://aiclass.tw/${img(c)}`,
+    jsonLd: { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, ratingCount: c.students }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H` } }
+  });
 
   const box = $('.c-video'), v = $('video', box);
   $('.play', box).onclick = () => { v.play(); box.classList.add('playing'); };
@@ -805,6 +882,20 @@ function course() {
     addEventListener('scroll', () => { bar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }, { passive: true });
     $('.stk-buy', bar).onclick = () => toast('示範網站：尚未串接金流');
   }
+
+  bindNotes(c.id, main);
+
+  // 課程進度 checkboxes
+  const prog = getCourseProg(c.id);
+  $$('.chap', main).forEach((chEl, ci) => {
+    $$('li', chEl).forEach((li, li2) => {
+      const key = `${ci}-${li2}`;
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.className = 'lesson-cb'; cb.checked = prog.done.includes(key);
+      cb.onchange = () => { if (cb.checked) markLesson(c.id, ci, li2); else { const p = getCourseProg(c.id); p.done = p.done.filter(k => k !== key); saveProgress(); } };
+      li.querySelector('span').prepend(cb);
+    });
+  });
 }
 
 /* ---------- 活動頁 ---------- */
@@ -1493,6 +1584,13 @@ function articlePage() {
   catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
   const related = posts.filter(p => p.cat === post.cat && p.id !== post.id).slice(0, 3);
   document.title = post.title + '｜AI Class 學習專欄';
+  seo({
+    title: post.title + '｜AI Class 學習專欄',
+    desc: post.excerpt,
+    url: `https://aiclass.tw/article.html?id=${post.id}`,
+    img: `https://aiclass.tw/assets/img/v${post.v}.jpg`,
+    jsonLd: { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.excerpt, author: { '@type': 'Person', name: post.author }, datePublished: post.date, image: `https://aiclass.tw/assets/img/v${post.v}.jpg`, publisher: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' } }
+  });
 
   const body = `<p>在當今快速變化的時代，持續學習已經不再是選項，而是每個專業人士的必修課。${post.excerpt}</p>
 <h2>為什麼這個主題很重要？</h2>
@@ -3562,8 +3660,48 @@ else if (page === 'live') livePage();
 else if (page === 'order-history') orderHistoryPage();
 else if (page === 'search') searchPage();
 else if (page === 'quiz') quizPage();
+else notFoundPage();
 reveal();
 tickCountdown(); setInterval(tickCountdown, 1000);
 document.body.classList.add('loaded');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+
+// ── 課程比較功能 ──
+const cmpList = JSON.parse(sessionStorage.getItem('aic-cmp') || '[]');
+function saveCmp() { sessionStorage.setItem('aic-cmp', JSON.stringify(cmpList)); updCmpUI(); }
+function updCmpUI() {
+  let bar = $('.cmp-bar');
+  if (!bar) { bar = document.createElement('div'); bar.className = 'cmp-bar'; document.body.append(bar); }
+  if (!cmpList.length) { bar.classList.remove('show'); return; }
+  bar.classList.add('show');
+  bar.innerHTML = `<div class="cmp-inner"><span class="cmp-label">比較課程 (${cmpList.length}/3)</span><div class="cmp-items">${cmpList.map(id => {
+    const c = byId[id]; return c ? `<div class="cmp-chip"><img src="${img(c)}" alt=""><span>${c.title.slice(0, 12)}</span><button data-cmp-rm="${id}">×</button></div>` : '';
+  }).join('')}</div><button class="btn btn-pri cmp-go" ${cmpList.length < 2 ? 'disabled' : ''}>開始比較</button><button class="cmp-clear">清除</button></div>`;
+  $$('[data-cmp-rm]', bar).forEach(b => b.onclick = () => { const i = cmpList.indexOf(b.dataset.cmpRm); if (i > -1) cmpList.splice(i, 1); saveCmp(); });
+  $('.cmp-clear', bar).onclick = () => { cmpList.length = 0; saveCmp(); };
+  $('.cmp-go', bar).onclick = () => {
+    const courses = cmpList.map(id => byId[id]).filter(Boolean);
+    const ov = document.createElement('div'); ov.className = 'cmp-overlay';
+    ov.innerHTML = `<div class="cmp-modal"><div class="cmp-modal-head"><h2>課程比較</h2><button class="cmp-close">×</button></div>
+      <div class="cmp-table"><table><thead><tr><th></th>${courses.map(c => `<th><img src="${img(c)}" alt=""><br>${c.title}</th>`).join('')}</tr></thead><tbody>
+        <tr><td>價格</td>${courses.map(c => `<td class="cmp-pri">${fmt(c.price)}</td>`).join('')}</tr>
+        <tr><td>原價</td>${courses.map(c => `<td><del>${fmt(c.origin)}</del></td>`).join('')}</tr>
+        <tr><td>折扣</td>${courses.map(c => `<td>${pct(c)}% OFF</td>`).join('')}</tr>
+        <tr><td>評分</td>${courses.map(c => `<td>★ ${c.rating}</td>`).join('')}</tr>
+        <tr><td>學員數</td>${courses.map(c => `<td>${c.students.toLocaleString()}</td>`).join('')}</tr>
+        <tr><td>時數</td>${courses.map(c => `<td>${c.hours} 小時</td>`).join('')}</tr>
+        <tr><td>講師</td>${courses.map(c => `<td>${c.teacher}</td>`).join('')}</tr>
+        <tr><td>分類</td>${courses.map(c => `<td>${c.sub}</td>`).join('')}</tr>
+      </tbody></table></div></div>`;
+    document.body.append(ov);
+    $('.cmp-close', ov).onclick = () => ov.remove();
+    ov.onclick = e => { if (e.target === ov) ov.remove(); };
+  };
+}
+window.addCompare = id => {
+  if (cmpList.includes(id)) { toast('已在比較清單中'); return; }
+  if (cmpList.length >= 3) { toast('最多比較 3 門課程'); return; }
+  cmpList.push(id); saveCmp(); toast('已加入比較');
+};
+updCmpUI();
 })();

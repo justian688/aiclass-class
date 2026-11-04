@@ -1393,6 +1393,8 @@ body.loaded::before,body.loaded::after{opacity:0;visibility:hidden;pointer-event
 [data-theme="dark"] .sres a:hover{background:rgba(255,255,255,.05)}
 [data-theme="dark"] .hot button{background:var(--bg2);border-color:var(--line);color:var(--tx2)}
 [data-theme="dark"] .recent-list button{background:var(--bg2);border-color:var(--line);color:var(--tx2)}
+[data-theme="dark"] .notes-input{background:var(--bg2);border-color:var(--line);color:var(--tx)}
+[data-theme="dark"] .note-item{background:var(--card);border-color:var(--line)}
 .theme-toggle{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;transition:background .25s,color .25s;color:var(--tx2)}
 .theme-toggle:hover{background:var(--bg2);color:var(--tx)}
 
@@ -1927,6 +1929,23 @@ body:not(.loaded) main{min-height:100vh}
   .live-rec-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 }
 
+/* ===== 學習筆記 ===== */
+.notes-add{display:flex;gap:12px;align-items:flex-start;margin-bottom:24px}
+.notes-input{flex:1;resize:vertical;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;font:inherit;font-size:15px;background:var(--bg);color:var(--tx);transition:border-color .2s}
+.notes-input:focus{border-color:var(--pri);outline:none}
+.notes-save{flex-shrink:0;height:auto;align-self:flex-end}
+.note-item{position:relative;padding:16px 20px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;background:var(--card);transition:box-shadow .2s}
+.note-item:hover{box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.note-date{font-size:13px;color:var(--tx3);margin-bottom:6px}
+.note-text{font-size:15px;line-height:1.7;white-space:pre-wrap}
+.note-del{position:absolute;top:12px;right:12px;font-size:13px;color:var(--tx3);opacity:0;transition:opacity .2s,color .2s}
+.note-item:hover .note-del{opacity:1}
+.note-del:hover{color:#ff3b30}
+.notes-empty{color:var(--tx3);font-size:15px;text-align:center;padding:32px 0}
+
+/* ===== 課程進度 checkbox ===== */
+.lesson-cb{width:18px;height:18px;accent-color:var(--pri);cursor:pointer;margin-right:8px;vertical-align:middle;flex-shrink:0}
+
 /* ===== 全站視覺打磨 ===== */
 ::selection{background:rgba(124,92,255,.2);color:var(--tx)}
 
@@ -2108,3 +2127,28 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
   .live-dot{animation-duration:1.5s!important}
   .live-badge{animation-duration:1.5s!important}
 }
+
+/* ===== 課程比較 ===== */
+.cmp-bar{position:fixed;bottom:-80px;left:0;right:0;z-index:200;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -4px 20px rgba(0,0,0,.12);transition:bottom .4s var(--ease);padding:12px 0}
+.cmp-bar.show{bottom:0}
+.cmp-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:16px}
+.cmp-label{font-weight:700;font-size:14px;white-space:nowrap}
+.cmp-items{display:flex;gap:8px;flex:1;overflow-x:auto}
+.cmp-chip{display:flex;align-items:center;gap:6px;background:var(--bg2);border-radius:8px;padding:4px 10px 4px 4px;font-size:13px;white-space:nowrap}
+.cmp-chip img{width:32px;height:32px;border-radius:6px;object-fit:cover}
+.cmp-chip button{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:16px;padding:0 2px}
+.cmp-go{height:38px;font-size:13px;padding:0 20px;white-space:nowrap}
+.cmp-go:disabled{opacity:.4;cursor:not-allowed}
+.cmp-clear{background:none;border:none;color:var(--tx2);font-size:13px;cursor:pointer;white-space:nowrap}
+.cmp-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:24px}
+.cmp-modal{background:var(--bg);border-radius:20px;max-width:900px;width:100%;max-height:85vh;overflow:auto;padding:28px}
+.cmp-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.cmp-modal-head h2{font-size:22px;margin:0}
+.cmp-close{background:none;border:none;font-size:28px;color:var(--tx2);cursor:pointer}
+.cmp-table{overflow-x:auto}
+.cmp-table table{width:100%;border-collapse:collapse;text-align:center}
+.cmp-table th{padding:16px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+.cmp-table th img{width:120px;height:80px;object-fit:cover;border-radius:10px;margin-bottom:8px;display:block;margin:0 auto 8px}
+.cmp-table td{padding:12px;border-bottom:1px solid var(--line);font-size:14px}
+.cmp-table td:first-child{font-weight:600;text-align:left;color:var(--tx2);white-space:nowrap}
+.cmp-pri{color:var(--pri);font-weight:700;font-size:16px}
