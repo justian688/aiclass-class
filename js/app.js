@@ -2728,10 +2728,13 @@ function categoryPage() {
 /* ---------- 收藏頁 ---------- */
 function wishlistPage() {
   const main = $('main');
-  const items = [...wish].map(id => byId[id]).filter(Boolean);
+  let wishSort = 'added';
 
   function render() {
-    const items = [...wish].map(id => byId[id]).filter(Boolean);
+    let items = [...wish].map(id => byId[id]).filter(Boolean);
+    if (wishSort === 'price-low') items.sort((a,b) => a.price - b.price);
+    else if (wishSort === 'price-high') items.sort((a,b) => b.price - a.price);
+    else if (wishSort === 'rating') items.sort((a,b) => b.rating - a.rating);
     if (!items.length) {
       main.innerHTML = `<section class="sec"><div class="wrap">
         <div class="cart-empty"><div class="cart-empty-icon">♡</div><h2>收藏清單是空的</h2><p>瀏覽課程時點擊愛心，把感興趣的課程加入收藏</p><a class="btn btn-pri" href="index.html">探索課程</a></div>
@@ -2742,8 +2745,11 @@ function wishlistPage() {
     <section class="wish-hero"><div class="wrap">
       <div class="crumb rv-up"><a href="index.html">首頁</a> › 我的收藏</div>
       <h1 class="wish-title rv-up">我的收藏</h1>
-      <p class="wish-count rv-up">共 ${items.length} 堂課程</p>
-      <button class="btn btn-pri wish-add-all rv-up" style="margin-top:12px">🛒 一鍵全部加入購物車</button>
+      <p class="wish-count rv-up">共 ${items.length} 堂課程・總價值 ${fmt(items.reduce((s,c)=>s+c.price,0))}</p>
+      <div class="wish-actions-bar rv-up">
+        <button class="btn btn-pri wish-add-all">🛒 一鍵全部加入購物車</button>
+        <select class="wish-sort"><option value="added">加入順序</option><option value="price-low">價格低→高</option><option value="price-high">價格高→低</option><option value="rating">評分最高</option></select>
+      </div>
     </div></section>
     <section class="sec"><div class="wrap">
       <div class="wish-grid">${items.map(c => `<div class="wish-item rv-up">
@@ -2765,13 +2771,17 @@ function wishlistPage() {
       localStorage.setItem('aic-wish', JSON.stringify([...wish]));
       render();
       toast('已移除收藏');
+      window.trackEvent('remove_from_wishlist', { item_id: b.dataset.id });
     });
     const addAllBtn = $('.wish-add-all', main);
     if (addAllBtn) addAllBtn.onclick = () => {
       items.forEach(c => cart.add(c.id));
       saveCart(); updateCartBadge();
       toast(`已將 ${items.length} 堂課程加入購物車`, 'success');
+      window.trackEvent('add_to_cart', { item_id: 'wishlist_all', value: items.reduce((s,c) => s + c.price, 0) });
     };
+    const sortSel = $('.wish-sort', main);
+    if (sortSel) sortSel.onchange = () => { wishSort = sortSel.value; render(); };
     reveal(main);
   }
   render();
@@ -3760,7 +3770,7 @@ function playerPage() {
     if (!auto || auto.checked) {
       if (curLs < chapters[curCh].lessons.length - 1) goLesson(curCh, curLs + 1);
       else if (curCh < chapters.length - 1) goLesson(curCh + 1, 0);
-      else toast('恭喜完成所有課程！🎉');
+      else { toast('恭喜完成所有課程！🎉'); showCompletionCelebration(c); }
     }
   };
 
@@ -3819,6 +3829,36 @@ function playerPage() {
     }
   }, 60000);
   window.addEventListener('beforeunload', () => clearInterval(restTimer));
+}
+
+function showCompletionCelebration(c) {
+  const ov = document.createElement('div'); ov.className = 'comp-ov';
+  ov.innerHTML = `<div class="comp-box">
+    <canvas class="comp-confetti" width="400" height="300"></canvas>
+    <div class="comp-icon">🎓</div>
+    <h2>恭喜完成課程！</h2>
+    <p class="comp-sub">${c.title}</p>
+    <p class="comp-msg">你已完成所有課程章節，太棒了！<br>繼續保持學習的熱情 💪</p>
+    <div class="comp-btns">
+      <a href="certificate.html?id=${c.id}" class="btn">查看證書</a>
+      <button class="btn btn-ghost comp-close">繼續瀏覽</button>
+    </div>
+  </div>`;
+  document.body.append(ov);
+  requestAnimationFrame(() => ov.classList.add('show'));
+  const cvs = ov.querySelector('canvas'), ctx = cvs.getContext('2d');
+  const colors = ['#7c5cff','#ff5c8a','#34c759','#ff9f0a','#5ac8fa','#af52de'];
+  const pieces = Array.from({ length: 60 }, () => ({ x: Math.random()*400, y: Math.random()*-300, r: Math.random()*6+2, c: colors[Math.floor(Math.random()*6)], vx: (Math.random()-.5)*3, vy: Math.random()*3+2, rot: Math.random()*360 }));
+  let raf;
+  (function draw() {
+    ctx.clearRect(0,0,400,300);
+    pieces.forEach(p => { p.x += p.vx; p.y += p.vy; p.rot += 3; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle = p.c; ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r); ctx.restore(); if (p.y > 320) { p.y = -10; p.x = Math.random()*400; } });
+    raf = requestAnimationFrame(draw);
+  })();
+  const close = () => { cancelAnimationFrame(raf); ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); };
+  ov.querySelector('.comp-close').onclick = close;
+  ov.onclick = e => { if (e.target === ov) close(); };
+  window.trackEvent('course_complete', { item_id: c.id, item_name: c.title });
 }
 
 /* ---------- 服務條款 ---------- */

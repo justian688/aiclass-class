@@ -8,32 +8,72 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f5f5f7;--tx:#1d1d1f;--tx2:#6e6e73;--tx3:#aeaeb2}
+:root{--bg:#f5f5f7;--tx:#1d1d1f;--tx2:#6e6e73;--tx3:#aeaeb2;--pri:#7c5cff}
 @media(prefers-color-scheme:dark){:root{--bg:#0b0b10;--tx:#e8e8ec;--tx2:#8e8e93;--tx3:#5a5a6a}}
 body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--tx);padding:24px;transition:background .3s,color .3s}
-.box{text-align:center;max-width:420px}
+.box{text-align:center;max-width:480px}
 .icon{font-size:72px;margin-bottom:24px;filter:grayscale(.3);animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @media(prefers-reduced-motion:reduce){.icon{animation:none}}
 h1{font-size:24px;font-weight:800;margin-bottom:12px}
-p{color:var(--tx2);line-height:1.6;margin-bottom:24px}
+.desc{color:var(--tx2);line-height:1.6;margin-bottom:24px}
 .btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 32px;background:linear-gradient(135deg,#7c5cff,#a855f7);color:#fff;font-weight:700;font-size:15px;border:0;border-radius:14px;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px rgba(124,92,255,.3);transition:transform .25s,box-shadow .25s}
 .btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,92,255,.4)}
+.retry-txt{margin-top:12px;font-size:13px;color:var(--tx3)}
+.cached-sec{margin-top:32px;text-align:left;border-top:1px solid rgba(124,92,255,.15);padding-top:20px}
+.cached-sec h3{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--tx2)}
+.cached-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.cached-list li{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(124,92,255,.06);border-radius:10px;font-size:14px;color:var(--tx)}
+.cached-list li .c-dot{width:8px;height:8px;border-radius:50%;background:var(--pri);flex-shrink:0}
 .tip{margin-top:20px;font-size:13px;color:var(--tx3)}
-.status{margin-top:16px;font-size:13px;color:var(--tx3)}
+.status{margin-top:16px;font-size:13px;color:#34c759;font-weight:600}
 </style>
 </head>
 <body>
 <div class="box">
   <div class="icon">📡</div>
   <h1>目前沒有網路連線</h1>
-  <p>AI Class 需要網路才能載入課程內容。<br>請檢查你的網路連線後重新整理頁面。</p>
+  <p class="desc">AI Class 需要網路才能載入課程內容。<br>請檢查你的網路連線後重新整理頁面。</p>
   <button class="btn" onclick="location.reload()">重新整理</button>
+  <p class="retry-txt" id="retry"></p>
+  <div class="cached-sec" id="cached" style="display:none">
+    <h3>📦 可離線瀏覽的已快取內容</h3>
+    <ul class="cached-list" id="cached-list"></ul>
+  </div>
   <p class="tip">已購買的課程影片會在有網路時自動快取，方便你下次離線觀看。</p>
   <p class="status" id="status"></p>
 </div>
 <script>
-window.addEventListener('online', () => { document.getElementById('status').textContent = '網路已恢復，正在重新載入…'; setTimeout(() => location.reload(), 800); });
+window.addEventListener('online', () => { document.getElementById('status').textContent = '✓ 網路已恢復，正在重新載入…'; setTimeout(() => location.reload(), 800); });
+
+let countdown = 15;
+const retryEl = document.getElementById('retry');
+const tick = () => {
+  retryEl.textContent = `${countdown} 秒後自動重試…`;
+  if (--countdown < 0) { countdown = 30; location.reload(); }
+};
+tick(); setInterval(tick, 1000);
+
+if ('caches' in window) {
+  caches.keys().then(ks => {
+    const c = ks.find(k => k.startsWith('aic-'));
+    if (c) return caches.open(c).then(cache => cache.keys());
+    return [];
+  }).then(reqs => {
+    const pages = reqs.filter(r => r.url.endsWith('.html') && !r.url.includes('offline') && !r.url.includes('404'));
+    if (pages.length) {
+      const sec = document.getElementById('cached');
+      const list = document.getElementById('cached-list');
+      sec.style.display = 'block';
+      pages.slice(0, 6).forEach(r => {
+        const name = decodeURIComponent(r.url.split('/').pop().replace('.html', '').replace(/-/g, ' '));
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="c-dot"></span><a href="${r.url}" style="color:inherit;text-decoration:none">${name || '首頁'}</a>`;
+        list.append(li);
+      });
+    }
+  }).catch(() => {});
+}
 </script>
 </body>
 </html>
