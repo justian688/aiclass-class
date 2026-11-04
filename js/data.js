@@ -542,6 +542,111 @@ window.CHAPTERS = {
     { ch: 3, title: '關卡設計', lessons: ['Tilemap 地圖編輯', '陷阱與機關設計', '收集物與計分系統', '檢查點與存檔', '關卡切換與載入畫面'], duration: 110 },
     { ch: 4, title: '敵人與戰鬥', lessons: ['敵人 AI 巡邏路線', '追蹤與攻擊行為', 'Boss 戰設計', '生命值與傷害系統', '粒子特效與畫面震動'], duration: 120 },
     { ch: 5, title: '打磨與上架', lessons: ['UI 系統（血條/對話框）', '音效與背景音樂', '遊戲手感（Game Feel）', 'Steam 上架流程', '行銷與社群推廣'], duration: 85 }
+  ],
+  c04: [
+    { ch: 1, title: '鍵盤基礎', lessons: ['認識鍵盤與坐姿', '五線譜與音名', '右手 C 大調音階', '左手伴奏基礎', '第一首歌：小星星'], duration: 70 },
+    { ch: 2, title: '和弦與伴奏', lessons: ['三和弦原理', '常用和弦進行（I-V-vi-IV）', '左手伴奏型態', '右手旋律即興', '5 首流行歌彈奏'], duration: 85 },
+    { ch: 3, title: '進階和聲', lessons: ['七和弦與延伸和弦', '和弦轉位運用', '經過和弦與替代和弦', '爵士和聲入門', '5 首進階歌曲改編'], duration: 100 },
+    { ch: 4, title: '即興演奏', lessons: ['五聲音階即興', '旋律裝飾技巧', '節奏變化與切分', '和弦內音即興', '即興演奏實戰練習'], duration: 90 },
+    { ch: 5, title: '編曲與錄音', lessons: ['流行歌編曲結構', 'GarageBand 錄音教學', '伴奏帶製作', '表演準備與心態', '期末：完整歌曲改編錄製'], duration: 75 }
+  ],
+  c11: [
+    { ch: 1, title: '個人品牌定位', lessons: ['什麼是個人品牌', '找到你的獨特定位', '目標受眾分析', '品牌人設建立', '競爭者分析'], duration: 60 },
+    { ch: 2, title: '內容策略', lessons: ['內容主題規劃', '內容日曆制定', '文章 vs 短影音 vs Podcast', '搜尋意圖與關鍵字', '內容覆用與分發'], duration: 70 },
+    { ch: 3, title: '社群經營', lessons: ['Instagram 經營策略', 'YouTube 頻道建立', 'LinkedIn 專業形象', '社群互動與社群感', '數據分析與調整'], duration: 80 },
+    { ch: 4, title: '變現模式', lessons: ['接案與顧問服務', '線上課程與數位產品', '聯盟行銷與業配', '會員制與訂閱制', '多元收入組合'], duration: 70 },
+    { ch: 5, title: '長期經營', lessons: ['品牌一致性維護', '團隊與外包管理', '危機處理', '品牌延伸策略', '期末：品牌企劃書完成'], duration: 55 }
+  ],
+  c12: [
+    { ch: 1, title: 'AE 基礎操作', lessons: ['介面與工作區設定', '圖層類型與屬性', '關鍵影格動畫', '時間軸與速度曲線', '預覽與輸出設定'], duration: 80 },
+    { ch: 2, title: '文字與形狀動畫', lessons: ['文字動畫器', '形狀圖層繪製', '路徑動畫', 'Trim Paths 技巧', '實作：動態 Logo'], duration: 90 },
+    { ch: 3, title: '表達式入門', lessons: ['wiggle 與 loopOut', 'time 與 Math 函數', '圖層間連結', '彈性表達式', '實作：自動化動態圖表'], duration: 100 },
+    { ch: 4, title: '特效與合成', lessons: ['粒子特效（CC Particle）', '追蹤與穩定', '色彩校正', '綠幕去背', '實作：社群短影音動態'], duration: 110 },
+    { ch: 5, title: '作品與工作流', lessons: ['Lottie 動畫匯出', '與 Premiere 協作', '動態設計師作品集', '接案報價參考', '期末：完整品牌動態包'], duration: 70 }
+  ],
+  c14: [
+    { ch: 1, title: '概念藝術導論', lessons: ['概念藝術在產業中的角色', '影響圖與情緒版製作', '風格探索與定義', '快速草圖技巧', '構圖基本原則'], duration: 80 },
+    { ch: 2, title: '場景設計', lessons: ['透視與空間感', '地形與建築語言', '光影氛圍營造', '色彩劇本', '實作：奇幻城市場景'], duration: 110 },
+    { ch: 3, title: '生物與角色設計', lessons: ['生物解剖參考', '混合特徵設計法', '材質與紋理表現', '比例與誇張化', '實作：原創生物設計'], duration: 100 },
+    { ch: 4, title: '道具與武器設計', lessons: ['功能性與美學平衡', '材質表現（金屬/木/布）', '設計語言統一', '三視圖製作', '實作：武器概念設計'], duration: 95 },
+    { ch: 5, title: '世界觀整合', lessons: ['世界觀設定文件撰寫', '視覺風格指南', '場景與角色整合', '作品集排版', '期末：完整世界觀設計'], duration: 85 }
+  ],
+  c19: [
+    { ch: 1, title: '網頁設計基礎', lessons: ['網頁設計趨勢概覽', 'Wireframe 線框圖', '視覺階層與排版', '格線系統運用', '色彩與字體選擇'], duration: 80 },
+    { ch: 2, title: '響應式設計', lessons: ['行動優先設計思維', '斷點策略規劃', '彈性圖片與影片', '導覽列響應式設計', '實作：響應式 Landing Page'], duration: 100 },
+    { ch: 3, title: '互動與動態', lessons: ['Hover 與微互動設計', '滾動動畫規劃', '頁面轉場效果', '表單設計與驗證', '實作：互動式作品集'], duration: 90 },
+    { ch: 4, title: '設計系統建立', lessons: ['Atomic Design 方法論', '元件庫建立', '色彩與文字 Token', '間距與圓角規範', '設計交付文件'], duration: 95 },
+    { ch: 5, title: '進階實務', lessons: ['SEO 友善設計', '無障礙設計原則', '效能與載入體驗', '跨瀏覽器測試', '期末：完整網站設計'], duration: 75 }
+  ],
+  c25: [
+    { ch: 1, title: 'Python 資料分析環境', lessons: ['Anaconda 與 Jupyter 設定', 'NumPy 陣列基礎', 'Pandas DataFrame 操作', '資料型別與缺失值', '讀取 CSV / Excel / JSON'], duration: 80 },
+    { ch: 2, title: '資料清理與轉換', lessons: ['缺失值處理策略', '重複值與異常值偵測', '字串處理與正則', '日期時間處理', '實作：清理真實業務資料'], duration: 90 },
+    { ch: 3, title: '資料視覺化', lessons: ['Matplotlib 基礎圖表', 'Seaborn 統計視覺化', 'Plotly 互動式圖表', '圖表設計原則', '實作：銷售分析儀表板'], duration: 100 },
+    { ch: 4, title: '統計分析與報表', lessons: ['描述性統計', '相關性分析', '樞紐分析表', '自動化 Excel 報表（openpyxl）', '自動寄信報表'], duration: 90 },
+    { ch: 5, title: '進階應用', lessons: ['SQL 資料庫查詢', 'Web Scraping 資料蒐集', '機器學習入門（scikit-learn）', 'Streamlit 資料 App', '期末：端到端分析專案'], duration: 85 }
+  ],
+  c26: [
+    { ch: 1, title: 'Next.js App Router', lessons: ['專案建立與目錄結構', 'Server Components vs Client Components', '路由與動態路由', 'Loading / Error / Not Found', 'Middleware 與 Layout'], duration: 95 },
+    { ch: 2, title: '資料與狀態', lessons: ['Server Actions', 'Fetch 與快取策略', 'Zustand 狀態管理', 'React Query 整合', 'Optimistic Updates'], duration: 110 },
+    { ch: 3, title: '認證與授權', lessons: ['NextAuth.js 設定', 'OAuth 社群登入', 'JWT 與 Session', '角色權限控管', '實作：登入與會員系統'], duration: 100 },
+    { ch: 4, title: '付款與 SaaS 功能', lessons: ['Stripe 訂閱模式', 'Webhook 處理', '用量計費實作', 'Admin Dashboard', '實作：SaaS 定價頁面'], duration: 110 },
+    { ch: 5, title: '部署與優化', lessons: ['Vercel 部署設定', 'Edge Runtime', 'ISR 與 On-demand Revalidation', '效能監控與 Analytics', '期末：完整 SaaS 產品'], duration: 85 }
+  ],
+  c27: [
+    { ch: 1, title: '短影音基礎', lessons: ['短影音趨勢與平台分析', '手機拍攝設備推薦', '構圖與景別選擇', '自然光與簡易打光', '第一支短影音拍攝'], duration: 60 },
+    { ch: 2, title: '運鏡與節奏', lessons: ['基礎運鏡技巧', '轉場運鏡手法', '節奏感與音樂卡點', '故事結構：開頭三秒法則', '實作：5 種常見短影音類型'], duration: 75 },
+    { ch: 3, title: 'CapCut 剪輯', lessons: ['介面與基本操作', '音樂與音效搭配', '字幕與文字動畫', '特效與濾鏡運用', '實作：完整短影音剪輯'], duration: 80 },
+    { ch: 4, title: '進階技巧', lessons: ['綠幕去背應用', '畫面穩定與速度控制', '多機位剪輯', '色調統一與風格化', '封面設計與標題'], duration: 70 },
+    { ch: 5, title: '經營與變現', lessons: ['演算法運作原理', '選題與腳本撰寫', '粉絲互動與社群經營', '業配與商業合作', '期末：打造個人短影音品牌'], duration: 55 }
+  ],
+  c33: [
+    { ch: 1, title: 'Premiere Pro 基礎', lessons: ['介面導覽與專案設定', '匯入素材與管理', '時間軸基本操作', '基礎剪輯技巧', '輸出設定與格式'], duration: 85 },
+    { ch: 2, title: '進階剪輯', lessons: ['多機位剪輯', '巢狀序列與子片段', '速度控制與時間重映射', '關鍵影格動畫', 'J-Cut 與 L-Cut'], duration: 100 },
+    { ch: 3, title: '調色與風格', lessons: ['Lumetri Color 面板', '一級校正流程', '二級調色與遮罩', 'LUT 套用與自訂', '實作：電影感調色'], duration: 95 },
+    { ch: 4, title: '音效與混音', lessons: ['音訊基礎與格式', '音量調整與關鍵影格', '環境音與音效設計', 'Essential Sound 面板', '實作：完整音效混音'], duration: 90 },
+    { ch: 5, title: '工作流與接案', lessons: ['Proxy 代理剪輯', '與 AE 動態圖形整合', '團隊協作流程', '接案報價與合約', '期末：完整影片作品'], duration: 80 }
+  ],
+  c36: [
+    { ch: 1, title: '文案思維建立', lessons: ['文案的角色與價值', '消費者心理學基礎', '目標受眾分析', '品牌語調設定', 'AIDA 模型運用'], duration: 55 },
+    { ch: 2, title: '標題與開頭', lessons: ['標題公式 12 種', '數字型標題技巧', '問題型標題設計', '吸睛開頭寫法', '實作：改寫 10 個標題'], duration: 60 },
+    { ch: 3, title: '產品與銷售文案', lessons: ['FAB 特色利益轉換', '商品描述撰寫', 'Landing Page 結構', '社群貼文文案', '實作：完整銷售頁文案'], duration: 70 },
+    { ch: 4, title: '社群與品牌文案', lessons: ['Instagram 貼文寫法', 'Facebook 廣告文案', 'Email 行銷文案', '品牌故事撰寫', '實作：一週社群內容排程'], duration: 65 },
+    { ch: 5, title: '進階與接案', lessons: ['SEO 文案技巧', 'A/B 測試與數據優化', '文案作品集建立', '接案定價與提案', '期末：品牌文案企劃書'], duration: 50 }
+  ],
+  c48: [
+    { ch: 1, title: 'AI 工具概論', lessons: ['ChatGPT 帳號與模型選擇', '介面操作與基本對話', 'Prompt 的基本結構', '常見錯誤與限制', '其他 AI 工具介紹'], duration: 45 },
+    { ch: 2, title: '辦公室應用', lessons: ['會議紀錄自動整理', '信件撰寫與回覆', '簡報大綱生成', '翻譯與多語系處理', '實作：一天的 AI 辦公流程'], duration: 55 },
+    { ch: 3, title: '數據與報表', lessons: ['Excel 公式生成', '資料分析與摘要', '圖表建議與解讀', 'SQL 查詢生成', '實作：月報自動化'], duration: 60 },
+    { ch: 4, title: '內容創作', lessons: ['部落格文章撰寫', '社群貼文批量產出', '廣告文案生成', '影片腳本與標題', '實作：一週內容行事曆'], duration: 55 },
+    { ch: 5, title: '進階自動化', lessons: ['GPTs 自訂助手', 'Zapier + AI 自動化', 'API 串接基礎', '個人知識庫建立', '期末：打造你的 AI 工作流'], duration: 50 }
+  ],
+  c55: [
+    { ch: 1, title: 'LLM 基礎與微調概念', lessons: ['大型語言模型原理', '預訓練 vs 微調', 'Full Fine-tuning vs LoRA', '硬體需求與雲端方案', '實作環境建置'], duration: 80 },
+    { ch: 2, title: '資料準備', lessons: ['訓練資料格式', '資料清洗與標注', '對話格式轉換', '資料品質評估', '實作：企業 FAQ 資料集'], duration: 90 },
+    { ch: 3, title: 'LoRA 微調實戰', lessons: ['LoRA 原理與參數', 'Kohya / PEFT 框架', '訓練參數設定', '訓練監控與 WandB', '實作：客服模型微調'], duration: 110 },
+    { ch: 4, title: 'QLoRA 與進階技巧', lessons: ['量化基礎（4-bit / 8-bit）', 'QLoRA 設定與訓練', '多任務微調', '模型合併與匯出', 'DPO 偏好對齊'], duration: 100 },
+    { ch: 5, title: '部署與評估', lessons: ['vLLM 推論伺服器', 'API 服務建置', '效能評估指標', 'A/B 測試與迭代', '期末：完整微調到部署'], duration: 90 }
+  ],
+  c57: [
+    { ch: 1, title: 'Procreate 入門', lessons: ['iPad 與觸控筆選擇', '介面導覽與手勢操作', '畫布設定與 DPI', '基本繪圖工具', '圖層系統基礎'], duration: 65 },
+    { ch: 2, title: '筆刷與色彩', lessons: ['內建筆刷導覽', '自訂筆刷製作', '色彩理論基礎', '配色工具與調色盤', '實作：色彩練習 5 張'], duration: 80 },
+    { ch: 3, title: '角色繪製', lessons: ['人物比例與結構', '線稿技巧', '上色流程（平塗/賽璐璐）', '光影與材質表現', '實作：完整角色插畫'], duration: 100 },
+    { ch: 4, title: '場景與構圖', lessons: ['透視輔助線', '場景元素繪製', '氛圍與色彩渲染', '構圖引導視線', '實作：場景插畫作品'], duration: 90 },
+    { ch: 5, title: '商用與接案', lessons: ['作品輸出與格式', '動畫製作基礎', '社群發布策略', '接案平台與報價', '期末：5 張商用作品集'], duration: 70 }
+  ],
+  c34: [
+    { ch: 1, title: 'DaVinci Resolve 基礎', lessons: ['介面導覽與媒體管理', 'Cut 頁面快速剪輯', 'Edit 頁面進階操作', '時間軸與標記', '專案設定與輸出'], duration: 75 },
+    { ch: 2, title: '一級色彩校正', lessons: ['示波器讀取方法', '色彩空間與管理', '曝光與白平衡修正', '對比度與色調控制', '實作：三段素材一級校正'], duration: 85 },
+    { ch: 3, title: '二級調色', lessons: ['限定器與 Power Window', '膚色修正技巧', '天空與背景調色', '節點架構設計', '實作：電影風格調色'], duration: 95 },
+    { ch: 4, title: 'LUT 與風格化', lessons: ['LUT 原理與套用', '自訂 LUT 製作', '風格化調色手法', '跨場景色調統一', '實作：個人調色風格建立'], duration: 90 },
+    { ch: 5, title: '進階與交付', lessons: ['HDR 調色基礎', 'Fusion 合成入門', '音頻 Fairlight 基礎', '輸出交付規範', '期末：完整短片調色'], duration: 75 }
+  ],
+  c42: [
+    { ch: 1, title: '自由工作者心態', lessons: ['接案 vs 上班差異', '你適合自由工作嗎', '必備技能盤點', '建立專業形象', '工作空間規劃'], duration: 50 },
+    { ch: 2, title: '定價與報價', lessons: ['計算你的時薪底線', '三種定價策略', '報價單製作', '議價與談判技巧', '實作：製作個人報價模板'], duration: 55 },
+    { ch: 3, title: '客戶開發', lessons: ['案源管道盤點', '接案平台經營', '個人網站與作品集', '人脈經營與轉介', '實作：撰寫提案信'], duration: 60 },
+    { ch: 4, title: '專案管理', lessons: ['合約與保障', '時間管理與排程', '客戶溝通 SOP', '催款不尷尬', '處理難搞客戶'], duration: 55 },
+    { ch: 5, title: '持續經營', lessons: ['財務管理與報稅', '保險與退休規劃', '多元收入建立', '從接案到品牌', '期末：自由工作者營運計畫'], duration: 45 }
   ]
 };
 
