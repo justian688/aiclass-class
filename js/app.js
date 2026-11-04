@@ -524,9 +524,18 @@ function searchOverlay() {
 })();
 
 /* ---------- 卡片 ---------- */
+function getTotalLessons(c) {
+  const ch = window.CHAPTERS && window.CHAPTERS[c.id];
+  if (ch) return ch.reduce((s, x) => s + x.lessons.length, 0);
+  const n = c.hours >= 20 ? 6 : 5;
+  return Math.max(n * 4, Math.round(c.hours * 60 / 12));
+}
+
 function cardHighlights(c) {
   const hl = [];
-  if (c.hours) hl.push(`${c.hours} 小時完整課程內容`);
+  const total = getTotalLessons(c);
+  const chCnt = window.CHAPTERS && window.CHAPTERS[c.id] ? window.CHAPTERS[c.id].length : (c.hours >= 20 ? 6 : 5);
+  hl.push(`${chCnt} 章・${total} 堂・${c.hours} 小時`);
   if (c.rating >= 4.8) hl.push(`★ ${c.rating} 超高評分好課`);
   else hl.push(`★ ${c.rating} 好評推薦`);
   if (c.students > 5000) hl.push(`${(c.students/1000).toFixed(1)}K 學員已加入`);
@@ -547,7 +556,8 @@ function card(c, i, rank) {
   const lv = courseLevel(c);
   const isOwned = owned.has(c.id);
   const prog = progress[c.id];
-  const pctDone = prog ? Math.round(prog.done.length / 28 * 100) : 0;
+  const totalL = getTotalLessons(c);
+  const pctDone = prog && totalL > 0 ? Math.min(100, Math.round(prog.done.length / totalL * 100)) : 0;
   return `<a class="card rv-up ${isOwned ? 'card-owned' : ''}" href="${isOwned ? 'player.html' : 'course.html'}?id=${c.id}" data-v="${vid(c)}" style="transition-delay:${(i % 5) * 70}ms">
     <div class="tw">${rank ? `<span class="num">${i + 1}</span>` : ''}<div class="thumb">
       ${isOwned ? '<span class="badge owned-badge">已購買</span>' : c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
@@ -1308,7 +1318,7 @@ function course() {
       </div>
     </aside>
   </div></div></div>
-  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a></div></nav>
+  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a><a href="#plan">學習計畫</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
       <div class="c-highlights rv-up">${['從零到一完整學習','業界實戰流程','可直接使用的專案檔','講師親自回覆問題','終身免費更新','完課證書'].map(t=>`<span class="c-hl">${t}</span>`).join('')}</div>
@@ -1398,6 +1408,7 @@ function course() {
       </div>
       <p class="cl-note">已購買的學員自動享有所有更新內容</p>
     </section>
+    ${(() => { const lv = courseLevel(c); const wk = lv.weeks; const hpw = Math.ceil(c.hours / wk); const plans = []; for (let w = 0; w < Math.min(wk, 6); w++) { const from = Math.floor(w * chapters.length / wk); const to = Math.floor((w + 1) * chapters.length / wk); const names = chapters.slice(from, to).map(ch => ch.name).join('、'); plans.push({ week: w + 1, chapters: names || '複習與作品完善', hours: hpw }); } if (wk > 6) plans.push({ week: '7+', chapters: '進階練習與作品集整理', hours: hpw }); return `<section class="c-sec c-plan rv-up" id="plan"><h2>📅 建議學習計畫<span class="c-plan-badge">${wk} 週完成</span></h2><p class="c-plan-sub">每週投入約 ${hpw} 小時，${wk} 週完成全部課程</p><div class="c-plan-timeline">${plans.map(p => `<div class="c-plan-item"><div class="c-plan-week">第 ${p.week} 週</div><div class="c-plan-content"><b>${p.chapters}</b><span>${p.hours} 小時</span></div></div>`).join('')}</div><div class="c-plan-tip">💡 以上為建議進度，你可以依自己的節奏調整。重要的是持續學習！</div></section>`; })()}
     <div class="c-guarantee rv-up">
       <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">購買後 7 天內，覺得不適合可全額退費，零風險。</div></div>
       <div class="c-guarantee-item"><div class="c-guarantee-icon">♾️</div><div class="c-guarantee-title">無限期觀看</div><div class="c-guarantee-desc">一次購買，終身觀看，隨時隨地複習。</div></div>
