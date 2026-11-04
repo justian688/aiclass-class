@@ -339,3 +339,110 @@ window.FAQ_FULL = [
     ['講師需要自己拍攝嗎？','可以自行拍攝也可以使用平台合作的攝影團隊，攝影棚費用另計但提供優惠價格。']
   ]}
 ];
+
+// ── 優惠券 ──
+window.COUPONS = [
+  { code: 'WELCOME200', discount: 200, type: 'fixed', min: 1000, desc: '新會員首購折 $200', expires: '2026-12-31', limit: 1 },
+  { code: 'AI2026', discount: 15, type: 'percent', min: 2000, desc: 'AI 課程 85 折', expires: '2026-11-30', cats: ['ai'], limit: 3 },
+  { code: 'DOUBLE11', discount: 1111, type: 'fixed', min: 5000, desc: '雙 11 限定折 $1,111', expires: '2026-11-11', limit: 1 },
+  { code: 'FRIEND50', discount: 50, type: 'fixed', min: 0, desc: '好友邀請折 $50', expires: '2026-12-31', limit: 5 },
+  { code: 'DESIGN20', discount: 20, type: 'percent', min: 3000, desc: '設計類課程 8 折', expires: '2026-11-30', cats: ['design'], limit: 2 },
+  { code: 'BAKE300', discount: 300, type: 'fixed', min: 1500, desc: '烘焙料理折 $300', expires: '2026-12-15', cats: ['baking'], limit: 2 }
+];
+
+// ── 成就徽章 ──
+window.BADGES = [
+  { id: 'bg1', name: '初來乍到', icon: '🌱', desc: '完成帳號註冊', xp: 10 },
+  { id: 'bg2', name: '第一堂課', icon: '🎓', desc: '完成第一個課程章節', xp: 20 },
+  { id: 'bg3', name: '學習達人', icon: '📚', desc: '累計觀看 10 小時', xp: 50 },
+  { id: 'bg4', name: '完課勇者', icon: '🏆', desc: '完成一門完整課程', xp: 100 },
+  { id: 'bg5', name: '知識狂人', icon: '🧠', desc: '完成 5 門課程', xp: 300 },
+  { id: 'bg6', name: '連續簽到王', icon: '🔥', desc: '連續 30 天出席', xp: 200 },
+  { id: 'bg7', name: '社群之星', icon: '⭐', desc: '留言被按讚 50 次', xp: 150 },
+  { id: 'bg8', name: '筆記達人', icon: '📝', desc: '累計寫下 100 則筆記', xp: 100 },
+  { id: 'bg9', name: '測驗滿分', icon: '💯', desc: '任一測驗取得滿分', xp: 80 },
+  { id: 'bg10', name: '分享推手', icon: '🤝', desc: '邀請 3 位好友加入', xp: 120 },
+  { id: 'bg11', name: '早鳥學員', icon: '🐦', desc: '連續 7 天在 8 點前上課', xp: 60 },
+  { id: 'bg12', name: '全能學霸', icon: '👑', desc: '在 3 個以上類別完課', xp: 500 }
+];
+
+// ── 排行榜 ──
+window.LEADERBOARD = [
+  { rank: 1, name: '小明同學', avatar: '🦊', xp: 12840, courses: 18, streak: 45 },
+  { rank: 2, name: '設計女孩', avatar: '🎨', xp: 11520, courses: 15, streak: 38 },
+  { rank: 3, name: 'AI 探索者', avatar: '🤖', xp: 10980, courses: 14, streak: 52 },
+  { rank: 4, name: '烘焙小廚', avatar: '🧁', xp: 9870, courses: 12, streak: 30 },
+  { rank: 5, name: '影像工作室', avatar: '🎬', xp: 9340, courses: 11, streak: 28 },
+  { rank: 6, name: '前端新手村', avatar: '💻', xp: 8760, courses: 10, streak: 41 },
+  { rank: 7, name: '音樂創作者', avatar: '🎵', xp: 8210, courses: 9, streak: 25 },
+  { rank: 8, name: '理財小白', avatar: '💰', xp: 7650, courses: 8, streak: 33 },
+  { rank: 9, name: '健身日記', avatar: '💪', xp: 7120, courses: 7, streak: 22 },
+  { rank: 10, name: '插畫練習生', avatar: '✏️', xp: 6890, courses: 8, streak: 19 }
+];
+
+// ── 測驗題庫 ──
+window.QUIZZES = [
+  { id: 'q1', course: 'c03', title: 'AI 應用開發基礎測驗', questions: [
+    { q: 'RAG 的全稱是什麼？', opts: ['Retrieval-Augmented Generation', 'Random Access Generator', 'Real-time AI Gateway', 'Recursive Algorithm Graph'], ans: 0 },
+    { q: '以下哪個不是常見的 Embedding 模型？', opts: ['text-embedding-3-small', 'BERT', 'GPT-4', 'all-MiniLM'], ans: 2 },
+    { q: 'Prompt Engineering 中，Few-shot 指的是？', opts: ['提供少量範例引導模型', '用少量資料微調模型', '減少模型輸出長度', '限制 API 呼叫次數'], ans: 0 },
+    { q: 'Function Calling 的主要用途是？', opts: ['讓模型呼叫外部工具或 API', '加速模型推論速度', '減少模型幻覺', '壓縮模型大小'], ans: 0 },
+    { q: 'Vector Database 主要儲存什麼？', opts: ['文字向量嵌入', 'SQL 結構化資料', '圖片檔案', '影片串流'], ans: 0 }
+  ]},
+  { id: 'q2', course: 'c24', title: '前端開發基礎測驗', questions: [
+    { q: 'CSS 中 flexbox 的主軸預設方向是？', opts: ['row（水平）', 'column（垂直）', 'row-reverse', 'column-reverse'], ans: 0 },
+    { q: 'JavaScript 中 === 和 == 的差別？', opts: ['=== 不做型別轉換', '沒有差別', '=== 速度較慢', '== 只比較型別'], ans: 0 },
+    { q: 'HTML5 的語意標籤不包含？', opts: ['<div>', '<article>', '<section>', '<nav>'], ans: 0 },
+    { q: 'CSS Grid 中 fr 單位代表？', opts: ['可用空間的比例', '固定像素', '百分比', '字型大小'], ans: 0 },
+    { q: 'addEventListener 的第三個參數是？', opts: ['options 或 useCapture', '回呼函數', '事件名稱', '延遲時間'], ans: 0 }
+  ]},
+  { id: 'q3', course: 'c16', title: 'Python 基礎測驗', questions: [
+    { q: 'Python 中 list 和 tuple 的主要差別？', opts: ['list 可變、tuple 不可變', '沒有差別', 'tuple 較快但功能相同', 'list 只能存數字'], ans: 0 },
+    { q: '以下哪個是 Python 的套件管理工具？', opts: ['pip', 'npm', 'yarn', 'cargo'], ans: 0 },
+    { q: 'Python 的 lambda 是什麼？', opts: ['匿名函數', '迴圈語法', '例外處理', '類別繼承'], ans: 0 },
+    { q: 'f-string 是哪個版本引入的？', opts: ['3.6', '2.7', '3.0', '3.10'], ans: 0 },
+    { q: 'Python 的 GIL 會影響？', opts: ['多執行緒的 CPU 密集任務', '所有程式的執行速度', '記憶體管理', '檔案讀寫'], ans: 0 }
+  ]}
+];
+
+// ── 直播活動 ──
+window.LIVE_EVENTS = [
+  { id: 'ev1', title: 'AI 繪圖工作坊：從零到商用', host: '黃士誠', date: '2026-11-08 20:00', duration: 90, enrolled: 342, max: 500, course: 'c47', status: 'upcoming' },
+  { id: 'ev2', title: '設計師職涯問答：轉職與接案', host: '陳柏睿', date: '2026-11-10 14:00', duration: 60, enrolled: 218, max: 300, course: 'c02', status: 'upcoming' },
+  { id: 'ev3', title: '法式甜點直播教學：焦糖布蕾', host: '張馨予', date: '2026-11-12 19:00', duration: 120, enrolled: 456, max: 500, course: 'c45', status: 'upcoming' },
+  { id: 'ev4', title: 'Python 自動化實作 Live Coding', host: '羅志偉', date: '2026-11-15 20:00', duration: 90, enrolled: 389, max: 500, course: 'c16', status: 'upcoming' },
+  { id: 'ev5', title: '遊戲開發者座談：獨立遊戲的第一步', host: '陳威宏', date: '2026-11-18 19:30', duration: 60, enrolled: 187, max: 300, course: 'c38', status: 'upcoming' },
+  { id: 'ev6', title: '前端面試模擬：React 實戰解題', host: '蔡承恩', date: '2026-10-25 20:00', duration: 90, enrolled: 500, max: 500, course: 'c26', status: 'ended', replay: true },
+  { id: 'ev7', title: '短影音創作者交流會', host: '趙宥翔', date: '2026-10-20 14:00', duration: 60, enrolled: 300, max: 300, course: 'c27', status: 'ended', replay: true },
+  { id: 'ev8', title: '品牌設計案例分享：從策略到落地', host: '林予安', date: '2026-10-15 19:00', duration: 75, enrolled: 245, max: 300, course: 'c50', status: 'ended', replay: true }
+];
+
+// ── 社群討論（模擬） ──
+window.COMMUNITY_POSTS = [
+  { id: 'cp1', author: '小明同學', avatar: '🦊', title: '分享我的 AI 助理作品——客服機器人 Demo', content: '跟著黃老師的課程做出了第一個 RAG 客服機器人，正確率大概 85%，還在調整 Prompt...', course: 'c03', likes: 48, replies: 12, time: '2 小時前', tags: ['作品分享'] },
+  { id: 'cp2', author: '設計女孩', avatar: '🎨', title: '第一次用 Figma 做完整 App 設計，求feedback！', content: '花了兩週完成了一個記帳 App 的 UI 設計，Auto Layout 真的太好用了！', course: 'c02', likes: 36, replies: 8, time: '5 小時前', tags: ['作品分享', '求回饋'] },
+  { id: 'cp3', author: '烘焙小廚', avatar: '🧁', title: '閃電泡芙成功了！分享我的心得', content: '第三次嘗試終於成功，關鍵是泡芙麵糊的溫度和擠花的手法，老師的 tip 真的很重要。', course: 'c45', likes: 72, replies: 23, time: '8 小時前', tags: ['心得分享'] },
+  { id: 'cp4', author: '前端新手村', avatar: '💻', title: 'JavaScript 閉包到底怎麼理解？', content: '看了好幾次還是有點模糊，有沒有大大可以用簡單的例子解釋一下？', course: 'c24', likes: 15, replies: 31, time: '1 天前', tags: ['發問'] },
+  { id: 'cp5', author: 'AI 探索者', avatar: '🤖', title: 'Midjourney v6 的 Prompt 技巧整理', content: '整理了 50 個高品質出圖的 Prompt 模板，包含風格指定、構圖控制和負面提示...', course: 'c47', likes: 156, replies: 42, time: '1 天前', tags: ['筆記分享', '資源'] },
+  { id: 'cp6', author: '健身日記', avatar: '💪', title: '跟著 12 週課表練了 8 週的變化', content: '體脂從 28% 降到 23%，附上前後對比照。飲食調整真的是關鍵！', course: 'c31', likes: 234, replies: 56, time: '2 天前', tags: ['心得分享', '成果'] },
+  { id: 'cp7', author: '音樂創作者', avatar: '🎵', title: '用 Ableton 做出的第一首 Lo-fi Beat', content: '雖然還很青澀，但終於從零完成了一首完整的作品，感動！附上 SoundCloud 連結。', course: 'c28', likes: 89, replies: 18, time: '2 天前', tags: ['作品分享'] },
+  { id: 'cp8', author: '理財小白', avatar: '💰', title: 'ETF 定期定額三個月心得分享', content: '跟著郭老師的配置建議投了 0050 和 00878，雖然才三個月但心態穩多了。', course: 'c41', likes: 67, replies: 29, time: '3 天前', tags: ['心得分享'] }
+];
+
+// ── 課程章節結構（供課程詳情頁使用） ──
+window.CHAPTERS = {
+  c03: [
+    { ch: 1, title: '課程導覽與環境建置', lessons: ['課程大綱與學習路線', '開發環境安裝（Python + VS Code）', 'API Key 申請與設定', '第一次呼叫 AI API'], duration: 85 },
+    { ch: 2, title: 'Prompt Engineering', lessons: ['Prompt 設計原則', 'Zero-shot vs Few-shot', 'System Prompt 與角色設定', 'Chain of Thought 推理', '實作：智慧客服 Prompt'], duration: 120 },
+    { ch: 3, title: 'Function Calling 與工具整合', lessons: ['Function Calling 原理', '定義工具 Schema', '連接外部 API', '多工具串接實作', '錯誤處理與回退機制'], duration: 110 },
+    { ch: 4, title: 'RAG 架構實作', lessons: ['Embedding 向量嵌入概念', 'Vector Database 選擇與設定', '文件切割與索引建立', 'Retrieval 策略與排序', '實作：企業知識庫問答'], duration: 150 },
+    { ch: 5, title: '部署與上線', lessons: ['API 服務架構設計', 'FastAPI 後端開發', 'Docker 容器化', '雲端部署（GCP / AWS）', '監控與迭代優化', '期末專案：完整 AI 助手'], duration: 140 }
+  ],
+  c24: [
+    { ch: 1, title: 'HTML 基礎', lessons: ['網頁結構與標籤', '文字排版與連結', '圖片與多媒體', '表格與表單', '語意化標籤'], duration: 95 },
+    { ch: 2, title: 'CSS 排版與樣式', lessons: ['選擇器與優先權', 'Box Model 盒模型', 'Flexbox 彈性排版', 'Grid 網格系統', '響應式設計 RWD', '動畫與過渡效果'], duration: 130 },
+    { ch: 3, title: 'JavaScript 核心', lessons: ['變數、型別與運算子', '函數與作用域', '陣列與物件操作', 'DOM 操作與事件', '非同步與 Promise', 'Fetch API 串接'], duration: 160 },
+    { ch: 4, title: '專案實作', lessons: ['專案一：個人履歷網站', '專案二：Todo App', '專案三：天氣查詢', '專案四：電影搜尋', '專案五：部落格系統'], duration: 200 },
+    { ch: 5, title: '部署與進階', lessons: ['Git 版本控制', 'GitHub Pages 部署', '效能優化基礎', '無障礙設計', '前端面試準備'], duration: 95 }
+  ]
+};
