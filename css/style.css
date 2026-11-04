@@ -3604,6 +3604,42 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 @media(max-width:480px){.rq-box{padding:32px 24px}.rq-box h2{font-size:1.2rem}.rq-pick img{width:64px;height:48px}}
 @media(prefers-reduced-motion:reduce){.rq-box{transition:none}.rq-overlay{transition:none}.rq-prog-fill{transition:none}.rq-opt{transition:none}.rq-opt.picked{transform:none}}
 
+/* ===== 講師追蹤按鈕 ===== */
+.follow-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:12px;border:2px solid var(--pri);background:transparent;color:var(--pri);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .25s;margin-top:12px}
+.follow-btn:hover{background:var(--pri);color:#fff;transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,92,255,.3)}
+.follow-btn.following{background:var(--pri);color:#fff;border-color:var(--pri)}
+.follow-btn.following:hover{background:transparent;color:var(--pri)}
+.ins-follow-badge{display:inline-block;background:var(--pri);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:8px;margin-top:8px}
+[data-theme="dark"] .follow-btn{border-color:var(--pri)}
+
+/* ===== 評價投票 ===== */
+.rv-helpful{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:.8rem;color:var(--tx3);flex-wrap:wrap}
+.rv-vote{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--tx2);font-size:.78rem;cursor:pointer;transition:all .2s}
+.rv-vote:hover{border-color:var(--pri);color:var(--pri);background:rgba(124,92,255,.06)}
+.rv-vote.voted{background:rgba(124,92,255,.12);border-color:var(--pri);color:var(--pri);font-weight:600}
+.rv-vote-n{font-weight:700}
+[data-theme="dark"] .rv-vote{border-color:var(--line)}
+[data-theme="dark"] .rv-vote:hover{background:rgba(124,92,255,.15)}
+[data-theme="dark"] .rv-vote.voted{background:rgba(124,92,255,.2)}
+
+/* ===== 我的頁面 - 追蹤講師 ===== */
+.my-following-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.my-follow-card{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:14px;background:var(--bg2);text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s}
+.my-follow-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.my-follow-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;flex-shrink:0}
+.my-follow-avatar img{width:100%;height:100%;object-fit:cover}
+.my-follow-info{flex:1;min-width:0}
+.my-follow-info h3{font-size:1rem;font-weight:700;margin:0 0 4px}
+.my-follow-info p{font-size:.82rem;color:var(--pri);margin:0 0 2px}
+.my-follow-info span{font-size:.78rem;color:var(--tx3)}
+.my-follow-card .follow-btn{margin-top:0;padding:8px 18px;font-size:.8rem;flex-shrink:0}
+.my-follow-empty{text-align:center;padding:48px 24px;color:var(--tx3)}
+.my-follow-empty p{margin:0 0 16px;font-size:1rem}
+[data-theme="dark"] .my-follow-card{background:var(--card)}
+[data-theme="dark"] .my-follow-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.2)}
+@media(max-width:760px){.my-follow-card{flex-wrap:wrap}.my-follow-card .follow-btn{width:100%}}
+@media(prefers-reduced-motion:reduce){.follow-btn{transition:none}.follow-btn:hover{transform:none}.rv-vote{transition:none}.my-follow-card{transition:none}.my-follow-card:hover{transform:none}}
+
 /* ===== 列印樣式 ===== */
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}

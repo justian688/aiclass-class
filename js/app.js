@@ -11,6 +11,10 @@ const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
 const aicUser = JSON.parse(localStorage.getItem('aic-user') || 'null');
 const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
 const streakData = (() => { const k = 'aic-streak', today = new Date().toISOString().slice(0,10), d = JSON.parse(localStorage.getItem(k) || '{"last":"","count":0}'), yd = new Date(Date.now()-864e5).toISOString().slice(0,10); if (d.last !== today) { d.count = d.last === yd ? d.count + 1 : 1; d.last = today; localStorage.setItem(k, JSON.stringify(d)); } return d; })();
+const follows = new Set(JSON.parse(localStorage.getItem('aic-follows') || '[]'));
+function saveFollows() { localStorage.setItem('aic-follows', JSON.stringify([...follows])); }
+const reviewVotes = JSON.parse(localStorage.getItem('aic-rvotes') || '{}');
+function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(reviewVotes)); }
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) b.textContent = cart.size || ''; if (b) b.style.display = cart.size ? 'flex' : 'none'; }
 
@@ -1281,9 +1285,10 @@ function course() {
     <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span style="color:var(--pri);font-size:18px">★ ${c.rating.toFixed(1)}</span> <span style="font-size:15px;color:var(--tx3);font-weight:400">(${c.students.toLocaleString()} 位學員)</span></h2>
       <div class="review-stats rv-up"><div class="rs-big"><b>${c.rating.toFixed(1)}</b><div class="rs-stars">★★★★★</div><div style="font-size:13px;color:var(--tx3)">${c.students.toLocaleString()} 則評價</div></div>
       <div class="rs-bars">${distPcts.map((p, i) => `<div class="rs-bar"><span>${5 - i}</span><div class="rs-track"><i style="width:${p}%"></i></div><span>${p}%</span></div>`).join('')}</div></div>
-      <div class="review-list">${reviewData.map(r => `<div class="review-item rv-up">
+      <div class="review-list">${reviewData.map((r, i) => `<div class="review-item rv-up">
         <div class="ri-head"><div class="ri-avatar">${r.initial}</div><div class="ri-meta"><b>${r.name}</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${r.date}</span></div></div></div>
         <p>${r.text}</p>
+        <div class="rv-helpful"><span>這則評價有幫助嗎？</span><button class="rv-vote rv-up-vote ${reviewVotes[c.id+'-'+i]==='up'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="up">👍 有幫助 <span class="rv-vote-n">${12+i*3+(reviewVotes[c.id+'-'+i]==='up'?1:0)}</span></button><button class="rv-vote rv-dn-vote ${reviewVotes[c.id+'-'+i]==='dn'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="dn">👎</button></div>
       </div>`).join('')}</div>
       <div class="ur-form rv-up"><h3>撰寫你的評價</h3>
         <div class="ur-stars"><span data-ur="1">☆</span><span data-ur="2">☆</span><span data-ur="3">☆</span><span data-ur="4">☆</span><span data-ur="5">☆</span></div>
@@ -1385,6 +1390,17 @@ function course() {
     };
   });
   $$('.qa button').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+  $$('.rv-vote', main).forEach(btn => btn.onclick = e => {
+    e.preventDefault();
+    const key = btn.dataset.rv, dir = btn.dataset.dir;
+    const row = btn.closest('.rv-helpful');
+    if (reviewVotes[key] === dir) { delete reviewVotes[key]; btn.classList.remove('voted'); }
+    else { reviewVotes[key] = dir; $$('.rv-vote', row).forEach(b => b.classList.remove('voted')); btn.classList.add('voted'); }
+    saveReviewVotes();
+    const numEl = row.querySelector('.rv-up-vote .rv-vote-n');
+    if (numEl) { const base = +numEl.textContent; numEl.textContent = reviewVotes[key] === 'up' ? base + 1 : base; }
+    toast(dir === 'up' ? '感謝你的回饋！' : '已記錄');
+  });
   bindCards(main); bindRail($('#more'));
 
   // 分頁 scrollspy + smooth scroll on click
@@ -2476,6 +2492,7 @@ function instructorPage() {
             <div class="insd-stat"><b>⭐ ${t.avgRating}</b><span>平均評分</span></div>
             <div class="insd-stat"><b>${totalHrs}</b><span>小時內容</span></div>
           </div>
+          <button class="follow-btn ${follows.has(t.name) ? 'following' : ''}" data-follow="${t.name}">${follows.has(t.name) ? '✓ 已追蹤' : '＋ 追蹤講師'}</button>
         </div>
       </div>
     </div></section>
@@ -2504,6 +2521,13 @@ function instructorPage() {
     </div></section>
     ${railSec('insd-rec', '', '你可能也會喜歡', C.filter(x => !t.courses.includes(x)).slice(0, 8))}`;
     bindCards(main); bindRail($('#insd-rec'));
+    const followBtn = $('.follow-btn', main);
+    if (followBtn) followBtn.onclick = () => {
+      const name = followBtn.dataset.follow;
+      if (follows.has(name)) { follows.delete(name); followBtn.classList.remove('following'); followBtn.textContent = '＋ 追蹤講師'; toast(`已取消追蹤 ${name}`); }
+      else { follows.add(name); followBtn.classList.add('following'); followBtn.textContent = '✓ 已追蹤'; toast(`已追蹤 ${name}`); }
+      saveFollows();
+    };
     reveal(main);
     return;
   }
@@ -2536,6 +2560,7 @@ function instructorPage() {
           <div><b>⭐ ${t.avgRating}</b><span>評分</span></div>
         </div>
         <div class="ins-courses">${t.courses.slice(0, 2).map(c => `<span class="ins-course-link">${c.title}</span>`).join('')}</div>
+        ${follows.has(t.name) ? '<span class="ins-follow-badge">已追蹤</span>' : ''}
       </a>`).join('')}
     </div>
     <div class="blog-empty" id="ins-empty" style="display:none"><p>找不到符合的講師</p></div>
@@ -2796,6 +2821,7 @@ function myPage() {
         <button class="myp-nav-btn" data-sec="wishlist">♡ 心願清單</button>
         <a href="order-history.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🧾 訂單紀錄</a>
         <button class="myp-nav-btn" data-sec="coupons">🎟️ 優惠券</button>
+        <button class="myp-nav-btn" data-sec="following">👤 追蹤講師</button>
         <button class="myp-nav-btn" data-sec="settings">⚙️ 帳號設定</button>
         <button class="myp-nav-btn" data-sec="achievements">🏅 成就徽章</button>
         <a href="quiz.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🎯 技能測驗</a>
@@ -2960,6 +2986,21 @@ function myPage() {
         </div>
       </section>
 
+      <!-- 追蹤講師 -->
+      <section class="myp-sec" id="myp-sec-following" hidden>
+        <h2 class="myp-sec-title rv-up">追蹤的講師</h2>
+        ${follows.size ? `<div class="my-following-grid rv-up">${[...follows].map(name => {
+          const tData = C.filter(x => x.teacher === name);
+          const tV = tData[0]?.v || '785';
+          const tRole = tData[0]?.role || '';
+          return `<a class="my-follow-card" href="instructor.html?name=${encodeURIComponent(name)}">
+            <div class="my-follow-avatar"><img src="assets/img/v${tV}.jpg" alt="${name}"></div>
+            <div class="my-follow-info"><h3>${name}</h3><p>${tRole}</p><span>${tData.length} 門課程</span></div>
+            <button class="follow-btn following my-unfollow" data-follow="${name}">✓ 已追蹤</button>
+          </a>`;
+        }).join('')}</div>` : '<div class="my-follow-empty rv-up"><p>還沒有追蹤任何講師</p><a href="instructor.html" class="btn btn-pri btn-sm">探索講師 →</a></div>'}
+      </section>
+
       <!-- 帳號設定 -->
       <section class="myp-sec" id="myp-sec-settings" hidden>
         <h2 class="myp-sec-title rv-up">帳號設定</h2>
@@ -3068,6 +3109,16 @@ function myPage() {
     $$('#myp-list .myp-card', main).forEach(c => {
       c.style.display = (tab === 'all' || c.dataset.status === tab) ? '' : 'none';
     });
+  });
+
+  // Unfollow in my page
+  $$('.my-unfollow', main).forEach(btn => btn.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    const name = btn.dataset.follow;
+    follows.delete(name); saveFollows();
+    btn.closest('.my-follow-card').remove();
+    toast(`已取消追蹤 ${name}`);
+    if (!follows.size) { const sec = $('#myp-sec-following', main); if (sec) sec.querySelector('.my-following-grid')?.replaceWith(Object.assign(document.createElement('div'), { className: 'my-follow-empty rv-up', innerHTML: '<p>還沒有追蹤任何講師</p><a href="instructor.html" class="btn btn-pri btn-sm">探索講師 →</a>' })); }
   });
 
   // "繼續學習" 查看全部 → 跳到課程 tab
