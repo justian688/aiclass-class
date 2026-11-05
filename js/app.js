@@ -2718,9 +2718,9 @@ function trainingPage() {
         <!-- 總覽 -->
         <div class="trn-tab-panel" id="tab-overview">
           <div class="trn-stat-grid">
-            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(124,92,255,.15);color:var(--pri)">👥</div><div><div class="trn-stat-num">50</div><div class="trn-stat-label">員工帳號</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:var(--pri-15);color:var(--pri)">👥</div><div><div class="trn-stat-num">50</div><div class="trn-stat-label">員工帳號</div></div></div>
             <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(76,255,138,.12);color:#4cff8a">📚</div><div><div class="trn-stat-num">8</div><div class="trn-stat-label">培訓課程</div></div></div>
-            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,92,138,.12);color:var(--pink)">📊</div><div><div class="trn-stat-num">72%</div><div class="trn-stat-label">平均完成率</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:var(--pink-12);color:var(--pink)">📊</div><div><div class="trn-stat-num">72%</div><div class="trn-stat-label">平均完成率</div></div></div>
             <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,195,92,.12);color:#ffc35c">⏱</div><div><div class="trn-stat-num">1,280</div><div class="trn-stat-label">累計學習時數</div></div></div>
           </div>
           <div class="trn-row">
@@ -2815,9 +2815,9 @@ function trainingPage() {
         <!-- 學習報表 -->
         <div class="trn-tab-panel" id="tab-reports" hidden>
           <div class="trn-stat-grid">
-            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(124,92,255,.15);color:var(--pri)">📊</div><div><div class="trn-stat-num">72%</div><div class="trn-stat-label">平均完成率</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:var(--pri-15);color:var(--pri)">📊</div><div><div class="trn-stat-num">72%</div><div class="trn-stat-label">平均完成率</div></div></div>
             <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(76,255,138,.12);color:#4cff8a">🏆</div><div><div class="trn-stat-num">156</div><div class="trn-stat-label">已發證書</div></div></div>
-            <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,92,138,.12);color:var(--pink)">⏱</div><div><div class="trn-stat-num">25.6h</div><div class="trn-stat-label">人均學習時數</div></div></div>
+            <div class="trn-stat"><div class="trn-stat-icon" style="background:var(--pink-12);color:var(--pink)">⏱</div><div><div class="trn-stat-num">25.6h</div><div class="trn-stat-label">人均學習時數</div></div></div>
             <div class="trn-stat"><div class="trn-stat-icon" style="background:rgba(255,195,92,.12);color:#ffc35c">⭐</div><div><div class="trn-stat-num">4.8</div><div class="trn-stat-label">平均課程評分</div></div></div>
           </div>
           <div class="trn-row">
@@ -7326,10 +7326,10 @@ function reportPage() {
     </div>
 
     <div class="rpt-overview rv-up">
-      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(124,92,255,.12);color:var(--pri)">⏱</div><div class="rpt-ov-data"><b>${totalHours}</b><span>總學習時數</span></div></div>
+      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:var(--pri-12);color:var(--pri)">⏱</div><div class="rpt-ov-data"><b>${totalHours}</b><span>總學習時數</span></div></div>
       <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(52,199,89,.12);color:#34c759">✓</div><div class="rpt-ov-data"><b>${completed}</b><span>已完成課程</span></div></div>
       <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(255,149,0,.12);color:#ff9500">📚</div><div class="rpt-ov-data"><b>${enrolled.length}</b><span>進行中課程</span></div></div>
-      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(255,92,138,.12);color:var(--pink)">🔥</div><div class="rpt-ov-data"><b>${streakData.count}</b><span>連續學習天數</span></div></div>
+      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:var(--pink-12);color:var(--pink)">🔥</div><div class="rpt-ov-data"><b>${streakData.count}</b><span>連續學習天數</span></div></div>
     </div>
 
     <div class="rpt-grid">
@@ -7820,7 +7820,7 @@ if (page === 'home' || page === 'category') {
 // ── 回到頂部按鈕（含進度環）──
 {
   const btt = document.createElement('button'); btt.className = 'btt'; btt.setAttribute('aria-label', '回到頂部');
-  btt.innerHTML = '<svg class="btt-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="rgba(124,92,255,.15)" stroke-width="2.5"/><circle class="btt-prog" cx="22" cy="22" r="20" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="125.66" stroke-dashoffset="125.66" stroke-linecap="round" transform="rotate(-90 22 22)"/></svg><span class="btt-arrow">↑</span>';
+  btt.innerHTML = '<svg class="btt-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="var(--pri-15)" stroke-width="2.5"/><circle class="btt-prog" cx="22" cy="22" r="20" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="125.66" stroke-dashoffset="125.66" stroke-linecap="round" transform="rotate(-90 22 22)"/></svg><span class="btt-arrow">↑</span>';
   document.body.append(btt);
   btt.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
   const prog = btt.querySelector('.btt-prog');
@@ -8340,5 +8340,18 @@ function openRecommendQuiz() {
   run();
   window.addEventListener('hashchange', run);
 })();
+
+// ── 頁面退出動畫 ──
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || a.getAttribute('href').startsWith('#') || a.getAttribute('href').startsWith('javascript') || a.getAttribute('href').startsWith('mailto') || a.getAttribute('href').startsWith('tel')) return;
+    const href = a.getAttribute('href');
+    if (!href.endsWith('.html') && !href.includes('.html?') && href !== '/' && href !== '') return;
+    e.preventDefault();
+    document.body.classList.add('page-exit');
+    setTimeout(() => { location.href = href; }, 200);
+  });
+}
 
 })();
