@@ -8432,6 +8432,7 @@ document.addEventListener('error', e => {
   const prefetched = new Set();
   let hoverTimer;
   document.addEventListener('pointerenter', e => {
+    if (!e.target.closest) return;
     const a = e.target.closest('a[href]');
     if (!a || a.target === '_blank') return;
     const href = a.getAttribute('href');
@@ -8447,7 +8448,7 @@ document.addEventListener('error', e => {
     }, 65);
   }, true);
   document.addEventListener('pointerleave', e => {
-    if (e.target.closest('a[href]')) clearTimeout(hoverTimer);
+    if (e.target.closest && e.target.closest('a[href]')) clearTimeout(hoverTimer);
   }, true);
 }
 
