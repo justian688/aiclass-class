@@ -1633,6 +1633,7 @@ function course() {
       `}
       <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
       <div class="c-buy-feat"><span>🎬 無限期觀看</span><span>📁 附專案檔</span><span>📱 多裝置</span><span>🔄 免費更新</span></div>
+      ${(()=>{const lv=courseLevel(c);const lvMap={'入門':1,'中階':2,'進階':3};const n=lvMap[lv.label]||2;const cls=n===1?'filled':n===2?'filled warn':'filled hard';return `<div class="c-difficulty"><span class="c-diff-label">課程難度</span><div class="c-diff-bars">${[1,2,3].map(i=>`<div class="c-diff-bar${i<=n?' '+cls:''}"></div>`).join('')}</div><span class="c-diff-text">${lv.label}</span></div>`;})()}
       <div class="c-buy-trust">
         <div><span>🛡️</span> 7 天退費保證</div>
         <div><span>🔒</span> 安全加密付款</div>
@@ -1739,6 +1740,7 @@ function course() {
         <textarea class="qa-input" placeholder="在這裡提問，講師會親自回覆…" rows="3" aria-label="發問"></textarea>
         <div class="qa-post-foot"><span class="qa-hint">提問前請先搜尋是否已有相似問題</span><button class="btn btn-pri btn-sm qa-submit">送出問題</button></div>
       </div>
+      <div class="qa-sort rv-up"><span>排序</span><button class="qa-sort-btn on" data-qsort="hot">🔥 最熱門</button><button class="qa-sort-btn" data-qsort="new">🕐 最新</button></div>
       <div class="qa-list">
         ${[
           { init:'周', name:'周**', date:'3 天前', q:'請問第三章的專案檔在哪裡下載？找不到連結。', aName: c.teacher, a:'在第三章第一堂的「課程資源」區塊可以找到下載連結，如果還是找不到的話請截圖給我，我來協助！', likes:12, replies:2 },
@@ -2093,6 +2095,14 @@ function course() {
     const num = like.querySelector('.qa-like-num');
     const cur = parseInt(num.textContent);
     num.textContent = like.classList.contains('liked') ? cur + 1 : cur - 1;
+  });
+  $$('.qa-sort-btn', main).forEach(btn => btn.onclick = () => {
+    $$('.qa-sort-btn', main).forEach(b => b.classList.toggle('on', b === btn));
+    const list = $('.qa-list', main);
+    const items = [...list.querySelectorAll('.qa-item')];
+    if (btn.dataset.qsort === 'hot') items.sort((a,b) => parseInt(b.querySelector('.qa-like-num')?.textContent||0) - parseInt(a.querySelector('.qa-like-num')?.textContent||0));
+    else items.reverse();
+    items.forEach(it => list.appendChild(it));
   });
 
   bindCards(main); // for smart recommend rail

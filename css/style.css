@@ -4939,6 +4939,25 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .stt-arrow{font-size:16px;font-weight:700;color:var(--tx);z-index:1}
 .stt-prog{transition:stroke-dashoffset .1s linear}
 
+/* ── Q&A 排序 ── */
+.qa-sort{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:14px;color:var(--tx2)}
+.qa-sort-btn{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--bg);transition:all .2s}
+.qa-sort-btn.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.qa-sort-btn:hover:not(.on){background:var(--bg2)}
+[data-theme="dark"] .qa-sort-btn{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04)}
+[data-theme="dark"] .qa-sort-btn.on{background:var(--pri);border-color:var(--pri)}
+
+/* ── 課程難度指標 ── */
+.c-difficulty{display:flex;align-items:center;gap:10px;margin:12px 0;padding:12px 16px;background:var(--bg2);border-radius:12px}
+.c-diff-label{font-size:13px;color:var(--tx2);white-space:nowrap}
+.c-diff-bars{display:flex;gap:4px;flex:1}
+.c-diff-bar{height:6px;flex:1;border-radius:3px;background:var(--line);transition:background .3s}
+.c-diff-bar.filled{background:var(--pri)}
+.c-diff-bar.filled.warn{background:#ff9500}
+.c-diff-bar.filled.hard{background:#ff5c8a}
+.c-diff-text{font-size:13px;font-weight:600;min-width:36px;text-align:right}
+[data-theme="dark"] .c-difficulty{background:rgba(255,255,255,.04)}
+
 /* ── 社群投票 ── */
 .poll-wrap{margin:12px 0 8px;padding:16px;background:var(--bg2);border-radius:14px}
 .poll-q{font-size:15px;margin:0 0 10px;font-weight:600}
