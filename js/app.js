@@ -15,20 +15,21 @@ const pct = c => Math.round((1 - c.price / c.origin) * 100);
 const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
 document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" fill="%23e8e8ec"><rect width="400" height="225"/><text x="50%" y="50%" text-anchor="middle" fill="%23aeaeb2" font-size="14" dy=".3em">圖片載入失敗</text></svg>')}`; } }, true);
 const page = document.body.dataset.page;
-const wish = new Set(JSON.parse(localStorage.getItem('aic-wish') || '[]'));
-const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
-const aicUser = JSON.parse(localStorage.getItem('aic-user') || 'null');
-const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
-const streakData = (() => { const k = 'aic-streak', today = new Date().toISOString().slice(0,10), d = JSON.parse(localStorage.getItem(k) || '{"last":"","count":0}'), yd = new Date(Date.now()-864e5).toISOString().slice(0,10); if (d.last !== today) { d.count = d.last === yd ? d.count + 1 : 1; d.last = today; localStorage.setItem(k, JSON.stringify(d)); } return d; })();
-const follows = new Set(JSON.parse(localStorage.getItem('aic-follows') || '[]'));
+const ls = (key, fallback) => { try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; } catch { localStorage.removeItem(key); return fallback; } };
+const wish = new Set(ls('aic-wish', []));
+const cart = new Set(ls('aic-cart', []));
+const aicUser = ls('aic-user', null);
+const owned = new Set(ls('aic-owned', []));
+const streakData = (() => { const k = 'aic-streak', today = new Date().toISOString().slice(0,10), d = ls(k, {last:'',count:0}), yd = new Date(Date.now()-864e5).toISOString().slice(0,10); if (d.last !== today) { d.count = d.last === yd ? d.count + 1 : 1; d.last = today; localStorage.setItem(k, JSON.stringify(d)); } return d; })();
+const follows = new Set(ls('aic-follows', []));
 function saveFollows() { localStorage.setItem('aic-follows', JSON.stringify([...follows])); }
-const reviewVotes = JSON.parse(localStorage.getItem('aic-rvotes') || '{}');
+const reviewVotes = ls('aic-rvotes', {});
 function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(reviewVotes)); }
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) { b.textContent = cart.size || ''; b.style.display = cart.size ? 'flex' : 'none'; b.classList.remove('bounce'); void b.offsetWidth; b.classList.add('bounce'); } }
 
 /* ---------- XP 經驗值系統 ---------- */
-const xpData = (() => { const d = JSON.parse(localStorage.getItem('aic-xp') || '{"total":0,"log":[]}'); return d; })();
+const xpData = (() => { const d = ls('aic-xp', {total:0,log:[]}); return d; })();
 function addXP(amount, reason) {
   xpData.total += amount;
   xpData.log.push({ amount, reason, ts: Date.now() });
@@ -118,7 +119,7 @@ function seo(opts = {}) {
 }
 
 /* ---------- 學習筆記 ---------- */
-const allNotes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
+const allNotes = ls('aic-notes', {});
 function saveNotes() { localStorage.setItem('aic-notes', JSON.stringify(allNotes)); }
 function notesWidget(courseId) {
   const notes = allNotes[courseId] || [];
@@ -167,7 +168,7 @@ function bindNotes(courseId, main) {
 }
 
 /* ---------- 課程進度追蹤 ---------- */
-const progress = JSON.parse(localStorage.getItem('aic-progress') || '{}');
+const progress = ls('aic-progress', {});
 function saveProgress() { localStorage.setItem('aic-progress', JSON.stringify(progress)); }
 function getCourseProg(cid) { return progress[cid] || { done: [], lastAt: 0 }; }
 function markLesson(cid, chapIdx, lessonIdx) {
@@ -179,7 +180,7 @@ function markLesson(cid, chapIdx, lessonIdx) {
 }
 
 /* ---------- 使用者評價 ---------- */
-const userReviews = JSON.parse(localStorage.getItem('aic-reviews') || '{}');
+const userReviews = ls('aic-reviews', {});
 function saveReviews() { localStorage.setItem('aic-reviews', JSON.stringify(userReviews)); }
 function bindUserReview(courseId, main) {
   const stars = $$('[data-ur]', main);
@@ -516,7 +517,7 @@ function shell() {
   }
 
   // 最近瀏覽浮動提示
-  const rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
+  const rv = ls('aic-recent-view', []);
   if (rv.length && page !== 'course' && page !== 'player') {
     const last = byId[rv[0]];
     if (last) {
@@ -558,7 +559,7 @@ function shell() {
 /* ---------- 搜尋 ---------- */
 function searchOverlay() {
   const recentKey = 'aic-recent-search';
-  const getRecent = () => JSON.parse(localStorage.getItem(recentKey) || '[]');
+  const getRecent = () => ls(recentKey, []);
   const addRecent = q => { let r = getRecent().filter(x => x !== q); r.unshift(q); localStorage.setItem(recentKey, JSON.stringify(r.slice(0, 8))); renderRecent(); };
 
   const ov = document.createElement('div'); ov.className = 'overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', '搜尋課程');
@@ -865,7 +866,7 @@ function home() {
   }
 
   // Welcome back (returning user)
-  const hasHistory = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').length > 0 || owned.size > 0;
+  const hasHistory = ls('aic-recent-view', []).length > 0 || owned.size > 0;
   if (hasHistory && !sessionStorage.getItem('aic-wb')) {
     sessionStorage.setItem('aic-wb', '1');
     const ownedArr = [...owned].map(id => byId[id]).filter(Boolean);
@@ -881,7 +882,7 @@ function home() {
   }
 
   // 最近瀏覽（放在「為你推薦」上方）
-  const recentIds = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
+  const recentIds = ls('aic-recent-view', []);
   if (recentIds.length > 0) {
     const recentCourses = recentIds.map(id => byId[id]).filter(Boolean).slice(0, 6);
     if (recentCourses.length) {
@@ -896,7 +897,7 @@ function home() {
   main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="sort-bar"><button class="sort-btn on" data-sort="default">推薦</button><button class="sort-btn" data-sort="new">最新上架</button><button class="sort-btn" data-sort="students">最多學員</button><button class="sort-btn" data-sort="price">價格低到高</button></div></div>`);
   // 個人化排序：優先顯示最近瀏覽過的分類課程
   const personalizedC = (() => {
-    const rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]');
+    const rv = ls('aic-recent-view', []);
     if (!rv.length) return C;
     const catFreq = {};
     rv.forEach(id => { const cc = byId[id]; if (cc) catFreq[cc.cat] = (catFreq[cc.cat] || 0) + 1; });
@@ -1030,7 +1031,7 @@ function home() {
       const a = actions[Math.floor(Math.random() * actions.length)];
       return `<div class="af-item">${s}**完成了${a.type}任務 <b>+${a.reward}${a.unit}</b></div>`;
     }).join('');
-    const msDone = JSON.parse(localStorage.getItem('aic-ms-done') || '[]');
+    const msDone = ls('aic-ms-done', []);
     const now = new Date(), midnight = new Date(now); midnight.setHours(24,0,0,0);
     const msLeft = Math.max(0, Math.floor((midnight - now) / 1000));
     const msH = String(Math.floor(msLeft/3600)).padStart(2,'0'), msM = String(Math.floor(msLeft%3600/60)).padStart(2,'0'), msS = String(msLeft%60).padStart(2,'0');
@@ -1056,7 +1057,7 @@ function home() {
       const btn = e.target.closest('.mi-btn[data-ms]');
       if (!btn || btn.classList.contains('mi-done')) return;
       const idx = +btn.dataset.ms; const m = window.MISSIONS[idx];
-      const done = JSON.parse(localStorage.getItem('aic-ms-done') || '[]');
+      const done = ls('aic-ms-done', []);
       if (done.includes(idx)) return;
       done.push(idx); localStorage.setItem('aic-ms-done', JSON.stringify(done));
       btn.classList.add('mi-done'); btn.innerHTML = '<span class="ms-check">✓</span> 已完成';
@@ -1504,12 +1505,12 @@ function course() {
   if (!c) { notFoundPage(); return; }
   document.title = `${c.title}｜AI Class`;
   // 記錄最近瀏覽
-  let rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(x => x !== c.id);
+  let rv = ls('aic-recent-view', []).filter(x => x !== c.id);
   rv.unshift(c.id); localStorage.setItem('aic-recent-view', JSON.stringify(rv.slice(0, 10)));
   window.trackEvent('view_item', { item_id: c.id, item_name: c.title, item_category: c.cat, value: c.price });
   const cat = window.CATS.find(x => x.id === c.cat);
   const others = C.filter(x => x.id !== c.id && x.cat === c.cat).concat(C.filter(x => x.cat !== c.cat)).slice(0, 8);
-  const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
+  const owned = new Set(ls('aic-owned', []));
 
   // 使用 CHAPTERS 真實資料，或自動生成章節
   let chapters, totalLessonCount, numChaps;
@@ -2130,7 +2131,7 @@ function course() {
   const srRail = $('.sr-sec .rail'); if (srRail) bindRail($('.sr-sec'));
 
   // 記錄最近瀏覽
-  const recentView = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(id => id !== c.id);
+  const recentView = ls('aic-recent-view', []).filter(id => id !== c.id);
   recentView.unshift(c.id);
   localStorage.setItem('aic-recent-view', JSON.stringify(recentView.slice(0, 20)));
 
@@ -3191,12 +3192,12 @@ function articlePage() {
 
   const likeBtn = $('#art-like', main);
   const bmBtn = $('#art-bm', main);
-  const liked = JSON.parse(localStorage.getItem('aic-likes') || '[]');
-  const bookmarked = JSON.parse(localStorage.getItem('aic-bm') || '[]');
+  const liked = ls('aic-likes', []);
+  const bookmarked = ls('aic-bm', []);
   if (liked.includes(post.id)) likeBtn.classList.add('on');
   if (bookmarked.includes(post.id)) bmBtn.classList.add('on');
   likeBtn.onclick = () => {
-    const arr = JSON.parse(localStorage.getItem('aic-likes') || '[]');
+    const arr = ls('aic-likes', []);
     const has = arr.includes(post.id);
     if (has) arr.splice(arr.indexOf(post.id), 1); else arr.push(post.id);
     localStorage.setItem('aic-likes', JSON.stringify(arr));
@@ -3204,7 +3205,7 @@ function articlePage() {
     toast(has ? '已取消' : '感謝回饋！');
   };
   bmBtn.onclick = () => {
-    const arr = JSON.parse(localStorage.getItem('aic-bm') || '[]');
+    const arr = ls('aic-bm', []);
     const has = arr.includes(post.id);
     if (has) arr.splice(arr.indexOf(post.id), 1); else arr.push(post.id);
     localStorage.setItem('aic-bm', JSON.stringify(arr));
@@ -3213,7 +3214,7 @@ function articlePage() {
   };
 
   // 閱讀位置記憶
-  const artPos = JSON.parse(localStorage.getItem('aic-art-pos') || '{}');
+  const artPos = ls('aic-art-pos', {});
   if (artPos[post.id]) setTimeout(() => scrollTo({ top: artPos[post.id], behavior: 'instant' }), 80);
   let scrollTimer;
   const saveScroll = () => { artPos[post.id] = scrollY; localStorage.setItem('aic-art-pos', JSON.stringify(artPos)); };
@@ -4818,7 +4819,7 @@ function playerPage() {
 
   // Bookmarks
   const bmKey = 'aic-bookmarks-' + c.id;
-  let bookmarks = JSON.parse(localStorage.getItem(bmKey) || '[]');
+  let bookmarks = ls(bmKey, []);
   function renderBookmarks() {
     const list = $('#plr-bm-list'), empty = $('#plr-bm-empty');
     if (!list) return;
@@ -5212,7 +5213,7 @@ function checkoutPage() {
   submitBtn.onclick = () => {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="ck-spinner"></span> 處理中…';
-    const owned = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
+    const owned = new Set(ls('aic-owned', []));
     items.forEach(c => owned.add(c.id));
     localStorage.setItem('aic-owned', JSON.stringify([...owned]));
     const orderId = 'AIC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
@@ -5227,7 +5228,7 @@ function checkoutPage() {
 function orderCompletePage() {
   seo({ title: '訂單完成｜AI Class', desc: '恭喜！你的訂單已完成，課程已開通', url: 'https://aiclass.tw/order-complete.html' });
   const main = $('main');
-  const order = JSON.parse(localStorage.getItem('aic-last-order') || 'null');
+  const order = ls('aic-last-order', null);
   if (!order) { location.href = 'index.html'; return; }
 
   const items = order.items.map(id => byId[id]).filter(Boolean);
@@ -5411,8 +5412,8 @@ function couponPage() {
 function certificatePage() {
   const main = $('main');
   seo({ title: '結業證書｜AI Class', desc: '查看你的結業證書', url: 'https://aiclass.tw/certificate.html' });
-  const ownedIds = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
-  const progress = JSON.parse(localStorage.getItem('aic-progress') || '{}');
+  const ownedIds = new Set(ls('aic-owned', []));
+  const progress = ls('aic-progress', {});
   const completedCourses = C.filter(c => ownedIds.has(c.id) && (progress[c.id] === 100 || progress[c.id] === undefined));
   const certificates = completedCourses.map(c => ({
     ...c,
@@ -5478,7 +5479,7 @@ function pathPage() {
   const totalStudents = Math.min(...courses.map(c => c.students));
   document.title = `${p.name}｜AI Class 學習路徑`;
 
-  const ownedArr = JSON.parse(localStorage.getItem('aic-owned') || '[]');
+  const ownedArr = ls('aic-owned', []);
   const pathDone = courses.filter(c => ownedArr.includes(c.id)).length;
   const pathPct = courses.length ? Math.round(pathDone / courses.length * 100) : 0;
 
@@ -5955,7 +5956,7 @@ function searchPage() {
   };
   inp.addEventListener('keydown', e => {
     if (e.key === 'Enter' && inp.value.trim()) {
-      let r = JSON.parse(localStorage.getItem('aic-recent-search') || '[]').filter(x => x !== inp.value.trim());
+      let r = ls('aic-recent-search', []).filter(x => x !== inp.value.trim());
       r.unshift(inp.value.trim()); localStorage.setItem('aic-recent-search', JSON.stringify(r.slice(0, 8)));
       window.trackEvent('search', { search_term: inp.value.trim() });
     }
@@ -5982,7 +5983,7 @@ function searchPage() {
   $$('.srch-trend', main).forEach(b => b.onclick = () => { inp.value = b.textContent; state.q = b.textContent; clearBtn.style.display = 'flex'; filter(); inp.focus(); });
 
   if (initQ) {
-    let r = JSON.parse(localStorage.getItem('aic-recent-search') || '[]').filter(x => x !== initQ);
+    let r = ls('aic-recent-search', []).filter(x => x !== initQ);
     r.unshift(initQ); localStorage.setItem('aic-recent-search', JSON.stringify(r.slice(0, 8)));
   }
 
@@ -5995,7 +5996,7 @@ function communityPage() {
   const main = $('main');
   seo({ title: '學習社群｜AI Class', desc: '與同學交流學習心得、分享作品', url: 'https://aiclass.tw/community.html' });
   const posts = (window.COMMUNITY_POSTS || []).slice();
-  const cmyLiked = new Set(JSON.parse(localStorage.getItem('aic-cmy-likes') || '[]'));
+  const cmyLiked = new Set(ls('aic-cmy-likes', []));
   const tagSet = new Set(); posts.forEach(p => (p.tags||[]).forEach(t => tagSet.add(t)));
   const cats = ['全部', ...tagSet];
   const catColors = {'作品分享':'#7c5cff','心得分享':'#34c759','發問':'#ff9500','筆記分享':'#00b4d8','求回饋':'#ff5c8a','資源':'#a855f7','成果':'#f59e0b'};
@@ -6138,7 +6139,7 @@ function communityPage() {
     const share = e.target.closest('.cmy-share-btn');
     if (share) { navigator.clipboard?.writeText(`AI Class 社群 — ${share.dataset.share}\nhttps://aiclass.tw/community.html`).then(() => toast('已複製分享連結')).catch(() => toast('複製失敗')); }
   });
-  const pollVotes = new Set(JSON.parse(localStorage.getItem('aic-poll-votes') || '[]'));
+  const pollVotes = new Set(ls('aic-poll-votes', []));
   main.querySelectorAll('.poll-option').forEach(opt => {
     const key = opt.dataset.poll + ':' + opt.dataset.opt;
     if (pollVotes.has(key)) { opt.classList.add('poll-selected'); opt.closest('.poll-wrap').classList.add('poll-voted'); }
@@ -6239,7 +6240,7 @@ function quizPage() {
   const main = $('main');
   seo({ title: '學習測驗｜AI Class', desc: '測驗你的學習成果，挑戰各科知識', url: 'https://aiclass.tw/quiz.html' });
   const quizzes = window.QUIZZES || [];
-  const saved = JSON.parse(localStorage.getItem('aic-quiz-results') || '{}');
+  const saved = ls('aic-quiz-results', {});
   const totalQ = quizzes.reduce((s, q) => s + q.questions.length, 0);
 
   main.innerHTML = `<div class="qz-hero rv-up">
@@ -6366,10 +6367,10 @@ function achievementPage() {
   const main = $('main');
   seo({ title: '學習成就｜AI Class', desc: '查看你的學習徽章與成就收藏', url: 'https://aiclass.tw/achievement.html' });
   const badges = window.BADGES || [];
-  const owned = JSON.parse(localStorage.getItem('aic-owned') || '[]');
-  const quizResults = JSON.parse(localStorage.getItem('aic-quiz-results') || '{}');
-  const notes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
-  const progress = JSON.parse(localStorage.getItem('aic-progress') || '{}');
+  const owned = ls('aic-owned', []);
+  const quizResults = ls('aic-quiz-results', {});
+  const notes = ls('aic-notes', {});
+  const progress = ls('aic-progress', {});
 
   const rarityMap = { common: { label: '普通', color: '#6e6e73' }, rare: { label: '稀有', color: '#00b4d8' }, epic: { label: '史詩', color: '#a855f7' }, legendary: { label: '傳說', color: '#ffd700' } };
   const achievements = badges.map(b => {
@@ -6388,7 +6389,7 @@ function achievementPage() {
     else if (b.id === 'bg12') { const catsDone = new Set(); owned.forEach(id => { const cc = byId[id]; if (cc) catsDone.add(cc.cat); }); earned = catsDone.size >= 3; prog = catsDone.size; total = 3; }
     else if (b.id === 'bg13') { earned = streakData.count >= 7; prog = Math.min(streakData.count, 7); total = 7; }
     else if (b.id === 'bg14') { const lessons = Object.values(progress).reduce((s,v) => s + Math.floor(v / 5), 0); earned = lessons >= 100; prog = Math.min(lessons, 100); total = 100; }
-    else if (b.id === 'bg15') { const rv = Object.keys(JSON.parse(localStorage.getItem('aic-reviews') || '{}')).length; earned = rv >= 10; prog = Math.min(rv, 10); total = 10; }
+    else if (b.id === 'bg15') { const rv = Object.keys(ls('aic-reviews', {})).length; earned = rv >= 10; prog = Math.min(rv, 10); total = 10; }
     else if (b.id === 'bg16') { prog = 2; total = 5; }
     else if (b.id === 'bg17') { earned = xpData.total >= 10000; prog = Math.min(xpData.total, 10000); total = 10000; }
     else if (b.id === 'bg18') { prog = 0; total = 1; }
@@ -6971,7 +6972,7 @@ function galleryPage() {
   seo({ title: '學員作品牆｜AI Class', desc: `探索 ${G.length} 件學員精彩作品`, url: 'https://aiclass.tw/gallery.html',
     jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學員作品牆', description: `${G.length} 件學員作品展示` }
   });
-  const galLikes = JSON.parse(localStorage.getItem('aic-gal-likes') || '{}');
+  const galLikes = ls('aic-gal-likes', {});
 
   main.innerHTML = `
   <section class="sec"><div class="wrap" style="padding-top:100px">
@@ -7048,7 +7049,7 @@ function settingsPage() {
   document.title = '帳號設定｜AI Class';
   const user = aicUser || { name: '學員', email: 'user@aiclass.tw' };
   const isDark = document.documentElement.dataset.theme === 'dark';
-  const prefs = JSON.parse(localStorage.getItem('aic-settings') || '{"emailNews":true,"emailCourse":true,"emailPromo":false,"lang":"zh-TW","autoplay":true,"subtitle":true}');
+  const prefs = ls('aic-settings', {emailNews:true,emailCourse:true,emailPromo:false,lang:'zh-TW',autoplay:true,subtitle:true});
 
   main.innerHTML = `
   <section class="sec"><div class="wrap">
@@ -7220,7 +7221,7 @@ function settingsPage() {
 /* ---------- 學習筆記總覽 ---------- */
 function notebookPage() {
   const main = $('main');
-  const allNotes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
+  const allNotes = ls('aic-notes', {});
   seo({ title: '學習筆記｜AI Class', desc: '管理你的所有課程學習筆記', url: 'https://aiclass.tw/notebook.html' });
 
   const flat = [];
@@ -7688,7 +7689,7 @@ document.addEventListener('click', e => {
 });
 
 // ── 課程比較功能 ──
-const cmpList = JSON.parse(sessionStorage.getItem('aic-cmp') || '[]');
+const cmpList = (() => { try { return JSON.parse(sessionStorage.getItem('aic-cmp') || '[]'); } catch { return []; } })();
 function saveCmp() { sessionStorage.setItem('aic-cmp', JSON.stringify(cmpList)); updCmpUI(); }
 function updCmpUI() {
   let bar = $('.cmp-bar');
@@ -7958,7 +7959,7 @@ function openRecommendQuiz() {
 
 // ── 學習計時器浮動 widget ──
 {
-  const timerState = JSON.parse(sessionStorage.getItem('aic-timer') || '{"running":false,"elapsed":0,"start":0}');
+  const timerState = (() => { try { return JSON.parse(sessionStorage.getItem('aic-timer') || '{"running":false,"elapsed":0,"start":0}'); } catch { return {running:false,elapsed:0,start:0}; } })();
   const tw = document.createElement('div'); tw.className = 'study-timer';
   tw.innerHTML = `<button class="st-toggle" aria-label="學習計時器">⏱</button>
     <div class="st-panel">
