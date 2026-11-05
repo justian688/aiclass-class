@@ -24,7 +24,7 @@ function saveFollows() { localStorage.setItem('aic-follows', JSON.stringify([...
 const reviewVotes = JSON.parse(localStorage.getItem('aic-rvotes') || '{}');
 function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(reviewVotes)); }
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
-function updateCartBadge() { const b = $('.cart-badge'); if (b) b.textContent = cart.size || ''; if (b) b.style.display = cart.size ? 'flex' : 'none'; }
+function updateCartBadge() { const b = $('.cart-badge'); if (b) { b.textContent = cart.size || ''; b.style.display = cart.size ? 'flex' : 'none'; b.classList.remove('bounce'); void b.offsetWidth; b.classList.add('bounce'); } }
 
 /* ---------- SEO：動態 meta / JSON-LD ---------- */
 function seo(opts = {}) {
@@ -1886,6 +1886,7 @@ function course() {
 
 /* ---------- 活動頁 ---------- */
 function eventPage() {
+  seo({ title: '限時活動｜AI Class', desc: '限時優惠活動，搶購精選課程享超值折扣', url: 'https://aiclass.tw/event.html' });
   const main = $('main');
   const bfDeadline = new Date('2026-11-23T23:59:59').getTime();
   const featured = C.filter(c => c.tag === 'HOT' || c.tag === 'BEST').slice(0, 8);
@@ -1986,6 +1987,7 @@ function eventPage() {
 
 /* ---------- 購物車頁 ---------- */
 function cartPage() {
+  seo({ title: '購物車｜AI Class', desc: '查看你的購物車，完成結帳開始學習', url: 'https://aiclass.tw/cart.html' });
   const main = $('main');
   function render() {
     const items = [...cart].map(id => byId[id]).filter(Boolean);
@@ -2060,6 +2062,7 @@ function cartPage() {
 
 /* ---------- 登入頁 ---------- */
 function loginPage() {
+  seo({ title: '登入 / 註冊｜AI Class', desc: '登入或建立 AI Class 帳號，開始你的學習之旅', url: 'https://aiclass.tw/login.html' });
   const main = $('main');
   const mosaic = C.slice(0, 16).map((c, i) => {
     const size = 60 + Math.random() * 50;
@@ -3114,6 +3117,7 @@ function categoryPage() {
 
 /* ---------- 收藏頁 ---------- */
 function wishlistPage() {
+  seo({ title: '我的收藏｜AI Class', desc: '查看你收藏的課程，隨時加入購物車', url: 'https://aiclass.tw/wishlist.html' });
   const main = $('main');
   let wishSort = 'added';
 
@@ -3176,6 +3180,7 @@ function wishlistPage() {
 
 /* ---------- 我的學習 ---------- */
 function myPage() {
+  seo({ title: '我的學習｜AI Class', desc: '管理你的課程進度、學習紀錄與成績', url: 'https://aiclass.tw/my.html' });
   const main = $('main');
   const enrolled = C.slice(0, 7).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62, 33, 91][i], lastWatch: ['2 小時前', '昨天', '3 天前', '5 分鐘前', '1 天前', '4 小時前', '剛剛'][i] }));
   const totalHours = enrolled.reduce((s, c) => s + c.hours, 0);
@@ -3841,6 +3846,7 @@ function teachPage() {
 /* ---------- 課程播放器 ---------- */
 function playerPage() {
   const c = byId[new URLSearchParams(location.search).get('id')] || C[0];
+  seo({ title: `${c.title}｜AI Class 播放器`, desc: `正在觀看：${c.title}，由 ${c.teacher} 授課`, url: `https://aiclass.tw/player.html?id=${c.id}` });
   document.title = `${c.title}｜AI Class 播放器`;
   window.trackEvent('begin_content', { item_id: c.id, item_name: c.title });
   document.body.style.setProperty('--bg', '#070710');
@@ -4264,6 +4270,7 @@ function showCompletionCelebration(c) {
 
 /* ---------- 服務條款 ---------- */
 function termsPage() {
+  seo({ title: '服務條款｜AI Class', desc: 'AI Class 服務條款與使用規範', url: 'https://aiclass.tw/terms.html' });
   const main = $('main');
   main.innerHTML = `
   <section class="legal-hero"><div class="wrap">
@@ -4332,6 +4339,7 @@ function termsPage() {
 
 /* ---------- 隱私權政策 ---------- */
 function privacyPage() {
+  seo({ title: '隱私權政策｜AI Class', desc: 'AI Class 隱私權保護政策', url: 'https://aiclass.tw/privacy.html' });
   const main = $('main');
   main.innerHTML = `
   <section class="legal-hero"><div class="wrap">
@@ -4425,6 +4433,7 @@ function privacyPage() {
 
 /* ---------- 結帳頁 ---------- */
 function checkoutPage() {
+  seo({ title: '結帳｜AI Class', desc: '確認訂單並完成付款', url: 'https://aiclass.tw/checkout.html' });
   const main = $('main');
   const items = [...cart].map(id => byId[id]).filter(Boolean);
   if (!items.length) { location.href = 'cart.html'; return; }
@@ -4595,6 +4604,7 @@ function checkoutPage() {
 
 /* ---------- 訂單完成頁 ---------- */
 function orderCompletePage() {
+  seo({ title: '訂單完成｜AI Class', desc: '恭喜！你的訂單已完成，課程已開通', url: 'https://aiclass.tw/order-complete.html' });
   const main = $('main');
   const order = JSON.parse(localStorage.getItem('aic-last-order') || 'null');
   if (!order) { location.href = 'index.html'; return; }
@@ -4970,6 +4980,7 @@ function invitePage() {
 
 /* ---------- 訂單紀錄 ---------- */
 function orderHistoryPage() {
+  seo({ title: '訂單紀錄｜AI Class', desc: '查看你的所有訂單紀錄與發票', url: 'https://aiclass.tw/order-history.html' });
   const main = $('main');
   const img_ = c => `assets/img/v${c.v}.jpg`;
   const demoOrders = [
@@ -5799,6 +5810,7 @@ function leaderboardPage() {
 
 /* ---------- 404 ---------- */
 function notFoundPage() {
+  seo({ title: '找不到頁面｜AI Class', desc: '你要找的頁面不存在，但我們有很多精彩課程等你探索', url: 'https://aiclass.tw/404.html' });
   const main = $('main');
   document.title = '找不到頁面｜AI Class';
   main.innerHTML = `<section class="nf-hero"><div class="wrap" style="text-align:center;padding:120px 32px">
@@ -6857,6 +6869,28 @@ document.addEventListener('error', e => {
     e.target.alt = '';
   }
 }, true);
+
+// ── Ripple effect on .btn-pri ──
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-pri');
+    if (!btn) return;
+    const r = document.createElement('span'); r.className = 'ripple';
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.width = r.style.height = size + 'px';
+    r.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    r.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    btn.appendChild(r);
+    r.addEventListener('animationend', () => r.remove());
+  });
+}
+
+// ── Wish heart pop animation ──
+document.addEventListener('click', e => {
+  const w = e.target.closest('.wish');
+  if (w) { w.classList.remove('pop'); void w.offsetWidth; w.classList.add('pop'); }
+});
 
 // ── 課程比較功能 ──
 const cmpList = JSON.parse(sessionStorage.getItem('aic-cmp') || '[]');
