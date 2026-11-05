@@ -1379,7 +1379,7 @@ function course() {
   <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a><a href="#plan">學習計畫</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
-      <div class="c-highlights rv-up">${['從零到一完整學習','業界實戰流程','可直接使用的專案檔','講師親自回覆問題','終身免費更新','完課證書'].map(t=>`<span class="c-hl">${t}</span>`).join('')}</div>
+      <div class="c-highlights rv-up">${(() => { const hl = chapters.slice(0, 4).map(ch => ch.name); hl.push(`${c.hours} 小時完整教學`, '講師親回覆問題'); return hl.map(t => `<span class="c-hl">${t}</span>`).join(''); })()}</div>
       <div class="points">
       ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。'], ['04', '持續精進', '加碼業界趨勢與 AI 工具應用，讓你保持競爭力。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div>
       ${(()=>{const lv=courseLevel(c);const targets=lv.label==='入門'?['完全沒有相關經驗的初學者','想轉職但不知從何開始的人','對這個領域有興趣，想建立系統性知識的人','希望有人帶著做，不想自己摸索的人']:lv.label==='進階'?['已有基礎，想提升到專業水準的人','想學業界實戰流程與技巧的人','需要完成作品集或升級技能的在職者','想接案或建立個人品牌的創作者']:['有一定基礎，想更深入學習的人','希望系統化整理知識的自學者','想學更多實務技巧的在職人士','準備升級技能、拓展職涯的人'];return `<div class="c-target rv-up"><h3>🎯 適合對象</h3><ul>${targets.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;})()}
@@ -6958,6 +6958,37 @@ function openRecommendQuiz() {
   };
   resetBtn.onclick = () => { running = false; elapsed = 0; clearInterval(interval); timerState.running = false; timerState.elapsed = 0; timerState.start = 0; sessionStorage.setItem('aic-timer', JSON.stringify(timerState)); display.textContent = '00:00:00'; startBtn.textContent = '▶ 開始'; tw.classList.remove('active'); };
   tw.querySelector('.st-toggle').onclick = () => tw.classList.toggle('open');
+}
+
+// ── 客服聊天 widget ──
+{
+  const cw = document.createElement('div'); cw.className = 'chat-widget';
+  cw.innerHTML = `<button class="cw-fab" aria-label="客服聊天"><span class="cw-fab-icon">💬</span><span class="cw-fab-badge" hidden>1</span></button>
+    <div class="cw-panel" hidden role="dialog" aria-modal="false" aria-label="客服聊天">
+      <div class="cw-head"><span class="cw-dot">●</span> AI Class 客服中心<button class="cw-min" aria-label="最小化">－</button></div>
+      <div class="cw-body">
+        <div class="cw-msg cw-bot"><div class="cw-av">🤖</div><div class="cw-bub">你好！我是 AI Class 智能客服 🎓<br>有什麼可以幫你的嗎？</div></div>
+        <div class="cw-quick"><button data-cq="course">課程諮詢</button><button data-cq="refund">退費問題</button><button data-cq="tech">技術問題</button><button data-cq="other">其他問題</button></div>
+      </div>
+      <div class="cw-foot"><input class="cw-input" placeholder="輸入訊息…" aria-label="聊天訊息"><button class="cw-send">送出</button></div>
+    </div>`;
+  document.body.append(cw);
+  const cwPanel = cw.querySelector('.cw-panel'), cwBody = cw.querySelector('.cw-body'), cwInput = cw.querySelector('.cw-input'), cwBadge = cw.querySelector('.cw-fab-badge');
+  cw.querySelector('.cw-fab').onclick = () => { cwPanel.hidden = !cwPanel.hidden; cw.classList.toggle('open', !cwPanel.hidden); cwBadge.hidden = true; if (!cwPanel.hidden) cwInput.focus(); };
+  cw.querySelector('.cw-min').onclick = () => { cwPanel.hidden = true; cw.classList.remove('open'); };
+  const cwReplies = {
+    course: '我們有 72+ 堂精選課程，涵蓋設計、繪畫、AI、影像等領域。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！',
+    refund: '購買後 7 天內，觀看進度低於 20%，可申請全額退費。到<a href="contact.html">聯繫我們</a>提交申請，3 個工作天內處理。',
+    tech: '常見問題：<br>• 影片無法播放 → 清除快取重試<br>• 進度未儲存 → 確認已登入<br>• 下載問題 → 用 Chrome 瀏覽器<br>如仍有問題，到<a href="contact.html">聯繫我們</a>。',
+    other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 support@aiclass.tw'
+  };
+  function cwAddMsg(text, bot) { const d = document.createElement('div'); d.className = 'cw-msg ' + (bot ? 'cw-bot' : 'cw-user'); d.innerHTML = bot ? `<div class="cw-av">🤖</div><div class="cw-bub">${text}</div>` : `<div class="cw-bub">${text}</div>`; const q = cwBody.querySelector('.cw-quick'); if (q) q.remove(); cwBody.append(d); cwBody.scrollTop = cwBody.scrollHeight; }
+  function cwBot(text) { const t = document.createElement('div'); t.className = 'cw-msg cw-bot cw-typing'; t.innerHTML = '<div class="cw-av">🤖</div><div class="cw-bub"><span class="cw-dots"><i></i><i></i><i></i></span></div>'; cwBody.append(t); cwBody.scrollTop = cwBody.scrollHeight; setTimeout(() => { t.remove(); cwAddMsg(text, true); }, 800 + Math.random() * 500); }
+  cw.querySelectorAll('[data-cq]').forEach(b => b.onclick = () => { cwAddMsg(b.textContent, false); cwBot(cwReplies[b.dataset.cq]); });
+  function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！這是示範網站，客服功能開發中。到<a href="faq.html">常見問題</a>或<a href="contact.html">聯繫我們</a>取得幫助 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="coupon.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
+  cw.querySelector('.cw-send').onclick = cwSend;
+  cwInput.addEventListener('keydown', e => { if (e.key === 'Enter') cwSend(); });
+  setTimeout(() => { if (cwPanel.hidden) { cwBadge.hidden = false; cwBadge.textContent = '1'; } }, 12000);
 }
 
 // ── 圖片 Lightbox ──
