@@ -335,7 +335,7 @@ function shell() {
       <button class="notif-btn" aria-label="通知">🔔${(()=>{const c=(window.NOTIFICATIONS||[]).filter(n=>!n.read).length;return c?`<span class="notif-badge-count">${c}</span>`:''})()}</button>
       <div class="notif-panel" role="dialog" aria-modal="false" aria-label="通知面板">
         <div class="notif-hdr"><h4>通知</h4><button class="notif-read-all">全部已讀</button></div>
-        <div class="notif-tabs"><button class="notif-tab on" data-nf="all">全部</button><button class="notif-tab" data-nf="course">課程</button><button class="notif-tab" data-nf="system">系統</button><button class="notif-tab" data-nf="promo">活動</button></div>
+        <div class="notif-tabs" role="tablist"><button class="notif-tab on" data-nf="all" role="tab" aria-selected="true">全部</button><button class="notif-tab" data-nf="course" role="tab" aria-selected="false">課程</button><button class="notif-tab" data-nf="system" role="tab" aria-selected="false">系統</button><button class="notif-tab" data-nf="promo" role="tab" aria-selected="false">活動</button></div>
         <div class="notif-list">${(window.NOTIFICATIONS||[]).length?(window.NOTIFICATIONS||[]).map(n=>{const icons={course:'📚',promo:'🏷️',community:'💬',achievement:'🏆',live:'📡',system:'⚙️'};return `<${n.link?`a href="${n.link}"`:'div'} class="notif-item${n.read?'':' unread'}" data-ntype="${n.type}"><div class="ni-icon">${icons[n.type]||'🔔'}</div><div class="ni-body"><b>${n.title}</b><p>${n.body}</p><div class="ni-time">${n.time}</div></div></${n.link?'a':'div'}>`}).join(''):'<div class="notif-empty"><div class="notif-empty-icon">🔕</div><p>目前沒有新通知</p></div>'}</div>
       </div>
     </div>
@@ -435,7 +435,7 @@ function shell() {
       toast('已全部標為已讀');
     };
     $$('.notif-tab', notifPanel).forEach(tab => tab.onclick = () => {
-      $$('.notif-tab', notifPanel).forEach(t => t.classList.toggle('on', t === tab));
+      $$('.notif-tab', notifPanel).forEach(t => { t.classList.toggle('on', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
       const f = tab.dataset.nf;
       const typeMap = { course: ['course'], system: ['system'], promo: ['promo', 'achievement', 'live', 'community'] };
       $$('.notif-item', notifPanel).forEach(el => {
@@ -495,6 +495,19 @@ function shell() {
     megaBtn.onclick = () => { if (innerWidth <= 760) megaDrop.hidden ? openMenu() : closeMenu(); };
     document.addEventListener('click', e => { if (!megaDrop.hidden && !e.target.closest('.mega-wrap')) closeMenu(); });
     megaDrop.addEventListener('click', e => { if (e.target.closest('a')) closeMenu(); });
+    megaBtn.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault(); openMenu();
+        const first = $('a', megaDrop); if (first) first.focus();
+      }
+    });
+    megaDrop.addEventListener('keydown', e => {
+      const links = $$('a', megaDrop);
+      const idx = links.indexOf(document.activeElement);
+      if (e.key === 'Escape') { e.preventDefault(); closeMenu(); megaBtn.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); if (idx < links.length - 1) links[idx + 1].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) links[idx - 1].focus(); else { closeMenu(); megaBtn.focus(); } }
+    });
   }
 
   // Cookie 同意橫幅
