@@ -8071,23 +8071,8 @@ function openRecommendQuiz() {
   });
 }
 
-// ── 頁面轉場動畫 ──
+// ── 頁面進場動畫 ──
 {
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a[href]');
-    if (!a) return;
-    const href = a.getAttribute('href');
-    if (!href) return;
-    const isInternal = (href.endsWith('.html') || href.includes('.html?') || href.includes('.html#')) && !href.startsWith('http');
-    if (!isInternal) return;
-    if (a.target === '_blank' || href.startsWith('#')) return;
-    if (prefersReduced) return;
-    e.preventDefault();
-    const m = $('main');
-    if (m) { m.style.transition = 'opacity .15s,transform .15s'; m.style.opacity = '0'; m.style.transform = 'translateY(8px)'; }
-    scrollTo({ top: 0 });
-    setTimeout(() => { location.href = a.href; }, 160);
-  });
   const m = $('main');
   if (m && !prefersReduced) {
     m.style.opacity = '0'; m.style.transform = 'translateY(8px)';
@@ -8393,6 +8378,7 @@ if (!prefersReduced) {
     const href = a.getAttribute('href');
     if (!href.endsWith('.html') && !href.includes('.html?') && href !== '/' && href !== '') return;
     e.preventDefault();
+    scrollTo({ top: 0 });
     if (document.startViewTransition) {
       document.startViewTransition(() => { location.href = href; });
     } else {
