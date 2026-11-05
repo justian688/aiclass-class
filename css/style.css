@@ -1507,6 +1507,7 @@ a.notif-item:hover{background:rgba(0,0,0,.03)}
 /* 深色模式 */
 [data-theme="dark"]{--bg:#0b0b10;--bg2:#14141e;--bg3:#1a1a28;--card:#181824;--line:#2a2a3a;
   --tx:#e8e8ec;--tx2:#a0a0b0;--tx3:#8a8a9a;
+  --pri:#9580ff;--pink:#ff6f99;
   --shadow-sm:0 2px 8px rgba(0,0,0,.2);
   --shadow-md:0 8px 24px -8px rgba(0,0,0,.35);
   --shadow-lg:0 20px 50px -18px rgba(0,0,0,.5);}

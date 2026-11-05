@@ -8066,7 +8066,8 @@ function openRecommendQuiz() {
   document.body.append(cw);
   const cwPanel = cw.querySelector('.cw-panel'), cwBody = cw.querySelector('.cw-body'), cwInput = cw.querySelector('.cw-input'), cwBadge = cw.querySelector('.cw-fab-badge');
   cw.querySelector('.cw-fab').onclick = () => { cwPanel.hidden = !cwPanel.hidden; cw.classList.toggle('open', !cwPanel.hidden); cwBadge.hidden = true; if (!cwPanel.hidden) cwInput.focus(); };
-  cw.querySelector('.cw-min').onclick = () => { cwPanel.hidden = true; cw.classList.remove('open'); };
+  cw.querySelector('.cw-min').onclick = () => { cwPanel.hidden = true; cw.classList.remove('open'); cw.querySelector('.cw-fab').focus(); };
+  cwPanel.addEventListener('keydown', e => { if (e.key === 'Escape') { cwPanel.hidden = true; cw.classList.remove('open'); cw.querySelector('.cw-fab').focus(); } });
   const cwReplies = {
     course: `我們有 ${C.length} 堂精選課程，涵蓋設計、繪畫、AI、影像等 10 大領域。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！`,
     refund: '購買後 7 天內，觀看進度低於 20%，可申請全額退費。到<a href="contact.html">聯繫我們</a>提交申請，3 個工作天內處理。',
