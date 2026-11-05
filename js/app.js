@@ -742,7 +742,7 @@ function home() {
       <img class="poster" src="${img(c)}" alt="${c.title}"${i ? '' : ' fetchpriority="high"'}>
       <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
       <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span><h1>${h}</h1><p>${p}</p>
-      <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">立即了解 →</a> <a class="btn btn-ghost" href="course.html?id=${c.id}#preview" style="margin-left:8px">▶ 試看</a></div></div></div></div>`; }).join('')}
+      <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">${owned.has(c.id) ? '繼續學習 →' : cart.has(c.id) ? '前往結帳 →' : '立即了解 →'}</a> <a class="btn btn-ghost" href="${owned.has(c.id) ? `player.html?id=${c.id}` : `course.html?id=${c.id}#preview`}" style="margin-left:8px">${owned.has(c.id) ? '🎬 進入播放器' : '▶ 試看'}</a></div></div></div></div>`; }).join('')}
     <div class="hero-ctrl"><div class="wrap">${slides.map((c, i) => `<button class="dot ${i ? '' : 'on'}"><div class="bar"><i></i></div><span>${c.title}</span></button>`).join('')}
       <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
   </section>`);
@@ -816,6 +816,21 @@ function home() {
     return [...C].sort((a, b) => (catFreq[b.cat] || 0) - (catFreq[a.cat] || 0) || b.rating - a.rating);
   })();
   main.insertAdjacentHTML('beforeend', railSec('filtered', '為你推薦', recentIds.length ? '根據你的瀏覽紀錄推薦' : '依照你選的分類即時篩選', personalizedC));
+
+  // 個人化推薦輪播
+  if (recentIds.length >= 2) {
+    const viewedCats = [...new Set(recentIds.map(id => byId[id]?.cat).filter(Boolean))];
+    const recCourses = C.filter(cc => viewedCats.includes(cc.cat) && !recentIds.includes(cc.id)).sort((a,b) => b.rating - a.rating).slice(0, 10);
+    if (recCourses.length >= 3) {
+      main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>根據你的興趣推薦</h2><div class="sub">與你瀏覽過的課程相關</div></div></div>
+        <div class="rec-carousel rv-up" id="rec-carousel"><div class="rec-track" id="rec-track">${recCourses.map(cc => `<a class="rec-card" href="course.html?id=${cc.id}"><img src="${img(cc)}" alt="${cc.title}" loading="lazy" decoding="async"><div class="rec-card-body"><h4>${cc.title.length > 22 ? cc.title.slice(0,22)+'…' : cc.title}</h4><div class="rec-card-meta">★ ${cc.rating} ・ ${cc.teacher}</div><div class="rec-card-price">${fmt(cc.price)} <del style="font-size:13px;color:var(--tx3);font-weight:400">${fmt(cc.origin)}</del></div></div></a>`).join('')}</div><button class="rec-nav prev" id="rec-prev" aria-label="上一組">‹</button><button class="rec-nav next" id="rec-next" aria-label="下一組">›</button></div></div></section>`);
+      const track = $('#rec-track'), prevBtn = $('#rec-prev'), nextBtn = $('#rec-next');
+      let recOffset = 0; const cardW = 300;
+      const maxOffset = Math.max(0, recCourses.length * cardW - track.parentElement.offsetWidth);
+      prevBtn.onclick = () => { recOffset = Math.max(0, recOffset - cardW * 2); track.style.transform = `translateX(-${recOffset}px)`; };
+      nextBtn.onclick = () => { recOffset = Math.min(maxOffset, recOffset + cardW * 2); track.style.transform = `translateX(-${recOffset}px)`; };
+    }
+  }
 
   // 為什麼選擇 AI Class
   main.insertAdjacentHTML('beforeend', `<section class="usp-section" id="why"><div class="wrap">
@@ -1430,6 +1445,24 @@ function course() {
         <button class="btn btn-ghost" data-cart>加入購物車</button>
         <button class="btn btn-ghost" data-gift style="margin-top:6px">🎁 贈送此課程</button>
         <button class="btn btn-ghost" onclick="toast('已設定降價通知')" style="margin-top:6px">🔔 降價通知</button>
+        ${(() => {
+          const pts = []; const now = c.price; const orig = c.origin;
+          for (let i = 0; i < 7; i++) { const t = i === 6 ? now : Math.round(orig - (orig - now) * (0.3 + Math.sin(i * 1.2) * 0.25 + i * 0.08)); pts.push(Math.max(now, Math.min(orig, t))); }
+          const mn = Math.min(...pts) * 0.95, mx = Math.max(...pts) * 1.02, rng = mx - mn || 1;
+          const coords = pts.map((p, i) => `${(i / 6 * 280).toFixed(1)},${(50 - (p - mn) / rng * 44).toFixed(1)}`);
+          const months = ['5月','6月','7月','8月','9月','10月','11月'];
+          return `<div class="c-price-chart"><h4>📈 價格走勢（近 7 個月）</h4>
+            <svg viewBox="0 0 280 60" aria-label="價格歷史圖表">
+              <defs><linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--pri)"/><stop offset="1" stop-color="var(--pri)" stop-opacity="0"/></linearGradient></defs>
+              <polygon class="c-price-area" points="0,60 ${coords.join(' ')} 280,60"/>
+              <polyline class="c-price-line" points="${coords.join(' ')}"/>
+              <circle class="c-price-dot" cx="${(6 / 6 * 280).toFixed(1)}" cy="${(50 - (pts[6] - mn) / rng * 44).toFixed(1)}"/>
+              ${months.filter((_, i) => i % 2 === 0).map((m, i) => `<text class="c-price-label" x="${(i * 2 / 6 * 280).toFixed(1)}" y="60" text-anchor="middle">${m}</text>`).join('')}
+              <text class="c-price-now" x="280" y="${(50 - (pts[6] - mn) / rng * 44 - 6).toFixed(1)}" text-anchor="end">${fmt(now)}</text>
+            </svg>
+            <div class="c-price-tip">✦ 目前為近 7 個月最低價</div>
+          </div>`;
+        })()}
       `}
       <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
       <div class="c-buy-feat"><span>🎬 無限期觀看</span><span>📁 附專案檔</span><span>📱 多裝置</span><span>🔄 免費更新</span></div>
@@ -1491,6 +1524,7 @@ function course() {
       </div>
     </div>
     <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${chapters.length} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
+      <div class="curri-search rv-up"><span class="curri-search-icon">🔍</span><input type="text" id="curri-search-input" placeholder="搜尋章節或課時名稱…" aria-label="搜尋課程大綱"><div class="curri-search-result" id="curri-search-result"></div></div>
       <div class="curri-actions rv-up"><div class="curri-bar"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div><button class="btn btn-ghost btn-sm curri-toggle" id="curri-toggle-all">展開全部</button></div>
       ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><button class="chap-done-all" data-chap="${i}" title="標記本章全部完成">☐ 全完成</button><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
         <span><span class="chap-play">${l.free ? '▶' : '🔒'}</span>${i + 1}-${j + 1} ${l.name}${l.free ? '<em class="chap-free">免費試看</em>' : ''}</span>
@@ -1671,6 +1705,32 @@ function course() {
         if (cnt) cnt.textContent = ch.querySelector('.a ul').children.length + ' 堂 ' + (allOpen ? '＋' : '－');
       });
       toggleAllBtn.textContent = allOpen ? '展開全部' : '收合全部';
+    };
+  }
+  // Curriculum search
+  const curriInput = $('#curri-search-input', main);
+  if (curriInput) {
+    curriInput.oninput = () => {
+      const q = curriInput.value.trim().toLowerCase();
+      const chaps = $$('.chap', main);
+      const resultEl = $('#curri-search-result', main);
+      if (!q) { chaps.forEach(ch => { ch.classList.remove('curri-hidden'); $$('li', ch).forEach(li => { const sp = li.querySelector('span'); if (sp) sp.innerHTML = sp.textContent; }); }); if (resultEl) resultEl.textContent = ''; return; }
+      let matchCount = 0;
+      chaps.forEach(ch => {
+        let found = false;
+        $$('li', ch).forEach(li => {
+          const sp = li.querySelector('span');
+          if (!sp) return;
+          const txt = sp.textContent;
+          if (txt.toLowerCase().includes(q)) { found = true; matchCount++; sp.innerHTML = txt.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<mark class="lesson-hl">$1</mark>'); }
+          else { sp.innerHTML = txt; }
+        });
+        const title = ch.querySelector('.plr-ch-name, button > span')?.textContent || '';
+        if (title.toLowerCase().includes(q)) { found = true; matchCount++; }
+        ch.classList.toggle('curri-hidden', !found);
+        if (found) ch.classList.add('open');
+      });
+      if (resultEl) resultEl.textContent = matchCount ? `找到 ${matchCount} 個符合的結果` : '沒有找到相關內容';
     };
   }
   $$('.chap-free').forEach(em => {
@@ -3986,6 +4046,7 @@ function playerPage() {
             <div class="plr-sb-progress"><div class="plr-sb-bar"><div class="plr-sb-fill" style="width:${progress()}%"></div></div><span>${progress()}%</span></div>
           </div>
           <div class="plr-sb-list" id="plr-sb-list">${renderSidebar()}</div>
+          <div class="plr-minimap" id="plr-minimap"><h4>章節進度地圖</h4>${chapters.map((ch, ci) => `<div class="plr-mm-ch"><span class="plr-mm-label">${ci+1}</span><div class="plr-mm-dots">${ch.lessons.map((_, li) => `<span class="plr-mm-dot ${doneSet.has(lessonId(ci,li))?'done':''} ${ci===curCh&&li===curLs?'active':''}" data-ch="${ci}" data-ls="${li}" title="${ci+1}-${li+1} ${ch.lessons[li].t}"></span>`).join('')}</div></div>`).join('')}</div>
         </div>
         <div class="plr-sb-panel" id="plr-panel-notes" hidden>
           <div class="plr-notes-sb">
@@ -4125,6 +4186,7 @@ function playerPage() {
     sb.innerHTML = renderSidebar();
     bindSidebar();
     updateLessonBar();
+    updateMinimap();
     const p = progress();
     $('.plr-prog-txt').textContent = p + '% 完成';
     $('.plr-sb-fill').style.width = p + '%';
@@ -4138,19 +4200,51 @@ function playerPage() {
     $$('.plr-ls').forEach(b => b.onclick = () => goLesson(+b.dataset.ch, +b.dataset.ls));
   }
   bindSidebar();
+  function updateMinimap() {
+    const mm = $('#plr-minimap');
+    if (!mm) return;
+    mm.innerHTML = `<h4>章節進度地圖</h4>${chapters.map((ch, ci) => `<div class="plr-mm-ch"><span class="plr-mm-label">${ci+1}</span><div class="plr-mm-dots">${ch.lessons.map((_, li) => `<span class="plr-mm-dot ${doneSet.has(lessonId(ci,li))?'done':''} ${ci===curCh&&li===curLs?'active':''}" data-ch="${ci}" data-ls="${li}" title="${ci+1}-${li+1} ${ch.lessons[li].t}"></span>`).join('')}</div></div>`).join('')}`;
+    bindMinimap();
+  }
+  function bindMinimap() { $$('.plr-mm-dot').forEach(d => d.onclick = () => goLesson(+d.dataset.ch, +d.dataset.ls)); }
+  bindMinimap();
 
-  // Auto-next when video ends
+  // Auto-next when video ends (with countdown overlay)
   vid_el.onended = () => {
     doneSet.add(lessonId(curCh, curLs));
     const p = progress();
     $('.plr-prog-txt').textContent = p + '% 完成';
     $('.plr-sb-fill').style.width = p + '%';
     $('.plr-sb-progress span').textContent = p + '%';
+    updateMinimap();
     const auto = $('#plr-auto');
-    if (!auto || auto.checked) {
-      if (curLs < chapters[curCh].lessons.length - 1) goLesson(curCh, curLs + 1);
-      else if (curCh < chapters.length - 1) goLesson(curCh + 1, 0);
-      else { toast('恭喜完成所有課程！🎉'); showCompletionCelebration(c); }
+    const hasNext = curLs < chapters[curCh].lessons.length - 1 || curCh < chapters.length - 1;
+    if ((!auto || auto.checked) && hasNext) {
+      const nextCi = curLs < chapters[curCh].lessons.length - 1 ? curCh : curCh + 1;
+      const nextLi = curLs < chapters[curCh].lessons.length - 1 ? curLs + 1 : 0;
+      const nextTitle = chapters[nextCi].lessons[nextLi].t;
+      const ov = document.createElement('div'); ov.className = 'plr-autoplay-overlay';
+      ov.innerHTML = `<div class="plr-autoplay-ring"><svg viewBox="0 0 80 80"><circle class="ring-bg" /><circle class="ring-fg" id="ap-ring"/></svg><div class="plr-autoplay-count" id="ap-count">5</div></div>
+        <div class="plr-autoplay-info"><b>下一課</b>${nextCi + 1}-${nextLi + 1}　${nextTitle}</div>
+        <div class="plr-autoplay-btns"><button class="plr-ap-play" id="ap-now">立即播放</button><button class="plr-ap-cancel" id="ap-cancel">取消</button></div>`;
+      const videoWrap = $('.plr-video-wrap');
+      videoWrap.append(ov);
+      let sec = 5, apTimer;
+      const circumference = 2 * Math.PI * 36;
+      const ringEl = ov.querySelector('#ap-ring');
+      const countEl = ov.querySelector('#ap-count');
+      const goNext = () => { clearInterval(apTimer); ov.remove(); goLesson(nextCi, nextLi); };
+      const cancel = () => { clearInterval(apTimer); ov.remove(); };
+      apTimer = setInterval(() => {
+        sec--;
+        countEl.textContent = sec;
+        ringEl.style.strokeDashoffset = ((5 - sec) / 5 * circumference).toFixed(1);
+        if (sec <= 0) goNext();
+      }, 1000);
+      ov.querySelector('#ap-now').onclick = goNext;
+      ov.querySelector('#ap-cancel').onclick = cancel;
+    } else if (!hasNext) {
+      toast('恭喜完成所有課程！🎉'); showCompletionCelebration(c);
     }
   };
 
