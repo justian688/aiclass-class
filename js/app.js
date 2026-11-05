@@ -28,6 +28,20 @@ function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(r
 const _timers = [];
 function regInterval(fn, ms) { const id = setInterval(fn, ms); _timers.push(id); return id; }
 function clearTimers() { _timers.forEach(id => clearInterval(id)); _timers.length = 0; }
+
+function trapFocus(el) {
+  const sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  const handler = e => {
+    if (e.key !== 'Tab') return;
+    const focusable = [...el.querySelectorAll(sel)].filter(f => f.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+    else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
+  };
+  el.addEventListener('keydown', handler);
+  return () => el.removeEventListener('keydown', handler);
+}
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) { b.textContent = cart.size || ''; b.style.display = cart.size ? 'flex' : 'none'; b.classList.remove('bounce'); void b.offsetWidth; b.classList.add('bounce'); } }
 
@@ -266,7 +280,8 @@ function quickPreview(courseId) {
   </div>`;
   document.body.append(ov);
   requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
-  const closeQP = () => { ov.classList.remove('show'); setTimeout(() => { ov.remove(); if (prevFocus) prevFocus.focus(); }, 300); };
+  const releaseTrap = trapFocus(ov);
+  const closeQP = () => { releaseTrap(); ov.classList.remove('show'); setTimeout(() => { ov.remove(); if (prevFocus) prevFocus.focus(); }, 300); };
   ov.querySelector('.qp-close').onclick = closeQP;
   ov.onclick = e => { if (e.target === ov) closeQP(); };
   ov.querySelector('.qp-play').onclick = () => { const v = ov.querySelector('video'); v.play(); ov.querySelector('.qp-play').style.display = 'none'; };
@@ -618,15 +633,7 @@ function searchOverlay() {
   const close = () => { ov.classList.remove('on'); if (triggerEl) { triggerEl.focus(); triggerEl = null; } };
   $$('[data-search]').forEach(b => b.onclick = open);
   ov.onclick = e => { if (e.target === ov) close(); };
-  ov.addEventListener('keydown', e => {
-    if (e.key === 'Tab') {
-      const focusable = $$('input,button,a[href]', ov).filter(el => el.offsetParent !== null);
-      if (!focusable.length) return;
-      const first = focusable[0], last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  });
+  trapFocus(ov);
   addEventListener('keydown', e => {
     if (e.key === 'Escape' && ov.classList.contains('on')) { close(); return; }
     if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !e.shiftKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')) { e.preventDefault(); open(e); }
@@ -647,6 +654,7 @@ function searchOverlay() {
   const el = document.createElement('div'); el.className = 'kb-overlay'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', '鍵盤快捷鍵');
   el.innerHTML = `<div class="kb-box"><h3>鍵盤快捷鍵</h3><div class="kb-list">${keys.map(([k, d]) => `<div class="kb-row"><kbd>${k}</kbd><span>${d}</span></div>`).join('')}</div><button class="btn btn-ghost kb-close">關閉</button></div>`;
   document.body.append(el);
+  trapFocus(el);
   el.querySelector('.kb-close').onclick = () => el.classList.remove('on');
   el.onclick = e => { if (e.target === el) el.classList.remove('on'); };
   addEventListener('keydown', e => {
@@ -716,18 +724,31 @@ function card(c, i, rank) {
   </a>`;
 }
 
-// 滑鼠移入播放預覽影片
+// 滑鼠移入播放預覽影片 + 預先建立 video 元素
+const _vidPrefetchIO = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  _vidPrefetchIO.unobserve(e.target);
+  const el = e.target;
+  if (el._v || !el.dataset.v) return;
+  const v = document.createElement('video'); v.src = el.dataset.v; v.muted = v.loop = v.playsInline = true; v.preload = 'none';
+  $('.thumb', el).insertBefore(v, $('.hours', el));
+  el._v = v;
+}), { rootMargin: '200px 0px' });
+
 function bindCards(root = document) {
   $$('.card', root).forEach(el => {
     if (el.bound) return; el.bound = 1;
-    let v, t;
+    _vidPrefetchIO.observe(el);
+    let t;
     el.addEventListener('mouseenter', () => {
       t = setTimeout(() => {
-        if (!v) { v = document.createElement('video'); v.src = el.dataset.v; v.muted = v.loop = v.playsInline = true; v.preload = 'auto'; $('.thumb', el).insertBefore(v, $('.hours', el)); }
+        let v = el._v;
+        if (!v) { v = document.createElement('video'); v.src = el.dataset.v; v.muted = v.loop = v.playsInline = true; v.preload = 'auto'; $('.thumb', el).insertBefore(v, $('.hours', el)); el._v = v; }
+        v.preload = 'auto';
         v.currentTime = 0; v.play().then(() => el.classList.add('play')).catch(() => {});
       }, 260);
     });
-    el.addEventListener('mouseleave', () => { clearTimeout(t); el.classList.remove('play'); v && v.pause(); });
+    el.addEventListener('mouseleave', () => { clearTimeout(t); el.classList.remove('play'); el._v && el._v.pause(); });
   });
   $$('[data-wish]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
@@ -784,6 +805,12 @@ function bindRail(sec) {
   prev && (prev.onclick = () => rail.scrollBy({ left: -step() }));
   next && (next.onclick = () => rail.scrollBy({ left: step() }));
   rail.addEventListener('scroll', upd, { passive: true }); upd();
+  rail.setAttribute('role', 'region');
+  rail.setAttribute('tabindex', '0');
+  rail.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); rail.scrollBy({ left: 320, behavior: 'smooth' }); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); rail.scrollBy({ left: -320, behavior: 'smooth' }); }
+  });
   let down = false, sx, sl, moved;
   rail.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = rail.scrollLeft; });
   addEventListener('pointermove', e => { if (!down) return; const d = e.clientX - sx; if (Math.abs(d) > 6) { moved = true; rail.classList.add('drag'); } rail.scrollLeft = sl - d; });

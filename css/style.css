@@ -4940,6 +4940,10 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .srch-related-tag:hover{background:var(--pri-10)!important;border-color:var(--pri)!important}
 [data-theme="dark"] .srch-related{background:rgba(255,255,255,.04)}
 
+/* ── Rail 鍵盤 focus ── */
+.rail:focus{outline:2px solid var(--pri);outline-offset:2px;border-radius:var(--r)}
+.rail:focus:not(:focus-visible){outline:none}
+
 /* ── View Transitions API ── */
 ::view-transition-old(root){animation:vtOut .2s ease-in both}
 ::view-transition-new(root){animation:vtIn .25s ease-out both}
