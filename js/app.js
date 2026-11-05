@@ -5477,10 +5477,42 @@ function certificatePage() {
   reveal(main);
 }
 
+/* ---------- 學習路徑列表 ---------- */
+function pathListPage() {
+  const main = $('main');
+  seo({ title: '學習路徑｜AI Class', desc: '系統化學習路徑，從入門到專業，循序漸進培養即戰力', url: 'https://aiclass.tw/path.html' });
+  const paths = window.PATHS || [];
+  main.innerHTML = `<section class="sec-wrap rv-up"><div class="wrap">
+    <div class="crumb"><a href="index.html">首頁</a> › 學習路徑</div>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.4rem);text-align:center;margin:24px 0 8px">學習路徑</h1>
+    <p style="text-align:center;color:var(--tx2);max-width:600px;margin:0 auto 40px">系統化課程規劃，從入門到進階，帶你循序漸進培養完整技能</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px">
+      ${paths.map(p => {
+        const courses = p.courses.map(id => byId[id]).filter(Boolean);
+        const hours = courses.reduce((s, c) => s + c.hours, 0);
+        return `<a href="path.html?id=${p.id}" class="card rv-up" style="text-decoration:none;padding:28px;border-radius:20px;background:var(--card);border:1px solid var(--line);transition:.3s">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <span style="font-size:28px">${p.icon || '🎯'}</span>
+            <h2 style="font-size:18px;font-weight:700;color:var(--tx);margin:0">${p.name}</h2>
+          </div>
+          <p style="color:var(--tx2);font-size:14px;line-height:1.6;margin:0 0 16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.desc || ''}</p>
+          <div style="display:flex;gap:16px;font-size:13px;color:var(--tx3)">
+            <span>📚 ${courses.length} 堂</span>
+            <span>⏱ ${hours} 小時</span>
+            <span>📊 ${p.level}</span>
+          </div>
+        </a>`;
+      }).join('')}
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
 /* ---------- 學習路徑詳情 ---------- */
 function pathPage() {
   const main = $('main');
   const pid = new URLSearchParams(location.search).get('id');
+  if (!pid) { pathListPage(); return; }
   const p = window.PATHS.find(x => x.id === pid);
   if (!p) { notFoundPage(); return; }
   const courses = p.courses.map(id => byId[id]).filter(Boolean);
