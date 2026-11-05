@@ -1657,6 +1657,7 @@ function course() {
         <div class="c-side-row"><span>💬</span><span>講師回覆：平均 ${1 + (c.id.charCodeAt(1) % 3)} 小時內</span></div>
         <div class="c-side-row"><span>📅</span><span>最後更新：2026/10/${10 + (c.id.charCodeAt(2) % 20)}</span></div>
         <div class="c-side-row"><span>🌐</span><span>語言：繁體中文・附字幕</span></div>
+        <div class="c-reply-rate"><span class="c-rr-label">回覆率</span><div class="c-rr-bar"><div class="c-rr-fill" style="width:${92 + (c.id.charCodeAt(1) % 8)}%"></div></div><span class="c-rr-pct">${92 + (c.id.charCodeAt(1) % 8)}%</span></div>
       </div>
       <div class="c-completion"><b>${75 + (c.id.charCodeAt(2) % 20)}%</b><span>學員完成率</span><div class="c-completion-bar"><div class="c-completion-fill" style="width:${75 + (c.id.charCodeAt(2) % 20)}%"></div></div></div>
       <div class="c-mini-reviews">
