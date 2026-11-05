@@ -4939,6 +4939,39 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .stt-arrow{font-size:16px;font-weight:700;color:var(--tx);z-index:1}
 .stt-prog{transition:stroke-dashoffset .1s linear}
 
+/* ── 社群投票 ── */
+.poll-wrap{margin:12px 0 8px;padding:16px;background:var(--bg2);border-radius:14px}
+.poll-q{font-size:15px;margin:0 0 10px;font-weight:600}
+.poll-options{display:flex;flex-direction:column;gap:8px}
+.poll-option{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid rgba(124,92,255,.18);border-radius:10px;background:var(--bg);cursor:pointer;overflow:hidden;transition:border-color .2s,transform .15s}
+.poll-option:hover{border-color:var(--pri);transform:translateX(2px)}
+.poll-bar{position:absolute;left:0;top:0;height:100%;background:rgba(124,92,255,.1);border-radius:10px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+.poll-label{position:relative;font-size:14px;font-weight:500;color:var(--tx)}
+.poll-count{position:relative;font-size:13px;color:var(--tx2);white-space:nowrap}
+.poll-count small{font-size:12px;margin-left:2px}
+.poll-total{font-size:12px;color:var(--tx3);margin-top:8px;text-align:right}
+.poll-voted .poll-option{pointer-events:none}
+.poll-selected{border-color:var(--pri);background:rgba(124,92,255,.06)}
+.poll-selected .poll-bar{background:rgba(124,92,255,.18)}
+[data-theme="dark"] .poll-wrap{background:rgba(255,255,255,.04)}
+[data-theme="dark"] .poll-option{background:rgba(255,255,255,.03);border-color:rgba(124,92,255,.22)}
+[data-theme="dark"] .poll-bar{background:rgba(124,92,255,.15)}
+[data-theme="dark"] .poll-selected .poll-bar{background:rgba(124,92,255,.25)}
+@media(prefers-reduced-motion:reduce){.poll-bar{transition:none}.poll-option{transition:none}}
+
+/* ── 即將開課倒計時 ── */
+.upcoming-countdown{display:flex;align-items:baseline;gap:4px;margin:8px 0;font-variant-numeric:tabular-nums}
+.uc-cd-num{font-size:22px;font-weight:700;color:var(--pri);min-width:28px;text-align:center}
+.upcoming-countdown small{font-size:12px;color:var(--tx3);margin-right:6px}
+
+/* ── 搜尋相關推薦 ── */
+.srch-related{margin-top:24px;padding:20px;background:var(--bg2);border-radius:14px}
+.srch-related h4{margin:0 0 12px;font-size:15px;font-weight:600}
+.srch-related-tags{display:flex;flex-wrap:wrap;gap:8px}
+.srch-related-tag{border:1px solid rgba(124,92,255,.2)!important;transition:background .2s,border-color .2s}
+.srch-related-tag:hover{background:rgba(124,92,255,.1)!important;border-color:var(--pri)!important}
+[data-theme="dark"] .srch-related{background:rgba(255,255,255,.04)}
+
 /* ── 列印樣式 ── */
 @media print{
   .nav,.mnav,.float-bar,.chat-widget,.scroll-top,.page-progress,.cookie-bar,.sticky-buy,.sp-toast,.cart-reminder,.nl-overlay{display:none!important}

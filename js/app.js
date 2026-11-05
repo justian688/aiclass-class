@@ -1142,15 +1142,31 @@ function home() {
   // 即將上架
   if (window.UPCOMING_COURSES) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="upcoming"><div class="wrap"><div class="sec-head rv-up"><div><h2>即將上架</h2><div class="sub">搶先登記，開課通知第一手</div></div></div>
-      <div class="upcoming-grid">${window.UPCOMING_COURSES.map(uc => `<div class="upcoming-card rv-up">
+      <div class="upcoming-grid">${window.UPCOMING_COURSES.map(uc => {
+        const [y,m] = uc.expected.split('-').map(Number);
+        const target = new Date(y, m - 1, 1);
+        const now = new Date();
+        const diff = Math.max(0, target - now);
+        const days = Math.floor(diff / 864e5);
+        const hrs = Math.floor((diff % 864e5) / 36e5);
+        return `<div class="upcoming-card rv-up">
         <div class="upcoming-cat">${(window.CATS.find(c => c.id === uc.cat) || {}).name || ''}</div>
         <h3>${uc.title}</h3>
         <div class="upcoming-teacher">${uc.teacher}</div>
-        <div class="upcoming-date">預計 ${uc.expected} 上架</div>
-        <div class="upcoming-interest">${uc.interest.toLocaleString()} 人期待中</div>
+        <div class="upcoming-countdown" data-target="${target.toISOString()}"><span class="uc-cd-num">${days}</span><small>天</small><span class="uc-cd-num">${hrs}</span><small>時</small></div>
+        <div class="upcoming-interest">🔥 ${uc.interest.toLocaleString()} 人期待中</div>
         <div class="upcoming-price">${fmt(uc.earlybird)}<small>早鳥價</small></div>
-        <button class="upcoming-btn" onclick="toast('已登記開課通知')">登記通知</button>
-      </div>`).join('')}</div></div></section>`);
+        <button class="upcoming-btn" onclick="toast('已登記開課通知 📬')">🔔 登記通知</button>
+      </div>`;}).join('')}</div></div></section>`);
+    setInterval(() => {
+      $$('.upcoming-countdown[data-target]').forEach(el => {
+        const diff = Math.max(0, new Date(el.dataset.target) - new Date());
+        const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5);
+        const nums = el.querySelectorAll('.uc-cd-num');
+        if (nums[0]) nums[0].textContent = d;
+        if (nums[1]) nums[1].textContent = h;
+      });
+    }, 60000);
   }
 
   // 你的學習旅程（使用真實 owned 數據）
@@ -5837,6 +5853,15 @@ function searchPage() {
       grid.innerHTML = '';
       emptyEl.style.display = '';
     }
+    let relEl = $('#srchRelated'); if (relEl) relEl.remove();
+    if (q && list.length) {
+      const related = trending.filter(t => t.toLowerCase() !== q && (t.toLowerCase().includes(q.slice(0,2)) || C.some(c => c.cat === (list[0]||{}).cat && (c.title+c.teacher).toLowerCase().includes(t.toLowerCase())))).slice(0,6);
+      if (related.length) {
+        grid.insertAdjacentHTML('afterend', `<div class="srch-related rv-up" id="srchRelated"><h4>🔍 相關搜尋</h4><div class="srch-related-tags">${related.map(t=>`<button class="chip srch-related-tag">${t}</button>`).join('')}</div></div>`);
+        $$('.srch-related-tag', main).forEach(b => b.onclick = () => { inp.value = b.textContent; state.q = b.textContent; clearBtn.style.display = 'flex'; filter(); });
+        reveal(main);
+      }
+    }
     renderTags();
   }
 
@@ -5935,6 +5960,7 @@ function communityPage() {
           <h3 class="cmy-thread-title" style="cursor:pointer" onclick="this.closest('.cmy-thread').classList.toggle('expanded')">${p.title}</h3>
           <p class="cmy-thread-preview">${p.content}</p>
           ${c ? `<div class="cmy-course-link">📚 ${c.title}</div>` : ''}
+          ${p.poll ? `<div class="poll-wrap"><h4 class="poll-q">📊 ${p.poll.question}</h4><div class="poll-options">${(()=>{const total=p.poll.options.reduce((s,o)=>s+o.votes,0);return p.poll.options.map(o=>{const pct=total?Math.round(o.votes/total*100):0;return `<button class="poll-option" data-poll="${p.id}" data-opt="${o.text}"><div class="poll-bar" style="width:${pct}%"></div><span class="poll-label">${o.text}</span><span class="poll-count">${pct}%<small>（${o.votes}）</small></span></button>`;}).join('');})()}</div><div class="poll-total">${p.poll.options.reduce((s,o)=>s+o.votes,0).toLocaleString()} 人已投票</div></div>` : ''}
           <div class="cmy-thread-stats"><button class="cmy-like-btn${cmyLiked.has(p.id) ? ' liked' : ''}" data-pid="${p.id}" data-likes="${p.likes}"><span class="cmy-heart">${cmyLiked.has(p.id) ? '❤️' : '🤍'}</span> <span class="cmy-like-count">${p.likes + (cmyLiked.has(p.id) ? 1 : 0)}</span></button><div class="cmy-react-wrap"><button class="cmy-react-btn">😀+</button><div class="cmy-react-picker" hidden>${['👍','❤️','🔥','👏','😮','💡'].map(e=>`<button class="cmy-emoji" data-eid="${p.id}">${e}</button>`).join('')}</div></div><span>💬 ${p.replies}</span><button class="cmy-share-btn" data-share="${p.title}">🔗 分享</button></div>
         </div>
       </div>
@@ -6041,6 +6067,14 @@ function communityPage() {
     if (emoji) { toast(`已按 ${emoji.textContent} 表情反應`); emoji.closest('.cmy-react-picker').hidden = true; return; }
     const share = e.target.closest('.cmy-share-btn');
     if (share) { navigator.clipboard?.writeText(`AI Class 社群 — ${share.dataset.share}\nhttps://aiclass.tw/community.html`).then(() => toast('已複製分享連結')).catch(() => toast('複製失敗')); }
+  });
+  main.addEventListener('click', e => {
+    const opt = e.target.closest('.poll-option');
+    if (!opt) return;
+    const wrap = opt.closest('.poll-wrap');
+    wrap.classList.add('poll-voted');
+    opt.classList.add('poll-selected');
+    toast('感謝投票！');
   });
   document.addEventListener('click', e => { if (!e.target.closest('.cmy-react-wrap')) $$('.cmy-react-picker').forEach(p => p.hidden = true); });
   reveal(main);
