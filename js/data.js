@@ -1059,6 +1059,22 @@ window.ANNOUNCEMENTS = [
   { id: 'a3', text: '2026 秋季學習挑戰賽開跑，完成任務抽 AirPods', link: '/achievement.html', type: 'event' }
 ];
 
+// ── 學員作品牆 ──
+window.GALLERY = [
+  { id: 'g1', author: '林佳蓉', course: 'c02', cat: 'UI 設計', title: '旅遊 App 介面設計', desc: '完整的旅遊訂房 App UI，包含搜尋、列表、詳情與結帳四個主要頁面。', v: '13228', likes: 234, comments: 18, featured: true },
+  { id: 'g2', author: '張志遠', course: 'c27', cat: '攝影', title: '金門戰地日落', desc: '使用課程教的黃金時刻構圖技巧，在金門拍攝的日落系列作品。', v: '34408', likes: 189, comments: 12, featured: true },
+  { id: 'g3', author: '王思妤', course: 'c05', cat: '插畫', title: '森林精靈角色設計', desc: '原創角色 IP，包含三視圖、表情表與色彩設定。', v: '785', likes: 312, comments: 27, featured: true },
+  { id: 'g4', author: '陳冠廷', course: 'c16', cat: '程式', title: 'Python 自動化報表系統', desc: '用 Python 自動爬取銷售數據並產生 Excel 週報，每天省下 2 小時。', v: '46635', likes: 156, comments: 32, featured: false },
+  { id: 'g5', author: '許家豪', course: 'c06', cat: '3D', title: '中世紀城堡場景', desc: '使用 Blender 建模、UV 展開與 HDRI 燈光，完成的中世紀城堡場景。', v: '29997', likes: 278, comments: 21, featured: true },
+  { id: 'g6', author: '吳怡萱', course: 'c45', cat: '烘焙', title: '法式閃電泡芙', desc: '上完甜點課後的第一批閃電泡芙，巧克力淋面和焦糖口味。', v: '33936', likes: 198, comments: 45, featured: false },
+  { id: 'g7', author: '楊凱文', course: 'c12', cat: '動態設計', title: 'Logo 動態演繹', desc: '為個人品牌設計的 Logo 動態效果，使用 After Effects 表達式。', v: '99786', likes: 267, comments: 15, featured: true },
+  { id: 'g8', author: '黃詩涵', course: 'c03', cat: 'AI', title: 'AI 客服助手', desc: '結合 RAG 技術的企業 AI 客服系統，能回答產品和售後問題。', v: '41654', likes: 203, comments: 38, featured: false },
+  { id: 'g9', author: '劉家銘', course: 'c01', cat: '設計', title: '手沖咖啡品牌字型', desc: '為手沖咖啡品牌設計的中英文字型系統，包含標題與內文兩種字重。', v: '50598', likes: 245, comments: 16, featured: true },
+  { id: 'g10', author: '蔡承恩', course: 'c24', cat: '程式', title: '個人作品集網站', desc: '使用 HTML/CSS/JavaScript 打造的響應式個人作品集，含深色模式。', v: '9757', likes: 178, comments: 22, featured: false },
+  { id: 'g11', author: '周婉婷', course: 'c13', cat: '繪畫', title: '祖母的肖像', desc: '用古典三層法畫的祖母肖像，從底稿到完成花了三個週末。', v: '30232', likes: 334, comments: 28, featured: true },
+  { id: 'g12', author: '何俊廷', course: 'c14', cat: '概念設計', title: '廢墟城市世界觀', desc: '末日後的城市場景概念設計，包含 5 張環境概念圖。', v: '9339', likes: 289, comments: 19, featured: true },
+];
+
 // ── 限時免費體驗 ──
 window.FREE_COURSES = [
   { id: 'c07', reason: '新手入門精選', endsIn: '3 天後截止' },

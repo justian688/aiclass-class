@@ -272,7 +272,7 @@ function shell() {
   ft.innerHTML = `<div class="wrap"><div class="cols">
     <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
       <div class="ft-social"><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div></div>
-    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="live.html">直播教室</a></li></ul></div>
+    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="gallery.html">學員作品牆</a></li><li><a href="live.html">直播教室</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">下載 App<i class="ft-arrow">›</i></h4><ul><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 App Store（iOS）</a></li><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Google Play（Android）</a></li></ul>
       <div class="ft-lang"><select onchange="toast('語言切換功能開發中')" aria-label="語言選擇"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
@@ -934,7 +934,7 @@ function home() {
   // 學員作品牆
   const showcaseCourses = C.filter(c => ['drawing','video','design','game'].includes(c.cat)).slice(0, 8);
   main.insertAdjacentHTML('beforeend', `<section class="sec showcase-section"><div class="wrap">
-    <div class="sec-head rv-up"><div><h2>學員作品精選</h2><div class="sub">看看學員們學完課程後的成果</div></div></div>
+    <div class="sec-head rv-up"><div><h2>學員作品精選</h2><div class="sub">看看學員們學完課程後的成果</div></div><a href="gallery.html" class="more">查看全部 →</a></div>
     <div class="showcase-grid">${showcaseCourses.map((sc, i) => `<div class="showcase-item rv-up" style="transition-delay:${(i % 4) * 60}ms">
       <img src="${img(sc)}" alt="${sc.title}" loading="lazy">
       <div class="showcase-overlay"><span class="showcase-course">${sc.title}</span><span class="showcase-author">${sc.teacher} 的學員</span></div>
@@ -5829,6 +5829,84 @@ function contactPage() {
   reveal(main);
 }
 
+/* ---------- 學員作品牆 ---------- */
+function galleryPage() {
+  const main = $('main');
+  const G = window.GALLERY || [];
+  const cats = ['全部', ...new Set(G.map(g => g.cat))];
+  seo({ title: '學員作品牆｜AI Class', desc: `探索 ${G.length} 件學員精彩作品`, url: 'https://aiclass.tw/gallery.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學員作品牆', description: `${G.length} 件學員作品展示` }
+  });
+  const galLikes = JSON.parse(localStorage.getItem('aic-gal-likes') || '{}');
+
+  main.innerHTML = `
+  <section class="sec"><div class="wrap" style="padding-top:100px">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 學員作品牆</div>
+    <div class="gal-header rv-up">
+      <div class="gal-header-text"><h1>學員作品牆</h1><p>看看 AI Class 學員們的精彩創作成果</p></div>
+      <div class="gal-header-stats"><div class="gal-stat"><b>${G.length}</b><span>作品</span></div><div class="gal-stat"><b>${G.reduce((s,g) => s+g.likes, 0).toLocaleString()}</b><span>總讚數</span></div><div class="gal-stat"><b>${new Set(G.map(g => g.author)).size}</b><span>創作者</span></div></div>
+    </div>
+    <div class="chips rv-up" id="gal-chips">${cats.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-gcat="${c}">${c}</button>`).join('')}</div>
+    <div class="gal-sort rv-up"><select id="gal-sort" aria-label="排序"><option value="featured">精選優先</option><option value="likes">最多按讚</option><option value="comments">最多留言</option><option value="newest">最新作品</option></select></div>
+    <div class="gal-grid" id="gal-grid">${renderGallery(G, galLikes)}</div>
+  </div></section>`;
+
+  function renderGallery(items, likes) {
+    return items.map(g => {
+      const cc = byId[g.course];
+      const liked = likes[g.id];
+      return `<div class="gal-card rv-up ${g.featured ? 'gal-featured' : ''}" data-gcat="${g.cat}" data-gid="${g.id}" data-likes="${g.likes}" data-comments="${g.comments}">
+        <div class="gal-card-img"><img src="assets/img/v${g.v}.jpg" alt="${g.title}" loading="lazy">${g.featured ? '<span class="gal-feat-badge">⭐ 精選</span>' : ''}</div>
+        <div class="gal-card-body">
+          <div class="gal-card-meta"><span class="gal-cat-tag">${g.cat}</span></div>
+          <h3>${g.title}</h3>
+          <p class="gal-desc">${g.desc}</p>
+          <div class="gal-author"><div class="gal-author-avatar" style="background:hsl(${g.id.charCodeAt(1)*40},55%,55%)">${g.author[0]}</div><span>${g.author}</span></div>
+          ${cc ? `<a class="gal-course-link" href="course.html?id=${cc.id}">📚 ${cc.title}</a>` : ''}
+          <div class="gal-actions">
+            <button class="gal-like ${liked ? 'liked' : ''}" data-glike="${g.id}"><span class="gal-like-icon">${liked ? '♥' : '♡'}</span> <span class="gal-like-n">${g.likes + (liked ? 1 : 0)}</span></button>
+            <span class="gal-comment-count">💬 ${g.comments}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  $$('#gal-chips .chip', main).forEach(btn => btn.onclick = () => {
+    $$('#gal-chips .chip', main).forEach(b => b.classList.toggle('on', b === btn));
+    const cat = btn.dataset.gcat;
+    $$('#gal-grid .gal-card', main).forEach(c => { c.style.display = cat === '全部' || c.dataset.gcat === cat ? '' : 'none'; });
+  });
+
+  $('#gal-sort', main).onchange = function() {
+    const cards = [...$$('#gal-grid .gal-card', main)];
+    const grid = $('#gal-grid', main);
+    cards.sort((a, b) => {
+      if (this.value === 'likes') return +b.dataset.likes - +a.dataset.likes;
+      if (this.value === 'comments') return +b.dataset.comments - +a.dataset.comments;
+      if (this.value === 'featured') return (b.classList.contains('gal-featured') ? 1 : 0) - (a.classList.contains('gal-featured') ? 1 : 0);
+      return 0;
+    });
+    cards.forEach(c => grid.append(c));
+  };
+
+  $$('[data-glike]', main).forEach(btn => btn.onclick = () => {
+    const id = btn.dataset.glike;
+    const numEl = btn.querySelector('.gal-like-n');
+    const iconEl = btn.querySelector('.gal-like-icon');
+    if (galLikes[id]) {
+      delete galLikes[id]; btn.classList.remove('liked'); iconEl.textContent = '♡';
+      if (numEl) numEl.textContent = +numEl.textContent - 1;
+    } else {
+      galLikes[id] = true; btn.classList.add('liked'); iconEl.textContent = '♥';
+      if (numEl) numEl.textContent = +numEl.textContent + 1;
+    }
+    localStorage.setItem('aic-gal-likes', JSON.stringify(galLikes));
+  });
+
+  reveal(main);
+}
+
 /* ---------- 帳號設定 ---------- */
 function settingsPage() {
   const main = $('main');
@@ -6090,6 +6168,7 @@ else if (page === 'success') successPage();
 else if (page === 'upcoming') upcomingPage();
 else if (page === 'contact') contactPage();
 else if (page === 'settings') settingsPage();
+else if (page === 'gallery') galleryPage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
