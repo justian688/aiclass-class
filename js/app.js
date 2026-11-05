@@ -4399,7 +4399,8 @@ function teachPage() {
 
 /* ---------- 課程播放器 ---------- */
 function playerPage() {
-  const c = byId[new URLSearchParams(location.search).get('id')] || C[0];
+  const c = byId[new URLSearchParams(location.search).get('id')];
+  if (!c) { notFoundPage(); return; }
   seo({ title: `${c.title}｜AI Class 播放器`, desc: `正在觀看：${c.title}，由 ${c.teacher} 授課`, url: `https://aiclass.tw/player.html?id=${c.id}` });
   document.title = `${c.title}｜AI Class 播放器`;
   window.trackEvent('begin_content', { item_id: c.id, item_name: c.title });
