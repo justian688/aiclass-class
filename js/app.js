@@ -18,15 +18,16 @@ const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`
 document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' fill='%23e5e5ea'%3E%3Crect width='400' height='225' rx='12'/%3E%3Ctext x='200' y='120' text-anchor='middle' font-family='system-ui' font-size='14' fill='%23aeaeb2'%3E圖片載入失敗%3C/text%3E%3C/svg%3E"; e.target.alt = '圖片暫時無法顯示'; } }, true);
 const page = document.body.dataset.page;
 const ls = (key, fallback) => { try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; } catch { localStorage.removeItem(key); return fallback; } };
+const ss = (key, val) => { try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {} };
 const wish = new Set(ls('aic-wish', []));
 const cart = new Set(ls('aic-cart', []));
 const aicUser = ls('aic-user', null);
 const owned = new Set(ls('aic-owned', []));
-const streakData = (() => { const k = 'aic-streak', today = new Date().toISOString().slice(0,10), d = ls(k, {last:'',count:0}), yd = new Date(Date.now()-864e5).toISOString().slice(0,10); if (d.last !== today) { d.count = d.last === yd ? d.count + 1 : 1; d.last = today; localStorage.setItem(k, JSON.stringify(d)); } return d; })();
+const streakData = (() => { const k = 'aic-streak', today = new Date().toISOString().slice(0,10), d = ls(k, {last:'',count:0}), yd = new Date(Date.now()-864e5).toISOString().slice(0,10); if (d.last !== today) { d.count = d.last === yd ? d.count + 1 : 1; d.last = today; ss(k, d); } return d; })();
 const follows = new Set(ls('aic-follows', []));
-function saveFollows() { localStorage.setItem('aic-follows', JSON.stringify([...follows])); }
+function saveFollows() { ss('aic-follows', [...follows]); }
 const reviewVotes = ls('aic-rvotes', {});
-function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(reviewVotes)); }
+function saveReviewVotes() { ss('aic-rvotes', reviewVotes); }
 
 function trapFocus(el) {
   const sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -41,7 +42,7 @@ function trapFocus(el) {
   el.addEventListener('keydown', handler);
   return () => el.removeEventListener('keydown', handler);
 }
-function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
+function saveCart() { ss('aic-cart', [...cart]); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) { b.textContent = cart.size || ''; b.style.display = cart.size ? 'flex' : 'none'; b.classList.remove('bounce'); void b.offsetWidth; b.classList.add('bounce'); } }
 
 /* ---------- XP 經驗值系統 ---------- */
@@ -50,7 +51,7 @@ function addXP(amount, reason) {
   xpData.total += amount;
   xpData.log.push({ amount, reason, ts: Date.now() });
   if (xpData.log.length > 100) xpData.log = xpData.log.slice(-100);
-  localStorage.setItem('aic-xp', JSON.stringify(xpData));
+  ss('aic-xp', xpData);
   const lvl = getXPLevel();
   const badge = $('.hdr-level-badge');
   if (badge) { badge.textContent = `Lv.${lvl.lv}`; badge.title = lvl.name; }
@@ -136,7 +137,7 @@ function seo(opts = {}) {
 
 /* ---------- 學習筆記 ---------- */
 const allNotes = ls('aic-notes', {});
-function saveNotes() { localStorage.setItem('aic-notes', JSON.stringify(allNotes)); }
+function saveNotes() { ss('aic-notes', allNotes); }
 function notesWidget(courseId) {
   const notes = allNotes[courseId] || [];
   return `<section class="c-sec" id="notes"><h2 class="rv-up">📝 我的學習筆記 ${notes.length ? `<button class="notes-export btn btn-ghost btn-sm" style="font-size:13px;margin-left:12px">📥 匯出筆記</button>` : ''}</h2>
@@ -185,7 +186,7 @@ function bindNotes(courseId, main) {
 
 /* ---------- 課程進度追蹤 ---------- */
 const progress = ls('aic-progress', {});
-function saveProgress() { localStorage.setItem('aic-progress', JSON.stringify(progress)); }
+function saveProgress() { ss('aic-progress', progress); }
 function getCourseProg(cid) { return progress[cid] || { done: [], lastAt: 0 }; }
 function markLesson(cid, chapIdx, lessonIdx) {
   if (!progress[cid]) progress[cid] = { done: [], lastAt: 0 };
@@ -197,7 +198,7 @@ function markLesson(cid, chapIdx, lessonIdx) {
 
 /* ---------- 使用者評價 ---------- */
 const userReviews = ls('aic-reviews', {});
-function saveReviews() { localStorage.setItem('aic-reviews', JSON.stringify(userReviews)); }
+function saveReviews() { ss('aic-reviews', userReviews); }
 function bindUserReview(courseId, main) {
   const stars = $$('[data-ur]', main);
   const txt = $('.ur-text', main);
@@ -450,7 +451,7 @@ function shell() {
   const tBtn = $('[data-theme-toggle]', hdr);
   function syncTheme() { tBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; }
   syncTheme();
-  tBtn.onclick = () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); localStorage.setItem('aic-theme', next); syncTheme(); };
+  tBtn.onclick = () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); ss('aic-theme', next); syncTheme(); };
 
   // 字體大小調整
   const sizes = ['normal', 'large', 'xlarge'];
@@ -463,7 +464,7 @@ function shell() {
   fsBtn.setAttribute('aria-label', '字體大小');
   fsBtn.textContent = 'A';
   fsBtn.title = '字體大小：' + sizeLabels[sizeIdx];
-  fsBtn.onclick = () => { sizeIdx = (sizeIdx + 1) % sizes.length; document.documentElement.dataset.fontsize = sizes[sizeIdx]; localStorage.setItem('aic-fontsize', sizes[sizeIdx]); fsBtn.title = '字體大小：' + sizeLabels[sizeIdx]; toast('字體大小：' + sizeLabels[sizeIdx]); };
+  fsBtn.onclick = () => { sizeIdx = (sizeIdx + 1) % sizes.length; document.documentElement.dataset.fontsize = sizes[sizeIdx]; ss('aic-fontsize', sizes[sizeIdx]); fsBtn.title = '字體大小：' + sizeLabels[sizeIdx]; toast('字體大小：' + sizeLabels[sizeIdx]); };
   tBtn.after(fsBtn);
 
   // 頁首：往下捲隱藏、往上捲出現
@@ -501,7 +502,7 @@ function shell() {
     ck.innerHTML = `<p>我們使用 Cookie 來提供更好的瀏覽體驗與個人化推薦。詳情請參閱 <a href="privacy.html">隱私權政策</a>。</p><div class="cookie-btns"><button class="btn btn-ghost cookie-decline">僅必要</button><button class="btn btn-pri cookie-ok">全部接受</button></div>`;
     document.body.append(ck);
     requestAnimationFrame(() => requestAnimationFrame(() => ck.classList.add('show')));
-    const closeCk = (val) => { localStorage.setItem('aic-cookie-ok', val); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
+    const closeCk = (val) => { ss('aic-cookie-ok', val); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
     $('.cookie-ok', ck).onclick = () => closeCk('all');
     $('.cookie-decline', ck).onclick = () => closeCk('essential');
   }
@@ -519,7 +520,7 @@ function shell() {
     render();
     document.body.append(tov);
     requestAnimationFrame(() => requestAnimationFrame(() => tov.classList.add('on')));
-    const closeTour = () => { localStorage.setItem('aic-toured', '1'); tov.classList.remove('on'); setTimeout(() => tov.remove(), 300); };
+    const closeTour = () => { ss('aic-toured', '1'); tov.classList.remove('on'); setTimeout(() => tov.remove(), 300); };
     tov.addEventListener('click', e => {
       if (e.target.closest('.tour-skip')) { closeTour(); return; }
       if (e.target.closest('.tour-next')) { si++; if (si >= steps.length) closeTour(); else render(); }
@@ -571,7 +572,7 @@ function shell() {
 function searchOverlay() {
   const recentKey = 'aic-recent-search';
   const getRecent = () => ls(recentKey, []);
-  const addRecent = q => { let r = getRecent().filter(x => x !== q); r.unshift(q); localStorage.setItem(recentKey, JSON.stringify(r.slice(0, 8))); renderRecent(); };
+  const addRecent = q => { let r = getRecent().filter(x => x !== q); r.unshift(q); ss(recentKey, r.slice(0, 8)); renderRecent(); };
 
   const ov = document.createElement('div'); ov.className = 'overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', '搜尋課程');
   const hasVoice = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
@@ -600,7 +601,7 @@ function searchOverlay() {
       const text = $('.ri-text', el).textContent;
       el.onclick = e => { if (!e.target.closest('.ri-del')) { inp.value = text; run(); } };
       const del = $('.ri-del', el);
-      if (del) del.onclick = e => { e.stopPropagation(); let arr = getRecent().filter(x => x !== text); localStorage.setItem(recentKey, JSON.stringify(arr)); renderRecent(); };
+      if (del) del.onclick = e => { e.stopPropagation(); let arr = getRecent().filter(x => x !== text); ss(recentKey, arr); renderRecent(); };
     });
   }
 
@@ -747,7 +748,7 @@ function bindCards(root = document) {
     e.preventDefault(); e.stopPropagation();
     const id = b.dataset.wish, on = !wish.has(id);
     on ? wish.add(id) : wish.delete(id);
-    localStorage.setItem('aic-wish', JSON.stringify([...wish]));
+    ss('aic-wish', [...wish]);
     $$(`[data-wish="${id}"]`).forEach(x => { x.classList.toggle('on', on); x.textContent = on ? '♥' : '♡'; });
     toast(on ? '已加入收藏 ♥' : '已取消收藏');
     window.trackEvent(on ? 'add_to_wishlist' : 'remove_from_wishlist', { item_id: id });
@@ -771,7 +772,7 @@ function bindCards(root = document) {
   $$('[data-addwish]', root).forEach(b => b.onclick = e => {
     e.preventDefault(); e.stopPropagation();
     const id = b.dataset.addwish; wish.add(id);
-    localStorage.setItem('aic-wish', JSON.stringify([...wish]));
+    ss('aic-wish', [...wish]);
     $$(`[data-wish="${id}"]`).forEach(x => { x.classList.add('on'); x.textContent = '♥'; });
     toast('已加入收藏 ♥');
   });
@@ -1091,7 +1092,7 @@ function home() {
       const idx = +btn.dataset.ms; const m = window.MISSIONS[idx];
       const done = ls('aic-ms-done', []);
       if (done.includes(idx)) return;
-      done.push(idx); localStorage.setItem('aic-ms-done', JSON.stringify(done));
+      done.push(idx); ss('aic-ms-done', done);
       btn.classList.add('mi-done'); btn.innerHTML = '<span class="ms-check">✓</span> 已完成';
       btn.closest('.mission-card')?.classList.add('ms-done');
       addXP(m.reward, m.type);
@@ -1539,7 +1540,7 @@ function course() {
   document.title = `${c.title}｜AI Class`;
   // 記錄最近瀏覽
   let rv = ls('aic-recent-view', []).filter(x => x !== c.id);
-  rv.unshift(c.id); localStorage.setItem('aic-recent-view', JSON.stringify(rv.slice(0, 10)));
+  rv.unshift(c.id); ss('aic-recent-view', rv.slice(0, 10));
   window.trackEvent('view_item', { item_id: c.id, item_name: c.title, item_category: c.cat, value: c.price });
   const cat = window.CATS.find(x => x.id === c.cat);
   const others = C.filter(x => x.id !== c.id && x.cat === c.cat).concat(C.filter(x => x.cat !== c.cat)).slice(0, 8);
@@ -2167,7 +2168,7 @@ function course() {
   // 記錄最近瀏覽
   const recentView = ls('aic-recent-view', []).filter(id => id !== c.id);
   recentView.unshift(c.id);
-  localStorage.setItem('aic-recent-view', JSON.stringify(recentView.slice(0, 20)));
+  ss('aic-recent-view', recentView.slice(0, 20));
 
   // 課程進度 checkboxes + progress bar
   const prog = getCourseProg(c.id);
@@ -2425,7 +2426,7 @@ function loginPage() {
     if (!email || !email.includes('@')) { toast('請輸入有效的 Email'); return; }
     if (!pass) { toast('請輸入密碼'); return; }
     const name = email.split('@')[0].replace(/[^a-zA-Z一-鿿]/g, '') || '學員';
-    localStorage.setItem('aic-user', JSON.stringify({ name, email }));
+    ss('aic-user', { name, email });
     toast(`歡迎回來，${name}！`);
     setTimeout(() => location.href = 'index.html', 800);
   };
@@ -3234,7 +3235,7 @@ function articlePage() {
     const arr = ls('aic-likes', []);
     const has = arr.includes(post.id);
     if (has) arr.splice(arr.indexOf(post.id), 1); else arr.push(post.id);
-    localStorage.setItem('aic-likes', JSON.stringify(arr));
+    ss('aic-likes', arr);
     likeBtn.classList.toggle('on');
     toast(has ? '已取消' : '感謝回饋！');
   };
@@ -3242,7 +3243,7 @@ function articlePage() {
     const arr = ls('aic-bm', []);
     const has = arr.includes(post.id);
     if (has) arr.splice(arr.indexOf(post.id), 1); else arr.push(post.id);
-    localStorage.setItem('aic-bm', JSON.stringify(arr));
+    ss('aic-bm', arr);
     bmBtn.classList.toggle('on');
     toast(has ? '已取消收藏' : '已收藏文章');
   };
@@ -3251,7 +3252,7 @@ function articlePage() {
   const artPos = ls('aic-art-pos', {});
   if (artPos[post.id]) setTimeout(() => scrollTo({ top: artPos[post.id], behavior: 'instant' }), 80);
   let scrollTimer;
-  const saveScroll = () => { artPos[post.id] = scrollY; localStorage.setItem('aic-art-pos', JSON.stringify(artPos)); };
+  const saveScroll = () => { artPos[post.id] = scrollY; ss('aic-art-pos', artPos); };
   addEventListener('scroll', () => { clearTimeout(scrollTimer); scrollTimer = setTimeout(saveScroll, 400); }, { passive: true });
   addEventListener('beforeunload', saveScroll);
 
@@ -3575,7 +3576,7 @@ function wishlistPage() {
     </div></section>`;
     $$('.wish-rm', main).forEach(b => b.onclick = () => {
       wish.delete(b.dataset.id);
-      localStorage.setItem('aic-wish', JSON.stringify([...wish]));
+      ss('aic-wish', [...wish]);
       render();
       toast('已移除收藏');
       window.trackEvent('remove_from_wishlist', { item_id: b.dataset.id });
@@ -4572,7 +4573,7 @@ function playerPage() {
     phandle.style.left = pctVal + '%';
     pbar.setAttribute('aria-valuenow', Math.round(pctVal));
     timeEl.textContent = fmtTime(vid_el.currentTime) + ' / ' + fmtTime(vid_el.duration);
-    if (Math.floor(vid_el.currentTime) % 5 === 0) localStorage.setItem(posKey, vid_el.currentTime.toFixed(1));
+    if (Math.floor(vid_el.currentTime) % 5 === 0) ss(posKey, vid_el.currentTime.toFixed(1));
   };
   vid_el.addEventListener('loadedmetadata', () => {
     const saved = +localStorage.getItem(posKey);
@@ -4733,14 +4734,14 @@ function playerPage() {
   const noteKey = 'aic-note-' + c.id;
   const noteEl = $('#plr-note');
   noteEl.value = localStorage.getItem(noteKey) || '';
-  noteEl.oninput = () => localStorage.setItem(noteKey, noteEl.value);
+  noteEl.oninput = () => ss(noteKey, noteEl.value);
 
   // Timestamp stamp button
   $('#plr-stamp').onclick = () => {
     const ts = fmtTime(vid_el.currentTime);
     noteEl.value += (noteEl.value ? '\n' : '') + `[${ts}] `;
     noteEl.focus();
-    localStorage.setItem(noteKey, noteEl.value);
+    ss(noteKey, noteEl.value);
   };
 
   // Export notes
@@ -4837,7 +4838,7 @@ function playerPage() {
       <button class="plr-bm-del" data-bmdel="${i}" aria-label="刪除書籤">✕</button>
     </div>`).join('');
     $$('.plr-bm-jump', list).forEach(b => b.onclick = () => { vid_el.currentTime = +b.dataset.bmtime; vid_el.play(); });
-    $$('.plr-bm-del', list).forEach(b => b.onclick = () => { bookmarks.splice(+b.dataset.bmdel, 1); localStorage.setItem(bmKey, JSON.stringify(bookmarks)); renderBookmarks(); });
+    $$('.plr-bm-del', list).forEach(b => b.onclick = () => { bookmarks.splice(+b.dataset.bmdel, 1); ss(bmKey, bookmarks); renderBookmarks(); });
   }
   renderBookmarks();
   function addBookmark() {
@@ -4845,7 +4846,7 @@ function playerPage() {
     const label = `${chapters[curCh].name} - ${chapters[curCh].lessons[curLs].t}`;
     bookmarks.push({ time, label, ch: curCh, ls: curLs });
     bookmarks.sort((a, b) => a.time - b.time);
-    localStorage.setItem(bmKey, JSON.stringify(bookmarks));
+    ss(bmKey, bookmarks);
     renderBookmarks();
     toast(`已加入書籤 ${fmtTime(time)}`);
   }
@@ -5219,9 +5220,9 @@ function checkoutPage() {
     submitBtn.innerHTML = '<span class="ck-spinner"></span> 處理中…';
     const owned = new Set(ls('aic-owned', []));
     items.forEach(c => owned.add(c.id));
-    localStorage.setItem('aic-owned', JSON.stringify([...owned]));
+    ss('aic-owned', [...owned]);
     const orderId = 'AIC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
-    localStorage.setItem('aic-last-order', JSON.stringify({ id: orderId, items: items.map(c => c.id), total: finalTotal, coupon: appliedCoupon?.code || null, time: Date.now() }));
+    ss('aic-last-order', { id: orderId, items: items.map(c => c.id), total: finalTotal, coupon: appliedCoupon?.code || null, time: Date.now() });
     cart.clear(); saveCart(); updateCartBadge();
     setTimeout(() => { location.href = 'order-complete.html'; }, 1200);
   };
@@ -5609,7 +5610,7 @@ function pathPage() {
 function invitePage() {
   const main = $('main');
   seo({ title: '邀請好友｜AI Class', desc: '邀請好友加入 AI Class，雙方各得優惠券', url: 'https://aiclass.tw/invite.html' });
-  const code = localStorage.getItem('aic-invite-code') || (() => { const c = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase(); localStorage.setItem('aic-invite-code', c); return c; })();
+  const code = localStorage.getItem('aic-invite-code') || (() => { const c = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase(); ss('aic-invite-code', c); return c; })();
   const link = 'https://aiclass.tw/invite?ref=' + code;
   const stats = { invited: 3, registered: 2, earned: 1000 };
 
@@ -5993,7 +5994,7 @@ function searchPage() {
   inp.addEventListener('keydown', e => {
     if (e.key === 'Enter' && inp.value.trim()) {
       let r = ls('aic-recent-search', []).filter(x => x !== inp.value.trim());
-      r.unshift(inp.value.trim()); localStorage.setItem('aic-recent-search', JSON.stringify(r.slice(0, 8)));
+      r.unshift(inp.value.trim()); ss('aic-recent-search', r.slice(0, 8));
       window.trackEvent('search', { search_term: inp.value.trim() });
     }
   });
@@ -6020,7 +6021,7 @@ function searchPage() {
 
   if (initQ) {
     let r = ls('aic-recent-search', []).filter(x => x !== initQ);
-    r.unshift(initQ); localStorage.setItem('aic-recent-search', JSON.stringify(r.slice(0, 8)));
+    r.unshift(initQ); ss('aic-recent-search', r.slice(0, 8));
   }
 
   filter();
@@ -6162,7 +6163,7 @@ function communityPage() {
     if (!btn) return;
     const pid = btn.dataset.pid, baseLikes = +btn.dataset.likes;
     if (cmyLiked.has(pid)) { cmyLiked.delete(pid); } else { cmyLiked.add(pid); }
-    localStorage.setItem('aic-cmy-likes', JSON.stringify([...cmyLiked]));
+    ss('aic-cmy-likes', [...cmyLiked]);
     const heart = btn.querySelector('.cmy-heart'), count = btn.querySelector('.cmy-like-count');
     btn.classList.toggle('liked', cmyLiked.has(pid));
     heart.textContent = cmyLiked.has(pid) ? '❤️' : '🤍';
@@ -6190,7 +6191,7 @@ function communityPage() {
     wrap.classList.add('poll-voted');
     opt.classList.add('poll-selected');
     pollVotes.add(opt.dataset.poll + ':' + opt.dataset.opt);
-    localStorage.setItem('aic-poll-votes', JSON.stringify([...pollVotes]));
+    ss('aic-poll-votes', [...pollVotes]);
     toast('感謝投票！');
   });
   document.addEventListener('click', e => { if (!e.target.closest('.cmy-react-wrap')) $$('.cmy-react-picker').forEach(p => p.hidden = true); });
@@ -6368,7 +6369,7 @@ function quizPage() {
     const pctVal = Math.round(correct/total*100);
     const res = {score:correct, total, time:elapsed, pct:pctVal, date:Date.now()};
     saved[currentQuiz.id] = !saved[currentQuiz.id] || correct > saved[currentQuiz.id].score ? res : saved[currentQuiz.id];
-    localStorage.setItem('aic-quiz-results', JSON.stringify(saved));
+    ss('aic-quiz-results', saved);
     const icon = pctVal >= 80 ? '🏆' : pctVal >= 60 ? '👍' : '💪';
     const title = pctVal >= 80 ? '太厲害了！' : pctVal >= 60 ? '表現不錯！' : '繼續加油！';
     result.hidden = false; trapFocus(result);
@@ -7076,7 +7077,7 @@ function galleryPage() {
       galLikes[id] = true; btn.classList.add('liked'); iconEl.textContent = '♥';
       if (numEl) numEl.textContent = +numEl.textContent + 1;
     }
-    localStorage.setItem('aic-gal-likes', JSON.stringify(galLikes));
+    ss('aic-gal-likes', galLikes);
   });
 
   reveal(main);
@@ -7200,19 +7201,19 @@ function settingsPage() {
   const darkToggle = $('#set-dark', main);
   if (darkToggle) darkToggle.onchange = () => {
     document.documentElement.dataset.theme = darkToggle.checked ? 'dark' : 'light';
-    localStorage.setItem('aic-theme', darkToggle.checked ? 'dark' : 'light');
+    ss('aic-theme', darkToggle.checked ? 'dark' : 'light');
   };
 
   $$('.set-font-btn', main).forEach(btn => btn.onclick = () => {
     document.documentElement.style.fontSize = btn.dataset.fs;
-    localStorage.setItem('aic-fontsize', btn.dataset.fs);
+    ss('aic-fontsize', btn.dataset.fs);
     $$('.set-font-btn', main).forEach(b => b.classList.toggle('on', b === btn));
   });
 
   $$('.set-save', main).forEach(btn => btn.onclick = () => {
     $$('[data-pref]', main).forEach(inp => { prefs[inp.dataset.pref] = inp.checked; });
     const lang = $('#set-lang', main); if (lang) prefs.lang = lang.value;
-    localStorage.setItem('aic-settings', JSON.stringify(prefs));
+    ss('aic-settings', prefs);
     toast('設定已儲存');
   });
 
@@ -7319,7 +7320,7 @@ function notebookPage() {
     const notes = allNotes[cid] || [];
     notes.splice(+ci, 1);
     if (!notes.length) delete allNotes[cid]; else allNotes[cid] = notes;
-    localStorage.setItem('aic-notes', JSON.stringify(allNotes));
+    ss('aic-notes', allNotes);
     btn.closest('.nb-card').remove();
     const stat = main.querySelector('.nb-stat b');
     if (stat) stat.textContent = Object.values(allNotes).flat().length;
@@ -7635,7 +7636,7 @@ function skillmapPage() {
       const cur = document.documentElement.dataset.theme;
       const next = cur === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
-      localStorage.setItem('aic-theme', next);
+      ss('aic-theme', next);
     }
     if (e.key === 'Home' && !e.ctrlKey) { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }
   });
@@ -8019,7 +8020,7 @@ function openRecommendQuiz() {
   if (running) { startTs = Date.now(); timerState.elapsed = elapsed; timerState.start = startTs; sessionStorage.setItem('aic-timer', JSON.stringify(timerState)); interval = setInterval(tick, 1000); startBtn.textContent = '⏸ 暫停'; tw.classList.add('active'); }
   startBtn.onclick = () => {
     if (running) { running = false; elapsed = timerState.elapsed + (Date.now() - startTs) / 1000; timerState.elapsed = elapsed; timerState.running = false; timerState.start = 0; clearInterval(interval); startBtn.textContent = '▶ 開始'; tw.classList.remove('active');
-      const addedMins = Math.floor(elapsed / 60); todayMins += addedMins; localStorage.setItem(todayKey, todayMins); totalEl.textContent = todayMins;
+      const addedMins = Math.floor(elapsed / 60); todayMins += addedMins; ss(todayKey, todayMins); totalEl.textContent = todayMins;
     } else { running = true; startTs = Date.now(); timerState.running = true; timerState.start = startTs; timerState.elapsed = elapsed; interval = setInterval(tick, 1000); startBtn.textContent = '⏸ 暫停'; tw.classList.add('active'); }
     sessionStorage.setItem('aic-timer', JSON.stringify(timerState));
   };
@@ -8374,7 +8375,7 @@ function openRecommendQuiz() {
 {
   if (cart.size > 0 && page !== 'checkout' && page !== 'order-complete') {
     const cartTs = +(localStorage.getItem('aic-cart-ts') || Date.now());
-    if (!localStorage.getItem('aic-cart-ts')) localStorage.setItem('aic-cart-ts', Date.now());
+    if (!localStorage.getItem('aic-cart-ts')) ss('aic-cart-ts', Date.now());
     const elapsed = Date.now() - cartTs;
     if (elapsed > 1800000) {
       setTimeout(() => {
