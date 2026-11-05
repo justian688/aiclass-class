@@ -4040,36 +4040,6 @@ function myPage() {
     if (btn) { btn.click(); btn.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   };
 
-  // Settings: dark mode toggle
-  const darkCb = $('#set-dark', main);
-  if (darkCb) darkCb.onchange = () => {
-    document.documentElement.dataset.theme = darkCb.checked ? 'dark' : 'light';
-    localStorage.setItem('aic-theme', darkCb.checked ? 'dark' : 'light');
-    const hdrToggle = $('.theme-toggle');
-    if (hdrToggle) hdrToggle.textContent = darkCb.checked ? '☀️' : '🌙';
-  };
-  // Settings: font size
-  $$('.my-set-font', main).forEach(btn => btn.onclick = () => {
-    $$('.my-set-font', main).forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    const sz = btn.dataset.fs;
-    document.documentElement.style.fontSize = sz === 's' ? '14px' : sz === 'l' ? '18px' : '';
-    toast(sz === 's' ? '字體大小：小' : sz === 'l' ? '字體大小：大' : '字體大小：中（預設）');
-  });
-  // Settings: notification prefs (localStorage)
-  $$('[data-notif]', main).forEach(cb => {
-    const key = 'aic-notif-' + cb.dataset.notif;
-    const saved = localStorage.getItem(key);
-    if (saved !== null) cb.checked = saved === '1';
-    cb.onchange = () => { localStorage.setItem(key, cb.checked ? '1' : '0'); toast(cb.checked ? '已開啟通知' : '已關閉通知'); };
-  });
-  // Settings: privacy prefs
-  $$('[data-priv]', main).forEach(cb => {
-    const key = 'aic-priv-' + cb.dataset.priv;
-    const saved = localStorage.getItem(key);
-    if (saved !== null) cb.checked = saved === '1';
-    cb.onchange = () => { localStorage.setItem(key, cb.checked ? '1' : '0'); toast('隱私設定已更新'); };
-  });
 
   bindCards(main);
   reveal(main);
