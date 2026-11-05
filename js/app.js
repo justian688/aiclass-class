@@ -809,7 +809,7 @@ const cdHTML = `<div class="cd" data-cd><div><b data-h>00</b><small>時</small><
 function home() {
   const main = $('main');
   main.innerHTML = '';
-  seo({ jsonLd: { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://aiclass.tw/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class' } } })) } });
+  seo({ title: 'AI Class｜跟著業界職人，把熱情學成專業', desc: '精選線上課程平台，涵蓋設計、程式、AI、攝影、音樂等領域，由業界職人親授。無限期觀看、隨時隨地學習，把熱情學成專業。', url: 'https://aiclass.tw/', ogType: 'website', jsonLd: { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://aiclass.tw/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class' } } })) } });
   // Hero
   const slides = window.HERO.map(id => byId[id]);
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程" aria-roledescription="carousel">
