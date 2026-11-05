@@ -4772,12 +4772,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .ins-achievements li:last-child{border-bottom:none}
 .ins-ach-icon{font-size:16px;flex-shrink:0}
 
-/* ── 回到頂端按鈕 ── */
-.scroll-top{position:fixed;right:24px;bottom:30px;width:44px;height:44px;border-radius:50%;border:none;background:var(--pri);color:#fff;font-size:20px;font-weight:700;cursor:pointer;z-index:9050;box-shadow:var(--shadow-md);opacity:0;transform:translateY(20px);transition:opacity .3s,transform .3s;pointer-events:none;display:flex;align-items:center;justify-content:center}
-.scroll-top.show{opacity:1;transform:translateY(0);pointer-events:auto}
-.scroll-top:hover{background:#6a4ce0;transform:translateY(-2px)}
-[data-theme="dark"] .scroll-top{background:var(--pri);box-shadow:0 4px 16px rgba(124,92,255,.3)}
-@media(max-width:760px){.scroll-top{right:16px;bottom:80px;width:40px;height:40px;font-size:18px}}
+/* （.scroll-top 已由 .btt 統一處理，CSS 已移除） */
 
 /* ── 頁面載入進度條 ── */
 .page-progress{position:fixed;top:0;left:0;width:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--pink));z-index:9200;transition:none;pointer-events:none}
@@ -4934,12 +4929,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .ft-pay>span:first-child{font-size:12px;color:var(--tx3)}
 .ft-pay-icon{font-size:12px;color:var(--tx2);background:var(--bg2);padding:4px 10px;border-radius:6px;border:1px solid var(--line)}
 
-/* ── Back-to-top progress ring ── */
-.scroll-top{position:fixed;bottom:90px;right:20px;width:44px;height:44px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;z-index:9000;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateY(10px);box-shadow:var(--shadow-md);display:flex;align-items:center;justify-content:center;padding:0}
-.scroll-top.show{opacity:1;pointer-events:auto;transform:none}
-.stt-ring{position:absolute;inset:0;width:44px;height:44px}
-.stt-arrow{font-size:16px;font-weight:700;color:var(--tx);z-index:1}
-.stt-prog{transition:stroke-dashoffset .1s linear}
+/* （回到頂部已由 .btt 元件處理，.scroll-top 已移除） */
 
 /* ── 講師回覆率 ── */
 .c-reply-rate{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}

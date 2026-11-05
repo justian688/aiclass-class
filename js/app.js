@@ -7810,8 +7810,8 @@ document.addEventListener('click', e => {
   setTimeout(() => location.href = a.href, 300);
 });
 
-// ── 社群通知（Social Proof） ──
-if (page === 'home' || page === 'course' || page === 'category') {
+// ── 社群通知（Social Proof）──（課程頁有專屬版本，不在這裡重複）
+if (page === 'home' || page === 'category') {
   const spNames = ['小明','Emily','阿豪','小美','志偉','雅婷','大華','佳穎','宗翰','文惠','淑華','建宏'];
   const spCities = ['台北','台中','高雄','新竹','台南','桃園','花蓮'];
   let spCount = 0, spMax = page === 'home' ? 3 : 2;
@@ -8371,25 +8371,7 @@ function openRecommendQuiz() {
   window._origSaveCart = origSaveCart;
 }
 
-// ── 回到頂端按鈕 ──
-(function(){
-  const btn = document.createElement('button');
-  btn.className = 'scroll-top';
-  btn.setAttribute('aria-label', '回到頂端');
-  btn.innerHTML = '<svg class="stt-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="var(--line)" stroke-width="2.5"/><circle class="stt-prog" cx="22" cy="22" r="20" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="125.66" stroke-dashoffset="125.66" stroke-linecap="round" transform="rotate(-90 22 22)"/></svg><span class="stt-arrow">↑</span>';
-  document.body.append(btn);
-  const progCircle = btn.querySelector('.stt-prog');
-  let visible = false;
-  const check = rafThrottle(() => {
-    const show = window.scrollY > 600;
-    if (show !== visible) { visible = show; btn.classList.toggle('show', show); }
-    const total = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = total > 0 ? Math.min(1, window.scrollY / total) : 0;
-    progCircle.style.strokeDashoffset = (125.66 * (1 - pct)).toFixed(2);
-  });
-  window.addEventListener('scroll', check, { passive: true });
-  btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-})();
+// （回到頂部按鈕已由 .btt 元件處理，不重複建立）
 
 // ── 頁面載入進度條 ──
 (function(){
