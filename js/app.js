@@ -248,7 +248,7 @@ function shell() {
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
     <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
-    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><a href="my.html">我的學習</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
+    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><a href="my.html">我的學習</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
   </div>`;
   top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
 
@@ -3037,7 +3037,7 @@ function myPage() {
         <a href="order-history.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🧾 訂單紀錄</a>
         <button class="myp-nav-btn" data-sec="coupons">🎟️ 優惠券</button>
         <button class="myp-nav-btn" data-sec="following">👤 追蹤講師</button>
-        <button class="myp-nav-btn" data-sec="settings">⚙️ 帳號設定</button>
+        <a href="settings.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">⚙️ 帳號設定</a>
         <button class="myp-nav-btn" data-sec="achievements">🏅 成就徽章</button>
         <a href="quiz.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🎯 技能測驗</a>
         <a href="certificate.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🏆 結業證書</a>
@@ -3216,53 +3216,12 @@ function myPage() {
         }).join('')}</div>` : '<div class="my-follow-empty rv-up"><p>還沒有追蹤任何講師</p><a href="instructor.html" class="btn btn-pri btn-sm">探索講師 →</a></div>'}
       </section>
 
-      <!-- 帳號設定 -->
+      <!-- 帳號設定（已移至獨立頁面） -->
       <section class="myp-sec" id="myp-sec-settings" hidden>
         <h2 class="myp-sec-title rv-up">帳號設定</h2>
-        <div class="myp-settings rv-up">
-          <div class="myp-set-group">
-            <h3>👤 個人資料</h3>
-            <div class="my-set-profile"><div class="my-set-avatar">學</div><button class="btn btn-ghost btn-sm" onclick="toast('示範網站：更換頭像功能開發中')">更換頭像</button></div>
-            <div class="myp-set-row"><label>姓名</label><input value="學員" placeholder="你的姓名"></div>
-            <div class="myp-set-row"><label>Email</label><input value="user@aiclass.tw" placeholder="Email"></div>
-            <div class="myp-set-row"><label>手機</label><input placeholder="手機號碼（選填）"></div>
-            <div class="myp-set-row"><label>簡介</label><textarea placeholder="介紹一下自己…" rows="2" style="resize:vertical"></textarea></div>
-            <button class="btn btn-pri btn-sm" onclick="toast('示範網站：設定功能開發中')">儲存變更</button>
-          </div>
-          <div class="myp-set-group">
-            <h3>🎨 外觀設定</h3>
-            <div class="myp-set-row toggle"><label>深色模式</label><label class="my-set-switch"><input type="checkbox" id="set-dark" ${document.documentElement.dataset.theme==='dark'?'checked':''}><span class="my-set-slider"></span></label></div>
-            <div class="myp-set-row"><label>字體大小</label><div class="my-set-font-btns"><button class="my-set-font" data-fs="s">小</button><button class="my-set-font on" data-fs="m">中</button><button class="my-set-font" data-fs="l">大</button></div></div>
-            <div class="myp-set-row"><label>語言</label><select disabled style="padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx)"><option>繁體中文</option></select></div>
-          </div>
-          <div class="myp-set-group">
-            <h3>🔑 密碼變更</h3>
-            <div class="myp-set-row"><label>目前密碼</label><input type="password" placeholder="輸入目前密碼"></div>
-            <div class="myp-set-row"><label>新密碼</label><input type="password" placeholder="輸入新密碼"></div>
-            <div class="myp-set-row"><label>確認密碼</label><input type="password" placeholder="再次輸入新密碼"></div>
-            <button class="btn btn-pri btn-sm" onclick="toast('示範網站：設定功能開發中')">更新密碼</button>
-          </div>
-          <div class="myp-set-group">
-            <h3>🔔 通知偏好</h3>
-            <div class="myp-set-row toggle"><label>課程更新通知<span class="my-set-desc">有新章節或內容更新時通知你</span></label><label class="my-set-switch"><input type="checkbox" data-notif="update" checked><span class="my-set-slider"></span></label></div>
-            <div class="myp-set-row toggle"><label>促銷活動通知<span class="my-set-desc">限時優惠和折扣資訊</span></label><label class="my-set-switch"><input type="checkbox" data-notif="promo" checked><span class="my-set-slider"></span></label></div>
-            <div class="myp-set-row toggle"><label>學習提醒<span class="my-set-desc">每日學習提醒，保持學習習慣</span></label><label class="my-set-switch"><input type="checkbox" data-notif="remind"><span class="my-set-slider"></span></label></div>
-            <div class="myp-set-row toggle"><label>社群互動通知<span class="my-set-desc">有人回覆你的問題或評論時通知</span></label><label class="my-set-switch"><input type="checkbox" data-notif="social" checked><span class="my-set-slider"></span></label></div>
-            <div class="myp-set-row toggle"><label>電子報訂閱<span class="my-set-desc">每週精選課程與學習資源</span></label><label class="my-set-switch"><input type="checkbox" data-notif="newsletter"><span class="my-set-slider"></span></label></div>
-          </div>
-          <div class="myp-set-group">
-            <h3>🔒 隱私設定</h3>
-            <div class="myp-set-row toggle"><label>公開學習進度<span class="my-set-desc">其他學員可以看到你的學習狀態</span></label><label class="my-set-switch"><input type="checkbox" data-priv="progress" checked><span class="my-set-slider"></span></label></div>
-            <div class="myp-set-row toggle"><label>顯示學習成就<span class="my-set-desc">在個人檔案顯示成就徽章</span></label><label class="my-set-switch"><input type="checkbox" data-priv="achievement" checked><span class="my-set-slider"></span></label></div>
-            <div class="myp-set-row toggle"><label>出現在排行榜<span class="my-set-desc">允許在排行榜中顯示你的名稱</span></label><label class="my-set-switch"><input type="checkbox" data-priv="leaderboard"><span class="my-set-slider"></span></label></div>
-          </div>
-          <div class="myp-set-group my-set-danger">
-            <h3>⚠️ 帳號操作</h3>
-            <div class="my-set-actions">
-              <button class="btn btn-ghost" onclick="toast('示範網站：已登出（模擬）')">登出帳號</button>
-              <button class="btn my-set-del-btn" onclick="toast('示範網站：帳號刪除功能開發中')">刪除帳號</button>
-            </div>
-          </div>
+        <div class="set-redirect rv-up" style="text-align:center;padding:60px 20px">
+          <p style="font-size:18px;margin-bottom:16px">帳號設定已移至獨立頁面，提供更完整的管理功能。</p>
+          <a href="settings.html" class="btn btn-pri">前往帳號設定 →</a>
         </div>
       </section>
 
@@ -5870,6 +5829,163 @@ function contactPage() {
   reveal(main);
 }
 
+/* ---------- 帳號設定 ---------- */
+function settingsPage() {
+  const main = $('main');
+  seo({ title: '帳號設定｜AI Class', desc: '管理你的 AI Class 帳號設定、個人資料與通知偏好。', url: 'https://aiclass.tw/settings.html' });
+  document.title = '帳號設定｜AI Class';
+  const user = aicUser || { name: '學員', email: 'user@aiclass.tw' };
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  const prefs = JSON.parse(localStorage.getItem('aic-settings') || '{"emailNews":true,"emailCourse":true,"emailPromo":false,"lang":"zh-TW","autoplay":true,"subtitle":true}');
+
+  main.innerHTML = `
+  <section class="sec"><div class="wrap">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="my.html">我的學習</a> › 帳號設定</div>
+    <h1 class="set-title rv-up">帳號設定</h1>
+    <div class="set-layout">
+      <nav class="set-nav rv-up">
+        <button class="set-nav-btn on" data-stab="profile">👤 個人資料</button>
+        <button class="set-nav-btn" data-stab="notify">🔔 通知偏好</button>
+        <button class="set-nav-btn" data-stab="display">🎨 顯示設定</button>
+        <button class="set-nav-btn" data-stab="playback">▶ 播放設定</button>
+        <button class="set-nav-btn" data-stab="connected">🔗 連結帳號</button>
+        <button class="set-nav-btn" data-stab="privacy">🔒 隱私與安全</button>
+      </nav>
+      <div class="set-main">
+        <section class="set-sec" id="set-profile">
+          <h2 class="rv-up">個人資料</h2>
+          <div class="set-card rv-up">
+            <div class="set-avatar-row">
+              <div class="set-avatar-circle">${user.name[0]}</div>
+              <div class="set-avatar-info">
+                <button class="btn btn-ghost btn-sm set-avatar-btn">更換頭像</button>
+                <small>支援 JPG、PNG，建議 200×200px 以上</small>
+              </div>
+            </div>
+            <div class="set-field"><label>顯示名稱</label><input type="text" value="${user.name}" id="set-name" aria-label="顯示名稱"></div>
+            <div class="set-field"><label>Email</label><input type="email" value="${user.email}" id="set-email" aria-label="Email"><small>修改後需驗證新信箱</small></div>
+            <div class="set-field"><label>電話</label><input type="tel" placeholder="選填" id="set-phone" aria-label="電話"></div>
+            <div class="set-field"><label>自我介紹</label><textarea rows="3" placeholder="介紹一下自己吧..." id="set-bio" aria-label="自我介紹"></textarea></div>
+            <button class="btn btn-pri set-save" data-sec="profile">儲存變更</button>
+          </div>
+        </section>
+
+        <section class="set-sec" id="set-notify" hidden>
+          <h2 class="rv-up">通知偏好</h2>
+          <div class="set-card rv-up">
+            <div class="set-toggle-row"><span>電子報與學習週報</span><label class="set-toggle"><input type="checkbox" ${prefs.emailNews ? 'checked' : ''} data-pref="emailNews"><span class="set-slider"></span></label></div>
+            <div class="set-toggle-row"><span>課程更新通知</span><label class="set-toggle"><input type="checkbox" ${prefs.emailCourse ? 'checked' : ''} data-pref="emailCourse"><span class="set-slider"></span></label></div>
+            <div class="set-toggle-row"><span>促銷與優惠通知</span><label class="set-toggle"><input type="checkbox" ${prefs.emailPromo ? 'checked' : ''} data-pref="emailPromo"><span class="set-slider"></span></label></div>
+            <div class="set-toggle-row"><span>講師回覆通知</span><label class="set-toggle"><input type="checkbox" checked data-pref="emailReply"><span class="set-slider"></span></label></div>
+            <div class="set-toggle-row"><span>成就解鎖通知</span><label class="set-toggle"><input type="checkbox" checked data-pref="emailAch"><span class="set-slider"></span></label></div>
+            <button class="btn btn-pri set-save" data-sec="notify">儲存偏好</button>
+          </div>
+        </section>
+
+        <section class="set-sec" id="set-display" hidden>
+          <h2 class="rv-up">顯示設定</h2>
+          <div class="set-card rv-up">
+            <div class="set-toggle-row"><span>深色模式</span><label class="set-toggle"><input type="checkbox" ${isDark ? 'checked' : ''} id="set-dark"><span class="set-slider"></span></label></div>
+            <div class="set-field"><label>介面語言</label><select id="set-lang" aria-label="介面語言"><option value="zh-TW" ${prefs.lang === 'zh-TW' ? 'selected' : ''}>繁體中文</option><option value="zh-CN" ${prefs.lang === 'zh-CN' ? 'selected' : ''}>简体中文</option><option value="en" ${prefs.lang === 'en' ? 'selected' : ''}>English</option><option value="ja" ${prefs.lang === 'ja' ? 'selected' : ''}>日本語</option><option value="ko" ${prefs.lang === 'ko' ? 'selected' : ''}>한국어</option></select></div>
+            <div class="set-field"><label>字體大小</label><div class="set-font-btns"><button class="set-font-btn ${document.documentElement.style.fontSize === '14px' ? 'on' : ''}" data-fs="14px">小</button><button class="set-font-btn ${!document.documentElement.style.fontSize || document.documentElement.style.fontSize === '16px' ? 'on' : ''}" data-fs="16px">標準</button><button class="set-font-btn ${document.documentElement.style.fontSize === '18px' ? 'on' : ''}" data-fs="18px">大</button></div></div>
+            <button class="btn btn-pri set-save" data-sec="display">儲存設定</button>
+          </div>
+        </section>
+
+        <section class="set-sec" id="set-playback" hidden>
+          <h2 class="rv-up">播放設定</h2>
+          <div class="set-card rv-up">
+            <div class="set-toggle-row"><span>自動播放下一個單元</span><label class="set-toggle"><input type="checkbox" ${prefs.autoplay ? 'checked' : ''} data-pref="autoplay"><span class="set-slider"></span></label></div>
+            <div class="set-toggle-row"><span>預設開啟字幕</span><label class="set-toggle"><input type="checkbox" ${prefs.subtitle ? 'checked' : ''} data-pref="subtitle"><span class="set-slider"></span></label></div>
+            <div class="set-field"><label>預設播放速度</label><select id="set-speed" aria-label="播放速度"><option>0.75x</option><option selected>1x</option><option>1.25x</option><option>1.5x</option><option>2x</option></select></div>
+            <div class="set-field"><label>預設畫質</label><select id="set-quality" aria-label="畫質"><option>自動</option><option>1080p</option><option>720p</option><option>480p</option></select></div>
+            <button class="btn btn-pri set-save" data-sec="playback">儲存設定</button>
+          </div>
+        </section>
+
+        <section class="set-sec" id="set-connected" hidden>
+          <h2 class="rv-up">連結帳號</h2>
+          <div class="set-card rv-up">
+            <div class="set-connected-item"><div class="set-ci-icon" style="background:#4285f4">G</div><div class="set-ci-info"><b>Google</b><span>已連結：user@gmail.com</span></div><button class="btn btn-ghost btn-sm">解除連結</button></div>
+            <div class="set-connected-item"><div class="set-ci-icon" style="background:#06c755">L</div><div class="set-ci-info"><b>LINE</b><span class="set-ci-not">尚未連結</span></div><button class="btn btn-pri btn-sm">連結帳號</button></div>
+            <div class="set-connected-item"><div class="set-ci-icon" style="background:#000">A</div><div class="set-ci-info"><b>Apple</b><span class="set-ci-not">尚未連結</span></div><button class="btn btn-pri btn-sm">連結帳號</button></div>
+            <div class="set-connected-item"><div class="set-ci-icon" style="background:#0a66c2">in</div><div class="set-ci-info"><b>LinkedIn</b><span class="set-ci-not">尚未連結</span></div><button class="btn btn-pri btn-sm">連結帳號</button></div>
+          </div>
+        </section>
+
+        <section class="set-sec" id="set-privacy" hidden>
+          <h2 class="rv-up">隱私與安全</h2>
+          <div class="set-card rv-up">
+            <div class="set-toggle-row"><span>公開個人檔案</span><label class="set-toggle"><input type="checkbox" checked data-pref="publicProfile"><span class="set-slider"></span></label></div>
+            <div class="set-toggle-row"><span>允許其他學員查看我的學習進度</span><label class="set-toggle"><input type="checkbox" data-pref="showProgress"><span class="set-slider"></span></label></div>
+            <div class="set-toggle-row"><span>顯示在排行榜上</span><label class="set-toggle"><input type="checkbox" checked data-pref="showLeaderboard"><span class="set-slider"></span></label></div>
+            <hr class="set-divider">
+            <h3 class="set-danger-title">危險區域</h3>
+            <div class="set-danger-row">
+              <div><b>變更密碼</b><p>定期更換密碼以確保帳號安全</p></div>
+              <button class="btn btn-ghost btn-sm set-change-pw">變更密碼</button>
+            </div>
+            <div class="set-danger-row">
+              <div><b>匯出資料</b><p>下載你的所有學習紀錄與個人資料</p></div>
+              <button class="btn btn-ghost btn-sm set-export">匯出資料</button>
+            </div>
+            <div class="set-danger-row set-danger-delete">
+              <div><b>刪除帳號</b><p>此操作無法復原，所有課程與紀錄將永久刪除</p></div>
+              <button class="btn btn-sm set-delete-btn">刪除帳號</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div></section>`;
+
+  $$('.set-nav-btn', main).forEach(btn => btn.onclick = () => {
+    $$('.set-nav-btn', main).forEach(b => b.classList.toggle('on', b === btn));
+    $$('.set-sec', main).forEach(s => s.hidden = s.id !== 'set-' + btn.dataset.stab);
+  });
+
+  const darkToggle = $('#set-dark', main);
+  if (darkToggle) darkToggle.onchange = () => {
+    document.documentElement.dataset.theme = darkToggle.checked ? 'dark' : 'light';
+    localStorage.setItem('aic-theme', darkToggle.checked ? 'dark' : 'light');
+  };
+
+  $$('.set-font-btn', main).forEach(btn => btn.onclick = () => {
+    document.documentElement.style.fontSize = btn.dataset.fs;
+    localStorage.setItem('aic-fontsize', btn.dataset.fs);
+    $$('.set-font-btn', main).forEach(b => b.classList.toggle('on', b === btn));
+  });
+
+  $$('.set-save', main).forEach(btn => btn.onclick = () => {
+    $$('[data-pref]', main).forEach(inp => { prefs[inp.dataset.pref] = inp.checked; });
+    const lang = $('#set-lang', main); if (lang) prefs.lang = lang.value;
+    localStorage.setItem('aic-settings', JSON.stringify(prefs));
+    toast('設定已儲存');
+  });
+
+  const exportBtn = $('.set-export', main);
+  if (exportBtn) exportBtn.onclick = () => toast('資料匯出中，稍後會寄到你的信箱');
+
+  const pwBtn = $('.set-change-pw', main);
+  if (pwBtn) pwBtn.onclick = () => toast('密碼重設信已寄出，請查收 Email');
+
+  const delBtn = $('.set-delete-btn', main);
+  if (delBtn) delBtn.onclick = () => {
+    if (confirm('確定要刪除帳號嗎？此操作無法復原。')) toast('帳號刪除申請已送出，將於 3 個工作天內處理', 'warning');
+  };
+
+  const avatarBtn = $('.set-avatar-btn', main);
+  if (avatarBtn) avatarBtn.onclick = () => toast('頭像上傳功能開發中');
+
+  $$('.set-connected-item .btn', main).forEach(btn => btn.onclick = () => {
+    const name = btn.closest('.set-connected-item').querySelector('b').textContent;
+    if (btn.textContent.includes('解除')) toast(`已解除 ${name} 連結`, 'warning');
+    else toast(`${name} 連結功能開發中`);
+  });
+
+  reveal(main);
+}
+
 /* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
@@ -5919,6 +6035,7 @@ else if (page === 'bundle') bundlePage();
 else if (page === 'success') successPage();
 else if (page === 'upcoming') upcomingPage();
 else if (page === 'contact') contactPage();
+else if (page === 'settings') settingsPage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
