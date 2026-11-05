@@ -446,7 +446,7 @@ function shell() {
 
   // 深色模式切換
   const saved = localStorage.getItem('aic-theme');
-  const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+  const dark = saved === 'dark';
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   const tBtn = $('[data-theme-toggle]', hdr);
   function syncTheme() { tBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; }
