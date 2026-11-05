@@ -7808,6 +7808,7 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
     if (pctScroll >= 60) {
       triggered = true; sessionStorage.setItem('aic-nl-shown', '1');
       removeEventListener('scroll', nlCheck);
+
       const nl = document.createElement('div'); nl.className = 'nl-overlay'; nl.setAttribute('role', 'dialog'); nl.setAttribute('aria-modal', 'true'); nl.setAttribute('aria-label', '訂閱電子報');
       nl.innerHTML = `<div class="nl-box"><button class="nl-close" aria-label="關閉">✕</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址" aria-label="Email 地址" required><button class="btn btn-pri">免費訂閱</button></div><div class="nl-err" style="display:none;color:#ff5c8a;font-size:13px;margin-top:8px"></div><small>🔒 我們重視你的隱私，絕不分享個資。隨時可取消訂閱。</small></div>`;
       document.body.append(nl);
