@@ -4654,3 +4654,87 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .mnav-submenu a{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;color:var(--tx);text-decoration:none;border-radius:8px;white-space:nowrap}
 .mnav-submenu a:hover,.mnav-submenu a:focus{background:var(--bg2)}
 [data-theme="dark"] .mnav-submenu{background:var(--card)}
+
+/* ── 電子報訂閱 modal ── */
+.nl-overlay{position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.nl-overlay.on{opacity:1}
+.nl-modal{background:var(--bg);border-radius:20px;padding:40px 32px;max-width:420px;width:calc(100% - 32px);text-align:center;transform:translateY(20px);transition:transform .3s}
+.nl-overlay.on .nl-modal{transform:none}
+.nl-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;color:var(--tx3);cursor:pointer;padding:8px}
+.nl-icon{font-size:48px;margin-bottom:12px}
+.nl-modal h2{font-size:22px;margin-bottom:8px}
+.nl-modal p{color:var(--tx2);font-size:14px;margin-bottom:20px;line-height:1.6}
+.nl-form{display:flex;gap:8px;margin-bottom:12px}
+.nl-input{flex:1;padding:12px 16px;border:1px solid var(--line);border-radius:12px;font-size:14px;background:var(--bg);color:var(--tx);outline:none;transition:border-color .2s}
+.nl-input:focus{border-color:var(--pri)}
+.nl-hint{font-size:13px;color:var(--pri);font-weight:600}
+[data-theme="dark"] .nl-modal{background:var(--card)}
+@media(max-width:480px){.nl-form{flex-direction:column}.nl-modal{padding:32px 20px}}
+
+/* ── 課程頁社會證明通知 ── */
+.sp-toast{position:fixed;bottom:24px;left:24px;z-index:8500;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;max-width:360px;font-size:13px;transform:translateX(-120%);opacity:0;transition:all .4s var(--ease)}
+.sp-toast.show{transform:none;opacity:1}
+.sp-icon{font-size:20px;flex-shrink:0}
+.sp-time{display:block;font-size:11px;color:var(--tx3);margin-top:2px}
+.sp-close{background:none;border:none;font-size:16px;color:var(--tx3);cursor:pointer;padding:4px;margin-left:4px;flex-shrink:0}
+[data-theme="dark"] .sp-toast{background:var(--card)}
+@media(max-width:760px){.sp-toast{left:12px;right:12px;max-width:none;bottom:80px}}
+
+/* ── 購物車催促橫幅 ── */
+.cart-reminder{position:fixed;bottom:0;left:0;right:0;z-index:8800;transform:translateY(100%);transition:transform .4s var(--ease)}
+.cart-reminder.show{transform:none}
+.cart-rem-inner{max-width:800px;margin:0 auto;padding:14px 20px;background:linear-gradient(135deg,var(--pri),var(--pink));color:#fff;display:flex;align-items:center;gap:12px;font-size:14px}
+.cart-rem-icon{font-size:20px}
+.cart-rem-inner .btn{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);min-height:36px}
+.cart-rem-inner .btn:hover{background:#fff;color:var(--pri)}
+.cart-rem-close{background:none;border:none;color:rgba(255,255,255,.8);font-size:18px;cursor:pointer;padding:4px;margin-left:auto}
+@media(max-width:480px){.cart-rem-inner{flex-wrap:wrap;justify-content:center;text-align:center;gap:8px}}
+
+/* ── 結帳頁信任標章 ── */
+.ck-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.ck-trust-item{text-align:center;font-size:11px;color:var(--tx2);line-height:1.4}
+.ck-trust-icon{display:block;font-size:24px;margin-bottom:4px}
+
+/* ── 課程限時倒數強化 ── */
+.c-urgency{background:linear-gradient(135deg,rgba(255,59,48,.06),rgba(255,149,0,.06));border:1px solid rgba(255,59,48,.15);border-radius:12px;padding:10px 14px;margin:8px 0}
+.c-urgency-label{display:block;font-size:13px;font-weight:700;color:#ff3b30;margin-bottom:6px;text-align:center}
+[data-theme="dark"] .c-urgency{background:linear-gradient(135deg,rgba(255,59,48,.12),rgba(255,149,0,.1));border-color:rgba(255,59,48,.25)}
+
+/* ── 課程免費試看 modal ── */
+.preview-overlay{position:fixed;inset:0;z-index:9300;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.preview-overlay.on{opacity:1}
+.preview-modal{background:var(--bg);border-radius:20px;overflow:hidden;max-width:720px;width:calc(100% - 32px);position:relative;transform:scale(.95);transition:transform .3s}
+.preview-overlay.on .preview-modal{transform:none}
+.preview-close{position:absolute;top:12px;right:12px;z-index:2;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:22px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.preview-badge{position:absolute;top:12px;left:12px;z-index:2;background:#34c759;color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px}
+.preview-video{width:100%;display:block;background:#000;max-height:400px}
+.preview-info{padding:16px 20px}
+.preview-info h3{font-size:16px;margin-bottom:4px}
+.preview-info p{font-size:14px;color:var(--tx2)}
+.preview-cta{padding:0 20px 20px;text-align:center}
+.preview-cta p{font-size:14px;color:var(--tx2);margin-bottom:10px}
+.preview-buy{width:100%}
+.c-preview-btn{margin-top:6px;background:rgba(52,199,89,.08)!important;color:#34c759!important;border-color:#34c759!important}
+.c-preview-btn:hover{background:#34c759!important;color:#fff!important}
+[data-theme="dark"] .preview-modal{background:var(--card)}
+@media(max-width:480px){.preview-modal{border-radius:12px}.preview-video{max-height:240px}}
+
+/* ── 本週學習週報 ── */
+.wk-report{background:var(--bg2);border-radius:16px;padding:28px;border:1px solid var(--line)}
+.wk-header h3{font-size:18px;margin-bottom:20px;color:var(--tx)}
+.wk-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.wk-stat{text-align:center;padding:16px 8px;background:var(--bg);border-radius:12px;box-shadow:var(--shadow-sm)}
+.wk-stat-icon{font-size:24px;margin-bottom:6px}
+.wk-stat b{display:block;font-size:24px;color:var(--pri);font-weight:800}
+.wk-stat span{font-size:12px;color:var(--tx2)}
+.wk-highlights{margin-bottom:20px}
+.wk-highlights h4{font-size:15px;margin-bottom:10px}
+.wk-highlights ul{list-style:none;padding:0}
+.wk-highlights li{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.6}
+.wk-highlights li:last-child{border-bottom:none}
+.wk-encourage{background:linear-gradient(135deg,rgba(124,92,255,.06),rgba(255,92,138,.06));border-radius:12px;padding:16px;text-align:center}
+.wk-encourage p{font-size:15px;font-weight:500;margin:0}
+[data-theme="dark"] .wk-report{background:var(--card)}
+[data-theme="dark"] .wk-stat{background:rgba(255,255,255,.05)}
+[data-theme="dark"] .wk-encourage{background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(255,92,138,.08))}
+@media(max-width:480px){.wk-stats{grid-template-columns:1fr 1fr}.wk-report{padding:20px 16px}}

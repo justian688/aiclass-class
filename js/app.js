@@ -101,13 +101,19 @@ function seo(opts = {}) {
   setMeta('property', 'og:url', dUrl);
   setMeta('property', 'og:image', dImg);
   setMeta('property', 'og:locale', 'zh_TW');
+  setMeta('property', 'og:site_name', 'AI Class');
   if (opts.ogType) setMeta('property', 'og:type', opts.ogType);
+  setMeta('name', 'twitter:card', opts.twitterCard || 'summary_large_image');
   setMeta('name', 'twitter:title', dTitle);
   setMeta('name', 'twitter:description', dDesc);
   setMeta('name', 'twitter:image', dImg);
+  setMeta('name', 'twitter:site', '@aiclass_tw');
   setMeta('name', 'description', dDesc);
+  let hreflang = $('link[hreflang]');
+  if (!hreflang) { hreflang = document.createElement('link'); hreflang.rel = 'alternate'; hreflang.hreflang = 'zh-TW'; document.head.append(hreflang); }
+  hreflang.href = dUrl;
   const canon = $('link[rel="canonical"]'); if (canon) canon.href = dUrl;
-  if (opts.jsonLd) { let s = $('#seo-jsonld'); if (!s) { s = document.createElement('script'); s.id = 'seo-jsonld'; s.type = 'application/ld+json'; document.head.append(s); } s.textContent = JSON.stringify(opts.jsonLd); }
+  if (opts.jsonLd) { let s = $('#seo-jsonld'); if (!s) { s = document.createElement('script'); s.id = 'seo-jsonld'; s.type = 'application/ld+json'; document.head.append(s); } s.textContent = JSON.stringify(Array.isArray(opts.jsonLd) ? opts.jsonLd : [opts.jsonLd]); }
 }
 
 /* ---------- 學習筆記 ---------- */
@@ -1543,9 +1549,10 @@ function course() {
         <div><span class="pct">${pct(c)}%</span> <del>${fmt(c.origin)}</del></div>
         <div class="big">${fmt(c.price)}</div>
         <div style="color:var(--tx2);font-size:14px">或 3 期 0 利率，每期 ${fmt(Math.ceil(c.price / 3))}</div>
-        ${cdHTML}
+        <div class="c-urgency"><span class="c-urgency-label">⏰ 限時優惠倒數</span>${cdHTML}</div>
         <button class="btn btn-pri c-buy-pulse" data-buy>立即購買</button>
         <button class="btn btn-ghost" data-cart>加入購物車</button>
+        <button class="btn btn-ghost c-preview-btn" data-preview>▶ 免費試看第一堂</button>
         <button class="btn btn-ghost" data-gift style="margin-top:6px">🎁 贈送此課程</button>
         <button class="btn btn-ghost" onclick="toast('已設定降價通知')" style="margin-top:6px">🔔 降價通知</button>
         ${(() => {
@@ -1768,8 +1775,9 @@ function course() {
     img: `https://aiclass.tw/${img(c)}`,
     ogType: 'course',
     jsonLd: [
-      { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, ratingCount: c.students }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H` } },
-      { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: cat.name, item: `https://aiclass.tw/category.html?cat=${c.cat}` }, { '@type': 'ListItem', position: 3, name: c.title }] }
+      { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/', sameAs: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher, jobTitle: c.role }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock', url: `https://aiclass.tw/course.html?id=${c.id}`, validFrom: '2026-01-01' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, worstRating: 1, ratingCount: c.students, reviewCount: Math.max(1, Math.round(c.students * 0.08)) }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H`, inLanguage: 'zh-TW' }, image: `https://aiclass.tw/${img(c)}`, inLanguage: 'zh-TW' },
+      { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: cat.name, item: `https://aiclass.tw/category.html?cat=${c.cat}` }, { '@type': 'ListItem', position: 3, name: c.title }] },
+      { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: courseFaq.map(f => ({ '@type': 'Question', name: f[0], acceptedAnswer: { '@type': 'Answer', text: f[1] } })) }
     ]
   });
 
@@ -1781,6 +1789,20 @@ function course() {
   if (buyBtn) buyBtn.onclick = () => toast('示範網站：尚未串接金流');
   const cartBtn = $('[data-cart]');
   if (cartBtn) cartBtn.onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); window.trackEvent('add_to_cart', { item_id: c.id, item_name: c.title, value: c.price }); };
+  const previewBtn = $('[data-preview]');
+  if (previewBtn) previewBtn.onclick = () => {
+    const firstLesson = chapters[0]?.lessons[0];
+    const ov = document.createElement('div'); ov.className = 'preview-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
+    ov.innerHTML = `<div class="preview-modal"><button class="preview-close" aria-label="關閉">×</button><div class="preview-badge">免費試看</div><video class="preview-video" src="${vid(c)}" poster="${img(c)}" controls autoplay></video><div class="preview-info"><h3>${c.title}</h3><p>${firstLesson ? firstLesson.name : '第一堂課'}</p></div><div class="preview-cta"><p>喜歡這堂課嗎？</p><button class="btn btn-pri preview-buy">以 ${fmt(c.price)} 購買完整課程</button></div></div>`;
+    document.body.append(ov);
+    requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
+    const closeP = () => { ov.querySelector('video')?.pause(); ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+    ov.querySelector('.preview-close').onclick = closeP;
+    ov.onclick = e => { if (e.target === ov) closeP(); };
+    ov.querySelector('.preview-buy').onclick = () => { closeP(); cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
+    document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { closeP(); document.removeEventListener('keydown', esc); } });
+    trackEvent('course_preview', { item_id: c.id, item_name: c.title });
+  };
   const copyBtn = $('[data-copy-link]');
   if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); const orig = copyBtn.textContent; copyBtn.textContent = '✓ 已複製！'; copyBtn.classList.add('copied'); setTimeout(() => { copyBtn.textContent = orig; copyBtn.classList.remove('copied'); }, 1500); toast('已複製課程連結，可以貼給朋友', 'success'); window.trackEvent('share', { method: 'copy_link', content_type: 'course', item_id: c.id }); };
   const nativeShare = $('[data-native-share]');
@@ -3563,6 +3585,7 @@ function myPage() {
         <a href="notebook.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">📝 學習筆記</a>
         <a href="report.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">📈 學習報告</a>
         <a href="settings.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">⚙️ 帳號設定</a>
+        <button class="myp-nav-btn" data-sec="weekly">📰 本週週報</button>
         <button class="myp-nav-btn" data-sec="achievements">🏅 成就徽章</button>
         <a href="quiz.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🎯 技能測驗</a>
         <a href="certificate.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🏆 結業證書</a>
@@ -3753,6 +3776,32 @@ function myPage() {
         <div class="set-redirect rv-up" style="text-align:center;padding:60px 20px">
           <p style="font-size:18px;margin-bottom:16px">帳號設定已移至獨立頁面，提供更完整的管理功能。</p>
           <a href="settings.html" class="btn btn-pri">前往帳號設定 →</a>
+        </div>
+      </section>
+
+      <!-- 本週學習週報 -->
+      <section class="myp-sec" id="myp-sec-weekly" hidden>
+        <h2 class="myp-sec-title rv-up">📰 本週學習週報</h2>
+        <div class="wk-report rv-up">
+          <div class="wk-header"><h3>🗓️ ${(() => { const d = new Date(), m = d.getMonth() + 1, day = d.getDate(), wd = d.getDay(); const mon = new Date(d); mon.setDate(day - (wd === 0 ? 6 : wd - 1)); return `${m}/${mon.getDate()} — ${m}/${day}`; })()} 學習週報</h3></div>
+          <div class="wk-stats">
+            <div class="wk-stat"><div class="wk-stat-icon">⏱</div><b>${Math.round(calDays.slice(-7).reduce((s, d) => s + d.mins, 0) / 60 * 10) / 10}</b><span>小時學習</span></div>
+            <div class="wk-stat"><div class="wk-stat-icon">📖</div><b>${calDays.slice(-7).filter(d => d.mins > 0).length}</b><span>天有學習</span></div>
+            <div class="wk-stat"><div class="wk-stat-icon">✅</div><b>${Math.round(inProgress[0]?.progress || 0)}%</b><span>最高進度</span></div>
+            <div class="wk-stat"><div class="wk-stat-icon">💎</div><b>${Math.min(350, streakDays * 50)}</b><span>獲得 XP</span></div>
+          </div>
+          <div class="wk-highlights">
+            <h4>🌟 本週亮點</h4>
+            <ul>
+              <li>完成 <b>${Math.max(3, Math.round(calDays.slice(-7).reduce((s, d) => s + d.mins, 0) / 15))}</b> 堂課時</li>
+              ${streakDays >= 3 ? `<li>🔥 已連續學習 <b>${streakDays} 天</b>，超棒！</li>` : '<li>💪 試著每天學一點，養成習慣吧</li>'}
+              <li>花最多時間在「<b>${enrolled[0]?.title.slice(0, 15) || '課程'}…</b>」</li>
+              ${completed > 0 ? `<li>🎓 已完成 <b>${completed}</b> 堂完整課程</li>` : ''}
+            </ul>
+          </div>
+          <div class="wk-encourage">
+            <p>${streakDays >= 7 ? '🏆 太厲害了！連續一週不間斷，你是真正的學習達人！' : streakDays >= 3 ? '🌱 保持得不錯！再加把勁，挑戰連續 7 天！' : '🚀 新的一週，新的開始，一起加油吧！'}</p>
+          </div>
         </div>
       </section>
 
@@ -4873,6 +4922,7 @@ function checkoutPage() {
           <button class="btn btn-pri ck-submit" id="ckSubmit">確認付款 ${fmt(subtotal)}</button>
           <ul class="ck-perks"><li>🔒 SSL 加密安全付款</li><li>✓ 7 天無條件退費保證</li><li>✓ 付款後立即開通課程</li><li>🎓 含完課結業證書</li></ul>
           ${subtotal >= 3000 ? `<div class="ck-installment"><span>🏦</span> 可分 3 期 0 利率，每期 ${fmt(Math.ceil(subtotal / 3))}</div>` : ''}
+          <div class="ck-trust"><div class="ck-trust-item"><span class="ck-trust-icon">🔒</span><span>SSL 256-bit<br>加密傳輸</span></div><div class="ck-trust-item"><span class="ck-trust-icon">✅</span><span>7 天退費<br>保證</span></div><div class="ck-trust-item"><span class="ck-trust-icon">🛡️</span><span>隱私保護<br>不外洩</span></div><div class="ck-trust-item"><span class="ck-trust-icon">💳</span><span>安全金流<br>認證</span></div></div>
         </div>
       </aside>
     </div>
@@ -7962,6 +8012,75 @@ function openRecommendQuiz() {
     wrap.addEventListener('scroll', check, { passive: true });
     requestAnimationFrame(check);
   });
+}
+
+// ── 電子報訂閱 modal（瀏覽 3 頁後觸發，每 session 一次）──
+{
+  const nlKey = 'aic-nl-shown', pvKey = 'aic-pv-count';
+  if (!sessionStorage.getItem(nlKey)) {
+    const pv = +(sessionStorage.getItem(pvKey) || 0) + 1;
+    sessionStorage.setItem(pvKey, pv);
+    if (pv >= 3) {
+      sessionStorage.setItem(nlKey, '1');
+      setTimeout(() => {
+        const ov = document.createElement('div'); ov.className = 'nl-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', '訂閱電子報');
+        ov.innerHTML = `<div class="nl-modal"><button class="nl-close" aria-label="關閉">×</button>
+          <div class="nl-icon">📬</div><h2>訂閱學習電子報</h2>
+          <p>每週精選課程推薦、學習技巧與專屬優惠，直送你的信箱。</p>
+          <div class="nl-form"><input class="nl-input" type="email" placeholder="你的 Email" aria-label="Email"><button class="btn btn-pri nl-submit">免費訂閱</button></div>
+          <span class="nl-hint">訂閱即贈 NT$200 折價券 🎁</span></div>`;
+        document.body.append(ov);
+        requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
+        const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+        ov.querySelector('.nl-close').onclick = close;
+        ov.onclick = e => { if (e.target === ov) close(); };
+        ov.querySelector('.nl-submit').onclick = () => { const em = ov.querySelector('.nl-input').value.trim(); if (!em || !em.includes('@')) { toast('請輸入有效的 Email', 'error'); return; } toast('訂閱成功！折價券已寄出 🎉', 'success'); trackEvent('newsletter_subscribe', { email_domain: em.split('@')[1] }); close(); };
+      }, 5000);
+    }
+  }
+}
+
+// ── 課程頁「最近購買」社會證明通知 ──
+{
+  if (page === 'course') {
+    const names = ['王○○','陳○○','林○○','張○○','黃○○','李○○','劉○○','吳○○','蔡○○','楊○○','許○○','鄭○○','謝○○','郭○○','曾○○','廖○○','賴○○','徐○○','周○○','葉○○'];
+    const cities = ['台北','新北','台中','高雄','桃園','台南','新竹','彰化','屏東','嘉義','基隆','宜蘭','花蓮','苗栗'];
+    const times = ['2 分鐘前','5 分鐘前','8 分鐘前','12 分鐘前','15 分鐘前','23 分鐘前','30 分鐘前','1 小時前'];
+    let spIdx = 0;
+    const spEl = document.createElement('div'); spEl.className = 'sp-toast'; spEl.setAttribute('aria-live', 'polite');
+    document.body.append(spEl);
+    const showSP = () => {
+      const n = names[spIdx % names.length], city = cities[Math.floor(Math.random() * cities.length)], t = times[Math.floor(Math.random() * times.length)];
+      spEl.innerHTML = `<span class="sp-icon">🛒</span><span><b>${n}</b>（${city}）剛購買了此課程<span class="sp-time">${t}</span></span><button class="sp-close" aria-label="關閉">×</button>`;
+      spEl.classList.add('show');
+      spEl.querySelector('.sp-close').onclick = () => spEl.classList.remove('show');
+      setTimeout(() => spEl.classList.remove('show'), 5000);
+      spIdx++;
+    };
+    setTimeout(showSP, 8000);
+    setInterval(showSP, 20000);
+  }
+}
+
+// ── 購物車催促橫幅 ──
+{
+  if (cart.size > 0 && page !== 'checkout' && page !== 'order-complete') {
+    const cartTs = +(localStorage.getItem('aic-cart-ts') || Date.now());
+    if (!localStorage.getItem('aic-cart-ts')) localStorage.setItem('aic-cart-ts', Date.now());
+    const elapsed = Date.now() - cartTs;
+    if (elapsed > 1800000) {
+      setTimeout(() => {
+        if ($('.cart-reminder')) return;
+        const rem = document.createElement('div'); rem.className = 'cart-reminder';
+        rem.innerHTML = `<div class="cart-rem-inner"><span class="cart-rem-icon">🛒</span><span>你的購物車有 <b>${cart.size}</b> 件商品等待結帳</span><a href="cart.html" class="btn btn-pri btn-sm">前往結帳</a><button class="cart-rem-close" aria-label="關閉">×</button></div>`;
+        document.body.append(rem);
+        requestAnimationFrame(() => requestAnimationFrame(() => rem.classList.add('show')));
+        rem.querySelector('.cart-rem-close').onclick = () => { rem.classList.remove('show'); setTimeout(() => rem.remove(), 300); };
+      }, 3000);
+    }
+  }
+  const origSaveCart = saveCart;
+  window._origSaveCart = origSaveCart;
 }
 
 
