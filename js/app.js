@@ -6,6 +6,11 @@ gtag('js', new Date());
 gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
 window.trackEvent = (name, params) => { if (typeof gtag === 'function') gtag('event', name, params); };
 
+if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+  window.onerror = (msg, src, line, col) => { window.toast?.(`⚠ ${msg} (${src?.split('/').pop()}:${line}:${col})`, 'error'); };
+  window.onunhandledrejection = e => { window.toast?.(`⚠ Unhandled: ${e.reason}`, 'error'); };
+}
+
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const rafThrottle = fn => { let ticking = false; return (...args) => { if (ticking) return; ticking = true; requestAnimationFrame(() => { fn(...args); ticking = false; }); }; };
@@ -451,7 +456,8 @@ function shell() {
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   const tBtn = $('[data-theme-toggle]', hdr);
   const themeMeta = $('meta[name="theme-color"]');
-  function syncTheme() { const isDark = document.documentElement.getAttribute('data-theme') === 'dark'; tBtn.textContent = isDark ? '☀️' : '🌙'; if (themeMeta) themeMeta.content = isDark ? '#0b0b10' : '#7c5cff'; }
+  let csMeta = $('meta[name="color-scheme"]'); if (!csMeta) { csMeta = document.createElement('meta'); csMeta.name = 'color-scheme'; document.head.append(csMeta); }
+  function syncTheme() { const isDark = document.documentElement.getAttribute('data-theme') === 'dark'; tBtn.textContent = isDark ? '☀️' : '🌙'; if (themeMeta) themeMeta.content = isDark ? '#0b0b10' : '#7c5cff'; csMeta.content = isDark ? 'dark light' : 'light dark'; }
   syncTheme();
   tBtn.onclick = () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); ss('aic-theme', next); syncTheme(); };
 
