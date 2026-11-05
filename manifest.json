@@ -23,7 +23,7 @@
     { "name": "社群討論", "short_name": "社群", "url": "/community.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
   ],
   "screenshots": [
-    { "src": "assets/img/og-cover.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "AI Class 首頁 — 探索 72 門業界職人課程" },
+    { "src": "assets/img/og-cover.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "AI Class 首頁 — 精選業界職人課程" },
     { "src": "assets/img/v785.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "課程詳情頁 — 完整章節與學員評價" }
   ]
 }

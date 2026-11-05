@@ -4114,7 +4114,7 @@ function aboutPage() {
     <h2 class="ent-sec-title rv-up">發展歷程</h2>
     <div class="abt-timeline">
       <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2023</span><h3>平台創立</h3><p>以「讓每個人都能跟頂尖職人學習」為理念，AI Class 正式上線</p></div></div>
-      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2024</span><h3>突破 50 堂課程</h3><p>與 ${teacherCount}+ 位業界講師合作，涵蓋設計、程式、AI、攝影等領域</p></div></div>
+      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2024</span><h3>精選課程上線</h3><p>與 ${teacherCount}+ 位業界講師合作，涵蓋設計、程式、AI、攝影等 10 大領域</p></div></div>
       <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2025</span><h3>AI 學習助手上線</h3><p>導入 AI 技術，提供個人化學習路徑推薦與智慧筆記功能</p></div></div>
       <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2026</span><h3>邁向國際</h3><p>累積超過 ${Math.round(totalStudents / 10000)} 萬學員，持續擴展更多語言與領域</p></div></div>
     </div>
@@ -6506,7 +6506,7 @@ function leaderboardPage() {
   <section class="lb-hero rv-up"><div class="wrap">
     <div class="crumb rv-up"><a href="index.html">首頁</a> › 學習排行榜</div>
     <h1>🏆 學習排行榜</h1>
-    <p>與全站 240,000 名學員一起競爭，激發學習動力</p>
+    <p>與全站 ${((window.PLATFORM_STATS||{}).students||52000).toLocaleString()} 名學員一起競爭，激發學習動力</p>
     <div class="lb-hero-stats">
       <div><b>${lb.length}</b><span>上榜學員</span></div>
       <div><b>${totalXp.toLocaleString()}</b><span>總 XP</span></div>
