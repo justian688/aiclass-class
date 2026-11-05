@@ -1418,8 +1418,21 @@ function course() {
     </section>
     <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span style="color:var(--pri);font-size:18px">★ ${c.rating.toFixed(1)}</span> <span style="font-size:15px;color:var(--tx3);font-weight:400">(${c.students.toLocaleString()} 位學員)</span></h2>
       <div class="review-stats rv-up"><div class="rs-big"><b>${c.rating.toFixed(1)}</b><div class="rs-stars">★★★★★</div><div style="font-size:13px;color:var(--tx3)">${c.students.toLocaleString()} 則評價</div></div>
-      <div class="rs-bars">${distPcts.map((p, i) => `<div class="rs-bar"><span>${5 - i}</span><div class="rs-track"><i style="width:${p}%"></i></div><span>${p}%</span></div>`).join('')}</div></div>
-      <div class="review-list">${reviewData.map((r, i) => `<div class="review-item rv-up">
+      <div class="rs-bars">${distPcts.map((p, i) => `<div class="rs-bar rv-star-filter" data-star="${5-i}" role="button" tabindex="0" title="篩選 ${5-i} 星評價"><span>${5 - i}</span><div class="rs-track"><i style="width:${p}%"></i></div><span>${p}%</span></div>`).join('')}</div></div>
+      <div class="rv-controls rv-up">
+        <div class="rv-sort">
+          <span>排序</span>
+          <button class="rv-sort-btn on" data-sort="helpful">最有幫助</button>
+          <button class="rv-sort-btn" data-sort="newest">最新</button>
+          <button class="rv-sort-btn" data-sort="highest">最高分</button>
+          <button class="rv-sort-btn" data-sort="lowest">最低分</button>
+        </div>
+        <div class="rv-filter-status" id="rv-filter-status" style="display:none">
+          <span id="rv-filter-txt"></span>
+          <button class="rv-filter-clear" id="rv-filter-clear">✕ 清除篩選</button>
+        </div>
+      </div>
+      <div class="review-list" id="review-list">${reviewData.map((r, i) => `<div class="review-item rv-up" data-rating="${r.rating}" data-date="${r.date}" data-helpful="${12+i*3}">
         <div class="ri-head"><div class="ri-avatar">${r.initial}</div><div class="ri-meta"><b>${r.name}</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${r.date}</span></div></div></div>
         <p>${r.text}</p>
         <div class="rv-helpful"><span>這則評價有幫助嗎？</span><button class="rv-vote rv-up-vote ${reviewVotes[c.id+'-'+i]==='up'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="up">👍 有幫助 <span class="rv-vote-n">${12+i*3+(reviewVotes[c.id+'-'+i]==='up'?1:0)}</span></button><button class="rv-vote rv-dn-vote ${reviewVotes[c.id+'-'+i]==='dn'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="dn">👎</button></div>
@@ -1527,7 +1540,7 @@ function course() {
   const cartBtn = $('[data-cart]');
   if (cartBtn) cartBtn.onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); window.trackEvent('add_to_cart', { item_id: c.id, item_name: c.title, value: c.price }); };
   const copyBtn = $('[data-copy-link]');
-  if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); toast('已複製課程連結'); window.trackEvent('share', { method: 'copy_link', content_type: 'course', item_id: c.id }); };
+  if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); const orig = copyBtn.textContent; copyBtn.textContent = '✓ 已複製！'; copyBtn.classList.add('copied'); setTimeout(() => { copyBtn.textContent = orig; copyBtn.classList.remove('copied'); }, 1500); toast('已複製課程連結，可以貼給朋友', 'success'); window.trackEvent('share', { method: 'copy_link', content_type: 'course', item_id: c.id }); };
   const nativeShare = $('[data-native-share]');
   if (nativeShare) nativeShare.onclick = () => navigator.share({ title: c.title + '｜AI Class', url: location.href }).then(() => window.trackEvent('share', { method: 'native', content_type: 'course', item_id: c.id })).catch(() => {});
   const giftBtn = $('[data-gift]');
@@ -1579,6 +1592,61 @@ function course() {
     if (numEl) { const base = +numEl.textContent; numEl.textContent = reviewVotes[key] === 'up' ? base + 1 : base; }
     toast(dir === 'up' ? '感謝你的回饋！' : '已記錄');
   });
+
+  // Review sort
+  const rvList = $('#review-list', main);
+  if (rvList) {
+    const sortReviews = (sortBy) => {
+      const items = [...rvList.querySelectorAll('.review-item')];
+      items.sort((a, b) => {
+        if (sortBy === 'newest') return b.dataset.date.localeCompare(a.dataset.date);
+        if (sortBy === 'highest') return (+b.dataset.rating) - (+a.dataset.rating);
+        if (sortBy === 'lowest') return (+a.dataset.rating) - (+b.dataset.rating);
+        return (+b.dataset.helpful) - (+a.dataset.helpful);
+      });
+      items.forEach(el => rvList.appendChild(el));
+    };
+    $$('.rv-sort-btn', main).forEach(btn => btn.onclick = () => {
+      $$('.rv-sort-btn', main).forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      sortReviews(btn.dataset.sort);
+    });
+    // Star filter
+    let activeStarFilter = 0;
+    const filterStatus = $('#rv-filter-status', main);
+    const filterTxt = $('#rv-filter-txt', main);
+    const filterClear = $('#rv-filter-clear', main);
+    $$('.rv-star-filter', main).forEach(bar => {
+      const handler = () => {
+        const star = +bar.dataset.star;
+        if (activeStarFilter === star) { activeStarFilter = 0; }
+        else { activeStarFilter = star; }
+        $$('.rv-star-filter', main).forEach(b => b.classList.toggle('active', +b.dataset.star === activeStarFilter));
+        const items = rvList.querySelectorAll('.review-item');
+        let visible = 0;
+        items.forEach(el => {
+          const show = !activeStarFilter || +el.dataset.rating === activeStarFilter;
+          el.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        if (activeStarFilter) {
+          filterStatus.style.display = '';
+          filterTxt.textContent = `顯示 ${activeStarFilter} 星評價（${visible} 則）`;
+        } else {
+          filterStatus.style.display = 'none';
+        }
+      };
+      bar.onclick = handler;
+      bar.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); } };
+    });
+    if (filterClear) filterClear.onclick = () => {
+      activeStarFilter = 0;
+      $$('.rv-star-filter', main).forEach(b => b.classList.remove('active'));
+      rvList.querySelectorAll('.review-item').forEach(el => el.style.display = '');
+      filterStatus.style.display = 'none';
+    };
+  }
+
   bindCards(main); bindRail($('#more'));
 
   // 分頁 scrollspy + smooth scroll on click
@@ -2496,7 +2564,16 @@ function articlePage() {
   const post = posts.find(p => p.id === id) || posts[0];
   const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
   catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
-  const related = posts.filter(p => p.cat === post.cat && p.id !== post.id).slice(0, 3);
+  const postTags = new Set(post.tags || []);
+  const related = posts.filter(p => p.id !== post.id)
+    .map(p => {
+      let score = 0;
+      if (p.cat === post.cat) score += 10;
+      (p.tags || []).forEach(t => { if (postTags.has(t)) score += 3; });
+      return { ...p, _score: score };
+    })
+    .sort((a, b) => b._score - a._score)
+    .slice(0, 3);
   document.title = post.title + '｜AI Class 學習專欄';
   seo({
     title: post.title + '｜AI Class 學習專欄',

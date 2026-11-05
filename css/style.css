@@ -369,6 +369,18 @@ body.hdr-hidden .tabs{top:0}
 .ri-avatar{width:40px;height:40px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px;flex-shrink:0}
 .ri-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .ri-meta b{display:block;font-size:15px}
+.rv-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 8px}
+.rv-sort{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2)}
+.rv-sort-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--tx2);font-size:13px;cursor:pointer;transition:all .2s var(--ease)}
+.rv-sort-btn.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.rv-sort-btn:hover:not(.on){border-color:var(--pri);color:var(--pri)}
+.rv-star-filter{cursor:pointer;border-radius:6px;padding:2px 4px;transition:background .2s}
+.rv-star-filter:hover,.rv-star-filter.active{background:color-mix(in srgb,var(--pri) 12%,transparent)}
+.rv-star-filter.active .rs-track i{background:var(--pri)}
+.rv-filter-status{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--pri);padding:8px 16px;background:color-mix(in srgb,var(--pri) 8%,transparent);border-radius:10px}
+.rv-filter-clear{background:none;border:none;color:var(--pri);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:6px}
+.rv-filter-clear:hover{background:color-mix(in srgb,var(--pri) 15%,transparent)}
+.c-share-btn.copied{color:var(--pri);font-weight:600}
 .ri-sub{font-size:13px;color:#ffc35c;letter-spacing:1px}
 .ri-date{color:var(--tx3);font-size:12px;letter-spacing:0}
 .c-share{display:flex;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
@@ -3143,6 +3155,9 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .rv-vote{border-color:var(--line)}
 [data-theme="dark"] .rv-vote:hover{background:rgba(124,92,255,.15)}
 [data-theme="dark"] .rv-vote.voted{background:rgba(124,92,255,.2)}
+[data-theme="dark"] .rv-sort-btn{background:var(--card);border-color:var(--line);color:var(--tx2)}
+[data-theme="dark"] .rv-sort-btn.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+[data-theme="dark"] .rv-filter-status{background:rgba(124,92,255,.12)}
 /* ===== 我的頁面 - 追蹤講師 ===== */
 .my-following-grid{display:grid;grid-template-columns:1fr;gap:16px}
 .my-follow-card{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:14px;background:var(--bg2);text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s}
@@ -4015,6 +4030,9 @@ h3{font-size:clamp(18px,2.2vw,24px)}
   .sm-legend{flex-wrap:wrap;gap:12px}
 }
 @media(max-width:480px){
+  .rv-controls{flex-direction:column;align-items:flex-start}
+  .rv-sort{flex-wrap:wrap}
+  .rv-sort-btn{padding:5px 10px;font-size:12px}
   .c-plan-item{flex-direction:column;align-items:flex-start;gap:6px}
   .c-plan-week{width:auto}
   .my-hero{padding:28px 0 20px}
