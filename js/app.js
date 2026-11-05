@@ -7756,5 +7756,213 @@ function openRecommendQuiz() {
   }
 }
 
+// ── 手機底部導航增強 ──
+{
+  const mnav = $('.mnav');
+  if (mnav) {
+    // 圓點指示器
+    $$('a', mnav).forEach(a => {
+      const dot = document.createElement('span');
+      dot.className = 'mnav-dot';
+      a.append(dot);
+    });
+
+    // 滾動自動隱藏/顯示
+    let lastY = 0, mnavHidden = false;
+    const mnavThreshold = 60;
+    let mnavRaf = false;
+    addEventListener('scroll', () => {
+      if (mnavRaf) return;
+      mnavRaf = true;
+      requestAnimationFrame(() => {
+        mnavRaf = false;
+        const y = scrollY;
+        if (y > lastY + mnavThreshold && !mnavHidden && y > 200) {
+          mnav.classList.add('mnav-hidden');
+          mnavHidden = true;
+        } else if (y < lastY - mnavThreshold && mnavHidden) {
+          mnav.classList.remove('mnav-hidden');
+          mnavHidden = false;
+        }
+        lastY = y;
+      });
+    }, { passive: true });
+
+    // 長按選單
+    const navLinks = $$('a', mnav);
+    const submenus = {
+      0: [{ icon: '🔥', text: '熱門課程', href: 'hot.html' }, { icon: '🆕', text: '最新上架', href: 'upcoming.html' }],
+      2: [{ icon: '🎨', text: '設計', href: 'category.html?cat=design' }, { icon: '💻', text: '程式', href: 'category.html?cat=dev' }, { icon: '🤖', text: 'AI', href: 'category.html?cat=ai' }],
+      4: [{ icon: '📊', text: '學習報告', href: 'report.html' }, { icon: '⚙️', text: '帳號設定', href: 'settings.html' }]
+    };
+    Object.entries(submenus).forEach(([idx, items]) => {
+      const link = navLinks[+idx];
+      if (!link) return;
+      link.style.position = 'relative';
+      const menu = document.createElement('div');
+      menu.className = 'mnav-submenu';
+      menu.innerHTML = items.map(it => `<a href="${it.href}">${it.icon} ${it.text}</a>`).join('');
+      link.append(menu);
+      let pressTimer = null;
+      link.addEventListener('touchstart', e => {
+        pressTimer = setTimeout(() => {
+          e.preventDefault();
+          $$('.mnav-submenu.show').forEach(m => m.classList.remove('show'));
+          menu.classList.add('show');
+          if (navigator.vibrate) navigator.vibrate(15);
+        }, 500);
+      }, { passive: false });
+      link.addEventListener('touchend', () => clearTimeout(pressTimer));
+      link.addEventListener('touchmove', () => clearTimeout(pressTimer));
+    });
+    document.addEventListener('touchstart', e => {
+      if (!e.target.closest('.mnav-submenu') && !e.target.closest('.mnav a')) {
+        $$('.mnav-submenu.show').forEach(m => m.classList.remove('show'));
+      }
+    });
+  }
+}
+
+// ── 下拉刷新提示 ──
+{
+  if ('ontouchstart' in window && innerWidth <= 760) {
+    const ptr = document.createElement('div');
+    ptr.className = 'ptr-indicator';
+    ptr.innerHTML = '<span class="ptr-arrow">↻</span>';
+    document.body.append(ptr);
+    let startY = 0, pulling = false;
+    document.addEventListener('touchstart', e => {
+      if (scrollY <= 0) startY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (startY === 0) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 60 && scrollY <= 0) {
+        ptr.classList.add('ptr-pulling');
+        pulling = true;
+      }
+    }, { passive: true });
+    document.addEventListener('touchend', () => {
+      if (pulling) {
+        ptr.classList.add('ptr-refreshing');
+        setTimeout(() => { location.reload(); }, 600);
+      }
+      ptr.classList.remove('ptr-pulling');
+      pulling = false;
+      startY = 0;
+    });
+  }
+}
+
+// ── PWA 安裝提示 ──
+{
+  let deferredPrompt = null;
+  addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (sessionStorage.getItem('aic-pwa-dismiss')) return;
+    setTimeout(() => {
+      const banner = document.createElement('div');
+      banner.className = 'pwa-install';
+      banner.innerHTML = `<div class="pwa-icon">📱</div>
+        <div class="pwa-text"><h4>安裝 AI Class App</h4><p>加入主畫面，離線也能學習</p></div>
+        <button class="pwa-install-btn">安裝</button>
+        <button class="pwa-install-close" aria-label="關閉">×</button>`;
+      document.body.append(banner);
+      requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('show')));
+      banner.querySelector('.pwa-install-btn').onclick = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') toast('已成功安裝 AI Class！', 'success');
+          deferredPrompt = null;
+        }
+        banner.classList.remove('show');
+        setTimeout(() => banner.remove(), 400);
+      };
+      banner.querySelector('.pwa-install-close').onclick = () => {
+        banner.classList.remove('show');
+        sessionStorage.setItem('aic-pwa-dismiss', '1');
+        setTimeout(() => banner.remove(), 400);
+      };
+    }, 15000);
+  });
+}
+
+// ── App badge (通知數) ──
+{
+  if ('setAppBadge' in navigator) {
+    const unread = (window.NOTIFICATIONS || []).filter(n => !n.read).length;
+    if (unread > 0) navigator.setAppBadge(unread).catch(() => {});
+  }
+}
+
+// ── 觸覺回饋 ──
+{
+  if (navigator.vibrate && 'ontouchstart' in window) {
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-pri, .btn-sec, .cw-fab, .mnav a, .add-cart');
+      if (btn) navigator.vibrate(8);
+    });
+  }
+}
+
+// ── 手機版課程頁底部 sheet ──
+{
+  if (innerWidth <= 760) {
+    const page = document.body.dataset.page || location.pathname;
+    if (page.includes('course')) {
+      const stickyBuy = $('.sticky-buy');
+      const sidebar = document.querySelector('.c-buy-feat, .c-side-info');
+      if (stickyBuy || sidebar) {
+        const sheet = document.createElement('div');
+        sheet.className = 'mob-course-sheet';
+        const priceEl = $('.sticky-buy-price') || $('.c-price');
+        const priceText = priceEl ? priceEl.textContent : '';
+        const buyBtn = stickyBuy ? stickyBuy.querySelector('.btn') : null;
+        sheet.innerHTML = `<div class="mob-sheet-handle"><div class="mob-sheet-bar"></div></div>
+          <div class="mob-sheet-peek">
+            <span class="mob-sheet-price">${priceText || '查看詳情'}</span>
+            ${buyBtn ? `<button class="btn btn-pri" onclick="document.querySelector('.add-cart')?.click() || toast('加入購物車', 'success')">${buyBtn.textContent}</button>` : ''}
+          </div>
+          <div class="mob-sheet-body"></div>`;
+        document.body.append(sheet);
+
+        let sheetStartY = 0;
+        const handle = sheet.querySelector('.mob-sheet-handle');
+        handle.addEventListener('touchstart', e => { sheetStartY = e.touches[0].clientY; }, { passive: true });
+        handle.addEventListener('touchend', e => {
+          const dy = e.changedTouches[0].clientY - sheetStartY;
+          if (dy < -30) sheet.classList.add('expanded');
+          else if (dy > 30) sheet.classList.remove('expanded');
+        });
+        handle.addEventListener('click', () => sheet.classList.toggle('expanded'));
+      }
+    }
+  }
+}
+
+// ── 寬表格水平滾動提示 ──
+{
+  const tables = $$('table');
+  tables.forEach(table => {
+    if (table.closest('.table-scroll-wrap')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'table-scroll-wrap';
+    table.parentNode.insertBefore(wrap, table);
+    wrap.append(table);
+    const check = () => {
+      if (wrap.scrollWidth > wrap.clientWidth + 4) {
+        wrap.classList.add('has-scroll');
+        wrap.classList.toggle('scrolled-end', wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 4);
+      } else {
+        wrap.classList.remove('has-scroll');
+      }
+    };
+    wrap.addEventListener('scroll', check, { passive: true });
+    requestAnimationFrame(check);
+  });
+}
+
 
 })();
