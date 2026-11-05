@@ -4713,6 +4713,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 @keyframes skel-wave{0%{background-position:200% 0}100%{background-position:-200% 0}}
 [data-theme="dark"] .skel{background:linear-gradient(90deg,#2a2a2e 25%,#3a3a3e 50%,#2a2a2e 75%);background-size:200% 100%}
 @media(prefers-reduced-motion:reduce){.skel{animation:none}}
+.skel-card{height:340px;border-radius:16px}
 
 /* ── 表單 focus 動畫 ── */
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(.tm-dot):not(.wish),select,textarea{transition:border-color .3s ease,box-shadow .3s ease}
