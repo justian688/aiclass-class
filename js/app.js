@@ -156,10 +156,10 @@ function bindNotes(courseId, main) {
     const ns = allNotes[courseId] || [];
     if (!ns.length) { toast('沒有筆記可匯出'); return; }
     const cTitle = (byId[courseId] || {}).title || courseId;
-    const txt = `# ${cTitle} — 學習筆記\n匯出時間：${new Date().toLocaleString('zh-TW')}\n${'─'.repeat(40)}\n\n` +
-      ns.map((n, i) => `## 筆記 ${i + 1}\n📅 ${new Date(n.ts).toLocaleString('zh-TW')}\n\n${n.text}\n`).join('\n' + '─'.repeat(40) + '\n\n');
-    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI-Class-筆記-${cTitle.slice(0,20)}.txt`; a.click();
+    const md = `# ${cTitle} — 學習筆記\n\n> 匯出自 AI Class ・ ${new Date().toLocaleString('zh-TW')}\n\n---\n\n` +
+      ns.map((n, i) => `### 筆記 ${i + 1}\n\n📅 ${new Date(n.ts).toLocaleString('zh-TW')}\n\n${n.text}\n\n---\n`).join('\n');
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI-Class-筆記-${cTitle.slice(0,20)}.md`; a.click();
     URL.revokeObjectURL(a.href);
     toast('筆記已匯出');
   };
@@ -1838,6 +1838,7 @@ function course() {
       </a>`).join('')}</div></div></section>`;
   })()}
   ${(() => { const G = window.GALLERY || []; const works = G.filter(g => g.course === c.id); if (!works.length) return ''; return `<section class="c-sec c-gallery rv-up" id="student-works"><h2>🎨 學員作品展示</h2><div class="c-gallery-grid">${works.map(w => `<div class="c-gallery-item"><div class="c-gallery-thumb"><img src="assets/img/v${w.v}.jpg" alt="${w.title}" loading="lazy" decoding="async"></div><div class="c-gallery-info"><h4>${w.title}</h4><p>${w.desc}</p><div class="c-gallery-meta"><span>${w.author}</span><span>❤ ${w.likes}</span></div></div></div>`).join('')}</div><a href="gallery.html" class="btn btn-ghost" style="width:100%;margin-top:16px">查看更多學員作品 →</a></section>`; })()}
+  ${(()=>{const next=C.filter(x=>x.id!==c.id&&x.cat===c.cat&&x.hours>c.hours).sort((a,b)=>a.hours-b.hours).slice(0,3);if(!next.length)return '';return `<div class="c-next-step rv-up"><h3>📈 學完這門，接下來學</h3><div class="c-next-grid">${next.map(n=>`<a class="c-next-card" href="course.html?id=${n.id}"><img src="${img(n)}" alt="${n.title}" loading="lazy" decoding="async"><div class="c-next-info"><b>${n.title}</b><span>★ ${n.rating} ・ ${n.hours}h ・ ${fmt(n.price)}</span></div><span class="c-next-arrow">→</span></a>`).join('')}</div></div>`;})()}
   ${smartRecommend(c)}
   ${railSec('more', '你可能也會喜歡', '', others)}`;
 
@@ -3405,6 +3406,7 @@ function categoryPage() {
     </div></section>
     <section class="sec"><div class="wrap">
       <div class="catp-filters rv-up">
+        ${(()=>{const subs=[...new Set(courses.map(c=>c.sub).filter(Boolean))];return subs.length>1?`<div class="catp-frow"><span class="catp-flabel">子分類</span><div class="catp-fbtns" data-fg="sub"><button class="chip on" data-fv="all">全部</button>${subs.map(s=>`<button class="chip" data-fv="${s}">${s}</button>`).join('')}</div></div>`:''})()}
         <div class="catp-frow"><span class="catp-flabel">價格</span><div class="catp-fbtns" data-fg="price"><button class="chip on" data-fv="all">全部</button><button class="chip" data-fv="0-2000">NT$0–2,000</button><button class="chip" data-fv="2000-5000">NT$2,000–5,000</button><button class="chip" data-fv="5000+">NT$5,000+</button></div></div>
         <div class="catp-frow"><span class="catp-flabel">難度</span><div class="catp-fbtns" data-fg="level"><button class="chip on" data-fv="all">全部</button><button class="chip" data-fv="入門">入門</button><button class="chip" data-fv="進階">進階</button><button class="chip" data-fv="專業">專業</button></div></div>
         <div class="catp-frow"><span class="catp-flabel">排序</span><div class="catp-fbtns" data-fg="sort"><button class="chip on" data-fv="default">推薦</button><button class="chip" data-fv="new">最新</button><button class="chip" data-fv="students">最多學員</button><button class="chip" data-fv="price-asc">價格低到高</button><button class="chip" data-fv="rating">評分最高</button></div></div>
@@ -3444,8 +3446,9 @@ function categoryPage() {
       });
     };
     const filterCat = () => {
-      const pf = getF('price'), lf = getF('level'), sf = getF('sort');
+      const pf = getF('price'), lf = getF('level'), sf = getF('sort'), subF = getF('sub');
       let list = courses.filter(c => {
+        if (subF && subF !== 'all' && c.sub !== subF) return false;
         if (pf === '0-2000' && c.price > 2000) return false;
         if (pf === '2000-5000' && (c.price < 2000 || c.price > 5000)) return false;
         if (pf === '5000+' && c.price < 5000) return false;
