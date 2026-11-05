@@ -1974,7 +1974,6 @@ function course() {
       const ch = b.parentNode;
       const isOpen = ch.classList.contains('open');
       ch.classList.toggle('open');
-      b.querySelector('.chap-count').textContent = ch.querySelector('.a ul').children.length + ' 堂 ' + (isOpen ? '＋' : '－');
     };
   });
   const toggleAllBtn = $('#curri-toggle-all', main);
