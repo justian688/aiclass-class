@@ -17,7 +17,7 @@ const pct = c => Math.round((1 - c.price / c.origin) * 100);
 const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
 document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' fill='%23e5e5ea'%3E%3Crect width='400' height='225' rx='12'/%3E%3Ctext x='200' y='120' text-anchor='middle' font-family='system-ui' font-size='14' fill='%23aeaeb2'%3E圖片載入失敗%3C/text%3E%3C/svg%3E"; e.target.alt = '圖片暫時無法顯示'; } }, true);
 const page = document.body.dataset.page;
-const ls = (key, fallback) => { try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; } catch { localStorage.removeItem(key); return fallback; } };
+const ls = (key, fallback) => { try { const v = localStorage.getItem(key); if (v == null) return fallback; try { return JSON.parse(v); } catch { return v; } } catch { return fallback; } };
 const ss = (key, val) => { try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {} };
 const wish = new Set(ls('aic-wish', []));
 const cart = new Set(ls('aic-cart', []));
@@ -449,7 +449,8 @@ function shell() {
   const dark = saved === 'dark';
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   const tBtn = $('[data-theme-toggle]', hdr);
-  function syncTheme() { tBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; }
+  const themeMeta = $('meta[name="theme-color"]');
+  function syncTheme() { const isDark = document.documentElement.getAttribute('data-theme') === 'dark'; tBtn.textContent = isDark ? '☀️' : '🌙'; if (themeMeta) themeMeta.content = isDark ? '#0b0b10' : '#7c5cff'; }
   syncTheme();
   tBtn.onclick = () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); ss('aic-theme', next); syncTheme(); };
 
@@ -8389,21 +8390,9 @@ function openRecommendQuiz() {
       }, 3000);
     }
   }
-  const origSaveCart = saveCart;
-  window._origSaveCart = origSaveCart;
 }
 
 // （回到頂部按鈕已由 .btt 元件處理，不重複建立）
-
-// ── 頁面載入進度條 ──
-(function(){
-  const bar = document.createElement('div');
-  bar.className = 'page-progress';
-  document.body.prepend(bar);
-  function run() { bar.classList.add('loading'); setTimeout(() => { bar.classList.remove('loading'); bar.classList.add('done'); setTimeout(() => bar.classList.remove('done'), 400); }, 600); }
-  run();
-  window.addEventListener('hashchange', run);
-})();
 
 
 // ── 頁面退出動畫（支援 View Transitions API）──
