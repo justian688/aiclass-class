@@ -400,6 +400,17 @@ body.hdr-hidden .tabs{top:0}
 .c-bundle-now{font-size:22px;font-weight:900;color:var(--pri)}
 .c-bundle-price del{font-size:14px;color:var(--tx3)}
 .c-bundle-save{font-size:13px;color:#34c759;font-weight:700}
+.c-gallery h2{font-size:22px}
+.c-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.c-gallery-item{background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .25s var(--ease),box-shadow .25s}
+.c-gallery-item:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.c-gallery-thumb{aspect-ratio:16/10;overflow:hidden}
+.c-gallery-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
+.c-gallery-item:hover .c-gallery-thumb img{transform:scale(1.05)}
+.c-gallery-info{padding:14px 16px}
+.c-gallery-info h4{font-size:15px;margin-bottom:4px}
+.c-gallery-info p{font-size:13px;color:var(--tx2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c-gallery-meta{display:flex;justify-content:space-between;margin-top:10px;font-size:12px;color:var(--tx3)}
 .ri-sub{font-size:13px;color:#ffc35c;letter-spacing:1px}
 .ri-date{color:var(--tx3);font-size:12px;letter-spacing:0}
 .c-share{display:flex;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
@@ -3179,6 +3190,8 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .rv-load-more{border-color:var(--line);color:var(--tx2)}
 [data-theme="dark"] .c-bundle-card{background:var(--card);border-color:var(--line)}
 [data-theme="dark"] .c-bundle-chip{background:var(--bg2);border-color:var(--line)}
+[data-theme="dark"] .c-gallery-item{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .c-gallery-item:hover{box-shadow:0 8px 24px rgba(0,0,0,.3)}
 [data-theme="dark"] .rv-filter-status{background:rgba(124,92,255,.12)}
 /* ===== 我的頁面 - 追蹤講師 ===== */
 .my-following-grid{display:grid;grid-template-columns:1fr;gap:16px}

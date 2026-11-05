@@ -1529,6 +1529,7 @@ function course() {
         <div class="rel-art-body"><span class="rel-art-cat">${(window.CATS.find(x => x.id === p.cat) || {}).name || ''}</span><h3>${p.title}</h3><span class="rel-art-meta">${p.readTime || '5 分鐘'} 閱讀</span></div>
       </a>`).join('')}</div></div></section>`;
   })()}
+  ${(() => { const G = window.GALLERY || []; const works = G.filter(g => g.course === c.id); if (!works.length) return ''; return `<section class="c-sec c-gallery rv-up" id="student-works"><h2>🎨 學員作品展示</h2><div class="c-gallery-grid">${works.map(w => `<div class="c-gallery-item"><div class="c-gallery-thumb"><img src="assets/img/v${w.v}.jpg" alt="${w.title}" loading="lazy" decoding="async"></div><div class="c-gallery-info"><h4>${w.title}</h4><p>${w.desc}</p><div class="c-gallery-meta"><span>${w.author}</span><span>❤ ${w.likes}</span></div></div></div>`).join('')}</div><a href="gallery.html" class="btn btn-ghost" style="width:100%;margin-top:16px">查看更多學員作品 →</a></section>`; })()}
   ${smartRecommend(c)}
   ${railSec('more', '你可能也會喜歡', '', others)}`;
 
@@ -2829,15 +2830,19 @@ function instructorPage() {
     </div></section>
     <section class="sec"><div class="wrap">
       <h2 class="insd-sec-title rv-up">學員好評</h2>
-      <div class="insd-reviews">${t.courses.slice(0, 3).map((c, i) => {
-        const names = ['小明','Emily','阿豪','志偉','雅婷','佳穎'];
-        const texts = ['講解非常清楚，跟著做就能學會！推薦給所有想入門的朋友。','內容紮實，每一章節都有實作練習，學完馬上能應用在工作上。','老師的教學節奏很好，不會太快也不會太慢，新手也能跟得上。'];
-        return `<div class="insd-review rv-up">
-          <div class="insd-review-head"><div class="insd-review-avatar" style="background:hsl(${i*80},60%,60%)">${names[i][0]}</div><div><b>${names[i]}</b><span>★★★★★</span></div></div>
-          <p>${texts[i]}</p>
-          <small>課程：${c.title}</small>
-        </div>`;
-      }).join('')}</div>
+      <div class="insd-reviews">${(() => {
+        const R = window.REVIEWS || [];
+        const tCats = new Set(t.courses.map(c => c.cat));
+        const catKw = { drawing: ['插畫','角色','Procreate','漫畫'], video: ['影片','剪輯','Blender','3D'], game: ['遊戲','Unity'], baking: ['料理','甜點','麵包','咖啡'], design: ['設計','UI','UX','品牌','前端'], ai: ['AI','Python','LLM','ChatGPT'], creative: ['攝影','文案','寫作','音樂'], beauty: ['美甲','健身'], finance: ['理財','ETF'], career: ['創業','電商','行銷'] };
+        const kws = [...tCats].flatMap(cat => catKw[cat] || []);
+        const matched = R.filter(r => kws.some(k => r[1].includes(k))).slice(0, 4);
+        const reviews = matched.length >= 3 ? matched : R.slice(0, 4);
+        return reviews.map((r, i) => `<div class="insd-review rv-up">
+          <div class="insd-review-head"><div class="insd-review-avatar" style="background:hsl(${i*70+120},55%,55%)">${r[0][0]}</div><div><b>${r[0]}</b><span>★★★★★</span></div></div>
+          <p>${r[2]}</p>
+          <small>課程：${r[1]}</small>
+        </div>`).join('');
+      })()}</div>
     </div></section>
     ${railSec('insd-rec', '', '你可能也會喜歡', C.filter(x => !t.courses.includes(x)).slice(0, 8))}`;
     bindCards(main); bindRail($('#insd-rec'));
