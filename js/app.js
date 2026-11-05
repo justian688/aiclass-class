@@ -787,7 +787,7 @@ function home() {
     if (freeCourses.length) {
       main.insertAdjacentHTML('beforeend', `<section class="sec free-sec" id="free"><div class="wrap"><div class="sec-head rv-up"><div><h2>🎁 限時免費體驗</h2><div class="sub">精選課程免費開放，把握機會</div></div></div>
         <div class="free-grid">${freeCourses.map(c => `<a class="free-card rv-up" href="course.html?id=${c.id}">
-          <div class="free-card-img"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="free-badge">FREE</span><span class="free-timer">${c.endsIn}</span></div>
+          <div class="free-card-img"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async"><span class="free-badge">FREE</span><span class="free-timer">${c.endsIn}</span></div>
           <div class="free-card-body"><span class="free-reason">${c.reason}</span><h3>${c.title}</h3><div class="free-card-meta"><span>${c.teacher}</span><span>★ ${c.rating}</span><span>${c.hours} 小時</span></div>
           <div class="free-card-price"><span class="free-now">NT$0</span><del>${fmt(c.origin)}</del></div></div>
         </a>`).join('')}</div></div></section>`);
@@ -858,7 +858,7 @@ function home() {
     const vTabs = ['全部', '最新', '學員分享', '講師訪談', '幕後花絮'];
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="videos"><div class="wrap"><div class="sec-head rv-up"><div><h2>影音學習</h2><div class="sub">免費觀看精選影片</div></div></div>
       <div class="video-tabs">${vTabs.map((t, i) => `<button class="video-tab ${i ? '' : 'on'}" data-vtab="${t}">${t}</button>`).join('')}</div>
-      <div class="video-grid" id="vgrid">${window.VIDEO_CONTENT.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="${vc.title}" loading="lazy"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('')}</div></div></section>`);
+      <div class="video-grid" id="vgrid">${window.VIDEO_CONTENT.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="${vc.title}" loading="lazy" decoding="async"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('')}</div></div></section>`);
   }
 
   // 限時優惠
@@ -873,7 +873,7 @@ function home() {
   } else {
     const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div></div>
-      <div class="teachers">${teachers.map((c, i) => `<a class="tc rv-up" style="transition-delay:${(i % 6) * 60}ms" href="course.html?id=${c.id}"><img src="${img(c)}" alt="${c.teacher}" loading="lazy"><div class="n"><b>${c.teacher}</b><span>${c.role}</span></div></a>`).join('')}</div></div></section>`);
+      <div class="teachers">${teachers.map((c, i) => `<a class="tc rv-up" style="transition-delay:${(i % 6) * 60}ms" href="course.html?id=${c.id}"><img src="${img(c)}" alt="${c.teacher}" loading="lazy" decoding="async"><div class="n"><b>${c.teacher}</b><span>${c.role}</span></div></a>`).join('')}</div></div></section>`);
   }
 
   // 評價
@@ -936,7 +936,7 @@ function home() {
   main.insertAdjacentHTML('beforeend', `<section class="sec showcase-section"><div class="wrap">
     <div class="sec-head rv-up"><div><h2>學員作品精選</h2><div class="sub">看看學員們學完課程後的成果</div></div><a href="gallery.html" class="more">查看全部 →</a></div>
     <div class="showcase-grid">${showcaseCourses.map((sc, i) => `<div class="showcase-item rv-up" style="transition-delay:${(i % 4) * 60}ms">
-      <img src="${img(sc)}" alt="${sc.title}" loading="lazy">
+      <img src="${img(sc)}" alt="${sc.title}" loading="lazy" decoding="async">
       <div class="showcase-overlay"><span class="showcase-course">${sc.title}</span><span class="showcase-author">${sc.teacher} 的學員</span></div>
     </div>`).join('')}</div>
   </div></section>`);
@@ -1023,7 +1023,7 @@ function home() {
         <button class="btn btn-pri quiz-cta-btn" id="startQuizBtn">開始推薦測驗 →</button>
       </div>
       <div class="quiz-cta-right">
-        <div class="quiz-cta-cards">${C.slice(0, 4).map(c => `<div class="quiz-cta-card"><img src="${img(c)}" alt="${c.title}" loading="lazy"></div>`).join('')}</div>
+        <div class="quiz-cta-cards">${C.slice(0, 4).map(c => `<div class="quiz-cta-card"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async"></div>`).join('')}</div>
       </div>
     </div>
   </div></section>`);
@@ -1092,7 +1092,7 @@ function home() {
     $$('.video-tab').forEach(x => x.classList.toggle('on', x === b));
     const grid = $('#vgrid'), cat = b.dataset.vtab;
     const list = cat === '全部' ? window.VIDEO_CONTENT : window.VIDEO_CONTENT.filter(v => v.cat === cat);
-    grid.innerHTML = list.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="${vc.title}" loading="lazy"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('');
+    grid.innerHTML = list.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="${vc.title}" loading="lazy" decoding="async"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('');
     reveal(grid);
     bindVidCards();
   });
@@ -1378,7 +1378,7 @@ function course() {
     </section>
     <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
       <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}" aria-hidden="true"></video></div>
-      ${others.slice(0, 4).map(o => `<div class="rv-up"><img src="${img(o)}" alt="${o.title}" loading="lazy"></div>`).join('')}</div></section>
+      ${others.slice(0, 4).map(o => `<div class="rv-up"><img src="${img(o)}" alt="${o.title}" loading="lazy" decoding="async"></div>`).join('')}</div></section>
     <section class="c-sec c-includes rv-up" id="includes"><h2>這堂課包含</h2>
       <div class="c-inc-grid">
         <div class="c-inc-item"><span class="c-inc-icon">📹</span><span>${c.hours} 小時影片內容</span></div>
@@ -1414,7 +1414,7 @@ function course() {
       <div class="t-stats"><span>📚 ${C.filter(x=>x.teacher===c.teacher).length} 堂課程</span><span>👥 ${C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.students,0).toLocaleString()} 位學員</span><span>⭐ ${(C.filter(x=>x.teacher===c.teacher).reduce((s,x)=>s+x.rating,0)/C.filter(x=>x.teacher===c.teacher).length).toFixed(1)} 平均評分</span></div>
       <a href="instructor.html?name=${encodeURIComponent(c.teacher)}" class="t-all-courses">查看所有課程 →</a>
     </div></div>
-    ${(() => { const tc = C.filter(x => x.teacher === c.teacher && x.id !== c.id).slice(0, 4); if (!tc.length) return ''; return `<div class="t-other-courses"><h4>${c.teacher} 的其他課程</h4><div class="t-oc-grid">${tc.map(x => `<a href="course.html?id=${x.id}" class="t-oc-card"><img src="${img(x)}" alt="${x.title}" loading="lazy"><div><b>${x.title}</b><span>★ ${x.rating} ・ ${fmt(x.price)}</span></div></a>`).join('')}</div></div>`; })()}
+    ${(() => { const tc = C.filter(x => x.teacher === c.teacher && x.id !== c.id).slice(0, 4); if (!tc.length) return ''; return `<div class="t-other-courses"><h4>${c.teacher} 的其他課程</h4><div class="t-oc-grid">${tc.map(x => `<a href="course.html?id=${x.id}" class="t-oc-card"><img src="${img(x)}" alt="${x.title}" loading="lazy" decoding="async"><div><b>${x.title}</b><span>★ ${x.rating} ・ ${fmt(x.price)}</span></div></a>`).join('')}</div></div>`; })()}
     </section>
     <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span style="color:var(--pri);font-size:18px">★ ${c.rating.toFixed(1)}</span> <span style="font-size:15px;color:var(--tx3);font-weight:400">(${c.students.toLocaleString()} 位學員)</span></h2>
       <div class="review-stats rv-up"><div class="rs-big"><b>${c.rating.toFixed(1)}</b><div class="rs-stars">★★★★★</div><div style="font-size:13px;color:var(--tx3)">${c.students.toLocaleString()} 則評價</div></div>
@@ -1499,7 +1499,7 @@ function course() {
     if (!related.length) return '';
     return `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>相關學習文章</h2><div class="sub">延伸閱讀，加深你的學習</div></div><a class="more" href="blog.html">查看全部 →</a></div>
       <div class="rel-articles">${related.map(p => `<a class="rel-article rv-up" href="article.html?id=${p.id}">
-        <div class="rel-art-img"><img src="assets/img/v${(C.find(x => x.cat === p.cat) || C[0]).v}.jpg" alt="${p.title}" loading="lazy"></div>
+        <div class="rel-art-img"><img src="assets/img/v${(C.find(x => x.cat === p.cat) || C[0]).v}.jpg" alt="${p.title}" loading="lazy" decoding="async"></div>
         <div class="rel-art-body"><span class="rel-art-cat">${(window.CATS.find(x => x.id === p.cat) || {}).name || ''}</span><h3>${p.title}</h3><span class="rel-art-meta">${p.readTime || '5 分鐘'} 閱讀</span></div>
       </a>`).join('')}</div></div></section>`;
   })()}
@@ -1766,7 +1766,7 @@ function eventPage() {
       <h2 class="ev-sec-title rv-up">精選優惠課程</h2>
       <div class="ev-course-grid">
         ${featured.map((c, i) => `<a class="ev-course rv-up" href="course.html?id=${c.id}" style="transition-delay:${(i%4)*80}ms">
-          <div class="ev-course-thumb"><img src="${img(c)}" alt="${c.title}" loading="lazy">${c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}</div>
+          <div class="ev-course-thumb"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async">${c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}</div>
           <div class="ev-course-info"><div class="teacher">${c.teacher}</div><h3>${c.title}</h3>
           <div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div></div>
         </a>`).join('')}
@@ -2400,7 +2400,7 @@ function blogPage() {
 
   <section class="sec"><div class="wrap">
     <a class="blog-feat rv-up" id="blog-feat" href="article.html?id=${featured.id}" data-cat="${featured.cat}" data-kw="${(featured.title + featured.excerpt + (featured.tags||[]).join('')).toLowerCase()}">
-      <div class="blog-feat-img"><img src="assets/img/v${featured.v}.jpg" alt="${featured.title}" loading="lazy"></div>
+      <div class="blog-feat-img"><img src="assets/img/v${featured.v}.jpg" alt="${featured.title}" loading="lazy" decoding="async"></div>
       <div class="blog-feat-body">
         <span class="blog-tag">${catMap[featured.cat] || featured.cat}</span>
         <h2>${featured.title}</h2>
@@ -2413,7 +2413,7 @@ function blogPage() {
   <section class="sec"><div class="wrap">
     <div class="blog-grid" id="blog-grid">
       ${posts.slice(1).map((p, i) => `<a class="blog-card rv-up${i >= 6 ? ' blog-hidden' : ''}" href="article.html?id=${p.id}" data-cat="${p.cat}" data-kw="${(p.title + p.excerpt + (p.tags||[]).join('')).toLowerCase()}">
-        <div class="blog-card-img"><img src="assets/img/v${p.v}.jpg" alt="${p.title}" loading="lazy"></div>
+        <div class="blog-card-img"><img src="assets/img/v${p.v}.jpg" alt="${p.title}" loading="lazy" decoding="async"></div>
         <div class="blog-card-body">
           <span class="blog-tag">${catMap[p.cat] || p.cat}</span>
           <h3>${p.title}</h3>
@@ -2538,7 +2538,7 @@ function articlePage() {
         <button class="art-act-btn" id="art-like"><span>👍</span> 有幫助</button>
         <button class="art-act-btn" id="art-bm"><span>🔖</span> 收藏</button>
       </div>
-      <div class="art-cover rv-up"><img src="assets/img/v${post.v}.jpg" alt="${post.title}" loading="lazy"></div>
+      <div class="art-cover rv-up"><img src="assets/img/v${post.v}.jpg" alt="${post.title}" loading="lazy" decoding="async"></div>
       <div class="art-body rv-up" id="art-body">${body}</div>
 
       ${(() => {
@@ -2549,7 +2549,7 @@ function articlePage() {
       })()}
 
       <div class="art-author-bio rv-up">
-        <div class="art-author-avatar"><img src="assets/img/v${post.v}.jpg" alt="${post.author}" loading="lazy"></div>
+        <div class="art-author-avatar"><img src="assets/img/v${post.v}.jpg" alt="${post.author}" loading="lazy" decoding="async"></div>
         <div class="art-author-info">
           <h4>${post.author}</h4>
           <p>AI Class 特約作者，專注於 ${catMap[post.cat] || post.cat} 領域，持續分享業界洞見與實戰經驗。</p>
@@ -2579,7 +2579,7 @@ function articlePage() {
       <div class="art-side-card rv-up">
         <h3>相關文章</h3>
         ${related.length ? related.map(r => `<a class="art-side-item" href="article.html?id=${r.id}">
-          <img src="assets/img/v${r.v}.jpg" alt="${r.title}" loading="lazy">
+          <img src="assets/img/v${r.v}.jpg" alt="${r.title}" loading="lazy" decoding="async">
           <div><h4>${r.title}</h4><span>${r.date}</span></div>
         </a>`).join('') : '<p style="color:var(--tx3)">暫無相關文章</p>'}
       </div>
@@ -2707,7 +2707,7 @@ function instructorPage() {
     <section class="sec"><div class="wrap">
       <h2 class="insd-sec-title rv-up">開設課程（${t.courses.length}）</h2>
       <div class="insd-courses">${t.courses.map(c => `<a class="insd-course rv-up" href="course.html?id=${c.id}">
-        <div class="insd-course-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy">${c.tag ? `<span class="tag">${c.tag}</span>` : ''}</div>
+        <div class="insd-course-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async">${c.tag ? `<span class="tag">${c.tag}</span>` : ''}</div>
         <div class="insd-course-body">
           <h3>${c.title}</h3>
           <div class="insd-course-meta">★ ${c.rating}（${c.students.toLocaleString()}）・${c.hours} 小時${window.CHAPTERS && window.CHAPTERS[c.id] ? '・' + window.CHAPTERS[c.id].length + ' 個章節' : ''}</div>
@@ -2760,7 +2760,7 @@ function instructorPage() {
   <section class="sec"><div class="wrap">
     <div class="ins-grid" id="ins-grid">
       ${teachers.map(t => `<a class="ins-card rv-up" href="instructor.html?name=${encodeURIComponent(t.name)}" data-name="${t.name}" data-role="${t.role}" style="text-decoration:none;color:inherit">
-        <div class="ins-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}" loading="lazy"></div>
+        <div class="ins-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}" loading="lazy" decoding="async"></div>
         <h3 class="ins-name">${t.name}</h3>
         <p class="ins-role">${t.role}</p>
         <div class="ins-stats">
@@ -2908,7 +2908,7 @@ function wishlistPage() {
     </div></section>
     <section class="sec"><div class="wrap">
       <div class="wish-grid">${items.map(c => `<div class="wish-item rv-up">
-        <a href="course.html?id=${c.id}" class="wish-thumb"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy"></a>
+        <a href="course.html?id=${c.id}" class="wish-thumb"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"></a>
         <div class="wish-info">
           <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
           <p class="teacher">${c.teacher}・${c.role}</p>
@@ -3027,7 +3027,7 @@ function myPage() {
   <div class="wrap my-resume rv-up">
     <div class="my-resume-head"><h2>繼續學習</h2><a href="#" class="my-resume-all" data-goto-courses>查看全部 →</a></div>
     <div class="my-resume-list">${inProgress.slice(0, 3).map(c => `<a class="my-resume-card" href="player.html?id=${c.id}">
-      <div class="my-rc-thumb"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy"><div class="my-rc-play">▶</div></div>
+      <div class="my-rc-thumb"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"><div class="my-rc-play">▶</div></div>
       <div class="my-rc-body">
         <h3>${c.title}</h3>
         <p class="my-rc-teacher">${c.teacher}・${c.lastWatch}</p>
@@ -3083,7 +3083,7 @@ function myPage() {
         </div>
         <div class="myp-grid" id="myp-list">
           ${enrolled.map(c => `<div class="myp-card rv-up" data-status="${c.progress === 100 ? 'done' : 'ing'}">
-            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy"></a>
+            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"></a>
             <div class="myp-card-body">
               <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
               <p class="teacher">${c.teacher}</p>
@@ -3179,7 +3179,7 @@ function myPage() {
         <h2 class="myp-sec-title rv-up">心願清單</h2>
         <div class="myp-grid">
           ${wishlist.map(c => `<div class="myp-card rv-up">
-            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy"></a>
+            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"></a>
             <div class="myp-card-body">
               <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
               <p class="teacher">${c.teacher}</p>
@@ -4713,7 +4713,7 @@ function orderHistoryPage() {
         </div>
         <div class="oh-card-items">
           ${o.items.map(c => `<div class="oh-item">
-            <img src="${img_(c)}" alt="${c.title}" loading="lazy">
+            <img src="${img_(c)}" alt="${c.title}" loading="lazy" decoding="async">
             <div class="oh-item-info">
               <a href="course.html?id=${c.id}" class="oh-item-title">${c.title}</a>
               <span class="oh-item-teacher">${c.teacher}・${c.hours} 小時</span>
@@ -5158,7 +5158,7 @@ function livePage() {
       <div class="live-rec-grid">${ended.map(e => {
         const c = byId[e.course];
         return `<div class="live-rec-card rv-up">
-        <div class="live-rec-thumb"><img src="${c ? img(c) : ''}" alt="${e.title}" loading="lazy"><div class="live-rec-dur">${e.duration} 分</div>${e.replay ? '<div class="live-replay-badge">可回放</div>' : ''}</div>
+        <div class="live-rec-thumb"><img src="${c ? img(c) : ''}" alt="${e.title}" loading="lazy" decoding="async"><div class="live-rec-dur">${e.duration} 分</div>${e.replay ? '<div class="live-replay-badge">可回放</div>' : ''}</div>
         <div class="live-rec-info"><h4>${e.title}</h4><span>${e.host}・${e.enrolled} 人參與・▶ ${(e.enrolled * 3).toLocaleString()} 次觀看</span></div>
       </div>`;
       }).join('')}</div>
@@ -5519,7 +5519,7 @@ function videoPage() {
       const thumb = cc ? img(cc) : '';
       const videoSrc = cc ? vid(cc) : '';
       return `<div class="vid-card rv-up" data-vcat="${v.cat}" data-video="${videoSrc}" data-poster="${thumb}">
-        <div class="vid-card-thumb"><img src="${thumb}" alt="${v.title}" loading="lazy"><span class="vid-play-icon">▶</span><span class="vid-views">${(v.views/1000).toFixed(1)}K 觀看</span></div>
+        <div class="vid-card-thumb"><img src="${thumb}" alt="${v.title}" loading="lazy" decoding="async"><span class="vid-play-icon">▶</span><span class="vid-views">${(v.views/1000).toFixed(1)}K 觀看</span></div>
         <div class="vid-card-info"><span class="vid-cat-tag">${v.cat}</span><h3>${v.title}</h3>${cc ? `<a class="vid-course-link" href="course.html?id=${cc.id}">${cc.title}</a>` : ''}</div></div>`;
     }).join('')}</div></div>`;
 
@@ -5581,7 +5581,7 @@ function bundlePage() {
           </div>
           <div class="bdl-courses">
             ${courses.map(c => `<a href="course.html?id=${c.id}" class="bdl-course">
-              <img src="${img(c)}" alt="${c.title}" loading="lazy">
+              <img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async">
               <div class="bdl-course-info">
                 <b>${c.title}</b>
                 <span>${c.teacher} ・ ★ ${c.rating}</span>
@@ -5687,7 +5687,7 @@ function successPage() {
           <div class="scs-courses">
             <span class="scs-courses-label">修習課程</span>
             ${courses.map(c => `<a href="course.html?id=${c.id}" class="scs-course-link">
-              <img src="${img(c)}" alt="${c.title}" loading="lazy">
+              <img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async">
               <span>${c.title}</span>
             </a>`).join('')}
           </div>
@@ -5874,7 +5874,7 @@ function galleryPage() {
       const cc = byId[g.course];
       const liked = likes[g.id];
       return `<div class="gal-card rv-up ${g.featured ? 'gal-featured' : ''}" data-gcat="${g.cat}" data-gid="${g.id}" data-likes="${g.likes}" data-comments="${g.comments}">
-        <div class="gal-card-img"><img src="assets/img/v${g.v}.jpg" alt="${g.title}" loading="lazy">${g.featured ? '<span class="gal-feat-badge">⭐ 精選</span>' : ''}</div>
+        <div class="gal-card-img"><img src="assets/img/v${g.v}.jpg" alt="${g.title}" loading="lazy" decoding="async">${g.featured ? '<span class="gal-feat-badge">⭐ 精選</span>' : ''}</div>
         <div class="gal-card-body">
           <div class="gal-card-meta"><span class="gal-cat-tag">${g.cat}</span></div>
           <h3>${g.title}</h3>
@@ -6114,7 +6114,7 @@ function notebookPage() {
     </div>
     <div class="nb-list" id="nb-list">
       ${flat.length ? flat.map(n => `<div class="nb-card rv-up" data-cid="${n.cid}" data-ts="${n.ts}" data-ci="${n.ci}">
-        <div class="nb-card-course"><img src="${n.cImg}" alt="${n.cTitle}" loading="lazy"><div class="nb-card-course-info"><a href="course.html?id=${n.cid}">${n.cTitle}</a><span>${n.cTeacher}</span></div></div>
+        <div class="nb-card-course"><img src="${n.cImg}" alt="${n.cTitle}" loading="lazy" decoding="async"><div class="nb-card-course-info"><a href="course.html?id=${n.cid}">${n.cTitle}</a><span>${n.cTeacher}</span></div></div>
         <p class="nb-card-text">${n.text}</p>
         <div class="nb-card-foot"><time>${new Date(n.ts).toLocaleDateString('zh-TW')} ${new Date(n.ts).toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</time><button class="nb-del" data-cid="${n.cid}" data-ci="${n.ci}">刪除</button></div>
       </div>`).join('') : `<div class="nb-empty rv-up"><div class="nb-empty-icon">📝</div><h3>還沒有筆記</h3><p>在觀看課程時記錄學習重點，所有筆記都會顯示在這裡。</p><a href="index.html" class="btn btn-pri">探索課程 →</a></div>`}
@@ -6259,7 +6259,7 @@ function reportPage() {
     <div class="rpt-card rpt-courses rv-up">
       <h3 class="rpt-card-title">課程進度明細</h3>
       <div class="rpt-course-list">${enrolled.map(c => `<div class="rpt-course-row">
-        <img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy">
+        <img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async">
         <div class="rpt-course-info"><b>${c.title}</b><span>${c.teacher}・${c.hours} 小時</span></div>
         <div class="rpt-course-prog"><div class="rpt-course-bar"><div class="rpt-course-fill" style="width:${c.progress}%"></div></div><span>${c.progress}%</span></div>
       </div>`).join('')}</div>
@@ -6334,7 +6334,7 @@ function salePage() {
     <div class="sale-grid">${d.courses.map(c => {
       const salePrice = Math.round(c.price * (1 - d.discount / 100));
       return `<a class="sale-card rv-up" href="course.html?id=${c.id}">
-        <div class="sale-card-img"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sale-off">-${d.discount}%</span></div>
+        <div class="sale-card-img"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async"><span class="sale-off">-${d.discount}%</span></div>
         <div class="sale-card-body">
           <h3>${c.title}</h3>
           <p class="sale-card-teacher">${c.teacher}</p>
@@ -6399,11 +6399,11 @@ function skillmapPage() {
       ${trees.map(t => `<div class="sm-tree rv-up" style="--tree-color:${t.color}">
         <div class="sm-tree-head"><span class="sm-tree-icon" style="background:${t.color}">${t.name[0]}</span><h2>${t.name}</h2><span class="sm-tree-count">${t.courses.length} 門課程</span></div>
         <div class="sm-tree-body">
-          ${t.beginner.length ? `<div class="sm-tier"><h3 class="sm-tier-label">🌱 入門</h3><div class="sm-tier-courses">${t.beginner.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
+          ${t.beginner.length ? `<div class="sm-tier"><h3 class="sm-tier-label">🌱 入門</h3><div class="sm-tier-courses">${t.beginner.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
           ${t.beginner.length && t.intermediate.length ? '<div class="sm-arrow">↓</div>' : ''}
-          ${t.intermediate.length ? `<div class="sm-tier"><h3 class="sm-tier-label">🚀 進階</h3><div class="sm-tier-courses">${t.intermediate.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
+          ${t.intermediate.length ? `<div class="sm-tier"><h3 class="sm-tier-label">🚀 進階</h3><div class="sm-tier-courses">${t.intermediate.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
           ${t.intermediate.length && t.advanced.length ? '<div class="sm-arrow">↓</div>' : ''}
-          ${t.advanced.length ? `<div class="sm-tier"><h3 class="sm-tier-label">💎 專精</h3><div class="sm-tier-courses">${t.advanced.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
+          ${t.advanced.length ? `<div class="sm-tier"><h3 class="sm-tier-label">💎 專精</h3><div class="sm-tier-courses">${t.advanced.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
         </div>
       </div>`).join('')}
     </div>
@@ -6772,7 +6772,7 @@ function openRecommendQuiz() {
         <h2>為你推薦這 ${picks.length} 堂課程</h2>
         <p class="rq-done-sub">根據你的回答，我們精選了最適合你的課程</p>
         <div class="rq-picks">${picks.map(c => `<a class="rq-pick" href="course.html?id=${c.id}">
-          <img src="${img(c)}" alt="${c.title}" loading="lazy">
+          <img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async">
           <div class="rq-pick-info"><h3>${c.title}</h3><span>${c.teacher}・★ ${c.rating}・${c.hours} 小時</span><b>${fmt(c.price)}</b></div>
         </a>`).join('')}</div>
         <button class="btn btn-ghost rq-retry">重新測驗</button>
