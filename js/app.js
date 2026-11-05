@@ -120,7 +120,7 @@ function seo(opts = {}) {
   setMeta('property', 'og:image', dImg);
   setMeta('property', 'og:locale', 'zh_TW');
   setMeta('property', 'og:site_name', 'AI Class');
-  if (opts.ogType) setMeta('property', 'og:type', opts.ogType);
+  setMeta('property', 'og:type', opts.ogType || 'website');
   setMeta('name', 'twitter:card', opts.twitterCard || 'summary_large_image');
   setMeta('name', 'twitter:title', dTitle);
   setMeta('name', 'twitter:description', dDesc);
@@ -853,7 +853,7 @@ function home() {
   const slides = window.HERO.map(id => byId[id]);
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程" aria-roledescription="carousel">
     ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
-      <img class="poster" src="${img(c)}" alt="${c.title}"${i ? '' : ' fetchpriority="high"'}>
+      <img class="poster" src="${img(c)}" alt="${c.title}"${i ? ' loading="lazy"' : ' fetchpriority="high"'}>
       <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
       <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span><h1>${h}</h1><p>${p}</p>
       <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">${owned.has(c.id) ? '繼續學習 →' : cart.has(c.id) ? '前往結帳 →' : '立即了解 →'}</a> <a class="btn btn-ghost" href="${owned.has(c.id) ? `player.html?id=${c.id}` : `course.html?id=${c.id}#preview`}" style="margin-left:8px">${owned.has(c.id) ? '🎬 進入播放器' : '▶ 試看'}</a></div></div></div></div>`; }).join('')}
@@ -4453,7 +4453,7 @@ function playerPage() {
                 <button id="plr-next-ls" class="plr-ctrl-btn" aria-label="下一課">⏭</button>
                 <div class="plr-vol-wrap">
                   <button id="plr-mute" class="plr-ctrl-btn" aria-label="靜音">🔊</button>
-                  <input type="range" id="plr-vol" min="0" max="1" step="0.05" value="1" class="plr-vol-slider">
+                  <input type="range" id="plr-vol" min="0" max="1" step="0.05" value="1" class="plr-vol-slider" aria-label="音量">
                 </div>
                 <span class="plr-time" id="plr-time">0:00 / 0:00</span>
               </div>
