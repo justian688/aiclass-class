@@ -7795,20 +7795,7 @@ document.addEventListener('keydown', e => {
 });
 $$('.chip, .qa button, .video-tab, .sort-btn, .time-tab').forEach(el => { if (!el.getAttribute('tabindex')) el.setAttribute('tabindex', '0'); });
 
-// ── 平滑頁面導航 ──
-document.addEventListener('click', e => {
-  const a = e.target.closest('a[href]');
-  if (!a || a.target === '_blank' || a.href.includes('#') || !a.href.startsWith(location.origin)) return;
-  e.preventDefault();
-  document.body.classList.add('page-exit');
-  const m = $('main');
-  if (m) {
-    m.innerHTML = `<div class="wrap" style="padding:40px 0"><div class="skel-row"><div class="skeleton" style="height:32px;width:40%;border-radius:8px;margin-bottom:20px"></div><div class="skeleton" style="height:16px;width:70%;border-radius:6px;margin-bottom:12px"></div><div class="skeleton" style="height:16px;width:55%;border-radius:6px;margin-bottom:28px"></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">${'<div class="skeleton" style="height:200px;border-radius:14px"></div>'.repeat(4)}</div></div></div>`;
-    m.style.opacity = '1'; m.style.transform = 'none';
-  }
-  scrollTo({ top: 0 });
-  setTimeout(() => location.href = a.href, 300);
-});
+// （平滑頁面導航已由下方「頁面轉場動畫」統一處理）
 
 // ── 社群通知（Social Proof）──（課程頁有專屬版本，不在這裡重複）
 if (page === 'home' || page === 'category') {
@@ -8085,6 +8072,7 @@ function openRecommendQuiz() {
     e.preventDefault();
     const m = $('main');
     if (m) { m.style.transition = 'opacity .15s,transform .15s'; m.style.opacity = '0'; m.style.transform = 'translateY(8px)'; }
+    scrollTo({ top: 0 });
     setTimeout(() => { location.href = a.href; }, 160);
   });
   const m = $('main');
