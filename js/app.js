@@ -5351,7 +5351,7 @@ function couponPage() {
       <div class="cpn-left">
         <span class="cpn-badge ${cp.typeTxt}">${cp.type === 'percent' ? '折扣' : '折抵'}</span>
         <div class="cpn-desc">${cp.desc}</div>
-        <div class="cpn-code-row"><span class="cpn-code">${cp.code}</span><button class="cpn-copy" onclick="navigator.clipboard.writeText('${cp.code}');this.textContent='✓';setTimeout(()=>this.textContent='📋',1500);toast('已複製優惠碼 ${cp.code}')">📋</button></div>
+        <div class="cpn-code-row"><span class="cpn-code">${cp.code}</span><button class="cpn-copy" data-code="${cp.code}">📋</button></div>
         ${cp.cats ? `<div class="cpn-cats">${cp.cats.map(c => `<span class="cpn-cat-tag">${c}</span>`).join('')}</div>` : ''}
       </div>
       <div class="cpn-right">
@@ -5391,6 +5391,16 @@ function couponPage() {
   </div>`;
 
   renderCoupons('all');
+  main.addEventListener('click', e => {
+    const copyBtn = e.target.closest('.cpn-copy[data-code]');
+    if (copyBtn) {
+      const code = copyBtn.dataset.code;
+      navigator.clipboard.writeText(code);
+      copyBtn.textContent = '✓';
+      setTimeout(() => copyBtn.textContent = '📋', 1500);
+      toast('已複製優惠碼 ' + code);
+    }
+  });
   $$('.cpn-tabs .chip', main).forEach(btn => btn.onclick = () => {
     $$('.cpn-tabs .chip', main).forEach(b => b.classList.toggle('on', b === btn));
     renderCoupons(btn.dataset.cpn);
@@ -5401,11 +5411,12 @@ function couponPage() {
 function certificatePage() {
   const main = $('main');
   seo({ title: '結業證書｜AI Class', desc: '查看你的結業證書', url: 'https://aiclass.tw/certificate.html' });
-  const owned = JSON.parse(localStorage.getItem('aic-owned') || '[]');
-  const completed = C.slice(0, 5).filter((c, i) => [2].includes(i));
-  const certificates = completed.map(c => ({
+  const ownedIds = new Set(JSON.parse(localStorage.getItem('aic-owned') || '[]'));
+  const progress = JSON.parse(localStorage.getItem('aic-progress') || '{}');
+  const completedCourses = C.filter(c => ownedIds.has(c.id) && (progress[c.id] === 100 || progress[c.id] === undefined));
+  const certificates = completedCourses.map(c => ({
     ...c,
-    student: '學員',
+    student: aicUser?.name || '學員',
     completedDate: '2026/10/25',
     certId: 'CERT-' + c.id.toUpperCase() + '-' + Date.now().toString(36).slice(-6).toUpperCase()
   }));
@@ -5462,7 +5473,7 @@ function pathPage() {
   if (!p) { notFoundPage(); return; }
   const courses = p.courses.map(id => byId[id]).filter(Boolean);
   const totalHours = courses.reduce((s, c) => s + c.hours, 0);
-  seo({ title: `${p.title}｜AI Class 學習路徑`, desc: p.desc || `${p.title} 學習路徑，${courses.length} 門課程，${totalHours} 小時`, url: `https://aiclass.tw/path.html?id=${p.id}` });
+  seo({ title: `${p.name}｜AI Class 學習路徑`, desc: p.desc || `${p.name} 學習路徑，${courses.length} 門課程，${totalHours} 小時`, url: `https://aiclass.tw/path.html?id=${p.id}` });
   const totalStudents = Math.min(...courses.map(c => c.students));
   document.title = `${p.name}｜AI Class 學習路徑`;
 
@@ -5488,8 +5499,8 @@ function pathPage() {
       <span>💰 預期年薪 ${p.salary}</span>
     </div>
     <div class="pth-actions">
-      <button class="btn btn-pri btn-lg" onclick="toast('示範網站：已加入學習路徑')">開始學習路徑</button>
-      <button class="btn btn-ghost btn-lg" onclick="toast('已分享路徑連結')">分享路徑</button>
+      <button class="btn btn-pri btn-lg pth-start-btn">開始學習路徑</button>
+      <button class="btn btn-ghost btn-lg pth-share-btn">分享路徑</button>
     </div>
   </div></section>
 
@@ -5527,7 +5538,7 @@ function pathPage() {
         <div class="pth-sum-row"><span>適合程度</span><b>${p.level}</b></div>
         <div class="pth-sum-row"><span>分開購買</span><b class="pth-origin">${fmt(courses.reduce((s, c) => s + c.origin, 0))}</b></div>
         <div class="pth-sum-row"><span>路徑優惠價</span><b class="pth-deal">${fmt(courses.reduce((s, c) => s + c.price, 0))}</b></div>
-        <button class="btn btn-pri" style="width:100%;margin-top:16px" onclick="toast('示範網站：已加入全部課程')">一次購買全路徑</button>
+        <button class="btn btn-pri pth-buy-all" style="width:100%;margin-top:16px">一次購買全路徑</button>
       </div>
     </div>
   </div>
@@ -5546,6 +5557,12 @@ function pathPage() {
       }).join('')}
     </div>
   </div></section>`;
+  const startBtn = $('.pth-start-btn', main);
+  if (startBtn) startBtn.onclick = () => toast('示範網站：已加入學習路徑');
+  const shareBtn = $('.pth-share-btn', main);
+  if (shareBtn) shareBtn.onclick = () => toast('已分享路徑連結');
+  const buyAll = $('.pth-buy-all', main);
+  if (buyAll) buyAll.onclick = () => toast('示範網站：已加入全部課程');
   bindCards(main);
 }
 
@@ -5553,7 +5570,7 @@ function pathPage() {
 function invitePage() {
   const main = $('main');
   seo({ title: '邀請好友｜AI Class', desc: '邀請好友加入 AI Class，雙方各得優惠券', url: 'https://aiclass.tw/invite.html' });
-  const code = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase();
+  const code = localStorage.getItem('aic-invite-code') || (() => { const c = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase(); localStorage.setItem('aic-invite-code', c); return c; })();
   const link = 'https://aiclass.tw/invite?ref=' + code;
   const stats = { invited: 3, registered: 2, earned: 1000 };
 
@@ -5576,17 +5593,17 @@ function invitePage() {
       <h2>你的專屬推薦連結</h2>
       <div class="inv-link-row">
         <input type="text" value="${link}" readonly class="inv-link" aria-label="推薦連結">
-        <button class="btn btn-pri inv-copy-btn" onclick="navigator.clipboard.writeText('${link}');this.textContent='✓ 已複製';this.classList.add('copied');setTimeout(()=>{this.textContent='複製連結';this.classList.remove('copied')},2000);toast('已複製邀請連結')">複製連結</button>
+        <button class="btn btn-pri inv-copy-btn" id="inv-copy-link">複製連結</button>
       </div>
       <div class="inv-code-row">
         <span>推薦碼：</span><code class="inv-code">${code}</code>
-        <button class="inv-copy" onclick="navigator.clipboard.writeText('${code}');this.textContent='✓';setTimeout(()=>this.textContent='📋',1500);toast('已複製推薦碼')">📋</button>
+        <button class="inv-copy" id="inv-copy-code">📋</button>
       </div>
       <div class="inv-share">
         <span>分享至：</span>
-        <button class="inv-share-btn" onclick="toast('示範網站')">LINE</button>
-        <button class="inv-share-btn" onclick="toast('示範網站')">Facebook</button>
-        <button class="inv-share-btn" onclick="toast('示範網站')">Email</button>
+        <button class="inv-share-btn">LINE</button>
+        <button class="inv-share-btn">Facebook</button>
+        <button class="inv-share-btn">Email</button>
       </div>
     </div>
 
@@ -5621,6 +5638,22 @@ function invitePage() {
       </ul>
     </div>
   </div>`;
+  const copyLink = $('#inv-copy-link', main);
+  if (copyLink) copyLink.onclick = () => {
+    navigator.clipboard.writeText(link);
+    copyLink.textContent = '✓ 已複製';
+    copyLink.classList.add('copied');
+    setTimeout(() => { copyLink.textContent = '複製連結'; copyLink.classList.remove('copied'); }, 2000);
+    toast('已複製邀請連結');
+  };
+  const copyCode = $('#inv-copy-code', main);
+  if (copyCode) copyCode.onclick = () => {
+    navigator.clipboard.writeText(code);
+    copyCode.textContent = '✓';
+    setTimeout(() => copyCode.textContent = '📋', 1500);
+    toast('已複製推薦碼');
+  };
+  $$('.inv-share-btn', main).forEach(btn => btn.onclick = () => toast('示範網站'));
 }
 
 /* ---------- 訂單紀錄 ---------- */
@@ -6146,7 +6179,7 @@ function livePage() {
       <div class="live-next-banner rv-up">
         <div class="live-next-info"><span class="live-next-label">🔜 下一場直播</span><h3>${nextEv.title}</h3><span>${nextEv.host}・${fmtDate(nextEv.date)} ${fmtTime(nextEv.date)}</span></div>
         <div class="live-next-cd" id="liveNextCd"></div>
-        <button class="btn btn-pri" onclick="toast('已預約提醒：${nextEv.title.replace(/'/g,"\\'")}','success')">🔔 預約</button>
+        <button class="btn btn-pri live-reserve-btn">🔔 預約</button>
       </div>
     </section>` : ''}
 
@@ -6163,7 +6196,7 @@ function livePage() {
           <div class="live-sched-bar"><div class="live-sched-fill" style="width:${pct}%"></div></div>
           <span class="live-sched-seats">${u.enrolled}/${u.max} 已預約</span>
         </div>
-        <button class="btn btn-ghost" onclick="toast('已預約提醒：${u.title.replace(/'/g,"\\'")}','success')">🔔 預約提醒</button>
+        <button class="btn btn-ghost live-reserve-btn" data-title="${u.title}">🔔 預約提醒</button>
       </div>`;
       }).join('')}</div>
     </section>
@@ -6191,6 +6224,10 @@ function livePage() {
     };
     tick(); setInterval(tick, 1000);
   }
+  main.addEventListener('click', e => {
+    const btn = e.target.closest('.live-reserve-btn');
+    if (btn) toast('已預約提醒：' + (btn.dataset.title || (nextEv && nextEv.title) || '直播'), 'success');
+  });
   reveal(main);
 }
 
@@ -7267,7 +7304,8 @@ function reportPage() {
   const main = $('main');
   seo({ title: '學習報告｜AI Class', desc: '你的個人學習報告——時數、進度、技能與目標追蹤', url: 'https://aiclass.tw/report.html' });
 
-  const enrolled = C.slice(0, 7).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62, 33, 91][i] }));
+  const demoProgress = [78, 45, 100, 12, 62, 33, 91, 55, 88, 20, 95, 38, 67];
+  const enrolled = C.map((c, i) => ({ ...c, progress: demoProgress[i % demoProgress.length] }));
   const totalHours = enrolled.reduce((s, c) => s + c.hours, 0);
   const completed = enrolled.filter(c => c.progress === 100).length;
   const weeklyData = [
@@ -7622,15 +7660,6 @@ document.body.classList.add('loaded');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 if (!$('link[rel="manifest"]')) { const m = document.createElement('link'); m.rel = 'manifest'; m.href = '/manifest.json'; document.head.append(m); }
 if (!$('meta[name="apple-mobile-web-app-capable"]')) { const m = document.createElement('meta'); m.name = 'apple-mobile-web-app-capable'; m.content = 'yes'; document.head.append(m); }
-
-document.addEventListener('error', e => {
-  if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) {
-    e.target.dataset.fallback = '1';
-    e.target.style.background = 'linear-gradient(135deg, var(--pri), var(--pink))';
-    e.target.style.objectFit = 'contain';
-    e.target.alt = '';
-  }
-}, true);
 
 // ── Ripple effect on .btn-pri ──
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
