@@ -1070,7 +1070,7 @@ function home() {
     <div class="media">${storyV.map((c, i) => `<video class="${i ? '' : 'on'}" src="${vid(c)}" muted loop playsinline preload="metadata" poster="${img(c)}" aria-hidden="true"></video>`).join('')}</div>
   </div></section>`);
 
-  main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="stats">
+  main.insertAdjacentHTML('beforeend', `<section class="sec" aria-label="平台數據"><div class="wrap"><div class="stats">
     ${[[(window.PLATFORM_STATS||{}).students||52000, '+', '累積學員'], [(window.PLATFORM_STATS||{}).instructors||12, '+', '業界職人講師'], [(window.PLATFORM_STATS||{}).satisfaction||4.85, '', '平均課程評分'], [98, '%', '學員推薦率']].map(([n, u, t]) => `<div class="stat rv-up"><b data-count="${n}" data-unit="${u}">0</b><span>${t}</span></div>`).join('')}
   </div></div></section>`);
 
