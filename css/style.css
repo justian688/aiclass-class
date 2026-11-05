@@ -4132,8 +4132,8 @@ h3{font-size:clamp(18px,2.2vw,24px)}
   .chap>button{min-height:48px}
   .mi-btn{min-height:44px;min-width:44px}
   .tabs a{min-height:44px;display:inline-flex;align-items:center}
-  .blog-tag{min-height:32px;display:inline-flex;align-items:center}
-  .art-tag{min-height:32px;display:inline-flex;align-items:center}
+  .blog-tag{min-height:44px;display:inline-flex;align-items:center}
+  .art-tag{min-height:44px;display:inline-flex;align-items:center}
   .c-share-btn{min-height:44px}
   .trn-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .trn-table thead,.trn-table tbody{display:table;width:100%}
@@ -4528,7 +4528,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .cart-reminder.show{transform:none}
 .cart-rem-inner{max-width:800px;margin:0 auto;padding:14px 20px;background:linear-gradient(135deg,var(--pri),var(--pink));color:#fff;display:flex;align-items:center;gap:12px;font-size:14px}
 .cart-rem-icon{font-size:20px}
-.cart-rem-inner .btn{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);min-height:36px}
+.cart-rem-inner .btn{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);min-height:44px}
 .cart-rem-inner .btn:hover{background:#fff;color:var(--pri)}
 .cart-rem-close{background:none;border:none;color:rgba(255,255,255,.8);font-size:18px;cursor:pointer;padding:4px;margin-left:auto}
 @media(max-width:480px){.cart-rem-inner{flex-wrap:wrap;justify-content:center;text-align:center;gap:8px}}
