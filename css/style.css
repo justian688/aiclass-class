@@ -325,7 +325,7 @@ body.hdr-hidden .tabs{top:0}
 .tabs a.on{color:var(--tx)}
 .tabs a::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;border-radius:3px;background:var(--grad);transform:scaleX(0);transition:transform .35s var(--ease)}
 .tabs a.on::after{transform:scaleX(1)}
-.c-sec{padding:64px 0 0;scroll-margin-top:130px}
+.c-sec{padding:64px 0 0;scroll-margin-top:130px;content-visibility:auto;contain-intrinsic-size:auto 400px}
 .c-sec h2{font-size:26px;font-weight:900;margin-bottom:22px}
 .c-highlights{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
 .c-hl{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;font-size:14px;font-weight:600;background:linear-gradient(135deg,var(--pri-8),var(--pink-8));border:1px solid var(--pri-15);color:var(--pri)}
