@@ -247,7 +247,8 @@ function shell() {
       <button class="notif-btn" aria-label="通知">🔔${(()=>{const c=(window.NOTIFICATIONS||[]).filter(n=>!n.read).length;return c?`<span class="notif-badge-count">${c}</span>`:''})()}</button>
       <div class="notif-panel" role="dialog" aria-modal="false" aria-label="通知面板">
         <div class="notif-hdr"><h4>通知</h4><button class="notif-read-all">全部已讀</button></div>
-        <div class="notif-list">${(window.NOTIFICATIONS||[]).length?(window.NOTIFICATIONS||[]).map(n=>{const icons={course:'📚',promo:'🏷️',community:'💬',achievement:'🏆',live:'📡',system:'⚙️'};return `<${n.link?`a href="${n.link}"`:'div'} class="notif-item${n.read?'':' unread'}"><div class="ni-icon">${icons[n.type]||'🔔'}</div><div class="ni-body"><b>${n.title}</b><p>${n.body}</p><div class="ni-time">${n.time}</div></div></${n.link?'a':'div'}>`}).join(''):'<div class="notif-empty"><div class="notif-empty-icon">🔕</div><p>目前沒有新通知</p></div>'}</div>
+        <div class="notif-tabs"><button class="notif-tab on" data-nf="all">全部</button><button class="notif-tab" data-nf="course">課程</button><button class="notif-tab" data-nf="system">系統</button><button class="notif-tab" data-nf="promo">活動</button></div>
+        <div class="notif-list">${(window.NOTIFICATIONS||[]).length?(window.NOTIFICATIONS||[]).map(n=>{const icons={course:'📚',promo:'🏷️',community:'💬',achievement:'🏆',live:'📡',system:'⚙️'};return `<${n.link?`a href="${n.link}"`:'div'} class="notif-item${n.read?'':' unread'}" data-ntype="${n.type}"><div class="ni-icon">${icons[n.type]||'🔔'}</div><div class="ni-body"><b>${n.title}</b><p>${n.body}</p><div class="ni-time">${n.time}</div></div></${n.link?'a':'div'}>`}).join(''):'<div class="notif-empty"><div class="notif-empty-icon">🔕</div><p>目前沒有新通知</p></div>'}</div>
       </div>
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
@@ -344,6 +345,14 @@ function shell() {
       setTimeout(() => { readAllBtn.textContent = '全部已讀'; }, 1500);
       toast('已全部標為已讀');
     };
+    $$('.notif-tab', notifPanel).forEach(tab => tab.onclick = () => {
+      $$('.notif-tab', notifPanel).forEach(t => t.classList.toggle('on', t === tab));
+      const f = tab.dataset.nf;
+      const typeMap = { course: ['course'], system: ['system'], promo: ['promo', 'achievement', 'live', 'community'] };
+      $$('.notif-item', notifPanel).forEach(el => {
+        el.style.display = f === 'all' || (typeMap[f] || []).includes(el.dataset.ntype) ? '' : 'none';
+      });
+    });
   }
 
   // 深色模式切換
@@ -3233,6 +3242,11 @@ function myPage() {
       <!-- 學習儀表板 -->
       <section class="myp-sec" id="myp-sec-dashboard" hidden>
         <h2 class="myp-sec-title rv-up">📊 學習儀表板</h2>
+        <div class="dash-fire-banner rv-up">
+          <div class="dash-fire-icon">🔥</div>
+          <div class="dash-fire-info"><b>連續學習 ${streakDays} 天！</b><p>保持每天學習，解鎖更多獎勵 — 下一個里程碑：${streakDays < 7 ? '7' : streakDays < 14 ? '14' : streakDays < 30 ? '30' : '60'} 天</p></div>
+          <div class="dash-fire-progress"><div class="dash-fire-fill" style="width:${Math.min(100, streakDays / (streakDays < 7 ? 7 : streakDays < 14 ? 14 : streakDays < 30 ? 30 : 60) * 100)}%"></div></div>
+        </div>
         <div class="dash-grid rv-up">
           <div class="dash-card">
             <div class="dash-card-head">累計學習時間</div>
@@ -4996,6 +5010,7 @@ function searchPage() {
           <div class="srch-empty-icon">🔍</div>
           <h3>找不到相關課程</h3>
           <p>試試其他關鍵字或調整篩選條件</p>
+          <div class="srch-recommend"><h4>為你推薦熱門課程</h4><div class="srch-rec-grid">${C.sort((a,b)=>b.students-a.students).slice(0,4).map(c=>card(c)).join('')}</div></div>
           <div class="srch-trending">
             <h4>熱門搜尋</h4>
             <div class="srch-trend-chips">${trending.map(t => `<button class="chip srch-trend">${t}</button>`).join('')}</div>
@@ -6696,6 +6711,8 @@ function updCmpUI() {
         <tr><td>評分</td>${courses.map((c, i) => `<td${hi(bRate,i)}><span class="cmp-stars">${'★'.repeat(Math.round(c.rating))}${'☆'.repeat(5-Math.round(c.rating))}</span> ${c.rating}</td>`).join('')}</tr>
         <tr><td>學員數</td>${courses.map((c, i) => `<td${hi(bStu,i)}>${c.students.toLocaleString()}</td>`).join('')}</tr>
         <tr><td>時數</td>${courses.map((c, i) => `<td${hi(bHrs,i)}>${c.hours} 小時</td>`).join('')}</tr>
+        <tr><td>難度</td>${courses.map(c => `<td><span class="card-lvl ${courseLevel(c).cls}">${courseLevel(c).label}</span></td>`).join('')}</tr>
+        <tr><td>章節</td>${courses.map(c => { const ch = window.CHAPTERS?.[c.id]; return `<td>${ch ? ch.length + ' 章・' + ch.reduce((s, x) => s + x.lessons.length, 0) + ' 堂' : '-'}</td>`; }).join('')}</tr>
         <tr><td>講師</td>${courses.map(c => `<td>${c.teacher}</td>`).join('')}</tr>
         <tr><td>分類</td>${courses.map(c => `<td>${c.sub}</td>`).join('')}</tr>
         <tr><td>狀態</td>${courses.map(c => `<td>${owned.has(c.id) ? '<span class="cmp-owned">✓ 已購買</span>' : '<span class="cmp-not-owned">未購買</span>'}</td>`).join('')}</tr>
