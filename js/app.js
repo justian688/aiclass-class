@@ -367,7 +367,7 @@ function shell() {
   if (innerWidth <= 760) $$('.ft-col-hd', ft).forEach(h => { h.onclick = () => h.parentNode.classList.toggle('ft-open'); });
 
   const mn = document.createElement('nav'); mn.className = 'mnav';
-  mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"><i>⌂</i>首頁</a><a href="#" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"><i>☺</i>我的</a>`;
+  mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"${page === 'home' ? ' aria-current="page"' : ''}><i>⌂</i>首頁</a><a href="#" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"${page === 'category' ? ' aria-current="page"' : ''}><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"${page === 'wishlist' ? ' aria-current="page"' : ''}><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"${page === 'my' ? ' aria-current="page"' : ''}><i>☺</i>我的</a>`;
   document.body.append(mn);
 
   if (page === 'home' && !sessionStorage.getItem('aic-splash')) {
@@ -8355,7 +8355,7 @@ function openRecommendQuiz() {
   window.addEventListener('hashchange', run);
 })();
 
-// ── 頁面退出動畫 ──
+// ── 頁面退出動畫（支援 View Transitions API）──
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href]');
@@ -8363,8 +8363,12 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const href = a.getAttribute('href');
     if (!href.endsWith('.html') && !href.includes('.html?') && href !== '/' && href !== '') return;
     e.preventDefault();
-    document.body.classList.add('page-exit');
-    setTimeout(() => { location.href = href; }, 200);
+    if (document.startViewTransition) {
+      document.startViewTransition(() => { location.href = href; });
+    } else {
+      document.body.classList.add('page-exit');
+      setTimeout(() => { location.href = href; }, 200);
+    }
   });
 }
 

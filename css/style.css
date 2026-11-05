@@ -4940,6 +4940,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .srch-related-tag:hover{background:var(--pri-10)!important;border-color:var(--pri)!important}
 [data-theme="dark"] .srch-related{background:rgba(255,255,255,.04)}
 
+/* ── View Transitions API ── */
+::view-transition-old(root){animation:vtOut .2s ease-in both}
+::view-transition-new(root){animation:vtIn .25s ease-out both}
+@keyframes vtOut{to{opacity:0;transform:translateY(8px)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(-8px)}}
+@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
+
 /* ── 列印樣式 ── */
 @media print{
   .nav,.mnav,.float-bar,.chat-widget,.scroll-top,.page-progress,.cookie-bar,.sticky-buy,.sp-toast,.cart-reminder,.nl-overlay{display:none!important}
