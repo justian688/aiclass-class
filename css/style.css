@@ -3524,8 +3524,6 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .fbt-sec{background:var(--card);border-color:var(--line)}
 [data-theme="dark"] .fbt-card{background:var(--bg2);border-color:var(--line)}
 [data-theme="dark"] .fbt-card:hover{box-shadow:0 6px 20px -8px var(--pri-20)}
-/* ---------- Confetti ---------- */
-@keyframes confetti-fall{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(100vh) rotate(720deg)}}
 /* ---------- Welcome Tour ---------- */
 .tour-overlay{position:fixed;inset:0;z-index:9400;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
 .tour-overlay.on{opacity:1;pointer-events:auto}
@@ -4625,7 +4623,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 /* ── 頁面載入進度條 ── */
 .page-progress{position:fixed;top:0;left:0;width:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--pink));z-index:9200;transition:none;pointer-events:none}
 .page-progress.loading{width:90%;transition:width .5s ease}
-.page-progress.done{width:100%;transition:width .15s ease;opacity:0;transition:width .15s ease, opacity .3s .15s ease}
+.page-progress.done{width:100%;opacity:0;transition:width .15s ease, opacity .3s .15s ease}
 
 /* ── 卡片 hover 微互動 ── */
 .card{transition:transform .25s ease,box-shadow .25s ease}
