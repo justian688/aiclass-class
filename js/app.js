@@ -7536,7 +7536,7 @@ function salePage() {
   function tickSale() {
     const diff = Math.max(0, endTs - Date.now());
     const d = Math.floor(diff / 864e5), h = Math.floor(diff % 864e5 / 36e5), m = Math.floor(diff % 36e5 / 6e4), s = Math.floor(diff % 6e4 / 1e3);
-    const $d = byId['cd-d'], $h = byId['cd-h'], $m = byId['cd-m'], $s = byId['cd-s'];
+    const $d = $('#cd-d'), $h = $('#cd-h'), $m = $('#cd-m'), $s = $('#cd-s');
     if ($d) { $d.textContent = String(d).padStart(2, '0'); $h.textContent = String(h).padStart(2, '0'); $m.textContent = String(m).padStart(2, '0'); $s.textContent = String(s).padStart(2, '0'); }
   }
   tickSale();
