@@ -4939,6 +4939,19 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .stt-arrow{font-size:16px;font-weight:700;color:var(--tx);z-index:1}
 .stt-prog{transition:stroke-dashoffset .1s linear}
 
+/* ── 首頁平台統計 ── */
+.hero-stats{padding:24px 0;background:var(--bg2);border-bottom:1px solid var(--line)}
+.hs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center}
+.hs-item b{display:block;font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.hs-item span{font-size:13px;color:var(--tx2);margin-top:2px}
+[data-theme="dark"] .hero-stats{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+@media(max-width:760px){.hs-grid{grid-template-columns:repeat(2,1fr);gap:12px}.hs-item b{font-size:22px}}
+
+/* ── X/Twitter 分享 ── */
+.c-share-x{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;transition:background .2s,border-color .2s}
+.c-share-x:hover{background:rgba(0,0,0,.05);border-color:var(--tx3)}
+[data-theme="dark"] .c-share-x:hover{background:rgba(255,255,255,.08)}
+
 /* ── Q&A 排序 ── */
 .qa-sort{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:14px;color:var(--tx2)}
 .qa-sort-btn{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--bg);transition:all .2s}

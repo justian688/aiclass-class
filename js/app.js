@@ -846,6 +846,19 @@ function home() {
     }
   }
 
+  // 平台統計
+  {
+    const totalStudents = C.reduce((s,c)=>s+c.students,0);
+    const teacherCount = new Set(C.map(c=>c.teacher)).size;
+    const totalHrs = C.reduce((s,c)=>s+c.hours,0);
+    main.insertAdjacentHTML('beforeend', `<div class="hero-stats rv-up"><div class="wrap"><div class="hs-grid">
+      <div class="hs-item"><b data-count="${C.length}">${C.length}</b><span>門課程</span></div>
+      <div class="hs-item"><b data-count="${totalStudents}">${totalStudents.toLocaleString()}</b><span>位學員</span></div>
+      <div class="hs-item"><b data-count="${teacherCount}">${teacherCount}</b><span>位講師</span></div>
+      <div class="hs-item"><b data-count="${totalHrs}">${totalHrs.toLocaleString()}</b><span>小時內容</span></div>
+    </div></div></div>`);
+  }
+
   // Welcome back (returning user)
   const hasHistory = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').length > 0 || owned.size > 0;
   if (hasHistory && !sessionStorage.getItem('aic-wb')) {
@@ -1591,6 +1604,7 @@ function course() {
         <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>
         <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="LINE 分享">💬 LINE</a>
         <a class="c-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="Facebook 分享">📘 Facebook</a>
+        <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — AI Class')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="X 分享">𝕏 Twitter</a>
         ${navigator.share ? `<button class="c-share-btn" data-native-share title="更多分享方式">📤 分享</button>` : ''}
       </div>
     </div>
@@ -7788,7 +7802,7 @@ if (page === 'home' || page === 'course' || page === 'category') {
     });
   }, { threshold: 0.3 });
   requestAnimationFrame(() => {
-    $$('.myp-stat b, .dash-card-head + .dash-ring .dash-ring-text b, .myp-aside-stats b').forEach(el => {
+    $$('.myp-stat b, .dash-card-head + .dash-ring .dash-ring-text b, .myp-aside-stats b, .hs-item b[data-count]').forEach(el => {
       if (/\d/.test(el.textContent)) countIO.observe(el);
     });
   });
