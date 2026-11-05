@@ -4362,3 +4362,10 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 
 /* ── Round 36: Article reading progress bar ── */
 .art-read-prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--pink));z-index:10001;width:0;transition:width .1s linear;pointer-events:none}
+
+/* ── Round 37: Welcome back banner ── */
+.wb-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 28px;border-radius:16px;background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(255,92,138,.06));border:1px solid rgba(124,92,255,.15);margin:16px 0 0}
+.wb-banner h2{font-size:20px;margin:0}
+.wb-banner p{margin:4px 0 0;color:var(--tx2);font-size:14px}
+[data-theme="dark"] .wb-banner{background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(255,92,138,.08));border-color:rgba(124,92,255,.2)}
+@media(max-width:480px){.wb-banner{flex-direction:column;text-align:center;padding:16px}}

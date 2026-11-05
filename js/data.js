@@ -975,6 +975,55 @@ window.CHAPTERS = {
     { ch: 3, title: '技能特效', lessons: ['近戰揮砍軌跡', '遠程投射物', '範圍爆炸', 'Buff 光環', '治療與回復'], duration: 100 },
     { ch: 4, title: '進階技巧', lessons: ['Shader Graph 整合', 'SDF 碰撞', '網格粒子', 'GPU Event 連鎖', '效能優化'], duration: 95 },
     { ch: 5, title: '專案整合', lessons: ['Timeline 整合', '觸發與狀態機', '音效同步', '作品 Reel 製作', '期末：5 個技能特效組'], duration: 70 }
+  ],
+  c73: [
+    { ch: 1, title: 'SketchUp 基礎建模', lessons: ['介面與導航', '基本幾何體', '推拉與路徑跟隨', '群組與元件', '圖層管理'], duration: 80 },
+    { ch: 2, title: '建築模型進階', lessons: ['牆體與開口', '樓梯與欄杆', '屋頂造型', '地形建模', '室內家具擺設'], duration: 95 },
+    { ch: 3, title: '材質與貼圖', lessons: ['內建材質庫', '自訂貼圖製作', 'UV 投影調整', 'PBR 材質概念', '材質管理技巧'], duration: 75 },
+    { ch: 4, title: 'Lumion 渲染', lessons: ['匯入與場景設定', '自然光與人工光', '景觀與植栽', '天空與氛圍', '動畫路徑'], duration: 90 },
+    { ch: 5, title: '提案與輸出', lessons: ['靜態高品質輸出', '動畫影片渲染', '全景 VR 輸出', '作品集排版', '期末：完整建案提案'], duration: 65 }
+  ],
+  c74: [
+    { ch: 1, title: '花藝基礎', lessons: ['工具與材料認識', '花材保鮮處理', '色彩搭配理論', '基本花型介紹'], duration: 55 },
+    { ch: 2, title: '手綁花束', lessons: ['螺旋手綁法', '圓形花束', '自然風長形花束', '包裝技巧'], duration: 65 },
+    { ch: 3, title: '桌花與空間花藝', lessons: ['低矮桌花', '高腳桌花', '牆面裝飾', '商業空間佈置'], duration: 60 },
+    { ch: 4, title: '婚禮花藝', lessons: ['新娘捧花', '胸花與手腕花', '拱門花藝', '宴會佈置規劃'], duration: 70 }
+  ],
+  c75: [
+    { ch: 1, title: 'SD 進階概念', lessons: ['模型架構回顧', 'Checkpoint 與 VAE', 'CLIP 與文字編碼', '採樣器比較', '高解析度修復'], duration: 80 },
+    { ch: 2, title: 'ControlNet 實戰', lessons: ['Canny 邊緣控制', 'OpenPose 姿態', 'Depth 深度圖', 'Scribble 塗鴉', 'IP-Adapter 風格遷移'], duration: 95 },
+    { ch: 3, title: 'LoRA 訓練', lessons: ['訓練資料集準備', 'Kohya 訓練設定', '參數調優策略', '風格 LoRA 實作', '角色 LoRA 實作'], duration: 90 },
+    { ch: 4, title: '進階工作流', lessons: ['Inpainting 局部修改', 'Outpainting 擴展', '批量生圖自動化', 'ComfyUI 節點式工作流', 'API 整合應用'], duration: 85 }
+  ],
+  c76: [
+    { ch: 1, title: 'VTuber 入門', lessons: ['VTuber 生態介紹', '角色設計要素', '立繪委託指南', '拆圖前的準備'], duration: 60 },
+    { ch: 2, title: 'Live2D 建模', lessons: ['PSD 拆圖規範', 'Cubism 介面操作', '網格與變形器', '物理演算設定', '表情與動作'], duration: 95 },
+    { ch: 3, title: '直播技術', lessons: ['OBS 場景建置', 'VTube Studio 設定', '追蹤校正', '綠幕與去背', '多場景切換'], duration: 75 },
+    { ch: 4, title: '頻道經營', lessons: ['平台選擇策略', '初配信準備', '企劃與互動', '剪輯精華片段', '周邊與變現'], duration: 55 }
+  ],
+  c77: [
+    { ch: 1, title: 'Procreate 入門', lessons: ['介面與手勢', '筆刷選擇與調整', '圖層基礎', '色彩工具', '選取與變形'], duration: 60 },
+    { ch: 2, title: '數位繪畫技巧', lessons: ['線稿技法', '平塗上色', '光影與質感', '配色心法', '風格探索'], duration: 80 },
+    { ch: 3, title: '商業插畫實作', lessons: ['雜誌封面插畫', '書籍內頁插圖', '社群圖文設計', 'LINE 貼圖製作', '商品圖案設計'], duration: 85 },
+    { ch: 4, title: '接案實務', lessons: ['作品集製作', '定價與報價', '客戶溝通', '合約與授權', '自我品牌經營'], duration: 50 }
+  ],
+  c78: [
+    { ch: 1, title: '自媒體定位', lessons: ['個人品牌盤點', '目標受眾分析', '內容主題策略', '平台選擇'], duration: 60 },
+    { ch: 2, title: '內容創作', lessons: ['內容日曆規劃', '標題與鉤子', '圖文排版技巧', '影片內容策略', 'SEO 與搜尋優化'], duration: 80 },
+    { ch: 3, title: '粉絲經營', lessons: ['互動策略', '社群數據分析', '電子報經營', '私域流量'], duration: 70 },
+    { ch: 4, title: '變現模式', lessons: ['業配定價指南', '聯盟行銷', '線上課程', '自有產品', '多元收入組合'], duration: 75 }
+  ],
+  c79: [
+    { ch: 1, title: '瑜珈基礎', lessons: ['瑜珈哲學簡介', '呼吸法', '暖身序列', '基礎站姿'], duration: 50 },
+    { ch: 2, title: '體位法練習', lessons: ['前彎體式', '後彎體式', '扭轉體式', '平衡體式', '倒立入門'], duration: 70 },
+    { ch: 3, title: '流動序列', lessons: ['太陽禮敬 A/B', '站姿流動', '地板序列', '修復瑜珈'], duration: 65 },
+    { ch: 4, title: '冥想與放鬆', lessons: ['正念冥想', '身體掃描', '瑜珈睡眠', '日常練習規劃'], duration: 45 }
+  ],
+  c80: [
+    { ch: 1, title: 'AI 工具全景', lessons: ['ChatGPT 進階 Prompt', 'Claude 深度對話', 'Gemini 多模態', '工具選擇策略'], duration: 55 },
+    { ch: 2, title: 'Notion AI 協作', lessons: ['Notion 基礎架構', 'AI 自動摘要', '知識庫建立', '專案管理模板', '團隊協作流程'], duration: 70 },
+    { ch: 3, title: '自動化串接', lessons: ['Zapier 基礎', 'Make 進階流程', 'GPT API 呼叫', 'Webhook 串接', '自動化工作流實作'], duration: 80 },
+    { ch: 4, title: '實戰應用', lessons: ['自動化週報', '客戶回覆模板', '社群內容排程', '數據報表自動化', '期末：個人 AI 工作系統'], duration: 60 }
   ]
 };
 

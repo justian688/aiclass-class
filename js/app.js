@@ -747,6 +747,16 @@ function home() {
       <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
   </section>`);
 
+  // Welcome back (returning user)
+  const hasHistory = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').length > 0 || owned.size > 0;
+  if (hasHistory && !sessionStorage.getItem('aic-wb')) {
+    sessionStorage.setItem('aic-wb', '1');
+    const ownedArr = [...owned].map(id => byId[id]).filter(Boolean);
+    const inProg = ownedArr.filter(c => { const p = progress[c.id]; return p && p.done.length > 0 && p.done.length < getTotalLessons(c); });
+    const cont = inProg[0];
+    main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="wb-banner rv-up"><div class="wb-left"><h2>歡迎回來 👋</h2><p>${cont ? `繼續學習「${cont.title.slice(0,16)}${cont.title.length>16?'…':''}」吧！` : '今天想學什麼呢？'}</p></div><div class="wb-right">${cont ? `<a class="btn btn-pri btn-sm" href="player.html?id=${cont.id}">繼續上課 →</a>` : `<a class="btn btn-pri btn-sm" href="category.html">探索課程 →</a>`}</div></div></div>`);
+  }
+
   // 學習連續橫幅
   if (streakData.count > 1) {
     const msgs = streakData.count >= 30 ? '太強了！你是學習達人 💪' : streakData.count >= 14 ? '太棒了！持續保持 🚀' : streakData.count >= 7 ? '學習習慣已養成！' : '保持下去！';
