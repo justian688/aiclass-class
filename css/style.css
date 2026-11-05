@@ -321,6 +321,9 @@ body.hdr-hidden .tabs{top:0}
 .c-highlights{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
 .c-hl{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;font-size:14px;font-weight:600;background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(255,92,138,.08));border:1px solid rgba(124,92,255,.15);color:var(--pri)}
 .c-hl::before{content:"✓";font-weight:900;font-size:12px}
+.curri-actions{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.curri-actions .curri-bar{flex:1;margin-bottom:0}
+.curri-toggle{flex-shrink:0;font-size:13px;white-space:nowrap}
 .curri-bar{position:relative;height:32px;border-radius:10px;background:var(--bg2);border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
 .curri-bar-fill{position:absolute;inset:0;border-radius:10px;background:var(--grad);transition:width .6s var(--ease)}
 .curri-bar-txt{position:relative;display:flex;align-items:center;justify-content:center;height:100%;font-size:13px;font-weight:600;color:var(--tx2);z-index:1}

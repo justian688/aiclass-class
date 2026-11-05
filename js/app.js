@@ -1278,15 +1278,26 @@ function course() {
     totalLessonCount = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
   }
 
-  // 評論假資料（含頭像首字、姓名、日期、評分）
-  const reviewData = [
-    { initial: '陳', name: '陳**', rating: 5, date: '2026-10-28', text: '講師把實務上的交付流程講得超清楚，上完直接用在公司專案，同事都問我去哪學的。每個章節都有練習，非常紮實。' },
-    { initial: '林', name: '林**', rating: 5, date: '2026-10-25', text: '課程節奏很適合初學者，從來不敢嘗試的東西現在已經可以獨立完成了，很有成就感！' },
-    { initial: '黃', name: '黃**', rating: 5, date: '2026-10-20', text: '範例程式碼可以直接改來用，架構圖超清楚，學習曲線很順。講師回覆問題也很快。' },
-    { initial: '張', name: '張**', rating: 4, date: '2026-10-15', text: '整體內容很好，就是有些段落講得比較快，需要反覆看幾次。但確實學到了很多實用的技巧。' },
-    { initial: '王', name: '王**', rating: 5, date: '2026-10-10', text: '影片節奏剛好，每章都有作業可以練手。完成整套課程後，作品集終於有東西可以放了！' },
-    { initial: '李', name: '李**', rating: 4, date: '2026-10-05', text: '調色那章的價值就超過課程費用了，CP 值非常高。唯一建議是希望可以多一些進階案例。' }
-  ];
+  // 從 data.js REVIEWS 中匹配相關評論
+  const reviewData = (() => {
+    const R = window.REVIEWS || [];
+    const catKeywords = { drawing: ['插畫','角色','Procreate','漫畫','Webtoon'], video: ['影片','剪輯','Blender','3D','動畫','VFX'], game: ['遊戲','Unity','像素'], baking: ['料理','甜點','烘焙','麵包','咖啡','拉花'], design: ['設計','UI','UX','品牌','前端'], ai: ['AI','Python','程式','RAG','LLM','ChatGPT','Prompt','GPT'], creative: ['攝影','寫作','文案','音樂','花藝'], beauty: ['美甲','美容','美髮','健身'], finance: ['理財','投資','ETF'], career: ['創業','電商','品牌經營','行銷'] };
+    const kws = catKeywords[c.cat] || [];
+    const scored = R.map((r, idx) => {
+      let s = 0;
+      if (kws.some(k => r[1].includes(k))) s += 10;
+      if (r[1].includes(c.title.split('：')[0].slice(0,4))) s += 5;
+      return { idx, s, name: r[0], course: r[1], text: r[2] };
+    });
+    scored.sort((a, b) => b.s - a.s || (a.idx * 7 + c.id.charCodeAt(1)) % 13 - (b.idx * 7 + c.id.charCodeAt(1)) % 13);
+    const picked = scored.slice(0, 8);
+    const ratings = [5, 5, 5, 4, 5, 4, 5, 5];
+    const baseDays = [3, 5, 8, 12, 18, 25, 30, 35];
+    return picked.map((p, i) => {
+      const d = new Date(); d.setDate(d.getDate() - baseDays[i]);
+      return { initial: p.name[0], name: p.name, rating: ratings[i], date: d.toISOString().slice(0,10), text: p.text };
+    });
+  })();
   const distPcts = [72, 20, 5, 2, 1];
 
   // 課程 FAQ（通用 + 分類相關）
@@ -1405,7 +1416,7 @@ function course() {
       </div>
     </div>
     <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${chapters.length} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
-      <div class="curri-bar rv-up"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div>
+      <div class="curri-actions rv-up"><div class="curri-bar"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div><button class="btn btn-ghost btn-sm curri-toggle" id="curri-toggle-all">展開全部</button></div>
       ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><button class="chap-done-all" data-chap="${i}" title="標記本章全部完成">☐ 全完成</button><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
         <span><span class="chap-play">${l.free ? '▶' : '🔒'}</span>${i + 1}-${j + 1} ${l.name}${l.free ? '<em class="chap-free">免費試看</em>' : ''}</span>
         <span class="chap-time">${l.time}</span>
@@ -1571,6 +1582,19 @@ function course() {
       b.querySelector('.chap-count').textContent = ch.querySelector('.a ul').children.length + ' 堂 ' + (isOpen ? '＋' : '－');
     };
   });
+  const toggleAllBtn = $('#curri-toggle-all', main);
+  if (toggleAllBtn) {
+    toggleAllBtn.onclick = () => {
+      const chaps = $$('.chap', main);
+      const allOpen = chaps.every(ch => ch.classList.contains('open'));
+      chaps.forEach(ch => {
+        ch.classList.toggle('open', !allOpen);
+        const cnt = ch.querySelector('.chap-count');
+        if (cnt) cnt.textContent = ch.querySelector('.a ul').children.length + ' 堂 ' + (allOpen ? '＋' : '－');
+      });
+      toggleAllBtn.textContent = allOpen ? '展開全部' : '收合全部';
+    };
+  }
   $$('.chap-free').forEach(em => {
     const li = em.closest('li');
     if (li) li.style.cursor = 'pointer';
