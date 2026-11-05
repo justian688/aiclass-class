@@ -1991,7 +1991,7 @@ function course() {
       const q = curriInput.value.trim().toLowerCase();
       const chaps = $$('.chap', main);
       const resultEl = $('#curri-search-result', main);
-      if (!q) { chaps.forEach(ch => { ch.classList.remove('curri-hidden'); $$('li', ch).forEach(li => { const sp = li.querySelector('span'); if (sp) sp.innerHTML = sp.textContent; }); }); if (resultEl) resultEl.textContent = ''; return; }
+      if (!q) { chaps.forEach(ch => { ch.classList.remove('curri-hidden'); $$('li', ch).forEach(li => { const sp = li.querySelector('span'); if (sp) sp.textContent = sp.textContent; }); }); if (resultEl) resultEl.textContent = ''; return; }
       let matchCount = 0;
       chaps.forEach(ch => {
         let found = false;
@@ -1999,8 +1999,8 @@ function course() {
           const sp = li.querySelector('span');
           if (!sp) return;
           const txt = sp.textContent;
-          if (txt.toLowerCase().includes(q)) { found = true; matchCount++; sp.innerHTML = txt.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<mark class="lesson-hl">$1</mark>'); }
-          else { sp.innerHTML = txt; }
+          if (txt.toLowerCase().includes(q)) { found = true; matchCount++; const safe = escH(txt), eq = escH(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); sp.innerHTML = safe.replace(new RegExp(`(${eq})`, 'gi'), '<mark class="lesson-hl">$1</mark>'); }
+          else { sp.textContent = txt; }
         });
         const title = ch.querySelector('.plr-ch-name, button > span')?.textContent || '';
         if (title.toLowerCase().includes(q)) { found = true; matchCount++; }
