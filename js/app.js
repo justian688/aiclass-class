@@ -518,7 +518,7 @@ function searchOverlay() {
   });
   addEventListener('keydown', e => {
     if (e.key === 'Escape' && ov.classList.contains('on')) { close(); return; }
-    if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')) { e.preventDefault(); open(e); }
+    if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !e.shiftKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')) { e.preventDefault(); open(e); }
   });
 }
 
@@ -5986,9 +5986,63 @@ function settingsPage() {
   reveal(main);
 }
 
+/* ---------- 鍵盤快捷鍵說明面板 ---------- */
+{
+  const shortcuts = [
+    { key: '?', desc: '顯示快捷鍵說明' },
+    { key: 'Ctrl + K', desc: '開啟搜尋' },
+    { key: 'Esc', desc: '關閉彈窗 / 搜尋' },
+    { key: 'D', desc: '切換深色模式' },
+    { key: '←', desc: '上一個 Hero 輪播' },
+    { key: '→', desc: '下一個 Hero 輪播' },
+    { key: 'Home', desc: '回到頁面頂部' },
+  ];
+  const playerShortcuts = [
+    { key: 'Space', desc: '播放 / 暫停' },
+    { key: '←', desc: '倒退 5 秒' },
+    { key: '→', desc: '快轉 5 秒' },
+    { key: '↑ / ↓', desc: '音量調整' },
+    { key: 'M', desc: '靜音切換' },
+    { key: 'F', desc: '全螢幕切換' },
+    { key: 'N', desc: '下一個單元' },
+    { key: 'P', desc: '上一個單元' },
+  ];
+  let kbOpen = false;
+  function toggleKbHelp() {
+    let panel = $('.kb-help-overlay');
+    if (panel) { panel.classList.remove('show'); setTimeout(() => panel.remove(), 300); kbOpen = false; return; }
+    panel = document.createElement('div'); panel.className = 'kb-help-overlay'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', '鍵盤快捷鍵');
+    const isPlayer = page === 'player';
+    panel.innerHTML = `<div class="kb-help-box">
+      <div class="kb-help-head"><h2>⌨ 鍵盤快捷鍵</h2><button class="kb-help-close" aria-label="關閉">×</button></div>
+      <div class="kb-help-cols">
+        <div class="kb-help-col"><h3>全站通用</h3>${shortcuts.map(s => `<div class="kb-row"><kbd>${s.key}</kbd><span>${s.desc}</span></div>`).join('')}</div>
+        ${isPlayer ? `<div class="kb-help-col"><h3>播放器</h3>${playerShortcuts.map(s => `<div class="kb-row"><kbd>${s.key}</kbd><span>${s.desc}</span></div>`).join('')}</div>` : ''}
+      </div>
+    </div>`;
+    document.body.append(panel);
+    requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('show')));
+    kbOpen = true;
+    panel.querySelector('.kb-help-close').onclick = () => toggleKbHelp();
+    panel.onclick = e => { if (e.target === panel) toggleKbHelp(); };
+  }
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable) return;
+    if (e.key === '?' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); toggleKbHelp(); }
+    if (e.key === 'd' && !e.ctrlKey && !e.metaKey && !kbOpen) {
+      const cur = document.documentElement.dataset.theme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('aic-theme', next);
+    }
+    if (e.key === 'Home' && !e.ctrlKey) { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }
+  });
+}
+
 /* ---------- 鍵盤無障礙：ESC 關閉 overlay ---------- */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
+    const kbPanel = $('.kb-help-overlay'); if (kbPanel) { kbPanel.classList.remove('show'); setTimeout(() => kbPanel.remove(), 300); return; }
     const ov = $('.overlay.on'); if (ov) { ov.classList.remove('on'); document.body.style.overflow = ''; }
     const cmpOv = $('.cmp-overlay'); if (cmpOv) cmpOv.remove();
     const qzModal = $('.qz-modal:not([hidden])'); if (qzModal) { qzModal.hidden = true; document.body.style.overflow = ''; }
