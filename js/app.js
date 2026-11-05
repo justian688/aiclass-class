@@ -1225,6 +1225,22 @@ function home() {
     </div>
   </div></section>`);
 
+  // 學員見證輪播
+  const TMC = window.TESTIMONIALS || [];
+  if (TMC.length && TMC[0].quote) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec tm-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員怎麼說</h2><div class="sub">來自不同領域的真實學習故事</div></div></div>
+      <div class="tm-carousel rv-up"><button class="tm-arrow tm-prev" aria-label="上一則">‹</button><div class="tm-track">${TMC.map((t, i) => `<div class="tm-slide${i === 0 ? ' active' : ''}"><div class="tm-card"><div class="tm-quote">"${t.quote}"</div><div class="tm-author"><span class="tm-avatar">${t.avatar}</span><div><b>${t.name}</b><span>${t.role}</span></div></div></div></div>`).join('')}</div><button class="tm-arrow tm-next" aria-label="下一則">›</button><div class="tm-dots">${TMC.map((_, i) => `<button class="tm-dot${i === 0 ? ' on' : ''}" data-i="${i}" aria-label="第 ${i + 1} 則"></button>`).join('')}</div></div>
+    </div></section>`);
+    const track = $('.tm-track', main), dots = $$('.tm-dot', main), slides = $$('.tm-slide', main);
+    let tmIdx = 0, tmTimer;
+    function goTm(n) { tmIdx = ((n % TMC.length) + TMC.length) % TMC.length; slides.forEach((s, i) => s.classList.toggle('active', i === tmIdx)); dots.forEach((d, i) => d.classList.toggle('on', i === tmIdx)); track.style.transform = `translateX(-${tmIdx * 100}%)`; }
+    function autoTm() { tmTimer = setInterval(() => goTm(tmIdx + 1), 5000); }
+    $('.tm-prev', main).onclick = () => { clearInterval(tmTimer); goTm(tmIdx - 1); autoTm(); };
+    $('.tm-next', main).onclick = () => { clearInterval(tmTimer); goTm(tmIdx + 1); autoTm(); };
+    dots.forEach(d => d.onclick = () => { clearInterval(tmTimer); goTm(+d.dataset.i); autoTm(); });
+    autoTm();
+  }
+
   // FAQ
   main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap faq"><div class="sec-head rv-up"><div><h2>常見問題</h2></div></div>
     ${window.FAQ.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
@@ -1510,7 +1526,9 @@ function course() {
     beauty: [['需要先買齊所有工具嗎？', '不用，課程開頭會列出必備清單，建議先買基本款，隨課程進度再擴充。']],
     game: [['需要會 3D 建模嗎？', '依課程內容而定，部分遊戲開發課程會包含基礎建模教學，也可搭配其他課程學習。']]
   };
+  const cFaqs = (window.COURSE_FAQS || {})[c.id] || [];
   const courseFaq = [
+    ...cFaqs,
     ...(catFaqMap[c.cat] || []),
     ['購買後可以觀看多久？', '一次購買即可無限期觀看，日後課程更新的內容也會免費開放，不需要再付任何費用。'],
     ['這堂課有字幕嗎？', '有的，課程提供繁體中文字幕，你也可以在播放器中自由開啟或關閉。'],
@@ -3180,6 +3198,7 @@ function instructorPage() {
           <span class="insd-role">${t.role}</span>
           <p class="insd-bio">${bio}</p>
           ${bioData && bioData.works ? `<div class="insd-works"><h4>經歷與成就</h4><ul>${bioData.works.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}
+          ${(() => { const insData = (window.INSTRUCTORS || []).find(x => x.name === t.name); return insData && insData.achievements ? `<div class="ins-achievements"><h4>榮譽與成就</h4><ul>${insData.achievements.map(a => `<li><span class="ins-ach-icon">🏆</span>${a}</li>`).join('')}</ul></div>` : ''; })()}
           <div class="insd-stats">
             <div class="insd-stat"><b>${t.courses.length}</b><span>門課程</span></div>
             <div class="insd-stat"><b>${t.students.toLocaleString()}</b><span>位學員</span></div>
@@ -8083,5 +8102,30 @@ function openRecommendQuiz() {
   window._origSaveCart = origSaveCart;
 }
 
+// ── 回到頂端按鈕 ──
+(function(){
+  const btn = document.createElement('button');
+  btn.className = 'scroll-top';
+  btn.setAttribute('aria-label', '回到頂端');
+  btn.innerHTML = '↑';
+  document.body.append(btn);
+  let visible = false;
+  const check = rafThrottle(() => {
+    const show = window.scrollY > 600;
+    if (show !== visible) { visible = show; btn.classList.toggle('show', show); }
+  });
+  window.addEventListener('scroll', check, { passive: true });
+  btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+})();
+
+// ── 頁面載入進度條 ──
+(function(){
+  const bar = document.createElement('div');
+  bar.className = 'page-progress';
+  document.body.prepend(bar);
+  function run() { bar.classList.add('loading'); setTimeout(() => { bar.classList.remove('loading'); bar.classList.add('done'); setTimeout(() => bar.classList.remove('done'), 400); }, 600); }
+  run();
+  window.addEventListener('hashchange', run);
+})();
 
 })();
