@@ -126,7 +126,17 @@ window.COURSES = [
   { id: 'c69', v: '9339', cat: 'finance', sub: '理財投資', title: '股市技術分析入門：看懂 K 線與量價關係', teacher: '郭書瑜', role: '理財規劃師・CFP', price: 3480, origin: 6200, rating: 4.7, students: 4890, tag: '', hours: 12, desc: 'K 線型態、均線系統、成交量判讀到進出場策略，建立有紀律的交易系統。' },
   { id: 'c70', v: '47208', cat: 'creative', sub: '生活風格', title: '極簡生活實踐：斷捨離與空間整理術', teacher: '陳思涵', role: '整理收納師・生活風格作家', price: 2280, origin: 4000, rating: 4.8, students: 3450, tag: '', hours: 8, desc: '物品篩選、收納動線、數位整理到心態轉換，過上輕鬆自在的極簡生活。' },
   { id: 'c71', v: '33066', cat: 'beauty', sub: '美髮', title: '日系剪髮技術：層次剪裁與造型吹整', teacher: '林柏翰', role: '髮型設計師・日本進修', price: 4980, origin: 8800, rating: 4.9, students: 1870, tag: '', hours: 16, desc: '髮質判斷、分區技巧、層次設計到吹整造型，學會日系沙龍的剪髮流程。' },
-  { id: 'c72', v: '30232', cat: 'game', sub: '動畫/特效', title: '遊戲特效設計：用 Unity VFX Graph 做出華麗技能', teacher: '陳威宏', role: '技術美術・遊戲業', price: 4680, origin: 8400, rating: 4.8, students: 1560, tag: '', hours: 18, desc: '粒子系統、Shader 基礎、時間軸控制到技能連招，做出 ARPG 等級的戰鬥特效。' }
+  { id: 'c72', v: '30232', cat: 'game', sub: '動畫/特效', title: '遊戲特效設計：用 Unity VFX Graph 做出華麗技能', teacher: '陳威宏', role: '技術美術・遊戲業', price: 4680, origin: 8400, rating: 4.8, students: 1560, tag: '', hours: 18, desc: '粒子系統、Shader 基礎、時間軸控制到技能連招，做出 ARPG 等級的戰鬥特效。' },
+
+  // ── Round 36 新增 ──
+  { id: 'c73', v: '50598', cat: 'design', sub: '建築', title: '建築視覺化：SketchUp 到 Lumion 的完整流程', teacher: '方翊倫', role: '建築視覺設計師', price: 5480, origin: 9600, rating: 4.8, students: 1720, tag: 'NEW', hours: 22, desc: '從 SketchUp 建模、材質貼圖到 Lumion 渲染動畫，做出提案級的建築視覺作品。' },
+  { id: 'c74', v: '42824', cat: 'creative', sub: '花藝設計', title: '花藝設計入門：日常到商業的花束創作', teacher: '陳思涵', role: '花藝設計師・空間策展人', price: 3280, origin: 5800, rating: 4.9, students: 2340, tag: '', hours: 10, desc: '花材辨識、配色理論、螺旋手綁技法到婚禮佈置，做出有溫度的花藝作品。' },
+  { id: 'c75', v: '46635', cat: 'ai', sub: 'AI 影像設計', title: 'Stable Diffusion 進階：ControlNet 與 LoRA 精修術', teacher: '黃士誠', role: 'AI 工程師・影像生成研究', price: 4980, origin: 8800, rating: 4.9, students: 3890, tag: 'HOT', hours: 16, desc: 'ControlNet 姿態控制、LoRA 訓練風格模型、inpainting 局部修改到批量生圖工作流。', ai: '用 ControlNet + LoRA 精準控制 AI 圖像生成' },
+  { id: 'c76', v: '33853', cat: 'video', sub: 'VTuber 製作', title: 'VTuber 出道全攻略：Live2D 建模到直播設定', teacher: '楊凱文', role: '動態設計師・VTuber 技術', price: 4280, origin: 7600, rating: 4.7, students: 2560, tag: 'NEW', hours: 15, desc: '立繪拆圖、Live2D 物理演算、OBS 串接到初次直播，完成你的 VTuber 出道準備。' },
+  { id: 'c77', v: '785', cat: 'drawing', sub: 'iPad 繪畫', title: 'iPad 數位插畫：Procreate 從零到接案', teacher: '張雨萱', role: '插畫家・Procreate 講師', price: 3680, origin: 6600, rating: 4.9, students: 4120, tag: 'BEST', hours: 14, desc: '筆刷設定、圖層管理、配色技巧到商業插畫實作，用 iPad 開啟你的插畫接案之路。', ai: '用 iPad + Procreate 從零開始學數位插畫到接案' },
+  { id: 'c78', v: '14540', cat: 'career', sub: '創業/電商經營', title: '自媒體變現全攻略：從內容到商業模式', teacher: '劉怡君', role: '品牌策略顧問', price: 4580, origin: 8200, rating: 4.8, students: 3670, tag: '', hours: 16, desc: '內容策略、粉絲經營、業配定價、聯盟行銷到自有產品，建立多元收入來源。' },
+  { id: 'c79', v: '2858', cat: 'beauty', sub: '運動健身', title: '瑜珈入門：從體位法到冥想的身心練習', teacher: '林芷萱', role: '瑜珈老師・RYT 200', price: 2480, origin: 4400, rating: 4.8, students: 3210, tag: '', hours: 10, desc: '基礎體位法、呼吸調息、核心穩定到放鬆冥想，在家就能建立每日瑜珈習慣。' },
+  { id: 'c80', v: '46353', cat: 'ai', sub: 'AI 生產力', title: 'AI 辦公室革命：ChatGPT × Notion × 自動化工具', teacher: '羅志偉', role: '生產力教練・軟體工程師', price: 3280, origin: 5800, rating: 4.9, students: 5670, tag: 'HOT', hours: 11, desc: 'Prompt 模板、Notion AI 協作、Zapier 串接到 GPT API 自動化，省下每天 3 小時重複工作。', ai: '用 AI 工具組合拳每天省下 3 小時辦公時間' }
 ];
 
 window.HERO = ['c47', 'c03', 'c05', 'c45', 'c31', 'c53'];
@@ -312,7 +322,7 @@ window.INSTRUCTORS = [
 
 // ── 平台數據 ──
 window.PLATFORM_STATS = {
-  courses: 72,
+  courses: 80,
   students: 240000,
   instructors: 35,
   satisfaction: 4.85,

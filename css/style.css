@@ -4329,3 +4329,36 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .cw-send:hover{opacity:.85}
 [data-theme="dark"] .cw-panel{box-shadow:0 12px 40px rgba(0,0,0,.4)}
 [data-theme="dark"] .cw-fab{box-shadow:0 4px 16px rgba(124,92,255,.25)}
+
+/* ── Round 36: Voice search ── */
+.sbox-input-row{display:flex;align-items:center;gap:8px}
+.sbox-input-row input{flex:1}
+.sbox-voice{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--tx);font-size:20px;cursor:pointer;transition:background .2s,box-shadow .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbox-voice:hover{background:var(--bg2)}
+.sbox-voice.listening{background:var(--pink);color:#fff;border-color:var(--pink);animation:voicePulse 1.2s ease infinite}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,138,.4)}50%{box-shadow:0 0 0 10px rgba(255,92,138,0)}}
+@media(prefers-reduced-motion:reduce){.sbox-voice.listening{animation:none}}
+
+/* ── Round 36: Certificate modal (my page) ── */
+.cert-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s}
+.cert-overlay.on{opacity:1}
+.cert-modal{background:var(--bg);border-radius:20px;padding:32px;max-width:560px;width:92%;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(20px);transition:transform .25s}
+.cert-overlay.on .cert-modal{transform:none}
+.cert-modal-close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:none;background:var(--bg2);color:var(--tx);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cert-preview{margin:12px 0 20px}
+.cert-card{background:linear-gradient(135deg,#f8f6ff,#fff5f8);border:2px solid var(--pri);border-radius:16px;padding:40px 32px;text-align:center;position:relative;overflow:hidden}
+.cert-card::before{content:'';position:absolute;inset:8px;border:1px solid rgba(124,92,255,.2);border-radius:12px;pointer-events:none}
+.cert-ribbon{font-size:13px;font-weight:700;color:var(--pri);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.cert-card h2{font-size:26px;margin:8px 0 20px;color:var(--tx)}
+.cert-name{font-size:22px;font-weight:700;color:var(--tx);margin:0 0 8px}
+.cert-course-title{font-size:16px;color:var(--pri);font-weight:600;margin:0 0 16px}
+.cert-body{font-size:14px;color:var(--tx2);line-height:1.7;margin:0 0 20px}
+.cert-foot{display:flex;justify-content:space-between;font-size:12px;color:var(--tx3);border-top:1px solid rgba(124,92,255,.15);padding-top:12px}
+.cert-actions{display:flex;gap:10px;justify-content:center}
+.cert-actions .btn{flex:1;max-width:220px}
+[data-theme="dark"] .cert-card{background:linear-gradient(135deg,#1a1432,#1e1225);border-color:rgba(124,92,255,.4)}
+[data-theme="dark"] .cert-card::before{border-color:rgba(124,92,255,.15)}
+.myp-cert-btn{font-size:12px!important;padding:4px 10px!important}
+
+/* ── Round 36: Article reading progress bar ── */
+.art-read-prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--pink));z-index:10001;width:0;transition:width .1s linear;pointer-events:none}

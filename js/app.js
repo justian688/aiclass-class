@@ -490,9 +490,22 @@ function searchOverlay() {
   const addRecent = q => { let r = getRecent().filter(x => x !== q); r.unshift(q); localStorage.setItem(recentKey, JSON.stringify(r.slice(0, 8))); renderRecent(); };
 
   const ov = document.createElement('div'); ov.className = 'overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', '搜尋課程');
-  ov.innerHTML = `<div class="sbox"><input placeholder="搜尋課程、講師…" aria-label="搜尋"><div class="hot">${['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案', '音樂'].map(k => `<button>${k}</button>`).join('')}</div><div class="recent"></div><div class="sres"></div></div>`;
+  const hasVoice = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+  ov.innerHTML = `<div class="sbox"><div class="sbox-input-row"><input placeholder="搜尋課程、講師…" aria-label="搜尋">${hasVoice ? '<button class="sbox-voice" aria-label="語音搜尋" title="語音搜尋">🎤</button>' : ''}</div><div class="hot">${['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案', '音樂'].map(k => `<button>${k}</button>`).join('')}</div><div class="recent"></div><div class="sres"></div></div>`;
   document.body.append(ov);
   const inp = $('input', ov), res = $('.sres', ov), recentEl = $('.recent', ov);
+  if (hasVoice) {
+    const voiceBtn = $('.sbox-voice', ov);
+    voiceBtn.onclick = () => {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const rec = new SR(); rec.lang = 'zh-TW'; rec.interimResults = false;
+      voiceBtn.classList.add('listening'); voiceBtn.textContent = '🔴';
+      rec.onresult = e => { inp.value = e.results[0][0].transcript; run(); };
+      rec.onend = () => { voiceBtn.classList.remove('listening'); voiceBtn.textContent = '🎤'; };
+      rec.onerror = () => { voiceBtn.classList.remove('listening'); voiceBtn.textContent = '🎤'; toast('語音辨識失敗，請再試一次', 'error'); };
+      rec.start();
+    };
+  }
 
   function renderRecent() {
     const r = getRecent();
@@ -2786,6 +2799,14 @@ function articlePage() {
   addEventListener('scroll', () => { clearTimeout(scrollTimer); scrollTimer = setTimeout(saveScroll, 400); }, { passive: true });
   addEventListener('beforeunload', saveScroll);
 
+  // Article reading progress bar
+  const artProg = document.createElement('div'); artProg.className = 'art-read-prog';
+  document.body.append(artProg);
+  addEventListener('scroll', rafThrottle(() => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    artProg.style.width = h > 0 ? (scrollY / h * 100) + '%' : '0';
+  }), { passive: true });
+
   reveal(main);
 }
 
@@ -3232,6 +3253,7 @@ function myPage() {
               </div>
               <div class="myp-card-foot">
                 <span class="myp-meta">${c.lastWatch}</span>
+                ${c.progress === 100 ? '<button class="btn btn-ghost btn-sm myp-cert-btn" data-cert-course="' + c.id + '">🏆 證書</button>' : ''}
                 <a href="player.html?id=${c.id}" class="btn btn-pri btn-sm">${c.progress === 100 ? '複習' : '繼續學習'}</a>
               </div>
             </div>
@@ -3455,6 +3477,23 @@ function myPage() {
     btn.closest('.my-follow-card').remove();
     toast(`已取消追蹤 ${name}`);
     if (!follows.size) { const sec = $('#myp-sec-following', main); if (sec) sec.querySelector('.my-following-grid')?.replaceWith(Object.assign(document.createElement('div'), { className: 'my-follow-empty rv-up', innerHTML: '<p>還沒有追蹤任何講師</p><a href="instructor.html" class="btn btn-pri btn-sm">探索講師 →</a>' })); }
+  });
+
+  // Certificate download from completed course card
+  $$('[data-cert-course]', main).forEach(btn => btn.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    const cc = byId[btn.dataset.certCourse]; if (!cc) return;
+    const ov = document.createElement('div'); ov.className = 'cert-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
+    const certId = 'AIC-' + cc.id.toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+    const dateStr = new Date().toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric'});
+    ov.innerHTML = `<div class="cert-modal"><button class="cert-modal-close" aria-label="關閉">×</button><div class="cert-preview"><div class="cert-card"><div class="cert-ribbon">AI Class</div><h2>結業證書</h2><p class="cert-name">學員</p><p class="cert-course-title">${cc.title}</p><p class="cert-body">已完成由 ${cc.teacher} 教授之課程全部 ${cc.hours} 小時內容，特此證明。</p><div class="cert-foot"><span>${dateStr}</span><span>${certId}</span></div></div></div><div class="cert-actions"><button class="btn btn-pri cert-dl-btn">📥 下載證書圖片</button><button class="btn btn-ghost cert-share-btn">📤 分享</button></div></div>`;
+    document.body.append(ov);
+    requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
+    const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+    $('.cert-modal-close', ov).onclick = close;
+    ov.onclick = ev => { if (ev.target === ov) close(); };
+    $('.cert-dl-btn', ov).onclick = () => toast('證書圖片下載功能開發中');
+    $('.cert-share-btn', ov).onclick = () => { navigator.clipboard.writeText(`我完成了 AI Class「${cc.title}」課程！ #AIClass #學習`); toast('已複製分享文字到剪貼簿', 'success'); };
   });
 
   // "繼續學習" 查看全部 → 跳到課程 tab
