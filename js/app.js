@@ -1075,7 +1075,7 @@ function home() {
   }
 
   // 限時優惠
-  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="promo"><div class="promo rv-up"><video src="${vid(byId.c12)}" autoplay muted loop playsinline poster="${img(byId.c12)}" aria-hidden="true"></video>
+  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="promo"><div class="promo rv-up"><video src="${vid(byId.c06)}" autoplay muted loop playsinline poster="${img(byId.c06)}" aria-hidden="true"></video>
     <div class="in"><div><span class="eyebrow">限時優惠</span><h2>雙 11 全站最低 5 折<br>今天午夜結束</h2><p>任選兩堂再折 NT$500，結帳自動套用</p><a class="btn" style="background:#fff;color:#000;margin-top:20px" href="#top10">查看優惠課程 →</a></div>${cdHTML}</div></div></div>`);
 
   // 講師
