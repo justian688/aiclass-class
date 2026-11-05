@@ -8402,6 +8402,15 @@ function openRecommendQuiz() {
 // （回到頂部按鈕已由 .btt 元件處理，不重複建立）
 
 
+// ── 圖片載入失敗佔位符 ──
+document.addEventListener('error', e => {
+  const img = e.target;
+  if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+  img.dataset.fallback = '1';
+  img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23e5e5ea'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='14' font-family='system-ui'%3E%E5%9C%96%E7%89%87%E7%84%A1%E6%B3%95%E8%BC%89%E5%85%A5%3C/text%3E%3C/svg%3E";
+  img.alt = '圖片無法載入';
+}, true);
+
 // ── 頁面退出動畫（支援 View Transitions API）──
 if (!prefersReduced) {
   document.addEventListener('click', e => {
