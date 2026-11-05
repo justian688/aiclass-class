@@ -4071,6 +4071,7 @@ function myPage() {
   });
 
   bindCards(main);
+  reveal(main);
 }
 
 /* ---------- 關於我們 ---------- */
@@ -5463,6 +5464,7 @@ function certificatePage() {
     if (navigator.share) navigator.share({ title: 'AI Class 結業證書', text: '我在 AI Class 完成了課程！', url: location.href }).catch(() => {});
     else { navigator.clipboard.writeText(location.href).then(() => toast('已複製分享連結', 'success')); }
   });
+  reveal(main);
 }
 
 /* ---------- 學習路徑詳情 ---------- */
@@ -5564,6 +5566,7 @@ function pathPage() {
   const buyAll = $('.pth-buy-all', main);
   if (buyAll) buyAll.onclick = () => toast('示範網站：已加入全部課程');
   bindCards(main);
+  reveal(main);
 }
 
 /* ---------- 邀請好友 ---------- */
@@ -5654,6 +5657,7 @@ function invitePage() {
     toast('已複製推薦碼');
   };
   $$('.inv-share-btn', main).forEach(btn => btn.onclick = () => toast('示範網站'));
+  reveal(main);
 }
 
 /* ---------- 訂單紀錄 ---------- */
@@ -6572,6 +6576,7 @@ function notFoundPage() {
   if (nfBtn) nfBtn.onclick = doSearch;
   if (nfInput) nfInput.onkeydown = e => { if (e.key === 'Enter') doSearch(); };
   bindCards(main); bindRail($('#nf-rec'));
+  reveal(main);
 }
 
 /* ---------- 影片內容 ---------- */
