@@ -23,7 +23,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .wrap{max-width:1360px;margin:0 auto;padding:0 32px}
 .grad-tx{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 /* 捲動進度條 */
-#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:200}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:200;animation:pageLoad .6s .1s ease-out forwards}
+@keyframes pageLoad{0%{width:0}60%{width:70%}100%{width:100%;opacity:0}}
 /* 公告列 */
 .topbar{background:var(--grad);font-size:14px;font-weight:600;text-align:center;padding:9px 16px;position:relative;z-index:101}
 .topbar b{font-variant-numeric:tabular-nums;background:rgba(0,0,0,.25);padding:2px 8px;border-radius:6px;margin-left:6px}
@@ -3174,16 +3175,17 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff;color:#1d1d1f;font-size:12pt}
-  .hdr,.mnav,.btt,.sp-toast,.social-proof,.cookie-bar,.overlay,.vid-overlay,.kb-overlay,.nl-overlay,.read-bar,.cmp-bar,.cmp-overlay,#progress,.notif-panel,.mega-drop,.search-btn,.theme-toggle,.font-size-btn,.cart-btn,.user-menu-wrap,.recent-tip,.skip,footer .ft-social,footer .ft-lang,footer .ft-bottom p,.topbar,.sticky-buy,.art-toc-mob,.float-bar,.splash,.toast-stack,.plr-sidebar-overlay{display:none!important}
+  .hdr,.mnav,.nav,.btt,.sp-toast,.social-proof,.cookie-bar,.overlay,.vid-overlay,.kb-overlay,.nl-overlay,.read-bar,.cmp-bar,.cmp-overlay,#progress,.notif-panel,.mega-drop,.search-btn,.theme-toggle,.font-size-btn,.cart-btn,.user-menu-wrap,.recent-tip,.skip,footer .ft-social,footer .ft-lang,footer .ft-bottom p,.topbar,.sticky-buy,.art-toc-mob,.float-bar,.splash,.toast-stack,.plr-sidebar-overlay,.chat-widget,.page-progress,.cart-reminder,.nl-overlay{display:none!important}
   .wrap{max-width:100%;padding:0}
   a{color:inherit;text-decoration:underline}
   a[href]::after{content:" (" attr(href) ")";font-size:9pt;color:#666}
   a[href^="#"]::after,a[href^="javascript"]::after,.logo a::after,nav a::after{content:none}
   img,video{max-width:100%;page-break-inside:avoid}
   h1,h2,h3{page-break-after:avoid}
-  .card,.course-info,.c-sec,.cert-card{page-break-inside:avoid}
+  .card,.course-info,.c-sec,.cert-card,.buy,.c-video video{page-break-inside:avoid;break-inside:avoid}
   .grid{display:block}
   .grid .card{display:block;width:100%;margin-bottom:16pt;break-inside:avoid}
+  .btn{border:1px solid #000;background:none;color:#000}
   footer{border-top:1pt solid #ccc;padding-top:8pt;font-size:9pt;color:#666}
   .cert-card{border:2pt solid #7c5cff;padding:24pt;text-align:center;page-break-inside:avoid}
 }
@@ -4873,11 +4875,3 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 @keyframes vtIn{from{opacity:0;transform:translateY(-8px)}}
 @media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
 
-/* ── 列印樣式 ── */
-@media print{
-  .nav,.mnav,.float-bar,.chat-widget,.page-progress,.cookie-bar,.sticky-buy,.sp-toast,.cart-reminder,.nl-overlay{display:none!important}
-  body{background:#fff;color:#000;font-size:12pt}
-  .card,.buy,.c-video video{break-inside:avoid}
-  a{color:#000;text-decoration:underline}
-  .btn{border:1px solid #000;background:none;color:#000}
-}

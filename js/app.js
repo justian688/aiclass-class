@@ -593,7 +593,7 @@ function searchOverlay() {
 
   function renderRecent() {
     const r = getRecent();
-    recentEl.innerHTML = r.length ? `<h5>最近搜尋 <button class="clear-recent">全部清除</button></h5><div class="recent-list">${r.map(k => `<span class="recent-item"><span class="ri-text">${k}</span><button class="ri-del" aria-label="刪除">×</button></span>`).join('')}</div>` : '';
+    recentEl.innerHTML = r.length ? `<h5>最近搜尋 <button class="clear-recent">全部清除</button></h5><div class="recent-list">${r.map(k => `<span class="recent-item"><span class="ri-text">${escH(k)}</span><button class="ri-del" aria-label="刪除">×</button></span>`).join('')}</div>` : '';
     const clrBtn = $('.clear-recent', ov);
     if (clrBtn) clrBtn.onclick = () => { localStorage.removeItem(recentKey); renderRecent(); };
     $$('.recent-item', ov).forEach(el => {
@@ -5832,7 +5832,7 @@ function searchPage() {
   const main = $('main');
   const params = new URLSearchParams(location.search);
   const initQ = params.get('q') || '';
-  if (initQ) seo({ title: `搜尋「${initQ}」｜AI Class`, desc: `AI Class 課程搜尋結果：${initQ}`, url: `https://aiclass.tw/search.html?q=${encodeURIComponent(initQ)}` });
+  if (initQ) seo({ title: `搜尋「${escH(initQ)}」｜AI Class`, desc: `AI Class 課程搜尋結果：${escH(initQ)}`, url: `https://aiclass.tw/search.html?q=${encodeURIComponent(initQ)}` });
   const cats = window.CATS.slice(1);
   const trending = window.TRENDING_SEARCHES || ['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案'];
 
@@ -5974,7 +5974,7 @@ function searchPage() {
 
   function renderTags() {
     const tags = [];
-    if (state.q) tags.push({ label: `"${state.q}"`, clear: () => { state.q = ''; inp.value = ''; clearBtn.style.display = 'none'; } });
+    if (state.q) tags.push({ label: `"${escH(state.q)}"`, clear: () => { state.q = ''; inp.value = ''; clearBtn.style.display = 'none'; } });
     state.cats.forEach(id => { const c = cats.find(x => x.id === id); if (c) tags.push({ label: c.name, clear: () => { state.cats.delete(id); $(`.srch-cb input[value="${id}"]`, main).checked = false; } }); });
     if (state.priceRange !== 'all') {
       const labels = { free: '免費', under3000: 'NT$3,000 以下', '3000to5000': 'NT$3,000–5,000', over5000: 'NT$5,000 以上' };
