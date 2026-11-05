@@ -252,10 +252,12 @@ window.BOOTCAMPS = [
 
 // ── 每日挑戰 ──
 window.MISSIONS = [
-  { type: '出席', icon: '📋', reward: 10, unit: '點' },
-  { type: '完課', icon: '🎬', reward: 20, unit: '點' },
-  { type: '作業', icon: '✏️', reward: 50, unit: '點' },
-  { type: '連續 7 天', icon: '🔥', reward: 200, unit: '點' }
+  { type: '每日出席', icon: '📋', reward: 10, unit: 'XP', desc: '今天登入平台學習', badge: '簡單' },
+  { type: '觀看一堂課', icon: '🎬', reward: 25, unit: 'XP', desc: '完成任意一個課時', badge: '簡單' },
+  { type: '寫學習筆記', icon: '✏️', reward: 15, unit: 'XP', desc: '為任意課程新增一則筆記', badge: '中等' },
+  { type: '連續 7 天', icon: '🔥', reward: 200, unit: 'XP', desc: '連續 7 天不中斷地學習', badge: '挑戰' },
+  { type: '完成測驗', icon: '🎯', reward: 30, unit: 'XP', desc: '完成一份課程小測驗', badge: '中等' },
+  { type: '發表評論', icon: '💬', reward: 15, unit: 'XP', desc: '為已完成的課程留下評價', badge: '簡單' }
 ];
 window.MISSION_STATS = { total: 462438, today: 1283 };
 
@@ -387,18 +389,35 @@ window.COUPONS = [
 
 // ── 成就徽章 ──
 window.BADGES = [
-  { id: 'bg1', name: '初來乍到', icon: '🌱', desc: '完成帳號註冊', xp: 10 },
-  { id: 'bg2', name: '第一堂課', icon: '🎓', desc: '完成第一個課程章節', xp: 20 },
-  { id: 'bg3', name: '學習達人', icon: '📚', desc: '累計觀看 10 小時', xp: 50 },
-  { id: 'bg4', name: '完課勇者', icon: '🏆', desc: '完成一門完整課程', xp: 100 },
-  { id: 'bg5', name: '知識狂人', icon: '🧠', desc: '完成 5 門課程', xp: 300 },
-  { id: 'bg6', name: '連續簽到王', icon: '🔥', desc: '連續 30 天出席', xp: 200 },
-  { id: 'bg7', name: '社群之星', icon: '⭐', desc: '留言被按讚 50 次', xp: 150 },
-  { id: 'bg8', name: '筆記達人', icon: '📝', desc: '累計寫下 100 則筆記', xp: 100 },
-  { id: 'bg9', name: '測驗滿分', icon: '💯', desc: '任一測驗取得滿分', xp: 80 },
-  { id: 'bg10', name: '分享推手', icon: '🤝', desc: '邀請 3 位好友加入', xp: 120 },
-  { id: 'bg11', name: '早鳥學員', icon: '🐦', desc: '連續 7 天在 8 點前上課', xp: 60 },
-  { id: 'bg12', name: '全能學霸', icon: '👑', desc: '在 3 個以上類別完課', xp: 500 }
+  { id: 'bg1', name: '初來乍到', icon: '🌱', desc: '完成帳號註冊', xp: 10, rarity: 'common' },
+  { id: 'bg2', name: '第一堂課', icon: '🎓', desc: '完成第一個課程章節', xp: 20, rarity: 'common' },
+  { id: 'bg3', name: '學習達人', icon: '📚', desc: '累計觀看 10 小時', xp: 50, rarity: 'common' },
+  { id: 'bg4', name: '完課勇者', icon: '🏆', desc: '完成一門完整課程', xp: 100, rarity: 'rare' },
+  { id: 'bg5', name: '知識狂人', icon: '🧠', desc: '購買 5 門課程', xp: 300, rarity: 'epic' },
+  { id: 'bg6', name: '連續簽到王', icon: '🔥', desc: '連續 30 天出席', xp: 200, rarity: 'epic' },
+  { id: 'bg7', name: '社群之星', icon: '⭐', desc: '留言被按讚 50 次', xp: 150, rarity: 'rare' },
+  { id: 'bg8', name: '筆記達人', icon: '📝', desc: '累計寫下 100 則筆記', xp: 100, rarity: 'rare' },
+  { id: 'bg9', name: '測驗滿分', icon: '💯', desc: '任一測驗取得滿分', xp: 80, rarity: 'rare' },
+  { id: 'bg10', name: '分享推手', icon: '🤝', desc: '邀請 3 位好友加入', xp: 120, rarity: 'rare' },
+  { id: 'bg11', name: '早鳥學員', icon: '🐦', desc: '連續 7 天在 8 點前上課', xp: 60, rarity: 'common' },
+  { id: 'bg12', name: '全能學霸', icon: '👑', desc: '在 3 個以上類別完課', xp: 500, rarity: 'legendary' },
+  { id: 'bg13', name: '連續七天', icon: '🗓️', desc: '連續學習 7 天不中斷', xp: 70, rarity: 'common' },
+  { id: 'bg14', name: '觀看百課', icon: '👁️', desc: '累計觀看 100 個課時', xp: 250, rarity: 'epic' },
+  { id: 'bg15', name: '評論家', icon: '💬', desc: '發表 10 則課程評論', xp: 120, rarity: 'rare' },
+  { id: 'bg16', name: '分享達人', icon: '📤', desc: '分享課程 5 次', xp: 80, rarity: 'common' },
+  { id: 'bg17', name: '傳奇學者', icon: '🌟', desc: '累計 10,000 XP', xp: 1000, rarity: 'legendary' },
+  { id: 'bg18', name: '學習馬拉松', icon: '🏃', desc: '單日學習超過 4 小時', xp: 60, rarity: 'rare' }
+];
+window.XP_RULES = { watchLesson: 10, completeLesson: 25, postReview: 15, dailyStreak: 50 };
+window.XP_LEVELS = [
+  { lv: 1, name: '新手學員', min: 0 },
+  { lv: 2, name: '初級學員', min: 100 },
+  { lv: 3, name: '中級學員', min: 300 },
+  { lv: 5, name: '學習達人', min: 800 },
+  { lv: 8, name: '進階達人', min: 2000 },
+  { lv: 10, name: '知識大師', min: 5000 },
+  { lv: 15, name: '資深大師', min: 12000 },
+  { lv: 20, name: '傳奇學者', min: 30000 }
 ];
 
 // ── 排行榜 ──
@@ -460,14 +479,14 @@ window.COMMUNITY_POSTS = [
   { id: 'cp2', author: '設計女孩', avatar: '🎨', title: '第一次用 Figma 做完整 App 設計，求feedback！', content: '花了兩週完成了一個記帳 App 的 UI 設計，Auto Layout 真的太好用了！', course: 'c02', likes: 36, replies: 8, time: '5 小時前', tags: ['作品分享', '求回饋'] },
   { id: 'cp3', author: '烘焙小廚', avatar: '🧁', title: '閃電泡芙成功了！分享我的心得', content: '第三次嘗試終於成功，關鍵是泡芙麵糊的溫度和擠花的手法，老師的 tip 真的很重要。', course: 'c45', likes: 72, replies: 23, time: '8 小時前', tags: ['心得分享'] },
   { id: 'cp4', author: '前端新手村', avatar: '💻', title: 'JavaScript 閉包到底怎麼理解？', content: '看了好幾次還是有點模糊，有沒有大大可以用簡單的例子解釋一下？', course: 'c24', likes: 15, replies: 31, time: '1 天前', tags: ['發問'] },
-  { id: 'cp5', author: 'AI 探索者', avatar: '🤖', title: 'Midjourney v6 的 Prompt 技巧整理', content: '整理了 50 個高品質出圖的 Prompt 模板，包含風格指定、構圖控制和負面提示...', course: 'c47', likes: 156, replies: 42, time: '1 天前', tags: ['筆記分享', '資源'] },
+  { id: 'cp5', author: 'AI 探索者', avatar: '🤖', title: 'Midjourney v6 的 Prompt 技巧整理', content: '整理了 50 個高品質出圖的 Prompt 模板，包含風格指定、構圖控制和負面提示...', course: 'c47', likes: 156, replies: 42, time: '1 天前', tags: ['筆記分享', '資源'], pinned: true },
   { id: 'cp6', author: '健身日記', avatar: '💪', title: '跟著 12 週課表練了 8 週的變化', content: '體脂從 28% 降到 23%，附上前後對比照。飲食調整真的是關鍵！', course: 'c31', likes: 234, replies: 56, time: '2 天前', tags: ['心得分享', '成果'] },
   { id: 'cp7', author: '音樂創作者', avatar: '🎵', title: '用 Ableton 做出的第一首 Lo-fi Beat', content: '雖然還很青澀，但終於從零完成了一首完整的作品，感動！附上 SoundCloud 連結。', course: 'c28', likes: 89, replies: 18, time: '2 天前', tags: ['作品分享'] },
   { id: 'cp8', author: '理財小白', avatar: '💰', title: 'ETF 定期定額三個月心得分享', content: '跟著郭老師的配置建議投了 0050 和 00878，雖然才三個月但心態穩多了。', course: 'c41', likes: 67, replies: 29, time: '3 天前', tags: ['心得分享'] },
   { id: 'cp9', author: '水彩新手', avatar: '🎨', title: '戶外寫生第一次就下雨的慘痛經驗', content: '跟著曾老師的課買好了水彩本和旅行調色盤，結果第一次出門寫生遇到大雨，顏料全糊了...但是意外畫出了很有氛圍感的作品！', course: 'c21', likes: 112, replies: 38, time: '4 天前', tags: ['心得分享', '成果'] },
   { id: 'cp10', author: '獨立遊戲夢', avatar: '🎮', title: '用 Godot 做的第一款小遊戲上架 itch.io 了！', content: '雖然只是一個簡單的平台跳躍遊戲，但從設計到程式到美術都是自己完成的，超有成就感。感謝陳老師的課程！', course: 'c38', likes: 198, replies: 45, time: '4 天前', tags: ['作品分享', '成果'] },
   { id: 'cp11', author: '攝影菜鳥', avatar: '📸', title: '請問室內人像打光推薦什麼燈？', content: '跟著李老師的課學了基本打光，但目前只有一支機頂閃，想要升級室內棚燈，預算一萬以內有推薦嗎？', likes: 34, replies: 22, time: '5 天前', tags: ['發問'] },
-  { id: 'cp12', author: '轉職工程師', avatar: '🚀', title: '非本科轉職前端三個月心得', content: '文組背景，靠著蔡老師的課從零開始學前端，三個月後拿到第一個 offer。分享我的學習時間表和面試準備方式。', course: 'c24', likes: 287, replies: 63, time: '5 天前', tags: ['心得分享', '成果'] }
+  { id: 'cp12', author: '轉職工程師', avatar: '🚀', title: '非本科轉職前端三個月心得', content: '文組背景，靠著蔡老師的課從零開始學前端，三個月後拿到第一個 offer。分享我的學習時間表和面試準備方式。', course: 'c24', likes: 287, replies: 63, time: '5 天前', tags: ['心得分享', '成果'], pinned: true }
 ];
 
 // ── 課程章節結構（供課程詳情頁使用） ──

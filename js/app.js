@@ -26,6 +26,68 @@ function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(r
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) { b.textContent = cart.size || ''; b.style.display = cart.size ? 'flex' : 'none'; b.classList.remove('bounce'); void b.offsetWidth; b.classList.add('bounce'); } }
 
+/* ---------- XP 經驗值系統 ---------- */
+const xpData = (() => { const d = JSON.parse(localStorage.getItem('aic-xp') || '{"total":0,"log":[]}'); return d; })();
+function addXP(amount, reason) {
+  xpData.total += amount;
+  xpData.log.push({ amount, reason, ts: Date.now() });
+  if (xpData.log.length > 100) xpData.log = xpData.log.slice(-100);
+  localStorage.setItem('aic-xp', JSON.stringify(xpData));
+  const lvl = getXPLevel();
+  const badge = $('.hdr-level-badge');
+  if (badge) { badge.textContent = `Lv.${lvl.lv}`; badge.title = lvl.name; }
+}
+function getXPLevel() {
+  const levels = window.XP_LEVELS || [{ lv: 1, name: '新手學員', min: 0 }];
+  let cur = levels[0];
+  for (const l of levels) { if (xpData.total >= l.min) cur = l; }
+  return cur;
+}
+function getXPProgress() {
+  const levels = window.XP_LEVELS || [];
+  const cur = getXPLevel();
+  const idx = levels.indexOf(cur);
+  const next = levels[idx + 1];
+  if (!next) return { pct: 100, cur: xpData.total, need: xpData.total };
+  return { pct: Math.round((xpData.total - cur.min) / (next.min - cur.min) * 100), cur: xpData.total - cur.min, need: next.min - cur.min };
+}
+
+/* ---------- Confetti 慶祝動畫 ---------- */
+function showConfetti() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv = document.createElement('canvas'); cv.className = 'confetti-canvas';
+  cv.style.cssText = 'position:fixed;inset:0;z-index:99999;pointer-events:none';
+  cv.width = innerWidth; cv.height = innerHeight;
+  document.body.append(cv);
+  const ctx = cv.getContext('2d');
+  const colors = ['#7c5cff','#ff5c8a','#34c759','#ffd700','#00b4d8','#ff9500','#a855f7'];
+  const pieces = Array.from({ length: 80 }, () => ({
+    x: Math.random() * cv.width, y: -20 - Math.random() * 200,
+    w: 6 + Math.random() * 8, h: 4 + Math.random() * 6,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    vx: (Math.random() - 0.5) * 4, vy: 2 + Math.random() * 4,
+    rot: Math.random() * 360, vr: (Math.random() - 0.5) * 10, opacity: 1
+  }));
+  let frame = 0;
+  const tick = () => {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    let alive = false;
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.rot += p.vr;
+      if (frame > 60) p.opacity = Math.max(0, p.opacity - 0.015);
+      if (p.opacity <= 0) return;
+      alive = true;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = p.opacity; ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    if (alive && frame < 180) requestAnimationFrame(tick); else cv.remove();
+  };
+  requestAnimationFrame(tick);
+}
+
 /* ---------- SEO：動態 meta / JSON-LD ---------- */
 function seo(opts = {}) {
   const base = 'https://aiclass.tw/';
@@ -253,7 +315,7 @@ function shell() {
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
     <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
-    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
+    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn"><span class="hdr-level-badge" title="${getXPLevel().name}">Lv.${getXPLevel().lv}</span>👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><div class="um-xp-row"><span class="hdr-level-badge lg">${getXPLevel().name}</span><span>${xpData.total.toLocaleString()} XP</span></div><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
   </div>`;
   top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
 
@@ -935,10 +997,41 @@ function home() {
       const a = actions[Math.floor(Math.random() * actions.length)];
       return `<div class="af-item">${s}**完成了${a.type}任務 <b>+${a.reward}${a.unit}</b></div>`;
     }).join('');
-    main.insertAdjacentHTML('beforeend', `<section class="sec" id="missions"><div class="wrap"><div class="sec-head rv-up"><div><h2>每日學習挑戰</h2><div class="sub">完成任務賺取學習點數</div></div></div>
-      <div class="mission-stats rv-up">累計已完成 <b>${window.MISSION_STATS.total.toLocaleString()}</b> 個任務・今日 <b>${window.MISSION_STATS.today.toLocaleString()}</b> 個</div>
-      <div class="missions"><div class="mission-list">${window.MISSIONS.map(m => `<div class="mission-item rv-up"><span class="mi-icon">${m.icon}</span><div class="mi-info"><div class="mi-type">${m.type}</div><div class="mi-reward">+${m.reward} ${m.unit}</div></div><button class="mi-btn" onclick="toast('示範網站：任務功能開發中')">領取</button></div>`).join('')}</div>
+    const msDone = JSON.parse(localStorage.getItem('aic-ms-done') || '[]');
+    const now = new Date(), midnight = new Date(now); midnight.setHours(24,0,0,0);
+    const msLeft = Math.max(0, Math.floor((midnight - now) / 1000));
+    const msH = String(Math.floor(msLeft/3600)).padStart(2,'0'), msM = String(Math.floor(msLeft%3600/60)).padStart(2,'0'), msS = String(msLeft%60).padStart(2,'0');
+    const badgeColors = { '簡單': '#34c759', '中等': '#ff9500', '挑戰': '#ff5c8a' };
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="missions"><div class="wrap"><div class="sec-head rv-up"><div><h2>每日學習挑戰</h2><div class="sub">完成任務賺取經驗值・每日重置倒數 <b class="ms-cd">${msH}:${msM}:${msS}</b></div></div></div>
+      <div class="mission-stats rv-up">累計已完成 <b>${window.MISSION_STATS.total.toLocaleString()}</b> 個任務・今日 <b>${window.MISSION_STATS.today.toLocaleString()}</b> 個・完成 <b>${msDone.length}/${window.MISSIONS.length}</b></div>
+      <div class="missions"><div class="mission-list">${window.MISSIONS.map((m,i) => {
+        const done = msDone.includes(i);
+        return `<div class="mission-card rv-up${done ? ' ms-done' : ''}">
+          <div class="ms-card-top"><span class="mi-icon">${m.icon}</span><span class="ms-badge" style="--ms-c:${badgeColors[m.badge]||'var(--pri)'}">${m.badge}</span></div>
+          <h4 class="ms-title">${m.type}</h4>
+          <p class="ms-desc">${m.desc}</p>
+          <div class="ms-reward-row"><span class="ms-reward-tag">🎁 +${m.reward} ${m.unit}</span></div>
+          <button class="mi-btn${done ? ' mi-done' : ''}" data-ms="${i}">${done ? '<span class="ms-check">✓</span> 已完成' : '領取獎勵'}</button>
+        </div>`;
+      }).join('')}</div>
       <div class="activity-feed rv-up"><div class="af-title">即時動態</div><div class="af-list">${feedItems}${feedItems}</div></div></div></div></section>`);
+    // Mission countdown timer
+    const cdEl = $('.ms-cd', main);
+    if (cdEl) { let sec = msLeft; const msTick = () => { sec--; if (sec < 0) return; cdEl.textContent = `${String(Math.floor(sec/3600)).padStart(2,'0')}:${String(Math.floor(sec%3600/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`; setTimeout(msTick, 1000); }; setTimeout(msTick, 1000); }
+    // Mission click to complete with check animation
+    main.addEventListener('click', e => {
+      const btn = e.target.closest('.mi-btn[data-ms]');
+      if (!btn || btn.classList.contains('mi-done')) return;
+      const idx = +btn.dataset.ms; const m = window.MISSIONS[idx];
+      const done = JSON.parse(localStorage.getItem('aic-ms-done') || '[]');
+      if (done.includes(idx)) return;
+      done.push(idx); localStorage.setItem('aic-ms-done', JSON.stringify(done));
+      btn.classList.add('mi-done'); btn.innerHTML = '<span class="ms-check">✓</span> 已完成';
+      btn.closest('.mission-card')?.classList.add('ms-done');
+      addXP(m.reward, m.type);
+      toast(`完成任務「${m.type}」+${m.reward} XP`, 'success');
+      if (done.length === window.MISSIONS.length) { setTimeout(() => { showConfetti(); toast('🎉 今日任務全部完成！', 'success'); }, 300); }
+    });
   }
 
   main.insertAdjacentHTML('beforeend', railSec('best', '評價最高', '五星好評不斷', sortBy('rating').slice(0, 10)));
@@ -3278,9 +3371,11 @@ function myPage() {
   });
   const memberSince = '2026 年 3 月';
   const streakDays = streakData.count;
-  const totalPts = streakDays * 30 + enrolled.length * 120;
-  const level = Math.min(12, Math.floor(totalHours / 5) + 1);
-  const levelTitle = totalHours >= 60 ? '學習大師' : totalHours >= 30 ? '進階學員' : '新手學員';
+  const totalPts = xpData.total || (streakDays * 30 + enrolled.length * 120);
+  const myLvl = getXPLevel();
+  const myXpProg = getXPProgress();
+  const level = myLvl.lv;
+  const levelTitle = myLvl.name;
 
   main.innerHTML = `
   <!-- 個人檔案 Hero Banner -->
@@ -3301,7 +3396,7 @@ function myPage() {
         </div>
       </div>
       <div class="my-hero-right">
-        <div class="my-xp-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/><circle cx="40" cy="40" r="34" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="214" stroke-dashoffset="${214 - 214 * Math.min(1, (totalHours % 10) / 10)}" stroke-linecap="round" transform="rotate(-90 40 40)"/></svg><div class="my-xp-text"><b>${totalHours * 60}</b><span>XP</span></div></div>
+        <div class="my-xp-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/><circle cx="40" cy="40" r="34" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="214" stroke-dashoffset="${214 - 214 * myXpProg.pct / 100}" stroke-linecap="round" transform="rotate(-90 40 40)"/></svg><div class="my-xp-text"><b>${totalPts.toLocaleString()}</b><span>XP</span></div></div>
       </div>
     </div>
   </div>
@@ -3550,8 +3645,8 @@ function myPage() {
       <section class="myp-sec" id="myp-sec-achievements" hidden>
         <h2 class="myp-sec-title rv-up">🏅 成就徽章</h2>
         <div class="gm-level rv-up">
-          <div class="gm-level-info"><span class="gm-level-badge">Lv.${Math.min(12,Math.floor(totalHours/5)+1)}</span><span>${totalHours >= 60 ? '學習大師' : totalHours >= 30 ? '進階學員' : '新手學員'}</span></div>
-          <div class="gm-xp-wrap"><div class="gm-xp-bar"><div class="gm-xp-fill" style="width:${Math.min(100,(totalHours%10)*10)}%"></div></div><span class="gm-xp-text">${totalHours*60} / ${(Math.floor(totalHours/10)+1)*600} XP</span></div>
+          <div class="gm-level-info"><span class="gm-level-badge">Lv.${myLvl.lv}</span><span>${myLvl.name}</span></div>
+          <div class="gm-xp-wrap"><div class="gm-xp-bar"><div class="gm-xp-fill" style="width:${myXpProg.pct}%"></div></div><span class="gm-xp-text">${totalPts.toLocaleString()} / ${(myXpProg.need || totalPts).toLocaleString()} XP</span></div>
         </div>
         <div class="gm-streak rv-up">
           <div class="gm-streak-fire">🔥</div>
@@ -5412,7 +5507,9 @@ function communityPage() {
   function getSorted() {
     let list = activeCat === '全部' ? posts : posts.filter(p => (p.tags||[]).includes(activeCat));
     if (sortMode === 'hot') list = [...list].sort((a,b) => b.likes - a.likes);
-    return list;
+    const pinned = list.filter(p => p.pinned);
+    const rest = list.filter(p => !p.pinned);
+    return [...pinned, ...rest];
   }
 
   function renderThreads() {
@@ -5421,12 +5518,14 @@ function communityPage() {
     return list.map(p => {
       const c = byId[p.course];
       const tagColor = catColors[(p.tags||[])[0]] || 'var(--pri)';
-      return `<div class="cmy-thread rv-up">
-      ${p.likes > 100 ? '<span class="cmy-hot">🔥 熱門</span>' : ''}
+      const wordCount = p.content.length;
+      return `<div class="cmy-thread rv-up${p.pinned ? ' cmy-pinned' : ''}">
+      ${p.pinned ? '<span class="cmy-pin-label">📌 置頂</span>' : ''}
+      ${!p.pinned && p.likes > 100 ? '<span class="cmy-hot">🔥 熱門</span>' : ''}
       <div class="cmy-thread-body">
         <div class="cmy-avatar" style="--av-c:${tagColor}">${p.avatar}</div>
         <div class="cmy-thread-main">
-          <div class="cmy-thread-meta"><span class="cmy-user">${p.author}</span>${(p.tags||[]).map(t => `<span class="cmy-tag" style="--tag-c:${catColors[t]||'var(--pri)'}">${t}</span>`).join('')}<span class="cmy-time">${p.time}</span></div>
+          <div class="cmy-thread-meta"><span class="cmy-user">${p.author}</span>${(p.tags||[]).map(t => `<span class="cmy-tag" style="--tag-c:${catColors[t]||'var(--pri)'}">${t}</span>`).join('')}<span class="cmy-time">${p.time}</span><span class="cmy-wc">${wordCount} 字</span></div>
           <h3 class="cmy-thread-title" style="cursor:pointer" onclick="this.closest('.cmy-thread').classList.toggle('expanded')">${p.title}</h3>
           <p class="cmy-thread-preview">${p.content}</p>
           ${c ? `<div class="cmy-course-link">📚 ${c.title}</div>` : ''}
@@ -5470,7 +5569,16 @@ function communityPage() {
       </div>
       <div class="cmy-sb-card rv-up">
         <h4>🔥 熱門話題</h4>
-        <div class="cmy-trending">${[...tagSet].map(t => `<span class="cmy-trend-tag" style="--tag-c:${catColors[t]||'var(--pri)'}">${t}</span>`).join('')}${(window.TRENDING_SEARCHES||[]).slice(0,6).map(s => `<span class="cmy-trend-tag">${s}</span>`).join('')}</div>
+        <div class="cmy-tag-cloud">${(() => {
+          const allTags = [...tagSet];
+          const trending = (window.TRENDING_SEARCHES||[]).slice(0,6);
+          const combined = [...allTags, ...trending];
+          return combined.map((t,i) => {
+            const size = 12 + Math.floor(Math.random() * 8);
+            const color = catColors[t] || `hsl(${(i*47)%360},55%,55%)`;
+            return `<span class="cmy-cloud-tag" style="font-size:${size}px;--tag-c:${color}">${t}</span>`;
+          }).join('');
+        })()}</div>
       </div>
     </aside>
   </div>
@@ -5741,6 +5849,7 @@ function achievementPage() {
   const notes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
   const progress = JSON.parse(localStorage.getItem('aic-progress') || '{}');
 
+  const rarityMap = { common: { label: '普通', color: '#6e6e73' }, rare: { label: '稀有', color: '#00b4d8' }, epic: { label: '史詩', color: '#a855f7' }, legendary: { label: '傳說', color: '#ffd700' } };
   const achievements = badges.map(b => {
     let earned = false, prog = 0, total = 1;
     if (b.id === 'bg1') { earned = !!localStorage.getItem('aic-user'); }
@@ -5748,22 +5857,32 @@ function achievementPage() {
     else if (b.id === 'bg3') { const hrs = Object.values(progress).reduce((s,v) => s+v, 0) * 0.5; earned = hrs >= 10; prog = Math.min(Math.round(hrs), 10); total = 10; }
     else if (b.id === 'bg4') { const done = Object.values(progress).filter(v => v >= 100).length; earned = done >= 1; prog = done; }
     else if (b.id === 'bg5') { earned = owned.length >= 5; prog = owned.length; total = 5; }
-    else if (b.id === 'bg6') { prog = 7; total = 30; }
+    else if (b.id === 'bg6') { prog = streakData.count; total = 30; earned = streakData.count >= 30; }
     else if (b.id === 'bg7') { prog = 12; total = 50; }
     else if (b.id === 'bg8') { const nc = Object.values(notes).reduce((s,v) => s + (Array.isArray(v) ? v.length : 0), 0); earned = nc >= 100; prog = Math.min(nc, 100); total = 100; }
     else if (b.id === 'bg9') { const perfect = Object.values(quizResults).some(r => r.pct === 100); earned = perfect; prog = perfect ? 1 : 0; }
     else if (b.id === 'bg10') { prog = 0; total = 3; }
     else if (b.id === 'bg11') { prog = 2; total = 7; }
-    else if (b.id === 'bg12') { const catsDone = new Set(); owned.forEach(id => { const c = byId[id]; if (c) catsDone.add(c.cat); }); earned = catsDone.size >= 3; prog = catsDone.size; total = 3; }
-    return { ...b, earned, prog, total };
+    else if (b.id === 'bg12') { const catsDone = new Set(); owned.forEach(id => { const cc = byId[id]; if (cc) catsDone.add(cc.cat); }); earned = catsDone.size >= 3; prog = catsDone.size; total = 3; }
+    else if (b.id === 'bg13') { earned = streakData.count >= 7; prog = Math.min(streakData.count, 7); total = 7; }
+    else if (b.id === 'bg14') { const lessons = Object.values(progress).reduce((s,v) => s + Math.floor(v / 5), 0); earned = lessons >= 100; prog = Math.min(lessons, 100); total = 100; }
+    else if (b.id === 'bg15') { const rv = Object.keys(JSON.parse(localStorage.getItem('aic-reviews') || '{}')).length; earned = rv >= 10; prog = Math.min(rv, 10); total = 10; }
+    else if (b.id === 'bg16') { prog = 2; total = 5; }
+    else if (b.id === 'bg17') { earned = xpData.total >= 10000; prog = Math.min(xpData.total, 10000); total = 10000; }
+    else if (b.id === 'bg18') { prog = 0; total = 1; }
+    const r = rarityMap[b.rarity || 'common'] || rarityMap.common;
+    return { ...b, earned, prog, total, rarityLabel: r.label, rarityColor: r.color };
   });
 
   const earnedCount = achievements.filter(a => a.earned).length;
-  const totalXp = achievements.filter(a => a.earned).reduce((s,a) => s + a.xp, 0);
+  const badgeXp = achievements.filter(a => a.earned).reduce((s,a) => s + a.xp, 0);
+  const totalXp = xpData.total || badgeXp;
 
   const earnedList = achievements.filter(a => a.earned);
   const lockedList = achievements.filter(a => !a.earned);
   const completePct = Math.round(earnedCount / badges.length * 100);
+  const lvl = getXPLevel();
+  const xpProg = getXPProgress();
 
   main.innerHTML = `
   <section class="ach-hero rv-up"><div class="wrap">
@@ -5785,16 +5904,17 @@ function achievementPage() {
       <div class="ach-ring-text"><b>${earnedCount}/${badges.length}</b><span>已解鎖</span></div>
     </div>
     <div class="ach-xp-bar rv-up">
-      <div class="ach-xp-label"><span>總 XP</span><b>${totalXp}</b></div>
-      <div class="ach-xp-track"><div class="ach-xp-fill" style="width:${Math.min(totalXp / 1500 * 100, 100)}%"></div></div>
-      <div class="ach-xp-next">下一等級：${1500 - totalXp > 0 ? `還需 ${1500 - totalXp} XP` : '已達成！'}</div>
+      <div class="ach-xp-label"><span>${lvl.name}（Lv.${lvl.lv}）</span><b>${totalXp.toLocaleString()} XP</b></div>
+      <div class="ach-xp-track"><div class="ach-xp-fill" style="width:${xpProg.pct}%"></div></div>
+      <div class="ach-xp-next">${xpProg.pct < 100 ? `下一等級：${xpProg.cur.toLocaleString()} / ${xpProg.need.toLocaleString()} XP` : '已達最高等級！'}</div>
     </div>
     ${earnedList.length ? `<h2 class="ach-section-title rv-up">✨ 已獲得 (${earnedList.length})</h2>
     <div class="ach-grid">
-      ${earnedList.map(a => `<div class="ach-card rv-up earned">
+      ${earnedList.map(a => `<div class="ach-card rv-up earned ach-${a.rarity||'common'}" style="--ach-rc:${a.rarityColor}">
         <div class="ach-icon">${a.icon}</div>
         <div class="ach-card-body">
           <h3>${a.name}</h3>
+          <span class="ach-rarity" style="color:${a.rarityColor}">${a.rarityLabel}</span>
           <p>${a.desc}</p>
           <div class="ach-xp-badge">+${a.xp} XP</div>
           <div class="ach-earned-date">✓ 已解鎖</div>
@@ -5803,15 +5923,21 @@ function achievementPage() {
     </div>` : ''}
     ${lockedList.length ? `<h2 class="ach-section-title rv-up">🔒 未解鎖 (${lockedList.length})</h2>
     <div class="ach-grid">
-      ${lockedList.map(a => `<div class="ach-card rv-up locked">
+      ${lockedList.map(a => {
+        const remain = a.total - a.prog;
+        const hint = remain > 0 ? `還差 ${remain.toLocaleString()} ${a.id === 'bg17' ? 'XP' : a.id === 'bg14' ? '課時' : a.id === 'bg8' ? '則筆記' : a.id === 'bg6' ? '天' : '項'}` : '';
+        return `<div class="ach-card rv-up locked ach-${a.rarity||'common'}" style="--ach-rc:${a.rarityColor}">
         <div class="ach-icon-wrap"><div class="ach-icon">${a.icon}</div><span class="ach-lock">🔒</span></div>
         <div class="ach-card-body">
           <h3>${a.name}</h3>
+          <span class="ach-rarity" style="color:${a.rarityColor}">${a.rarityLabel}</span>
           <p>${a.desc}</p>
           <div class="ach-xp-badge">+${a.xp} XP</div>
-          <div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round(a.prog/a.total*100)}%"></div></div><div class="ach-prog-txt">${a.prog} / ${a.total}</div>
+          <div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round(a.prog/a.total*100)}%"></div></div>
+          <div class="ach-prog-txt">${a.prog.toLocaleString()} / ${a.total.toLocaleString()}${hint ? ` — ${hint}` : ''}</div>
         </div>
-      </div>`).join('')}
+      </div>`;
+      }).join('')}
     </div>` : ''}
   </div>`;
   reveal(main);
