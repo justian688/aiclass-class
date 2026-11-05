@@ -2366,7 +2366,8 @@ input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--bg2) inset;-webkit-te
 .cookie-bar.show{bottom:0}
 .cookie-bar p{font-size:14px;color:var(--tx2);margin:0}
 .cookie-bar a{color:var(--pri);text-decoration:underline}
-.cookie-ok{height:38px;font-size:13px;padding:0 20px;white-space:nowrap;flex-shrink:0}
+.cookie-btns{display:flex;gap:8px;flex-shrink:0}
+.cookie-btns .btn{height:38px;font-size:13px;padding:0 20px;white-space:nowrap}
 /* ===== 電子報訂閱 ===== */
 .nl-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0);display:grid;place-items:center;padding:24px;transition:background .4s;opacity:0;pointer-events:none}
 .nl-overlay.show{background:rgba(0,0,0,.5);opacity:1;pointer-events:auto}

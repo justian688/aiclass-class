@@ -485,16 +485,18 @@ function shell() {
   // Cookie 同意橫幅
   if (!localStorage.getItem('aic-cookie-ok')) {
     const ck = document.createElement('div'); ck.className = 'cookie-bar';
-    ck.innerHTML = `<p>我們使用 Cookie 來提供更好的瀏覽體驗。繼續使用代表你同意我們的 <a href="privacy.html">隱私權政策</a>。</p><button class="btn btn-pri cookie-ok">我知道了</button>`;
+    ck.innerHTML = `<p>我們使用 Cookie 來提供更好的瀏覽體驗與個人化推薦。詳情請參閱 <a href="privacy.html">隱私權政策</a>。</p><div class="cookie-btns"><button class="btn btn-ghost cookie-decline">僅必要</button><button class="btn btn-pri cookie-ok">全部接受</button></div>`;
     document.body.append(ck);
     requestAnimationFrame(() => requestAnimationFrame(() => ck.classList.add('show')));
-    $('.cookie-ok', ck).onclick = () => { localStorage.setItem('aic-cookie-ok', '1'); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
+    const closeCk = (val) => { localStorage.setItem('aic-cookie-ok', val); ck.classList.remove('show'); setTimeout(() => ck.remove(), 400); };
+    $('.cookie-ok', ck).onclick = () => closeCk('all');
+    $('.cookie-decline', ck).onclick = () => closeCk('essential');
   }
 
   // 首次訪客歡迎導覽
   if (!localStorage.getItem('aic-toured') && page === 'home') {
     const steps = [
-      { icon: '🎓', title: '歡迎來到 AI Class', text: '跟著業界頂尖職人，把你的熱情學成專業。72+ 堂精選課程，涵蓋設計、插畫、AI、攝影等 9 大領域。' },
+      { icon: '🎓', title: '歡迎來到 AI Class', text: '跟著業界頂尖職人，把你的熱情學成專業。${C.length} 堂精選課程，涵蓋設計、插畫、AI、攝影等 10 大領域。' },
       { icon: '🎬', title: '業界職人親自授課', text: '每堂課由業界講師精心製作，提供完整專案檔、練習素材與 PDF 講義，學完就能產出作品。' },
       { icon: '🚀', title: '開始你的學習之旅', text: '按 ⌘K 搜尋課程、按 ? 查看快捷鍵。首購享折扣碼 WELCOME — 現在就探索適合你的課程！' }
     ];
@@ -808,7 +810,7 @@ function home() {
   seo({ jsonLd: { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://aiclass.tw/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class' } } })) } });
   // Hero
   const slides = window.HERO.map(id => byId[id]);
-  main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程">
+  main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程" aria-roledescription="carousel">
     ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
       <img class="poster" src="${img(c)}" alt="${c.title}"${i ? '' : ' fetchpriority="high"'}>
       <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
@@ -1015,7 +1017,7 @@ function home() {
   </div></section>`);
 
   main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="stats">
-    ${[[60000, '+', '累積學員'], [180, '+', '業界職人講師'], [4.9, '', '平均課程評分'], [98, '%', '學員推薦率']].map(([n, u, t]) => `<div class="stat rv-up"><b data-count="${n}" data-unit="${u}">0</b><span>${t}</span></div>`).join('')}
+    ${[[(window.PLATFORM_STATS||{}).students||52000, '+', '累積學員'], [(window.PLATFORM_STATS||{}).instructors||12, '+', '業界職人講師'], [(window.PLATFORM_STATS||{}).satisfaction||4.85, '', '平均課程評分'], [98, '%', '學員推薦率']].map(([n, u, t]) => `<div class="stat rv-up"><b data-count="${n}" data-unit="${u}">0</b><span>${t}</span></div>`).join('')}
   </div></div></section>`);
 
   // 每日學習挑戰
@@ -1289,7 +1291,7 @@ function home() {
       <div class="pro-plan popular"><div class="pro-plan-badge">最划算</div><div class="pro-plan-name">年付方案</div><div class="pro-plan-price"><span class="pro-currency">NT$</span><span class="pro-amount">4,990</span><span class="pro-period">/年</span></div><p class="pro-plan-note">平均每月 $416，省 30%</p><button class="btn btn-pri pro-plan-btn" onclick="toast('示範網站：訂閱功能開發中')">選擇年付</button></div>
     </div>
     <div class="pro-features rv-up">
-      ${[['🎬','全站 80+ 堂課程暢看','不用單堂購買，所有課程隨選隨看'],['⭐','Pro 獨家課程','搶先觀看 Pro 專屬的進階內容'],['📥','離線下載','支援離線觀看，通勤也能學習'],['🚫','無廣告體驗','專注學習，零干擾'],['🎓','優先新課通知','新課上線第一時間搶先看'],['💬','講師優先回覆','Pro 會員的問題優先處理']].map(f => `<div class="pro-feat"><span class="pro-feat-icon">${f[0]}</span><div><b>${f[1]}</b><p>${f[2]}</p></div></div>`).join('')}
+      ${[['🎬',`全站 ${C.length}+ 堂課程暢看`,'不用單堂購買，所有課程隨選隨看'],['⭐','Pro 獨家課程','搶先觀看 Pro 專屬的進階內容'],['📥','離線下載','支援離線觀看，通勤也能學習'],['🚫','無廣告體驗','專注學習，零干擾'],['🎓','優先新課通知','新課上線第一時間搶先看'],['💬','講師優先回覆','Pro 會員的問題優先處理']].map(f => `<div class="pro-feat"><span class="pro-feat-icon">${f[0]}</span><div><b>${f[1]}</b><p>${f[2]}</p></div></div>`).join('')}
     </div>
   </div></section>`);
 
@@ -2428,7 +2430,7 @@ function enterprisePage() {
   ];
   const plans = [
     { name: '入門方案', price: '免費', unit: '', desc: '適合小型團隊體驗', features: ['最多 5 位員工', '精選 10 堂課程', '基礎學習報表', '社群支援'], cta: '免費開始', ghost: true },
-    { name: '專業方案', price: 'NT$2,980', unit: '/月', desc: '適合中小型企業', features: ['最多 50 位員工', '全站 200+ 課程', '進階數據分析', '企業影片上傳 50GB', '專屬客服', '客製化證書'], cta: '立即訂閱', ghost: false },
+    { name: '專業方案', price: 'NT$2,980', unit: '/月', desc: '適合中小型企業', features: ['最多 50 位員工', '全站所有課程', '進階數據分析', '企業影片上傳 50GB', '專屬客服', '客製化證書'], cta: '立即訂閱', ghost: false },
     { name: '旗艦方案', price: '聯繫我們', unit: '', desc: '適合大型企業', features: ['無限員工帳號', '全站課程 + 客製課程', '完整 API 串接', '無限影片儲存空間', '專屬客服經理', '到府教育訓練', 'SSO 企業登入'], cta: '預約諮詢', ghost: true }
   ];
   const testimonials = [
@@ -4433,7 +4435,7 @@ function playerPage() {
         <div class="plr-video-wrap">
           <video id="plr-vid" src="${vid(c)}" poster="${img(c)}" preload="metadata" playsinline></video>
           <div class="plr-controls">
-            <div class="plr-progress-bar" id="plr-pbar"><div class="plr-progress-fill" id="plr-pfill"></div><div class="plr-progress-handle" id="plr-phandle"></div></div>
+            <div class="plr-progress-bar" id="plr-pbar" role="slider" aria-label="播放進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="plr-progress-fill" id="plr-pfill"></div><div class="plr-progress-handle" id="plr-phandle"></div></div>
             <div class="plr-ctrl-row">
               <div class="plr-ctrl-left">
                 <button id="plr-play" class="plr-ctrl-btn" aria-label="播放">▶</button>
@@ -4564,6 +4566,7 @@ function playerPage() {
     const pctVal = vid_el.currentTime / vid_el.duration * 100;
     pfill.style.width = pctVal + '%';
     phandle.style.left = pctVal + '%';
+    pbar.setAttribute('aria-valuenow', Math.round(pctVal));
     timeEl.textContent = fmtTime(vid_el.currentTime) + ' / ' + fmtTime(vid_el.duration);
     if (Math.floor(vid_el.currentTime) % 5 === 0) localStorage.setItem(posKey, vid_el.currentTime.toFixed(1));
   };
@@ -6005,7 +6008,7 @@ function communityPage() {
   <section class="cmy-hero rv-up"><div class="wrap">
     <div class="crumb rv-up" style="color:rgba(255,255,255,.7);margin-bottom:12px"><a href="index.html" style="color:rgba(255,255,255,.7)">首頁</a> › 學習社群</div>
     <h1>學習社群</h1>
-    <p>分享作品、討論課程、交流經驗，與超過 60,000 名學員一起成長</p>
+    <p>分享作品、討論課程、交流經驗，與超過 ${((window.PLATFORM_STATS||{}).students||52000).toLocaleString()} 名學員一起成長</p>
     <div class="cmy-hero-stats"><span><b>${posts.length}</b> 篇討論</span><span><b>${totalLikes.toLocaleString()}</b> 個讚</span><span><b>${totalReplies}</b> 則回覆</span></div>
   </div></section>
   <div class="wrap cmy-layout">
@@ -6045,7 +6048,7 @@ function communityPage() {
     </aside>
   </div>
   <button class="cmy-fab" id="cmy-fab">✏️ 發起討論</button>
-  <div class="cmy-modal" id="cmy-modal" hidden>
+  <div class="cmy-modal" id="cmy-modal" hidden role="dialog" aria-modal="true" aria-label="發起新討論">
     <div class="cmy-modal-bg"></div>
     <div class="cmy-modal-box">
       <div class="cmy-modal-hdr"><h3>發起新討論</h3><button class="cmy-modal-close" id="cmy-close">×</button></div>
@@ -6098,12 +6101,20 @@ function communityPage() {
     const share = e.target.closest('.cmy-share-btn');
     if (share) { navigator.clipboard?.writeText(`AI Class 社群 — ${share.dataset.share}\nhttps://aiclass.tw/community.html`).then(() => toast('已複製分享連結')).catch(() => toast('複製失敗')); }
   });
+  const pollVotes = new Set(JSON.parse(localStorage.getItem('aic-poll-votes') || '[]'));
+  main.querySelectorAll('.poll-option').forEach(opt => {
+    const key = opt.dataset.poll + ':' + opt.dataset.opt;
+    if (pollVotes.has(key)) { opt.classList.add('poll-selected'); opt.closest('.poll-wrap').classList.add('poll-voted'); }
+  });
   main.addEventListener('click', e => {
     const opt = e.target.closest('.poll-option');
     if (!opt) return;
     const wrap = opt.closest('.poll-wrap');
+    if (wrap.classList.contains('poll-voted')) return;
     wrap.classList.add('poll-voted');
     opt.classList.add('poll-selected');
+    pollVotes.add(opt.dataset.poll + ':' + opt.dataset.opt);
+    localStorage.setItem('aic-poll-votes', JSON.stringify([...pollVotes]));
     toast('感謝投票！');
   });
   document.addEventListener('click', e => { if (!e.target.closest('.cmy-react-wrap')) $$('.cmy-react-picker').forEach(p => p.hidden = true); });
@@ -7966,7 +7977,7 @@ function openRecommendQuiz() {
   cw.querySelector('.cw-fab').onclick = () => { cwPanel.hidden = !cwPanel.hidden; cw.classList.toggle('open', !cwPanel.hidden); cwBadge.hidden = true; if (!cwPanel.hidden) cwInput.focus(); };
   cw.querySelector('.cw-min').onclick = () => { cwPanel.hidden = true; cw.classList.remove('open'); };
   const cwReplies = {
-    course: '我們有 72+ 堂精選課程，涵蓋設計、繪畫、AI、影像等領域。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！',
+    course: '我們有 ${C.length} 堂精選課程，涵蓋設計、繪畫、AI、影像等 10 大領域。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！',
     refund: '購買後 7 天內，觀看進度低於 20%，可申請全額退費。到<a href="contact.html">聯繫我們</a>提交申請，3 個工作天內處理。',
     tech: '常見問題：<br>• 影片無法播放 → 清除快取重試<br>• 進度未儲存 → 確認已登入<br>• 下載問題 → 用 Chrome 瀏覽器<br>如仍有問題，到<a href="contact.html">聯繫我們</a>。',
     other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 support@aiclass.tw'
