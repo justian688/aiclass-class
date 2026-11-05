@@ -327,7 +327,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="upcoming.html">即將開課</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="sale.html" style="color:var(--pink)">🔥 特賣</a><a href="skillmap.html">技能地圖</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="upcoming.html">即將開課</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="sale.html" style="color:var(--pink)">🔥 特賣</a><a href="event.html" style="color:var(--pink)">🎉 活動</a><a href="skillmap.html">技能地圖</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -368,7 +368,7 @@ function shell() {
   ft.innerHTML = `<div class="wrap"><div class="cols">
     <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
       <div class="ft-social"><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div></div>
-    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="gallery.html">學員作品牆</a></li><li><a href="live.html">直播教室</a></li><li><a href="sale.html">限時特賣</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
+    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="gallery.html">學員作品牆</a></li><li><a href="live.html">直播教室</a></li><li><a href="sale.html">限時特賣</a></li><li><a href="event.html">限時活動</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">下載 App<i class="ft-arrow">›</i></h4><ul><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 App Store（iOS）</a></li><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Google Play（Android）</a></li></ul>
       <div class="ft-lang"><select onchange="toast('語言切換功能開發中')" aria-label="語言選擇"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
@@ -466,11 +466,6 @@ function shell() {
   fsBtn.onclick = () => { sizeIdx = (sizeIdx + 1) % sizes.length; document.documentElement.dataset.fontsize = sizes[sizeIdx]; localStorage.setItem('aic-fontsize', sizes[sizeIdx]); fsBtn.title = '字體大小：' + sizeLabels[sizeIdx]; toast('字體大小：' + sizeLabels[sizeIdx]); };
   tBtn.after(fsBtn);
 
-  // 回到頂部
-  const btt = document.createElement('button'); btt.className = 'back-top'; btt.innerHTML = '↑'; btt.setAttribute('aria-label', '回到頂部');
-  btt.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
-  document.body.append(btt);
-
   // 頁首：往下捲隱藏、往上捲出現
   let lastY = scrollY;
   addEventListener('scroll', rafThrottle(() => {
@@ -480,7 +475,6 @@ function shell() {
     const hide = y > 300 && y > lastY;
     hdr.classList.toggle('hide', hide);
     document.body.classList.toggle('hdr-hidden', hide);
-    btt.classList.toggle('show', y > 600);
     lastY = y;
   }), { passive: true });
 
@@ -2358,7 +2352,7 @@ function cartPage() {
               <del>${fmt(c.origin)}</del>
               <span class="off">${pct(c)}% OFF</span>
             </div>
-            <button class="cart-item-del" data-del="${c.id}" title="移除">✕</button>
+            <button class="cart-item-del" data-del="${c.id}" title="移除" aria-label="移除 ${c.title}">✕</button>
           </div>`).join('')}
         </div>
         <aside class="cart-summary">
@@ -3575,7 +3569,7 @@ function wishlistPage() {
         </div>
         <div class="wish-actions">
           <button class="btn btn-pri" onclick="cart.add('${c.id}');saveCart();updateCartBadge();toast('已加入購物車')">加入購物車</button>
-          <button class="wish-rm" data-id="${c.id}" title="移除收藏">✕</button>
+          <button class="wish-rm" data-id="${c.id}" title="移除收藏" aria-label="移除收藏 ${c.title}">✕</button>
         </div>
       </div>`).join('')}</div>
     </div></section>`;
@@ -4762,7 +4756,7 @@ function playerPage() {
 
   // Shortcuts overlay
   const scOverlay = $('#plr-shortcuts');
-  const toggleSc = () => { scOverlay.hidden = !scOverlay.hidden; };
+  const toggleSc = () => { scOverlay.hidden = !scOverlay.hidden; if (!scOverlay.hidden) trapFocus(scOverlay); };
   $('#plr-keys').onclick = toggleSc;
   $('.plr-shortcuts-close').onclick = toggleSc;
   scOverlay.onclick = e => { if (e.target === scOverlay) toggleSc(); };
@@ -5851,7 +5845,7 @@ function searchPage() {
       <div class="srch-input-wrap">
         <span class="srch-icon">⌕</span>
         <input class="srch-input" type="text" value="${escH(initQ)}" placeholder="搜尋課程、講師、關鍵字…" autofocus aria-label="搜尋課程">
-        <button class="srch-clear" style="display:${initQ ? 'flex' : 'none'}">✕</button>
+        <button class="srch-clear" style="display:${initQ ? 'flex' : 'none'}" aria-label="清除搜尋">✕</button>
       </div>
     </div>
     <div class="srch-tags" id="srchTags"></div>
@@ -5987,7 +5981,7 @@ function searchPage() {
       tags.push({ label: labels[state.priceRange], clear: () => { state.priceRange = 'all'; $('[name="srch-price"][value="all"]', main).checked = true; } });
     }
     if (state.minRating > 0) tags.push({ label: `★ ${state.minRating}+`, clear: () => { state.minRating = 0; $('[name="srch-rating"][value="0"]', main).checked = true; } });
-    tagsEl.innerHTML = tags.map((t, i) => `<span class="srch-tag">${t.label}<button data-idx="${i}">✕</button></span>`).join('');
+    tagsEl.innerHTML = tags.map((t, i) => `<span class="srch-tag">${t.label}<button data-idx="${i}" aria-label="移除篩選 ${t.label}">✕</button></span>`).join('');
     $$('.srch-tag button', tagsEl).forEach(b => b.onclick = () => { tags[+b.dataset.idx].clear(); filter(); });
   }
 
@@ -6157,10 +6151,12 @@ function communityPage() {
     refreshList();
   });
   const modal = $('#cmy-modal');
-  $('#cmy-fab').onclick = () => { modal.hidden = false; };
-  $('#cmy-close').onclick = () => { modal.hidden = true; };
-  $('#cmy-cancel').onclick = () => { modal.hidden = true; };
-  $('.cmy-modal-bg', modal).onclick = () => { modal.hidden = true; };
+  const closeCmy = () => { modal.hidden = true; };
+  $('#cmy-fab').onclick = () => { modal.hidden = false; trapFocus(modal); };
+  $('#cmy-close').onclick = closeCmy;
+  $('#cmy-cancel').onclick = closeCmy;
+  $('.cmy-modal-bg', modal).onclick = closeCmy;
+  modal.addEventListener('keydown', e => { if (e.key === 'Escape') closeCmy(); });
   main.addEventListener('click', e => {
     const btn = e.target.closest('.cmy-like-btn');
     if (!btn) return;
@@ -6318,15 +6314,15 @@ function quizPage() {
       }).join('')}</div>
     </div>` : ''}
   </div>
-  <div class="qz-modal" hidden>
+  <div class="qz-modal" hidden role="dialog" aria-modal="true" aria-label="測驗進行中">
     <div class="qz-modal-bg"></div>
     <div class="qz-modal-box">
-      <div class="qz-modal-hdr"><div class="qz-progress"><div class="qz-progress-fill"></div></div><div class="qz-hdr-info"><span class="qz-q-num"></span><span class="qz-timer">⏱ 00:00</span><button class="qz-close">✕</button></div></div>
+      <div class="qz-modal-hdr"><div class="qz-progress"><div class="qz-progress-fill"></div></div><div class="qz-hdr-info"><span class="qz-q-num"></span><span class="qz-timer">⏱ 00:00</span><button class="qz-close" aria-label="關閉測驗">✕</button></div></div>
       <div class="qz-modal-body"><h3 class="qz-question"></h3><div class="qz-options"></div></div>
       <div class="qz-modal-foot"><button class="btn btn-ghost qz-prev" disabled>← 上一題</button><button class="btn btn-pri qz-next">下一題 →</button></div>
     </div>
   </div>
-  <div class="qz-result" hidden>
+  <div class="qz-result" hidden role="dialog" aria-modal="true" aria-label="測驗結果">
     <div class="qz-modal-bg"></div>
     <div class="qz-result-box">
       <div class="qz-result-icon"></div>
@@ -6347,6 +6343,7 @@ function quizPage() {
     currentQuiz = { id, title: qz.title, questions: shuffled };
     currentQ = 0; answers = new Array(shuffled.length).fill(-1); elapsed = 0;
     modal.hidden = false; document.body.style.overflow = 'hidden';
+    trapFocus(modal);
     if (timerInt) clearInterval(timerInt);
     timerInt = setInterval(() => { elapsed++; $('.qz-timer', modal).textContent = '⏱ ' + String(Math.floor(elapsed/60)).padStart(2,'0') + ':' + String(elapsed%60).padStart(2,'0'); }, 1000);
     renderQuestion();
@@ -6374,7 +6371,7 @@ function quizPage() {
     localStorage.setItem('aic-quiz-results', JSON.stringify(saved));
     const icon = pctVal >= 80 ? '🏆' : pctVal >= 60 ? '👍' : '💪';
     const title = pctVal >= 80 ? '太厲害了！' : pctVal >= 60 ? '表現不錯！' : '繼續加油！';
-    result.hidden = false;
+    result.hidden = false; trapFocus(result);
     $('.qz-result-icon', result).textContent = icon;
     $('.qz-result-title', result).textContent = title;
     $('.qz-result-score', result).innerHTML = `<span class="qz-big-score">${correct}<small>/${total}</small></span><div class="qz-pct">${pctVal}%</div>`;
@@ -6400,6 +6397,7 @@ function quizPage() {
     if (e.target.closest('.qz-back-btn')) closeResult();
     if (e.target.closest('.qz-share-btn') && currentQuiz) { const txt = `我在 AI Class 的「${currentQuiz.title}」測驗中答對了 ${saved[currentQuiz.id].score}/${saved[currentQuiz.id].total} 題！`; if (navigator.share) navigator.share({title:'AI Class 測驗成績',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt).then(()=>toast('成績已複製')).catch(()=>{}); } }
   };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!modal.hidden) closeModal(); if (!result.hidden) closeResult(); } });
   reveal(main);
 }
 
