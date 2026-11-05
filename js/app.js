@@ -2426,8 +2426,8 @@ function loginPage() {
           <button class="login-social login-apple" onclick="toast('示範網站：Apple 登入功能開發中')"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>使用 Apple 帳號登入</button>
         </div>
         <div class="login-divider"><span>或使用 Email</span></div>
-        <div class="login-field"><label>Email</label><input type="email" placeholder="your@email.com"></div>
-        <div class="login-field"><label>密碼</label><input type="password" placeholder="輸入密碼"></div>
+        <div class="login-field"><label>Email</label><input type="email" placeholder="your@email.com" autocomplete="email"></div>
+        <div class="login-field"><label>密碼</label><input type="password" placeholder="輸入密碼" autocomplete="current-password"></div>
         <div class="login-options"><label><input type="checkbox"> 記住我</label><a href="#">忘記密碼？</a></div>
         <button class="btn btn-pri login-submit" id="login-go">登入</button>
         <div class="login-footer">還沒有帳號？<a href="#" id="login-toggle">Email 註冊</a></div>
@@ -2454,6 +2454,7 @@ function loginPage() {
     h1.textContent = isLogin ? '建立帳號' : '歡迎回來';
     p.textContent = isLogin ? '免費註冊，開始你的學習之旅' : '登入你的 AI Class 帳號，繼續學習之旅';
     submit.textContent = isLogin ? '免費註冊' : '登入';
+    const pw = $('input[type="password"]', main); if (pw) pw.autocomplete = isLogin ? 'new-password' : 'current-password';
     footer.innerHTML = isLogin ? '已有帳號？<a href="#" id="login-toggle">返回登入</a>' : '還沒有帳號？<a href="#" id="login-toggle">Email 註冊</a>';
     const newToggle = $('#login-toggle', main);
     if (newToggle) newToggle.onclick = toggleLink.onclick;
@@ -5132,7 +5133,7 @@ function checkoutPage() {
 
         <section class="ck-section">
           <h2><span class="ck-step">4</span>Email 確認</h2>
-          <div class="ck-field"><label>Email</label><input type="email" placeholder="your@email.com" value=""></div>
+          <div class="ck-field"><label>Email</label><input type="email" placeholder="your@email.com" value="" autocomplete="email"></div>
           <p class="ck-hint">訂單確認信與發票將寄送至此 Email</p>
         </section>
       </div>
@@ -6954,8 +6955,8 @@ function contactPage() {
       <p class="ctc-form-sub">無法找到答案？直接留下你的問題，客服團隊會盡快回覆</p>
       <form class="ctc-form" onsubmit="event.preventDefault();toast('感謝您的來信，我們會在 24 小時內回覆！');this.reset();">
         <div class="ctc-row">
-          <div class="ctc-field"><label>姓名 <span>*</span></label><input type="text" required placeholder="你的姓名"></div>
-          <div class="ctc-field"><label>Email <span>*</span></label><input type="email" required placeholder="your@email.com"></div>
+          <div class="ctc-field"><label>姓名 <span>*</span></label><input type="text" required placeholder="你的姓名" autocomplete="name"></div>
+          <div class="ctc-field"><label>Email <span>*</span></label><input type="email" required placeholder="your@email.com" autocomplete="email"></div>
         </div>
         <div class="ctc-field"><label>問題類型</label>
           <select><option>課程相關</option><option>帳務/付款</option><option>技術問題</option><option>退費申請</option><option>企業方案洽詢</option><option>講師合作</option><option>其他</option></select>
@@ -7138,7 +7139,7 @@ function settingsPage() {
             </div>
             <div class="set-field"><label>顯示名稱</label><input type="text" value="${user.name}" id="set-name" aria-label="顯示名稱"></div>
             <div class="set-field"><label>Email</label><input type="email" value="${user.email}" id="set-email" aria-label="Email"><small>修改後需驗證新信箱</small></div>
-            <div class="set-field"><label>電話</label><input type="tel" placeholder="選填" id="set-phone" aria-label="電話"></div>
+            <div class="set-field"><label>電話</label><input type="tel" placeholder="選填" id="set-phone" aria-label="電話" autocomplete="tel"></div>
             <div class="set-field"><label>自我介紹</label><textarea rows="3" placeholder="介紹一下自己吧..." id="set-bio" aria-label="自我介紹"></textarea></div>
             <button class="btn btn-pri set-save" data-sec="profile">儲存變更</button>
           </div>
