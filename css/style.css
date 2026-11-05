@@ -593,6 +593,20 @@ body.hdr-hidden .tabs{top:0}
 .cart-empty-icon{font-size:80px;margin-bottom:20px;opacity:.4}
 .cart-empty h2{font-size:24px;font-weight:900;margin-bottom:10px}
 .cart-empty p{color:var(--tx2);margin-bottom:24px}
+.empty-illus{width:160px;height:160px;margin:0 auto 24px;opacity:.7}
+.empty-illus svg{width:100%;height:100%}
+[data-theme="dark"] .empty-illus{opacity:.5}
+/* 加入購物車飛入動畫 */
+.fly-cart{position:fixed;z-index:9999;pointer-events:none;width:80px;height:50px;border-radius:8px;object-fit:cover;box-shadow:var(--shadow-md);transition:all .6s cubic-bezier(.2,.8,.24,1);opacity:1}
+.fly-cart.fly{transform:scale(.2);opacity:0}
+/* 最近瀏覽區塊（課程頁） */
+.recent-viewed{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px}
+@media(max-width:760px){.recent-viewed{grid-template-columns:repeat(2,1fr)}}
+.rv-item{display:flex;gap:10px;padding:10px;border-radius:12px;background:var(--bg2);transition:background .2s,transform .2s}
+.rv-item:hover{background:var(--pri-8);transform:translateY(-2px)}
+.rv-item img{width:60px;height:38px;border-radius:6px;object-fit:cover;flex-shrink:0}
+.rv-item .rv-title{font-size:13px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rv-item .rv-teacher{font-size:11px;color:var(--tx3);margin-top:2px}
 .cart-layout{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start}
 .cart-items{display:grid;gap:0}
 .cart-select-all{padding:14px 0;border-bottom:1px solid var(--line);font-size:14px;font-weight:600;color:var(--tx2)}
@@ -2124,7 +2138,8 @@ body:not(.loaded) main{min-height:100vh}
 [data-theme="dark"] ::-webkit-scrollbar-track{background:#0e0e18}
 button:focus-visible,a:focus-visible{outline:2px solid var(--pri);outline-offset:3px;border-radius:8px}
 .btn-pri:active,.btn-ghost:active,.chip:active{transform:scale(.96)}
-.card{scroll-snap-align:start;position:relative;display:block;transition:transform .3s var(--ease),box-shadow .3s}
+.card{scroll-snap-align:start;position:relative;display:block;transition:transform .3s var(--ease),box-shadow .3s;contain:layout style}
+.sec{contain:layout style}
 .card:hover{transform:translateY(-6px);box-shadow:0 16px 40px -12px rgba(0,0,0,.12)}
 .card:hover .price .now{color:var(--pri);transition:color .2s}
 .card:hover .price{background:var(--pri-6);border-radius:6px;margin:-4px -6px;padding:4px 6px;transition:background .2s}

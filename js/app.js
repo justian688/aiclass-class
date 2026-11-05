@@ -25,6 +25,9 @@ const follows = new Set(ls('aic-follows', []));
 function saveFollows() { localStorage.setItem('aic-follows', JSON.stringify([...follows])); }
 const reviewVotes = ls('aic-rvotes', {});
 function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(reviewVotes)); }
+const _timers = [];
+function regInterval(fn, ms) { const id = setInterval(fn, ms); _timers.push(id); return id; }
+function clearTimers() { _timers.forEach(id => clearInterval(id)); _timers.length = 0; }
 function saveCart() { localStorage.setItem('aic-cart', JSON.stringify([...cart])); }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) { b.textContent = cart.size || ''; b.style.display = cart.size ? 'flex' : 'none'; b.classList.remove('bounce'); void b.offsetWidth; b.classList.add('bounce'); } }
 
@@ -599,7 +602,7 @@ function searchOverlay() {
     const q = inp.value.trim().toLowerCase();
     const list = q ? C.filter(c => (c.title + c.teacher + c.role + (c.sub || '')).toLowerCase().includes(q)) : [];
     const hl = (t) => { const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return t.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>'); };
-    res.innerHTML = !q ? '' : list.length ? `<div class="sres-count">找到 ${list.length} 筆結果</div>` + list.slice(0, 8).map((c, i) => `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt="${c.title}"><div><b>${hl(c.title)}</b><div class="sres-info"><span class="sres-star">★ ${c.rating}</span><span>${hl(c.teacher)}・${fmt(c.price)}</span></div><span class="sres-cat">${c.sub || c.cat}</span></div></a>`).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
+    res.innerHTML = !q ? '' : list.length ? `<div class="sres-count">找到 ${list.length} 筆結果</div>` + list.slice(0, 8).map((c, i) => { const catName = (window.CATS.find(x => x.id === c.cat) || {}).name || c.cat; return `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt="${c.title}"><div><b>${hl(c.title)}</b><div class="sres-info"><span class="sres-star">★ ${c.rating}</span><span>${hl(c.teacher)}・${fmt(c.price)}</span></div><span class="sres-cat">${catName}</span>${c.sub ? `<span class="sres-cat" style="margin-left:4px">${c.sub}</span>` : ''}</div></a>`; }).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
   };
   const updSel = () => { $$('.sres-item', res).forEach((a, i) => a.classList.toggle('sres-active', i === selIdx)); };
   inp.oninput = run;
@@ -739,6 +742,16 @@ function bindCards(root = document) {
     e.preventDefault(); e.stopPropagation();
     const cid = b.dataset.addcart; cart.add(cid); saveCart(); updateCartBadge(); toast('已加入購物車');
     b.textContent = '✓ 已加入'; b.style.background = 'var(--pri)'; b.style.color = '#fff'; b.style.pointerEvents = 'none';
+    const thumb = b.closest('.card')?.querySelector('.thumb img');
+    const cartEl = $('.cart-btn') || $('.cart-badge');
+    if (thumb && cartEl && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const sr = thumb.getBoundingClientRect(), dr = cartEl.getBoundingClientRect();
+      const fly = document.createElement('img'); fly.src = thumb.src; fly.className = 'fly-cart';
+      fly.style.left = sr.left + 'px'; fly.style.top = sr.top + 'px'; fly.style.width = sr.width + 'px'; fly.style.height = sr.height + 'px';
+      document.body.append(fly);
+      requestAnimationFrame(() => { fly.style.left = dr.left + 'px'; fly.style.top = dr.top + 'px'; fly.classList.add('fly'); });
+      fly.addEventListener('transitionend', () => fly.remove());
+    }
     window.trackEvent('add_to_cart', { item_id: cid });
   });
   $$('[data-addwish]', root).forEach(b => b.onclick = e => {
@@ -1847,6 +1860,7 @@ function course() {
   ${(() => { const G = window.GALLERY || []; const works = G.filter(g => g.course === c.id); if (!works.length) return ''; return `<section class="c-sec c-gallery rv-up" id="student-works"><h2>🎨 學員作品展示</h2><div class="c-gallery-grid">${works.map(w => `<div class="c-gallery-item"><div class="c-gallery-thumb"><img src="assets/img/v${w.v}.jpg" alt="${w.title}" loading="lazy" decoding="async"></div><div class="c-gallery-info"><h4>${w.title}</h4><p>${w.desc}</p><div class="c-gallery-meta"><span>${w.author}</span><span>❤ ${w.likes}</span></div></div></div>`).join('')}</div><a href="gallery.html" class="btn btn-ghost" style="width:100%;margin-top:16px">查看更多學員作品 →</a></section>`; })()}
   ${(()=>{const next=C.filter(x=>x.id!==c.id&&x.cat===c.cat&&x.hours>c.hours).sort((a,b)=>a.hours-b.hours).slice(0,3);if(!next.length)return '';return `<div class="c-next-step rv-up"><h3>📈 學完這門，接下來學</h3><div class="c-next-grid">${next.map(n=>`<a class="c-next-card" href="course.html?id=${n.id}"><img src="${img(n)}" alt="${n.title}" loading="lazy" decoding="async"><div class="c-next-info"><b>${n.title}</b><span>★ ${n.rating} ・ ${n.hours}h ・ ${fmt(n.price)}</span></div><span class="c-next-arrow">→</span></a>`).join('')}</div></div>`;})()}
   ${smartRecommend(c)}
+  ${(()=>{const rv=ls('aic-recent-view',[]).filter(x=>x!==c.id).slice(0,4).map(x=>byId[x]).filter(Boolean);if(!rv.length)return '';return `<section class="c-sec rv-up"><h2>🕐 最近瀏覽</h2><div class="recent-viewed">${rv.map(r=>`<a class="rv-item" href="course.html?id=${r.id}"><img src="${img(r)}" alt="${r.title}" loading="lazy" decoding="async"><div><div class="rv-title">${r.title}</div><div class="rv-teacher">${r.teacher}</div></div></a>`).join('')}</div></section>`;})()}
   ${railSec('more', '你可能也會喜歡', '', others)}`;
 
   seo({
@@ -2288,7 +2302,7 @@ function cartPage() {
 
     if (!items.length) {
       main.innerHTML = `<div class="wrap" style="padding:80px 0"><div class="cart-empty">
-        <div class="cart-empty-icon">🛒</div>
+        <div class="empty-illus"><svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="50" width="100" height="80" rx="12" stroke="var(--tx3)" stroke-width="2" fill="var(--bg2)"/><path d="M30 70 L80 45 L130 70" stroke="var(--tx3)" stroke-width="2" fill="none"/><circle cx="80" cy="90" r="16" stroke="var(--pri)" stroke-width="2" stroke-dasharray="4 3" fill="none"/><path d="M74 90h12M80 84v12" stroke="var(--pri)" stroke-width="2" stroke-linecap="round"/></svg></div>
         <h2>購物車是空的</h2>
         <p>探索超過 ${C.length} 堂職人課程，找到適合你的學習方向</p>
         <a class="btn btn-pri" href="index.html">探索課程 →</a>
@@ -3510,7 +3524,7 @@ function wishlistPage() {
     else if (wishSort === 'rating') items.sort((a,b) => b.rating - a.rating);
     if (!items.length) {
       main.innerHTML = `<section class="sec"><div class="wrap">
-        <div class="cart-empty"><div class="cart-empty-icon">♡</div><h2>收藏清單是空的</h2><p>瀏覽課程時點擊愛心，把感興趣的課程加入收藏</p><a class="btn btn-pri" href="index.html">探索課程</a></div>
+        <div class="cart-empty"><div class="empty-illus"><svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M80 130 L35 85 A28 28 0 0 1 80 50 A28 28 0 0 1 125 85 Z" stroke="var(--pink)" stroke-width="2" fill="none" stroke-dasharray="5 4"/><circle cx="80" cy="82" r="8" fill="var(--pink)" opacity=".15"/><path d="M76 82h8M80 78v8" stroke="var(--pink)" stroke-width="1.5" stroke-linecap="round"/></svg></div><h2>收藏清單是空的</h2><p>瀏覽課程時點擊愛心，把感興趣的課程加入收藏</p><a class="btn btn-pri" href="index.html">探索課程</a></div>
       </div></section>`;
       return;
     }
@@ -5836,7 +5850,7 @@ function searchPage() {
         </div>
         <div class="srch-grid" id="srchGrid"></div>
         <div class="srch-empty" id="srchEmpty" style="display:none">
-          <div class="srch-empty-icon">🔍</div>
+          <div class="empty-illus"><svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="70" cy="70" r="35" stroke="var(--tx3)" stroke-width="2" fill="none" stroke-dasharray="5 4"/><line x1="95" y1="95" x2="125" y2="125" stroke="var(--tx3)" stroke-width="3" stroke-linecap="round"/><path d="M60 65 Q70 55 80 65" stroke="var(--pri)" stroke-width="1.5" fill="none"/><circle cx="60" cy="60" r="2" fill="var(--tx3)"/><circle cx="80" cy="60" r="2" fill="var(--tx3)"/></svg></div>
           <h3>找不到相關課程</h3>
           <p>試試其他關鍵字或調整篩選條件</p>
           <div class="srch-recommend"><h4>為你推薦熱門課程</h4><div class="srch-rec-grid">${[...C].sort((a,b)=>b.students-a.students).slice(0,4).map(c=>card(c)).join('')}</div></div>
@@ -8261,7 +8275,7 @@ function openRecommendQuiz() {
 }
 
 // ── 電子報訂閱 modal（瀏覽 3 頁後觸發，每 session 一次）──
-{
+(typeof requestIdleCallback==='function'?requestIdleCallback:cb=>setTimeout(cb,2000))(() => {
   const nlKey = 'aic-nl-shown', pvKey = 'aic-pv-count';
   if (!sessionStorage.getItem(nlKey)) {
     const pv = +(sessionStorage.getItem(pvKey) || 0) + 1;
@@ -8284,7 +8298,7 @@ function openRecommendQuiz() {
       }, 5000);
     }
   }
-}
+});
 
 // ── 課程頁「最近購買」社會證明通知 ──
 {
