@@ -1911,7 +1911,7 @@ function course() {
     img: `https://aiclass.tw/${img(c)}`,
     ogType: 'course',
     jsonLd: [
-      { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/', sameAs: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher, jobTitle: c.role }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock', url: `https://aiclass.tw/course.html?id=${c.id}`, validFrom: '2026-01-01' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, worstRating: 1, ratingCount: c.students, reviewCount: Math.max(1, Math.round(c.students * 0.08)) }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H`, inLanguage: 'zh-TW' }, image: `https://aiclass.tw/${img(c)}`, inLanguage: 'zh-TW' },
+      { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/', sameAs: 'https://aiclass.tw/' }, instructor: { '@type': 'Person', name: c.teacher, jobTitle: c.role }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock', url: `https://aiclass.tw/course.html?id=${c.id}`, validFrom: '2026-01-01' }, aggregateRating: { '@type': 'AggregateRating', ratingValue: c.rating, bestRating: 5, worstRating: 1, ratingCount: c.students, reviewCount: Math.max(1, Math.round(c.students * 0.08)) }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H`, inLanguage: 'zh-TW' }, educationalLevel: c.hours <= 10 ? 'Beginner' : c.hours <= 20 ? 'Intermediate' : 'Advanced', numberOfLessons: totalLessonCount, timeRequired: `PT${c.hours}H`, image: `https://aiclass.tw/${img(c)}`, inLanguage: 'zh-TW' },
       { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: cat.name, item: `https://aiclass.tw/category.html?cat=${c.cat}` }, { '@type': 'ListItem', position: 3, name: c.title }] },
       { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: courseFaq.map(f => ({ '@type': 'Question', name: f[0], acceptedAnswer: { '@type': 'Answer', text: f[1] } })) }
     ]
@@ -8486,3 +8486,9 @@ if (!prefersReduced) {
 }
 
 })();
+
+if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+  new PerformanceObserver(list => { list.getEntries().forEach(e => console.log(`[perf] ${e.entryType}: ${Math.round(e.startTime)}ms`)); }).observe({ type: 'largest-contentful-paint', buffered: true });
+  new PerformanceObserver(list => { list.getEntries().forEach(e => console.log(`[perf] ${e.name}: ${Math.round(e.startTime)}ms`)); }).observe({ type: 'paint', buffered: true });
+  addEventListener('load', () => { const nav = performance.getEntriesByType('navigation')[0]; if (nav) console.log(`[perf] DOM ready: ${Math.round(nav.domContentLoadedEventEnd)}ms, load: ${Math.round(nav.loadEventEnd)}ms`); });
+}
