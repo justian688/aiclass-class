@@ -439,7 +439,9 @@ window.LIVE_EVENTS = [
   { id: 'ev5', title: '遊戲開發者座談：獨立遊戲的第一步', host: '陳威宏', date: '2026-11-18 19:30', duration: 60, enrolled: 187, max: 300, course: 'c38', status: 'upcoming' },
   { id: 'ev6', title: '前端面試模擬：React 實戰解題', host: '蔡承恩', date: '2026-10-25 20:00', duration: 90, enrolled: 500, max: 500, course: 'c26', status: 'ended', replay: true },
   { id: 'ev7', title: '短影音創作者交流會', host: '趙宥翔', date: '2026-10-20 14:00', duration: 60, enrolled: 300, max: 300, course: 'c27', status: 'ended', replay: true },
-  { id: 'ev8', title: '品牌設計案例分享：從策略到落地', host: '林予安', date: '2026-10-15 19:00', duration: 75, enrolled: 245, max: 300, course: 'c50', status: 'ended', replay: true }
+  { id: 'ev8', title: '品牌設計案例分享：從策略到落地', host: '林予安', date: '2026-10-15 19:00', duration: 75, enrolled: 245, max: 300, course: 'c50', status: 'ended', replay: true },
+  { id: 'ev9', title: '商業攝影燈光實戰：一盞燈拍出雜誌感', host: '李承翰', date: '2026-11-20 19:30', duration: 90, enrolled: 278, max: 400, course: 'c33', status: 'upcoming' },
+  { id: 'ev10', title: '個人品牌經營 Q&A：從 0 到 10 萬粉', host: '劉怡君', date: '2026-11-22 14:00', duration: 75, enrolled: 410, max: 500, course: 'c53', status: 'upcoming' }
 ];
 
 // ── 社群討論（模擬） ──
@@ -451,7 +453,11 @@ window.COMMUNITY_POSTS = [
   { id: 'cp5', author: 'AI 探索者', avatar: '🤖', title: 'Midjourney v6 的 Prompt 技巧整理', content: '整理了 50 個高品質出圖的 Prompt 模板，包含風格指定、構圖控制和負面提示...', course: 'c47', likes: 156, replies: 42, time: '1 天前', tags: ['筆記分享', '資源'] },
   { id: 'cp6', author: '健身日記', avatar: '💪', title: '跟著 12 週課表練了 8 週的變化', content: '體脂從 28% 降到 23%，附上前後對比照。飲食調整真的是關鍵！', course: 'c31', likes: 234, replies: 56, time: '2 天前', tags: ['心得分享', '成果'] },
   { id: 'cp7', author: '音樂創作者', avatar: '🎵', title: '用 Ableton 做出的第一首 Lo-fi Beat', content: '雖然還很青澀，但終於從零完成了一首完整的作品，感動！附上 SoundCloud 連結。', course: 'c28', likes: 89, replies: 18, time: '2 天前', tags: ['作品分享'] },
-  { id: 'cp8', author: '理財小白', avatar: '💰', title: 'ETF 定期定額三個月心得分享', content: '跟著郭老師的配置建議投了 0050 和 00878，雖然才三個月但心態穩多了。', course: 'c41', likes: 67, replies: 29, time: '3 天前', tags: ['心得分享'] }
+  { id: 'cp8', author: '理財小白', avatar: '💰', title: 'ETF 定期定額三個月心得分享', content: '跟著郭老師的配置建議投了 0050 和 00878，雖然才三個月但心態穩多了。', course: 'c41', likes: 67, replies: 29, time: '3 天前', tags: ['心得分享'] },
+  { id: 'cp9', author: '水彩新手', avatar: '🎨', title: '戶外寫生第一次就下雨的慘痛經驗', content: '跟著曾老師的課買好了水彩本和旅行調色盤，結果第一次出門寫生遇到大雨，顏料全糊了...但是意外畫出了很有氛圍感的作品！', course: 'c21', likes: 112, replies: 38, time: '4 天前', tags: ['心得分享', '成果'] },
+  { id: 'cp10', author: '獨立遊戲夢', avatar: '🎮', title: '用 Godot 做的第一款小遊戲上架 itch.io 了！', content: '雖然只是一個簡單的平台跳躍遊戲，但從設計到程式到美術都是自己完成的，超有成就感。感謝陳老師的課程！', course: 'c38', likes: 198, replies: 45, time: '4 天前', tags: ['作品分享', '成果'] },
+  { id: 'cp11', author: '攝影菜鳥', avatar: '📸', title: '請問室內人像打光推薦什麼燈？', content: '跟著李老師的課學了基本打光，但目前只有一支機頂閃，想要升級室內棚燈，預算一萬以內有推薦嗎？', likes: 34, replies: 22, time: '5 天前', tags: ['發問'] },
+  { id: 'cp12', author: '轉職工程師', avatar: '🚀', title: '非本科轉職前端三個月心得', content: '文組背景，靠著蔡老師的課從零開始學前端，三個月後拿到第一個 offer。分享我的學習時間表和面試準備方式。', course: 'c24', likes: 287, replies: 63, time: '5 天前', tags: ['心得分享', '成果'] }
 ];
 
 // ── 課程章節結構（供課程詳情頁使用） ──

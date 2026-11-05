@@ -1419,8 +1419,14 @@ a.notif-item:hover{background:rgba(0,0,0,.03)}
 .plr-sidebar-toggle{display:none;background:none;border:none;color:var(--tx);font-size:20px;cursor:pointer}
 .plr-body{display:flex;flex:1;overflow:hidden}
 .plr-main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-.plr-video-wrap{position:relative;background:#000;aspect-ratio:16/9;flex-shrink:0}
+.plr-video-wrap{position:relative;background:#000;aspect-ratio:16/9;flex-shrink:0;transition:none}
 .plr-video-wrap video{width:100%;height:100%;object-fit:contain;display:block;cursor:pointer}
+.plr-video-wrap.plr-mini{position:fixed;bottom:24px;right:24px;width:320px;height:180px;z-index:999;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);aspect-ratio:auto;animation:miniSlide .3s var(--ease)}
+.plr-video-wrap.plr-mini .plr-controls,.plr-video-wrap.plr-mini .plr-lesson-bar,.plr-video-wrap.plr-mini .plr-nav-row{display:none}
+.plr-mini-close{display:none;position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;font-size:14px;z-index:5;line-height:1}
+.plr-video-wrap.plr-mini .plr-mini-close{display:grid;place-items:center}
+@keyframes miniSlide{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.plr-video-wrap.plr-mini{animation:none}@keyframes miniSlide{from{opacity:1;transform:none}to{opacity:1;transform:none}}}
 .plr-controls{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:8px 16px 12px;opacity:0;transition:opacity .3s}
 .plr-video-wrap:hover .plr-controls,.plr-video-wrap:fullscreen .plr-controls{opacity:1}
 .plr-progress-bar{position:relative;height:4px;background:rgba(255,255,255,.2);border-radius:2px;cursor:pointer;margin-bottom:10px;transition:height .15s}
@@ -2767,11 +2773,21 @@ img[loading="lazy"].loaded,img[loading="lazy"][complete]{opacity:1}
 .cmy-like-btn{background:none;border:none;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;transition:transform .2s,background .2s;color:var(--tx2)}
 .cmy-like-btn:hover{background:rgba(124,92,255,.08)}
 .cmy-like-btn.liked{color:#ff5c8a}
+.cmy-react-wrap{position:relative;display:inline-flex}
+.cmy-react-btn{background:none;border:1px solid var(--line);border-radius:16px;padding:4px 8px;font-size:13px;cursor:pointer;transition:background .2s}
+.cmy-react-btn:hover{background:rgba(124,92,255,.08)}
+.cmy-react-picker{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);display:flex;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:24px;padding:6px 8px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:20;animation:dropIn .2s var(--ease)}
+.cmy-emoji{background:none;border:none;font-size:20px;cursor:pointer;padding:4px;border-radius:8px;transition:transform .15s,background .15s;min-width:44px;min-height:44px;display:grid;place-items:center}
+.cmy-emoji:hover{transform:scale(1.3);background:rgba(124,92,255,.1)}
+.cmy-share-btn{background:none;border:none;font-size:13px;color:var(--tx2);cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .2s}
+.cmy-share-btn:hover{background:rgba(124,92,255,.08);color:var(--pri)}
 .cmy-like-count{font-weight:600}
 .cmy-trending{list-style:none;counter-reset:rank;display:flex;flex-direction:column;gap:6px;flex-wrap:wrap;margin-top:8px}
 .cmy-trend-tag{font-size:12px;padding:4px 10px;border-radius:12px;background:rgba(124,92,255,.08);color:var(--pri);cursor:pointer;transition:background .2s}
 .cmy-trend-tag:hover{background:rgba(124,92,255,.16)}
 [data-theme="dark"] .cmy-like-btn:hover{background:rgba(124,92,255,.15)}
+[data-theme="dark"] .cmy-react-picker{background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+[data-theme="dark"] .cmy-react-btn:hover{background:rgba(124,92,255,.15)}
 [data-theme="dark"] .cmy-trend-tag{background:rgba(124,92,255,.15)}
 /* ===== 測驗歷史 ===== */
 .qz-history{margin-top:40px;padding:24px;background:var(--bg2);border-radius:var(--r)}
@@ -4103,6 +4119,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
   .rv-sort{flex-wrap:wrap}
   .rv-sort-btn{padding:5px 10px;font-size:12px}
   .c-plan-item{flex-direction:column;align-items:flex-start;gap:6px}
+  .plr-video-wrap.plr-mini{width:200px;height:112px;bottom:72px;right:12px}
   .c-plan-week{width:auto}
   .my-hero{padding:28px 0 20px}
   .my-avatar-lg{width:64px;height:64px;font-size:26px}

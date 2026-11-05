@@ -4093,6 +4093,22 @@ function playerPage() {
     if (e.code === 'Escape' && !scOverlay.hidden) toggleSc();
   };
 
+  // Mini player on scroll
+  const videoWrap = $('.plr-video-wrap');
+  if (videoWrap) {
+    const miniObs = new IntersectionObserver(([entry]) => {
+      const mini = !entry.isIntersecting && !vid_el.paused;
+      videoWrap.classList.toggle('plr-mini', mini);
+    }, { threshold: 0.3 });
+    miniObs.observe(videoWrap);
+    const miniClose = document.createElement('button');
+    miniClose.className = 'plr-mini-close';
+    miniClose.setAttribute('aria-label', '關閉迷你播放器');
+    miniClose.textContent = '✕';
+    miniClose.onclick = () => { vid_el.pause(); videoWrap.classList.remove('plr-mini'); };
+    videoWrap.append(miniClose);
+  }
+
   // 學習休息提醒（每 25 分鐘）
   let studyMins = 0;
   const restTimer = setInterval(() => {
@@ -5159,7 +5175,7 @@ function communityPage() {
           <h3 class="cmy-thread-title" style="cursor:pointer" onclick="this.closest('.cmy-thread').classList.toggle('expanded')">${p.title}</h3>
           <p class="cmy-thread-preview">${p.content}</p>
           ${c ? `<div class="cmy-course-link">📚 ${c.title}</div>` : ''}
-          <div class="cmy-thread-stats"><button class="cmy-like-btn${cmyLiked.has(p.id) ? ' liked' : ''}" data-pid="${p.id}" data-likes="${p.likes}"><span class="cmy-heart">${cmyLiked.has(p.id) ? '❤️' : '🤍'}</span> <span class="cmy-like-count">${p.likes + (cmyLiked.has(p.id) ? 1 : 0)}</span></button><span>💬 ${p.replies}</span></div>
+          <div class="cmy-thread-stats"><button class="cmy-like-btn${cmyLiked.has(p.id) ? ' liked' : ''}" data-pid="${p.id}" data-likes="${p.likes}"><span class="cmy-heart">${cmyLiked.has(p.id) ? '❤️' : '🤍'}</span> <span class="cmy-like-count">${p.likes + (cmyLiked.has(p.id) ? 1 : 0)}</span></button><div class="cmy-react-wrap"><button class="cmy-react-btn">😀+</button><div class="cmy-react-picker" hidden>${['👍','❤️','🔥','👏','😮','💡'].map(e=>`<button class="cmy-emoji" data-eid="${p.id}">${e}</button>`).join('')}</div></div><span>💬 ${p.replies}</span><button class="cmy-share-btn" data-share="${p.title}">🔗 分享</button></div>
         </div>
       </div>
     </div>`;
@@ -5249,6 +5265,15 @@ function communityPage() {
     count.textContent = baseLikes + (cmyLiked.has(pid) ? 1 : 0);
     if (cmyLiked.has(pid)) { btn.style.transform = 'scale(1.15)'; setTimeout(() => btn.style.transform = '', 200); }
   });
+  main.addEventListener('click', e => {
+    const rb = e.target.closest('.cmy-react-btn');
+    if (rb) { const picker = rb.nextElementSibling; picker.hidden = !picker.hidden; return; }
+    const emoji = e.target.closest('.cmy-emoji');
+    if (emoji) { toast(`已按 ${emoji.textContent} 表情反應`); emoji.closest('.cmy-react-picker').hidden = true; return; }
+    const share = e.target.closest('.cmy-share-btn');
+    if (share) { navigator.clipboard?.writeText(`AI Class 社群 — ${share.dataset.share}\nhttps://aiclass.tw/community.html`).then(() => toast('已複製分享連結')).catch(() => toast('複製失敗')); }
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.cmy-react-wrap')) $$('.cmy-react-picker').forEach(p => p.hidden = true); });
   reveal(main);
 }
 
