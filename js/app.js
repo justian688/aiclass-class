@@ -515,7 +515,7 @@ function shell() {
   // 首次訪客歡迎導覽
   if (!localStorage.getItem('aic-toured') && page === 'home') {
     const steps = [
-      { icon: '🎓', title: '歡迎來到 AI Class', text: '跟著業界頂尖職人，把你的熱情學成專業。${C.length} 堂精選課程，涵蓋設計、插畫、AI、攝影等 10 大領域。' },
+      { icon: '🎓', title: '歡迎來到 AI Class', text: `跟著業界頂尖職人，把你的熱情學成專業。${C.length} 堂精選課程，涵蓋設計、插畫、AI、攝影等 10 大領域。` },
       { icon: '🎬', title: '業界職人親自授課', text: '每堂課由業界講師精心製作，提供完整專案檔、練習素材與 PDF 講義，學完就能產出作品。' },
       { icon: '🚀', title: '開始你的學習之旅', text: '按 ⌘K 搜尋課程、按 ? 查看快捷鍵。首購享折扣碼 WELCOME — 現在就探索適合你的課程！' }
     ];
@@ -8012,7 +8012,7 @@ function openRecommendQuiz() {
   cw.querySelector('.cw-fab').onclick = () => { cwPanel.hidden = !cwPanel.hidden; cw.classList.toggle('open', !cwPanel.hidden); cwBadge.hidden = true; if (!cwPanel.hidden) cwInput.focus(); };
   cw.querySelector('.cw-min').onclick = () => { cwPanel.hidden = true; cw.classList.remove('open'); };
   const cwReplies = {
-    course: '我們有 ${C.length} 堂精選課程，涵蓋設計、繪畫、AI、影像等 10 大領域。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！',
+    course: `我們有 ${C.length} 堂精選課程，涵蓋設計、繪畫、AI、影像等 10 大領域。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！`,
     refund: '購買後 7 天內，觀看進度低於 20%，可申請全額退費。到<a href="contact.html">聯繫我們</a>提交申請，3 個工作天內處理。',
     tech: '常見問題：<br>• 影片無法播放 → 清除快取重試<br>• 進度未儲存 → 確認已登入<br>• 下載問題 → 用 Chrome 瀏覽器<br>如仍有問題，到<a href="contact.html">聯繫我們</a>。',
     other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 support@aiclass.tw'
@@ -8029,7 +8029,7 @@ function openRecommendQuiz() {
 // ── 圖片 Lightbox ──
 {
   const lb = document.createElement('div'); lb.className = 'lb-overlay'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true'); lb.setAttribute('aria-label', '圖片檢視');
-  lb.innerHTML = `<button class="lb-close" aria-label="關閉">✕</button><button class="lb-nav lb-prev" aria-label="上一張">‹</button><img alt="放大檢視" hidden><button class="lb-nav lb-next" aria-label="下一張">›</button><div class="lb-counter"></div>`;
+  lb.innerHTML = `<button class="lb-close" aria-label="關閉">✕</button><button class="lb-nav lb-prev" aria-label="上一張">‹</button><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="放大檢視" hidden><button class="lb-nav lb-next" aria-label="下一張">›</button><div class="lb-counter"></div>`;
   document.body.append(lb);
   trapFocus(lb);
   let lbImgs = [], lbIdx = 0;
@@ -8369,6 +8369,14 @@ function openRecommendQuiz() {
   run();
   window.addEventListener('hashchange', run);
 })();
+
+// ── 圖片載入失敗回退 ──
+document.addEventListener('error', e => {
+  if (e.target.tagName !== 'IMG' || e.target.dataset.fallback) return;
+  e.target.dataset.fallback = '1';
+  e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23e5e5ea'%3E%3Crect width='400' height='300' rx='12'/%3E%3Ctext x='200' y='158' text-anchor='middle' font-family='system-ui' font-size='16' fill='%23aeaeb2'%3E圖片載入失敗%3C/text%3E%3C/svg%3E";
+  e.target.alt = '圖片暫時無法顯示';
+}, true);
 
 // ── 頁面退出動畫（支援 View Transitions API）──
 if (!prefersReduced) {
