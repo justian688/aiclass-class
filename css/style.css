@@ -4504,3 +4504,63 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .cmy-tag-cloud{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;padding:4px 0}
 .cmy-cloud-tag{display:inline-block;padding:4px 10px;border-radius:14px;cursor:pointer;color:var(--tag-c);border:1px solid currentColor;opacity:.75;transition:opacity .2s,transform .2s;line-height:1.4}
 .cmy-cloud-tag:hover{opacity:1;transform:scale(1.08)}
+
+/* ── Enterprise Compare Table ── */
+.ent-compare-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.ent-compare-tbl th,.ent-compare-tbl td{padding:12px 16px;text-align:center;border-bottom:1px solid var(--line)}
+.ent-compare-tbl th{background:var(--bg2);font-weight:600;position:sticky;top:0}
+.ent-compare-tbl th:first-child,.ent-compare-tbl td:first-child{text-align:left;font-weight:500}
+.ent-pop-col{background:rgba(124,92,255,.04)}
+[data-theme="dark"] .ent-pop-col{background:rgba(124,92,255,.08)}
+
+/* ── Enterprise Animated Stats ── */
+.ent-stats-anim{padding:48px 0;background:linear-gradient(135deg,rgba(124,92,255,.04),rgba(255,92,138,.04))}
+[data-theme="dark"] .ent-stats-anim{background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(255,92,138,.08))}
+
+/* ── Demo Modal ── */
+.demo-modal-ov{position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
+.demo-modal{background:var(--bg);border-radius:16px;padding:32px;max-width:480px;width:100%;position:relative;box-shadow:var(--shadow-lg,0 20px 60px rgba(0,0,0,.15))}
+.demo-modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--tx2);padding:4px 8px}
+.demo-modal-close:hover{color:var(--tx)}
+.demo-modal h2{font-size:22px;margin-bottom:8px}
+.demo-modal p{color:var(--tx2);font-size:14px;margin-bottom:20px;line-height:1.6}
+.demo-form{display:flex;flex-direction:column;gap:12px}
+.demo-form input,.demo-form select,.demo-form textarea{padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:var(--bg);color:var(--tx);outline:none;transition:border-color .2s}
+.demo-form input:focus,.demo-form select:focus,.demo-form textarea:focus{border-color:var(--pri)}
+
+/* ── Teach Story Stats ── */
+.tch-story-stat{margin-top:10px;font-size:13px;font-weight:600;color:var(--pri);background:rgba(124,92,255,.08);display:inline-block;padding:4px 12px;border-radius:8px}
+
+/* ── Teach Income Calculator ── */
+.tch-calc{max-width:500px;margin:0 auto;background:var(--bg2);border-radius:16px;padding:28px 24px}
+.tch-calc-row{margin-bottom:20px}
+.tch-calc-row label{display:block;font-weight:600;margin-bottom:4px;font-size:14px}
+.tch-calc-row span{display:block;font-size:20px;margin-bottom:8px;color:var(--tx)}
+.tch-calc-row input[type="range"]{width:100%;accent-color:var(--pri)}
+.tch-calc-result{text-align:center;font-size:18px;padding:16px;background:linear-gradient(135deg,var(--pri),var(--pink));color:#fff;border-radius:12px;font-weight:700}
+.tch-calc-result b{font-size:28px;display:block;margin-top:4px}
+
+/* ── About VMV Cards ── */
+.abt-vmv{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.abt-vmv-card{background:var(--bg2);border-radius:14px;padding:28px 24px;text-align:center}
+.abt-vmv-icon{font-size:36px;margin-bottom:12px}
+.abt-vmv-card h3{font-size:16px;margin-bottom:8px;font-weight:700}
+.abt-vmv-card p{font-size:14px;color:var(--tx2);line-height:1.7}
+@media(max-width:760px){.abt-vmv{grid-template-columns:1fr}}
+
+/* ── Contact Map ── */
+.ctc-map-box{background:var(--bg2);border-radius:16px;overflow:hidden;min-height:240px;display:flex;align-items:center;justify-content:center}
+.ctc-map-placeholder{text-align:center;padding:48px 24px}
+.ctc-map-pin{font-size:48px;margin-bottom:12px}
+.ctc-map-placeholder p{font-size:16px;font-weight:600;margin-bottom:4px}
+.ctc-map-placeholder span{font-size:14px;color:var(--tx2)}
+
+/* ── Contact Social ── */
+.ctc-social-links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.ctc-social-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;background:var(--bg2);color:var(--tx);text-decoration:none;font-size:14px;font-weight:500;transition:background .2s,transform .2s}
+.ctc-social-btn:hover{background:var(--pri);color:#fff;transform:translateY(-2px)}
+
+/* ── Contact Form Validation ── */
+.ctc-err{display:block;font-size:12px;color:#ff3b30;margin-top:4px}
+.ctc-invalid{border-color:#ff3b30!important}
+.ctc-invalid:focus{box-shadow:0 0 0 3px rgba(255,59,48,.15)}

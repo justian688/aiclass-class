@@ -2350,7 +2350,19 @@ function enterprisePage() {
   <section class="ent-partners">
     <div class="wrap">
       <h2 class="ent-sec-title rv-up">信賴 AI Class 的企業</h2>
-      <div class="ent-partner-logos rv-up">${(window.PARTNERS||[]).map(p => `<span class="ent-partner-logo">${p}</span>`).join('')}</div>
+      <div class="ent-partner-logos rv-up">${['台積電 TSMC','聯發科 MediaTek','宏碁 Acer','華碩 ASUS','LINE Taiwan','趨勢科技','國泰金控','富邦金控'].map(p => `<span class="ent-partner-logo">${p}</span>`).join('')}</div>
+      <p class="ent-sec-sub rv-up" style="margin-top:12px;font-size:14px">以及超過 500 家企業選擇 AI Class 作為培訓夥伴</p>
+    </div>
+  </section>
+
+  <section class="ent-stats-anim" id="ent-stats-anim">
+    <div class="wrap">
+      <div class="stats rv-up" id="ent-anim-nums">
+        <div class="stat"><b data-count="500" data-suffix="+">0</b><span>企業客戶</span></div>
+        <div class="stat"><b data-count="60000" data-suffix="+">0</b><span>企業學員</span></div>
+        <div class="stat"><b data-count="98" data-suffix="%">0</b><span>續約率</span></div>
+        <div class="stat"><b data-count="150" data-suffix="%">0</b><span>平均 ROI 提升</span></div>
+      </div>
     </div>
   </section>
 
@@ -2379,8 +2391,33 @@ function enterprisePage() {
           <div class="ent-plan-price"><span class="ent-plan-amount">${p.price}</span>${p.unit ? `<span class="ent-plan-unit">${p.unit}</span>` : ''}</div>
           <p class="ent-plan-desc">${p.desc}</p>
           <ul>${p.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul>
-          <button class="btn ${p.ghost ? 'btn-ghost' : 'btn-pri'}" style="width:100%;height:48px" onclick="toast('示範網站：方案功能開發中')">${p.cta}</button>
+          <button class="btn ${p.ghost ? 'btn-ghost' : 'btn-pri'}" style="width:100%;height:48px" onclick="${i === 2 ? 'openDemoModal()' : "toast('示範網站：方案功能開發中')"}">${p.cta}</button>
         </div>`).join('')}
+      </div>
+      <div class="ent-compare rv-up" style="margin-top:48px">
+        <h3 style="text-align:center;margin-bottom:24px;font-size:18px">方案功能比較</h3>
+        <div style="overflow-x:auto">
+        <table class="ent-compare-tbl">
+          <thead><tr><th>功能</th><th>入門方案</th><th class="ent-pop-col">專業方案</th><th>旗艦方案</th></tr></thead>
+          <tbody>
+            ${(() => {
+              const ck = v => v === '✓' ? '<span style="color:#34c759;font-weight:700">✓</span>' : v === '✗' ? '<span style="color:var(--tx3)">✗</span>' : v;
+              return [
+              ['員工帳號', '5 人', '50 人', '無限'],
+              ['課程存取', '精選 10 堂', '全站 200+', '全站 + 客製'],
+              ['學習報表', '✓', '✓', '✓'],
+              ['進階數據分析', '✗', '✓', '✓'],
+              ['企業影片上傳', '✗', '50GB', '無限'],
+              ['客製化證書', '✗', '✓', '✓'],
+              ['專屬客服', '社群支援', '✓', '專屬經理'],
+              ['API 串接', '✗', '✗', '✓'],
+              ['SSO 企業登入', '✗', '✗', '✓'],
+              ['到府教育訓練', '✗', '✗', '✓'],
+            ].map(r => `<tr><td>${r[0]}</td><td>${ck(r[1])}</td><td class="ent-pop-col">${ck(r[2])}</td><td>${ck(r[3])}</td></tr>`).join('');
+            })()}
+          </tbody>
+        </table>
+        </div>
       </div>
     </div>
   </section>
@@ -2421,7 +2458,58 @@ function enterprisePage() {
   </section>`;
 
   $$('.qa button', main).forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+
+  // Animated counter for enterprise stats
+  const entStats = $('#ent-anim-nums', main);
+  if (entStats) {
+    const cntObs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      cntObs.disconnect();
+      entStats.querySelectorAll('[data-count]').forEach(b => {
+        const target = +b.dataset.count, suffix = b.dataset.suffix || '';
+        let cur = 0;
+        const step = Math.max(1, Math.ceil(target / 45));
+        const iv = setInterval(() => {
+          cur = Math.min(cur + step, target);
+          b.textContent = cur.toLocaleString() + suffix;
+          if (cur >= target) clearInterval(iv);
+        }, 25);
+      });
+    }, { threshold: 0.3 });
+    cntObs.observe(entStats);
+  }
+
   reveal(main);
+}
+
+// Book Demo modal (enterprise)
+function openDemoModal() {
+  let ov = document.querySelector('.demo-modal-ov');
+  if (ov) { ov.hidden = false; ov.querySelector('input')?.focus(); return; }
+  ov = document.createElement('div');
+  ov.className = 'demo-modal-ov';
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-label', '預約 Demo');
+  ov.innerHTML = `<div class="demo-modal">
+    <button class="demo-modal-close" aria-label="關閉">&times;</button>
+    <h2>預約專屬 Demo</h2>
+    <p>填寫以下資訊，我們的企業顧問會在 1 個工作天內與您聯繫，安排專屬產品展示。</p>
+    <form class="demo-form" onsubmit="event.preventDefault();toast('已收到您的預約申請，顧問將盡快聯繫！','success');this.closest('.demo-modal-ov').hidden=true">
+      <input type="text" required placeholder="公司名稱" aria-label="公司名稱">
+      <input type="text" required placeholder="聯絡人姓名" aria-label="聯絡人姓名">
+      <input type="email" required placeholder="商務 Email" aria-label="商務 Email">
+      <input type="tel" placeholder="聯絡電話（選填）" aria-label="聯絡電話">
+      <select aria-label="公司規模"><option value="">公司規模</option><option>1-10 人</option><option>11-50 人</option><option>51-200 人</option><option>201-1000 人</option><option>1000+ 人</option></select>
+      <textarea placeholder="培訓需求或想了解的功能" rows="3" aria-label="培訓需求"></textarea>
+      <button type="submit" class="btn btn-pri" style="width:100%;height:48px">送出預約</button>
+    </form>
+  </div>`;
+  document.body.append(ov);
+  ov.querySelector('.demo-modal-close').onclick = () => { ov.hidden = true; };
+  ov.addEventListener('click', e => { if (e.target === ov) ov.hidden = true; });
+  ov.addEventListener('keydown', e => { if (e.key === 'Escape') ov.hidden = true; });
+  ov.querySelector('input')?.focus();
 }
 
 /* ---------- 企業培訓後台 ---------- */
@@ -3790,6 +3878,11 @@ function aboutPage() {
       <p>AI Class 相信，每個人都有潛力成為自己領域的專家。我們匯集了來自各行業的頂尖職人，將他們多年積累的實戰經驗，轉化為系統化的線上課程，讓學習不再受限於時間和地點。</p>
       <p>從設計、繪畫、AI 科技到料理烘焙，我們涵蓋了超過 10 大領域，課程一次購買即可無限期觀看，讓你用自己的節奏學習，真正把熱情變成專業能力。</p>
     </div>
+    <div class="abt-vmv rv-up" style="margin-top:40px">
+      <div class="abt-vmv-card"><div class="abt-vmv-icon">🎯</div><h3>願景 Vision</h3><p>成為亞洲最值得信賴的線上學習平台，讓每個人都能用最短的路徑，掌握改變人生的專業技能。</p></div>
+      <div class="abt-vmv-card"><div class="abt-vmv-icon">💡</div><h3>使命 Mission</h3><p>連結頂尖職人與渴望學習的人，用高品質的影片課程打破知識壁壘，讓專業不再是少數人的特權。</p></div>
+      <div class="abt-vmv-card"><div class="abt-vmv-icon">⭐</div><h3>核心價值 Values</h3><p>實戰為本、品質至上、終身學習、共好共創——我們堅信教育應該讓人成長，而非製造焦慮。</p></div>
+    </div>
   </div></section>
 
   <section class="sec"><div class="wrap">
@@ -3983,6 +4076,45 @@ function teachPage() {
     </div>
   </div></section>
 
+  <section class="sec"><div class="wrap">
+    <h2 class="ent-sec-title rv-up">成功講師的故事</h2>
+    <p class="ent-sec-sub rv-up">聽聽他們怎麼說</p>
+    <div class="ent-testi-grid">
+      ${[
+        { name: '張明哲', role: '資深 UI 設計師 → AI Class 講師', text: '從兼職開課到月收入超過正職薪水，AI Class 的行銷團隊幫我帶來了超乎想像的學員數。現在我可以全心投入教學，做自己最熱愛的事。', stat: '累計學員 8,000+' },
+        { name: '李婉如', role: '前 Google 工程師 → AI 課程講師', text: '我一開始很擔心不會教，但課程設計師手把手協助我規劃大綱，拍攝團隊也很專業。上架第一個月就賣了 500 套，完全超出預期。', stat: '首月銷售 500+' },
+        { name: '陳冠廷', role: '自由接案攝影師 → 攝影教學講師', text: '開課讓我的個人品牌大幅提升，不只課程收入穩定，接案報價也因為「講師」身份翻倍。AI Class 真的改變了我的職涯。', stat: '接案報價提升 200%' },
+      ].map((s, i) => `<div class="ent-testi rv-up" style="transition-delay:${i * 80}ms">
+        <div class="ent-testi-stars">★★★★★</div>
+        <p>"${s.text}"</p>
+        <div class="ent-testi-author"><b>${s.name}</b><span>${s.role}</span></div>
+        <div class="tch-story-stat">${s.stat}</div>
+      </div>`).join('')}
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <h2 class="ent-sec-title rv-up">講師收入試算</h2>
+    <p class="ent-sec-sub rv-up">透明的分潤制度，收入完全取決於你的課程品質</p>
+    <div class="tch-calc rv-up">
+      <div class="tch-calc-row"><label>課程定價</label><span>NT$ <b id="tchPrice">3,980</b></span><input type="range" id="tchPriceRange" min="990" max="9900" step="10" value="3980" aria-label="課程定價"></div>
+      <div class="tch-calc-row"><label>預估月銷量</label><span><b id="tchSales">100</b> 套</span><input type="range" id="tchSalesRange" min="10" max="500" step="10" value="100" aria-label="預估月銷量"></div>
+      <div class="tch-calc-result">預估月收入 <b id="tchIncome">NT$ 278,600</b></div>
+      <p style="font-size:13px;color:var(--tx3);text-align:center;margin-top:8px">以 70% 分潤比例計算，實際收入依合約為準</p>
+    </div>
+  </div></section>
+
+  <section class="ent-faq"><div class="wrap faq">
+    <h2 class="ent-sec-title rv-up">講師常見問題</h2>
+    ${[
+      ['需要什麼資格才能申請？', '只要你在某個領域有 3 年以上實戰經驗，並且有熱情想分享所學，就可以申請。我們重視的是實務能力，不限制學歷或證照。'],
+      ['課程拍攝需要自備器材嗎？', '不需要！我們在台北設有專業攝影棚，提供完整的拍攝設備和團隊。如果你在外縣市或海外，也可以使用我們的遠端錄製方案。'],
+      ['收入什麼時候入帳？', '每月 15 日結算上個月的銷售收入，扣除平台手續費後，次月 1 日前匯入指定帳戶。後台可即時查看銷售數據。'],
+      ['可以同時在其他平台開課嗎？', '可以。我們不要求獨家授權，但 AI Class 獨家的課程會獲得更多行銷資源和曝光機會。'],
+      ['課程上架後可以修改嗎？', '可以隨時更新課程內容、新增章節或修改價格。我們鼓勵講師持續更新課程，保持內容的時效性。'],
+    ].map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
+  </div></section>
+
   <section class="sec" id="tch-apply"><div class="wrap">
     <div class="ent-cta-box rv-up">
       <h2>準備好開始了嗎？</h2>
@@ -3995,6 +4127,21 @@ function teachPage() {
       </div>
     </div>
   </div></section>`;
+
+  // Income calculator
+  const prR = $('#tchPriceRange', main), slR = $('#tchSalesRange', main);
+  if (prR && slR) {
+    const fmt = n => 'NT$ ' + n.toLocaleString();
+    const calc = () => {
+      const price = +prR.value, sales = +slR.value;
+      $('#tchPrice', main).textContent = price.toLocaleString();
+      $('#tchSales', main).textContent = sales.toLocaleString();
+      $('#tchIncome', main).textContent = fmt(Math.round(price * sales * 0.7));
+    };
+    prR.oninput = calc; slR.oninput = calc;
+  }
+
+  $$('.qa button', main).forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
   reveal(main);
 }
 
@@ -6388,6 +6535,28 @@ function contactPage() {
         <div><b>營業時間</b><p>週一至週五 09:00 - 18:00</p></div>
       </div>
     </section>
+    <section class="ctc-map rv-up" style="margin-top:40px">
+      <h2>我們的位置</h2>
+      <div class="ctc-map-box">
+        <div class="ctc-map-placeholder">
+          <div class="ctc-map-pin">📍</div>
+          <p>台北市信義區松仁路 100 號 10 樓</p>
+          <span>AI Class 總部</span>
+          <a class="btn btn-ghost" href="https://maps.google.com/?q=台北市信義區松仁路100號" target="_blank" rel="noopener" style="margin-top:12px;font-size:13px">在 Google Maps 開啟 →</a>
+        </div>
+      </div>
+    </section>
+    <section class="ctc-social rv-up" style="margin-top:40px;text-align:center">
+      <h2>追蹤我們</h2>
+      <p style="color:var(--tx2);margin-bottom:20px">在社群媒體上關注 AI Class 最新消息</p>
+      <div class="ctc-social-links">
+        <a href="#" class="ctc-social-btn" aria-label="Facebook">📘 Facebook</a>
+        <a href="#" class="ctc-social-btn" aria-label="Instagram">📸 Instagram</a>
+        <a href="#" class="ctc-social-btn" aria-label="YouTube">🎬 YouTube</a>
+        <a href="#" class="ctc-social-btn" aria-label="LINE">💬 LINE</a>
+        <a href="#" class="ctc-social-btn" aria-label="Twitter">🐦 X (Twitter)</a>
+      </div>
+    </section>
   </div>`;
   const faqItems = main.querySelectorAll('.qa-item button');
   faqItems.forEach(btn => btn.addEventListener('click', () => {
@@ -6396,6 +6565,25 @@ function contactPage() {
     main.querySelectorAll('.qa-ans').forEach(a => { a.hidden = true; a.previousElementSibling.classList.remove('open'); });
     if (!open) { ans.hidden = false; btn.classList.add('open'); }
   }));
+
+  // Inline form validation
+  const ctcForm = main.querySelector('.ctc-form');
+  if (ctcForm) {
+    ctcForm.querySelectorAll('input, textarea').forEach(inp => {
+      inp.addEventListener('blur', () => {
+        let err = inp.closest('.ctc-field')?.querySelector('.ctc-err');
+        if (!inp.validity.valid && inp.value) {
+          if (!err) { err = document.createElement('span'); err.className = 'ctc-err'; inp.after(err); }
+          err.textContent = inp.type === 'email' ? '請輸入有效的 Email 格式' : '此欄位為必填';
+          inp.classList.add('ctc-invalid');
+        } else {
+          if (err) err.remove();
+          inp.classList.remove('ctc-invalid');
+        }
+      });
+    });
+  }
+
   reveal(main);
 }
 
