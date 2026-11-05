@@ -8129,8 +8129,8 @@ function openRecommendQuiz() {
     // 長按選單
     const navLinks = $$('a', mnav);
     const submenus = {
-      0: [{ icon: '🔥', text: '熱門課程', href: 'hot.html' }, { icon: '🆕', text: '最新上架', href: 'upcoming.html' }],
-      2: [{ icon: '🎨', text: '設計', href: 'category.html?cat=design' }, { icon: '💻', text: '程式', href: 'category.html?cat=dev' }, { icon: '🤖', text: 'AI', href: 'category.html?cat=ai' }],
+      0: [{ icon: '🔥', text: '熱門課程', href: 'category.html?sort=popular' }, { icon: '🆕', text: '最新上架', href: 'upcoming.html' }],
+      2: [{ icon: '🎨', text: '設計', href: 'category.html?cat=design' }, { icon: '✏️', text: '繪畫', href: 'category.html?cat=drawing' }, { icon: '🤖', text: 'AI', href: 'category.html?cat=ai' }],
       4: [{ icon: '📊', text: '學習報告', href: 'report.html' }, { icon: '⚙️', text: '帳號設定', href: 'settings.html' }]
     };
     Object.entries(submenus).forEach(([idx, items]) => {
