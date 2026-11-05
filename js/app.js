@@ -3317,7 +3317,10 @@ function instructorPage() {
     const bioData = BIOS[t.name];
     const bio = bioData ? bioData.detail : '擁有豐富的業界實戰經驗，專注於將專業知識轉化為易懂的教學內容。教學風格注重實作，強調「做中學」的學習理念。';
     seo({ title: `${t.name}｜AI Class 講師`, desc: `${t.name} — ${t.role}，${t.courses.length} 門課程，${t.students.toLocaleString()} 位學員`, url: `https://aiclass.tw/instructor.html?name=${encodeURIComponent(t.name)}`, ogType: 'profile',
-      jsonLd: { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { '@type': 'Person', name: t.name, jobTitle: t.role, description: bio } }
+      jsonLd: [
+        { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { '@type': 'Person', name: t.name, jobTitle: t.role, description: bio } },
+        { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: '講師', item: 'https://aiclass.tw/instructor.html' }, { '@type': 'ListItem', position: 3, name: t.name }] }
+      ]
     });
     document.title = `${t.name}｜AI Class 講師`;
     main.innerHTML = `
@@ -3466,6 +3469,7 @@ function categoryPage() {
     const cat = cats.find(c => c.id === catId) || cats[0];
     const courses = C.filter(c => c.cat === catId);
     document.title = cat.name + '｜AI Class 課程分類';
+    const bcScript = document.createElement('script'); bcScript.type = 'application/ld+json'; bcScript.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://aiclass.tw/' }, { '@type': 'ListItem', position: 2, name: '分類', item: 'https://aiclass.tw/category.html' }, { '@type': 'ListItem', position: 3, name: cat.name }] }); document.head.append(bcScript);
     const levelOf = c => c.hours < 10 ? '入門' : c.hours <= 20 ? '進階' : '專業';
     main.innerHTML = `
     <section class="catp-hero"><div class="wrap">
