@@ -8426,6 +8426,30 @@ document.addEventListener('error', e => {
   img.alt = '圖片無法載入';
 }, true);
 
+// ── Hover 預取加速導航 ──
+{
+  const prefetched = new Set();
+  let hoverTimer;
+  document.addEventListener('pointerenter', e => {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank') return;
+    const href = a.getAttribute('href');
+    if (!href || !href.endsWith('.html') && !href.includes('.html?')) return;
+    if (prefetched.has(href) || href === location.pathname.split('/').pop()) return;
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(() => {
+      prefetched.add(href);
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = href;
+      document.head.append(link);
+    }, 65);
+  }, true);
+  document.addEventListener('pointerleave', e => {
+    if (e.target.closest('a[href]')) clearTimeout(hoverTimer);
+  }, true);
+}
+
 // ── 頁面退出動畫（支援 View Transitions API）──
 if (!prefersReduced) {
   document.addEventListener('click', e => {
