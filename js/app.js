@@ -13,6 +13,7 @@ const C = window.COURSES, byId = Object.fromEntries(C.map(c => [c.id, c]));
 const fmt = n => 'NT$' + n.toLocaleString('en-US');
 const pct = c => Math.round((1 - c.price / c.origin) * 100);
 const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
+document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" fill="%23e8e8ec"><rect width="400" height="225"/><text x="50%" y="50%" text-anchor="middle" fill="%23aeaeb2" font-size="14" dy=".3em">圖片載入失敗</text></svg>')}`; } }, true);
 const page = document.body.dataset.page;
 const wish = new Set(JSON.parse(localStorage.getItem('aic-wish') || '[]'));
 const cart = new Set(JSON.parse(localStorage.getItem('aic-cart') || '[]'));
@@ -3078,18 +3079,18 @@ function articlePage() {
     ]
   });
 
-  const body = `<p>在當今快速變化的時代，持續學習已經不再是選項，而是每個專業人士的必修課。${post.excerpt}</p>
+  const abData = (window.ARTICLE_BODIES || {})[post.id];
+  const body = abData ? abData.map(b => b.type === 'h2' ? `<h2>${b.text}</h2>` : b.type === 'h3' ? `<h3>${b.text}</h3>` : `<p>${b.text}</p>`).join('\n') : `<p>${post.excerpt}</p>
 <h2>為什麼這個主題很重要？</h2>
 <p>不論你是剛入門的新手，還是有經驗的專業人士，掌握最新的知識和技能都能讓你在職場上保持競爭力。根據最新調查，超過 78% 的企業表示，持續學習的員工更容易獲得升遷機會。</p>
-<p>我們訪問了多位業界專家，整理出以下幾個關鍵要點：</p>
 <h3>1. 建立系統化的學習框架</h3>
-<p>零散的學習往往效果不佳。建議你先設定明確的學習目標，再根據目標規劃學習路線。例如，如果你的目標是成為一名全端工程師，可以從基礎的 HTML/CSS 開始，逐步深入 JavaScript、React，最後學習後端技術。</p>
+<p>零散的學習往往效果不佳。建議你先設定明確的學習目標，再根據目標規劃學習路線。</p>
 <h3>2. 實作是最好的老師</h3>
-<p>光看影片是不夠的，真正的學習來自動手實作。每學完一個章節，就試著做一個小專案，把學到的知識應用到實際場景中。這樣不僅能加深理解，還能累積作品集。</p>
+<p>光看影片是不夠的，真正的學習來自動手實作。每學完一個章節，就試著做一個小專案。</p>
 <h3>3. 加入學習社群</h3>
-<p>與志同道合的人一起學習，可以大幅提升學習效率。在 AI Class 的每堂課程都設有討論區，你可以在那裡提問、分享心得，和其他學員互相交流。</p>
+<p>與志同道合的人一起學習，可以大幅提升學習效率。在 AI Class 的每堂課程都設有討論區。</p>
 <h2>結語</h2>
-<p>學習是一場馬拉松，不是短跑。保持耐心、持續練習，你一定能看到成果。如果你還在猶豫要從哪裡開始，不妨先選一堂最感興趣的課程，跨出第一步。</p>`;
+<p>學習是一場馬拉松，不是短跑。保持耐心、持續練習，你一定能看到成果。</p>`;
 
   main.innerHTML = `
   <section class="art-hero"><div class="wrap art-wrap">
