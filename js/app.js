@@ -248,7 +248,7 @@ function shell() {
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
     <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
-    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><a href="my.html">我的學習</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
+    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
   </div>`;
   top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
 
@@ -997,6 +997,20 @@ function home() {
           <div class="instr-meta"><span>⭐ ${avgRating}</span><span>📚 ${tCourses.length} 堂</span><span>👥 ${t.students.toLocaleString()}</span></div>
         </a>`;
       }).join('')}</div></div></section>`);
+  }
+
+  // 智慧推薦
+  const recentCats = {};
+  recentIds.forEach(id => { const cc = byId[id]; if (cc) recentCats[cc.cat] = (recentCats[cc.cat] || 0) + 1; });
+  [...owned].forEach(id => { const cc = byId[id]; if (cc) recentCats[cc.cat] = (recentCats[cc.cat] || 0) + 2; });
+  if (Object.keys(recentCats).length) {
+    const topCat = Object.entries(recentCats).sort((a, b) => b[1] - a[1])[0][0];
+    const catName = (window.CATS.find(ct => ct.id === topCat) || {}).name || topCat;
+    const smartPicks = C.filter(c => c.cat === topCat && !owned.has(c.id) && !recentIds.includes(c.id)).sort((a, b) => b.rating - a.rating).slice(0, 6);
+    if (smartPicks.length >= 3) {
+      main.insertAdjacentHTML('beforeend', `<section class="sec smart-rec-sec" id="smart-rec"><div class="wrap"><div class="sec-head rv-up"><div><h2>為你推薦</h2><div class="sub">因為你對「${catName}」有興趣</div></div></div>
+        <div class="rail">${smartPicks.map((c, i) => card(c, i)).join('')}</div></div></section>`);
+    }
   }
 
   // 課程推薦測驗 CTA
@@ -3004,6 +3018,8 @@ function myPage() {
     <a class="my-qlink" href="quiz.html"><span class="my-ql-icon">🎯</span><span>技能測驗</span></a>
     <a class="my-qlink" href="invite.html"><span class="my-ql-icon">🎁</span><span>邀請好友</span></a>
     <a class="my-qlink" href="achievement.html"><span class="my-ql-icon">🏅</span><span>學習成就</span></a>
+    <a class="my-qlink" href="notebook.html"><span class="my-ql-icon">📝</span><span>學習筆記</span></a>
+    <a class="my-qlink" href="report.html"><span class="my-ql-icon">📈</span><span>學習報告</span></a>
     <a class="my-qlink" href="leaderboard.html"><span class="my-ql-icon">📊</span><span>排行榜</span></a>
   </div>
 
@@ -3037,6 +3053,8 @@ function myPage() {
         <a href="order-history.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🧾 訂單紀錄</a>
         <button class="myp-nav-btn" data-sec="coupons">🎟️ 優惠券</button>
         <button class="myp-nav-btn" data-sec="following">👤 追蹤講師</button>
+        <a href="notebook.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">📝 學習筆記</a>
+        <a href="report.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">📈 學習報告</a>
         <a href="settings.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">⚙️ 帳號設定</a>
         <button class="myp-nav-btn" data-sec="achievements">🏅 成就徽章</button>
         <a href="quiz.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">🎯 技能測驗</a>
@@ -6064,6 +6082,197 @@ function settingsPage() {
   reveal(main);
 }
 
+/* ---------- 學習筆記總覽 ---------- */
+function notebookPage() {
+  const main = $('main');
+  const allNotes = JSON.parse(localStorage.getItem('aic-notes') || '{}');
+  seo({ title: '學習筆記｜AI Class', desc: '管理你的所有課程學習筆記', url: 'https://aiclass.tw/notebook.html' });
+
+  const flat = [];
+  Object.entries(allNotes).forEach(([cid, notes]) => {
+    const cc = byId[cid];
+    if (cc && notes.length) notes.forEach((n, i) => flat.push({ ...n, cid, ci: i, cTitle: cc.title, cTeacher: cc.teacher, cImg: `assets/img/v${cc.v}.jpg` }));
+  });
+  flat.sort((a, b) => b.ts - a.ts);
+  const courseList = [...new Set(flat.map(n => n.cid))];
+
+  main.innerHTML = `
+  <section class="sec"><div class="wrap" style="padding-top:100px">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="my.html">我的學習</a> › 學習筆記</div>
+    <div class="nb-header rv-up">
+      <div class="nb-header-text"><h1>學習筆記</h1><p>你在 AI Class 的所有學習筆記</p></div>
+      <div class="nb-header-stats">
+        <div class="nb-stat"><b>${flat.length}</b><span>總筆記</span></div>
+        <div class="nb-stat"><b>${courseList.length}</b><span>課程</span></div>
+      </div>
+    </div>
+    <div class="nb-toolbar rv-up">
+      <div class="nb-search-wrap"><input type="search" class="nb-search" id="nb-search" placeholder="搜尋筆記內容..." aria-label="搜尋筆記"><span class="nb-search-icon">🔍</span></div>
+      <select class="nb-filter" id="nb-filter" aria-label="篩選課程"><option value="">全部課程</option>${courseList.map(cid => { const cc = byId[cid]; return cc ? `<option value="${cid}">${cc.title}</option>` : ''; }).join('')}</select>
+      <select class="nb-sort" id="nb-sort" aria-label="排序"><option value="newest">最新優先</option><option value="oldest">最舊優先</option></select>
+      ${flat.length ? `<button class="btn btn-ghost btn-sm nb-export-all" id="nb-export-all">📥 全部匯出</button>` : ''}
+    </div>
+    <div class="nb-list" id="nb-list">
+      ${flat.length ? flat.map(n => `<div class="nb-card rv-up" data-cid="${n.cid}" data-ts="${n.ts}" data-ci="${n.ci}">
+        <div class="nb-card-course"><img src="${n.cImg}" alt="${n.cTitle}" loading="lazy"><div class="nb-card-course-info"><a href="course.html?id=${n.cid}">${n.cTitle}</a><span>${n.cTeacher}</span></div></div>
+        <p class="nb-card-text">${n.text}</p>
+        <div class="nb-card-foot"><time>${new Date(n.ts).toLocaleDateString('zh-TW')} ${new Date(n.ts).toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</time><button class="nb-del" data-cid="${n.cid}" data-ci="${n.ci}">刪除</button></div>
+      </div>`).join('') : `<div class="nb-empty rv-up"><div class="nb-empty-icon">📝</div><h3>還沒有筆記</h3><p>在觀看課程時記錄學習重點，所有筆記都會顯示在這裡。</p><a href="index.html" class="btn btn-pri">探索課程 →</a></div>`}
+    </div>
+  </div></section>`;
+
+  const searchEl = $('#nb-search', main), filterEl = $('#nb-filter', main), sortEl = $('#nb-sort', main);
+  function applyFilters() {
+    const q = searchEl.value.toLowerCase(), cid = filterEl.value, order = sortEl.value;
+    const cards = $$('.nb-card', main);
+    cards.forEach(c => {
+      const matchCid = !cid || c.dataset.cid === cid;
+      const matchQ = !q || c.querySelector('.nb-card-text').textContent.toLowerCase().includes(q) || c.querySelector('.nb-card-course-info a').textContent.toLowerCase().includes(q);
+      c.style.display = matchCid && matchQ ? '' : 'none';
+    });
+    const sorted = [...cards].filter(c => c.style.display !== 'none').sort((a, b) => order === 'newest' ? +b.dataset.ts - +a.dataset.ts : +a.dataset.ts - +b.dataset.ts);
+    const list = $('#nb-list', main);
+    sorted.forEach(c => list.append(c));
+  }
+  if (searchEl) searchEl.oninput = applyFilters;
+  if (filterEl) filterEl.onchange = applyFilters;
+  if (sortEl) sortEl.onchange = applyFilters;
+
+  $$('.nb-del', main).forEach(btn => btn.onclick = () => {
+    const { cid, ci } = btn.dataset;
+    const notes = allNotes[cid] || [];
+    notes.splice(+ci, 1);
+    if (!notes.length) delete allNotes[cid]; else allNotes[cid] = notes;
+    localStorage.setItem('aic-notes', JSON.stringify(allNotes));
+    btn.closest('.nb-card').remove();
+    const stat = main.querySelector('.nb-stat b');
+    if (stat) stat.textContent = Object.values(allNotes).flat().length;
+    toast('筆記已刪除');
+  });
+
+  const exportAll = $('#nb-export-all', main);
+  if (exportAll) exportAll.onclick = () => {
+    let txt = `# AI Class — 全部學習筆記\n匯出時間：${new Date().toLocaleString('zh-TW')}\n${'─'.repeat(40)}\n\n`;
+    Object.entries(allNotes).forEach(([cid, notes]) => {
+      const cc = byId[cid];
+      if (cc && notes.length) {
+        txt += `## ${cc.title}（${cc.teacher}）\n\n`;
+        notes.forEach((n, i) => { txt += `### 筆記 ${i+1}\n📅 ${new Date(n.ts).toLocaleString('zh-TW')}\n\n${n.text}\n\n`; });
+        txt += '─'.repeat(40) + '\n\n';
+      }
+    });
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI-Class-全部筆記-${new Date().toISOString().slice(0,10)}.txt`; a.click();
+    toast('全部筆記已匯出');
+  };
+  reveal(main);
+}
+
+/* ---------- 學習報告 ---------- */
+function reportPage() {
+  const main = $('main');
+  seo({ title: '學習報告｜AI Class', desc: '你的個人學習報告——時數、進度、技能與目標追蹤', url: 'https://aiclass.tw/report.html' });
+
+  const enrolled = C.slice(0, 7).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62, 33, 91][i] }));
+  const totalHours = enrolled.reduce((s, c) => s + c.hours, 0);
+  const completed = enrolled.filter(c => c.progress === 100).length;
+  const weeklyData = [
+    { label: '10/28', hours: 2.5 }, { label: '10/29', hours: 1.8 }, { label: '10/30', hours: 3.2 },
+    { label: '10/31', hours: 0.5 }, { label: '11/01', hours: 2.0 }, { label: '11/02', hours: 4.1 },
+    { label: '11/03', hours: 1.5 }, { label: '11/04', hours: 2.8 }
+  ];
+  const maxH = Math.max(...weeklyData.map(d => d.hours));
+  const monthlyData = [
+    { label: '6月', hours: 12 }, { label: '7月', hours: 18 }, { label: '8月', hours: 22 },
+    { label: '9月', hours: 15 }, { label: '10月', hours: 28 }, { label: '11月', hours: 8 }
+  ];
+  const maxM = Math.max(...monthlyData.map(d => d.hours));
+  const catDist = {};
+  const catNameMap = Object.fromEntries((window.CATS || []).map(ct => [ct.id, ct.name]));
+  enrolled.forEach(c => { const cn = catNameMap[c.cat] || c.cat; catDist[cn] = (catDist[cn] || 0) + 1; });
+  const catEntries = Object.entries(catDist).sort((a, b) => b[1] - a[1]);
+  const catMax = Math.max(...catEntries.map(e => e[1]));
+  const skills = [
+    { name: 'UI/UX 設計', pct: 85 }, { name: 'AI 應用', pct: 70 }, { name: '插畫繪圖', pct: 55 },
+    { name: '攝影後製', pct: 40 }, { name: '音樂製作', pct: 25 }, { name: '3D 建模', pct: 30 }
+  ];
+  const goals = [
+    { title: '每週學習 10 小時', current: 18.4, target: 10, unit: '小時', done: true },
+    { title: '本月完成 2 門課', current: 1, target: 2, unit: '門', done: false },
+    { title: '累計 100 小時學習', current: totalHours, target: 100, unit: '小時', done: totalHours >= 100 },
+    { title: '獲得 5 張證書', current: completed, target: 5, unit: '張', done: completed >= 5 }
+  ];
+  const milestones = [
+    { date: '2026/11/03', text: '完成「進階 UI 動效設計」全部課程', icon: '🎓' },
+    { date: '2026/10/28', text: '購買第 7 堂課程', icon: '🛒' },
+    { date: '2026/10/20', text: '連續學習突破 14 天', icon: '🔥' },
+    { date: '2026/10/15', text: '獲得「測驗達人」徽章', icon: '🏆' },
+    { date: '2026/09/20', text: '加入 AI Class', icon: '🎉' }
+  ];
+
+  main.innerHTML = `
+  <section class="sec"><div class="wrap" style="padding-top:100px">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="my.html">我的學習</a> › 學習報告</div>
+    <div class="rpt-header rv-up">
+      <div class="rpt-header-text"><h1>學習報告</h1><p>你的個人化學習數據與分析</p></div>
+      <div class="rpt-period"><select id="rpt-period" aria-label="時間範圍"><option>最近 30 天</option><option>最近 90 天</option><option>全部</option></select></div>
+    </div>
+
+    <div class="rpt-overview rv-up">
+      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(124,92,255,.12);color:var(--pri)">⏱</div><div class="rpt-ov-data"><b>${totalHours}</b><span>總學習時數</span></div></div>
+      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(52,199,89,.12);color:#34c759">✓</div><div class="rpt-ov-data"><b>${completed}</b><span>已完成課程</span></div></div>
+      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(255,149,0,.12);color:#ff9500">📚</div><div class="rpt-ov-data"><b>${enrolled.length}</b><span>進行中課程</span></div></div>
+      <div class="rpt-ov-card"><div class="rpt-ov-icon" style="background:rgba(255,92,138,.12);color:var(--pink)">🔥</div><div class="rpt-ov-data"><b>${streakData.count}</b><span>連續學習天數</span></div></div>
+    </div>
+
+    <div class="rpt-grid">
+      <div class="rpt-card rv-up">
+        <h3 class="rpt-card-title">每日學習時數</h3>
+        <p class="rpt-card-sub">過去 8 天</p>
+        <div class="rpt-bar-chart">${weeklyData.map(d => `<div class="rpt-bar-col"><div class="rpt-bar" style="height:${d.hours / maxH * 100}%"><span class="rpt-bar-val">${d.hours}h</span></div><span class="rpt-bar-label">${d.label}</span></div>`).join('')}</div>
+      </div>
+      <div class="rpt-card rv-up">
+        <h3 class="rpt-card-title">每月學習時數</h3>
+        <p class="rpt-card-sub">近半年趨勢</p>
+        <div class="rpt-bar-chart rpt-monthly">${monthlyData.map(d => `<div class="rpt-bar-col"><div class="rpt-bar" style="height:${d.hours / maxM * 100}%"><span class="rpt-bar-val">${d.hours}h</span></div><span class="rpt-bar-label">${d.label}</span></div>`).join('')}</div>
+      </div>
+      <div class="rpt-card rv-up">
+        <h3 class="rpt-card-title">類別分佈</h3>
+        <p class="rpt-card-sub">你的學習方向</p>
+        <div class="rpt-hbar-chart">${catEntries.map(([cat, n]) => `<div class="rpt-hbar-row"><span class="rpt-hbar-label">${cat}</span><div class="rpt-hbar-track"><div class="rpt-hbar-fill" style="width:${n / catMax * 100}%"></div></div><span class="rpt-hbar-val">${n} 門</span></div>`).join('')}</div>
+      </div>
+      <div class="rpt-card rv-up">
+        <h3 class="rpt-card-title">技能雷達</h3>
+        <p class="rpt-card-sub">依據完成課程推算</p>
+        <div class="rpt-skills">${skills.map(s => `<div class="rpt-skill-row"><span class="rpt-skill-name">${s.name}</span><div class="rpt-skill-track"><div class="rpt-skill-fill" style="width:${s.pct}%"></div></div><span class="rpt-skill-val">${s.pct}%</span></div>`).join('')}</div>
+      </div>
+    </div>
+
+    <div class="rpt-goals rv-up">
+      <h3 class="rpt-card-title">學習目標</h3>
+      <div class="rpt-goals-grid">${goals.map(g => `<div class="rpt-goal ${g.done ? 'rpt-goal-done' : ''}">
+        <div class="rpt-goal-check">${g.done ? '✓' : ''}</div>
+        <div class="rpt-goal-info"><b>${g.title}</b><div class="rpt-goal-bar"><div class="rpt-goal-fill" style="width:${Math.min(100, g.current / g.target * 100)}%"></div></div><span class="rpt-goal-progress">${g.current} / ${g.target} ${g.unit}</span></div>
+      </div>`).join('')}</div>
+    </div>
+
+    <div class="rpt-card rpt-courses rv-up">
+      <h3 class="rpt-card-title">課程進度明細</h3>
+      <div class="rpt-course-list">${enrolled.map(c => `<div class="rpt-course-row">
+        <img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy">
+        <div class="rpt-course-info"><b>${c.title}</b><span>${c.teacher}・${c.hours} 小時</span></div>
+        <div class="rpt-course-prog"><div class="rpt-course-bar"><div class="rpt-course-fill" style="width:${c.progress}%"></div></div><span>${c.progress}%</span></div>
+      </div>`).join('')}</div>
+    </div>
+
+    <div class="rpt-card rpt-milestones rv-up">
+      <h3 class="rpt-card-title">學習里程碑</h3>
+      <div class="rpt-ml-list">${milestones.map(m => `<div class="rpt-ml-item"><span class="rpt-ml-icon">${m.icon}</span><div class="rpt-ml-info"><b>${m.text}</b><time>${m.date}</time></div></div>`).join('')}</div>
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
 /* ---------- 鍵盤快捷鍵說明面板 ---------- */
 {
   const shortcuts = [
@@ -6169,6 +6378,8 @@ else if (page === 'upcoming') upcomingPage();
 else if (page === 'contact') contactPage();
 else if (page === 'settings') settingsPage();
 else if (page === 'gallery') galleryPage();
+else if (page === 'notebook') notebookPage();
+else if (page === 'report') reportPage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });
