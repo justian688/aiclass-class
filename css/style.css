@@ -4810,6 +4810,22 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 [data-theme="dark"] .c-prereq-link{background:var(--card);border-color:rgba(255,255,255,.08)}
 @media(max-width:480px){.c-prereq{padding:12px}.c-prereq-link{font-size:12px;padding:4px 10px 4px 4px}.c-prereq-link img{width:28px;height:28px}}
 
+/* ── 為什麼選擇 AI Class ── */
+.why-sec{background:var(--bg2)}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.why-card{background:var(--bg);border-radius:16px;padding:28px 24px;border:1px solid var(--line);text-align:center;transition:transform .25s ease,box-shadow .25s ease}
+.why-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.why-icon{font-size:36px;display:block;margin-bottom:12px}
+.why-card h3{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--tx)}
+.why-card p{font-size:14px;color:var(--tx2);line-height:1.7;margin:0}
+[data-theme="dark"] .why-card{background:var(--card);border-color:rgba(255,255,255,.06)}
+@media(max-width:760px){.why-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.why-grid{grid-template-columns:1fr}.why-card{padding:24px 20px}}
+
+/* ── 課程學習目標勾選 ── */
+.c-hl-obj{display:block;text-align:left;padding:10px 14px;background:rgba(52,199,89,.04);border:1px solid rgba(52,199,89,.12);border-radius:10px;font-size:14px;color:var(--tx);line-height:1.6}
+[data-theme="dark"] .c-hl-obj{background:rgba(52,199,89,.08);border-color:rgba(52,199,89,.15)}
+
 /* ── 列印樣式 ── */
 @media print{
   .nav,.mnav,.float-bar,.chat-widget,.scroll-top,.page-progress,.cookie-bar,.sticky-buy,.sp-toast,.cart-reminder,.nl-overlay{display:none!important}

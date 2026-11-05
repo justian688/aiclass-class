@@ -1225,6 +1225,14 @@ function home() {
     </div>
   </div></section>`);
 
+  // 為什麼選擇 AI Class
+  const whyData = window.WHY_AICLASS || [];
+  if (whyData.length) {
+    main.insertAdjacentHTML('beforeend', `<section class="sec why-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>為什麼選擇 AI Class？</h2><div class="sub">超過 ${(window.PLATFORM_STATS||{}).students ? window.PLATFORM_STATS.students.toLocaleString() : '240,000'} 名學員信賴的學習平台</div></div></div>
+      <div class="why-grid">${whyData.map(w => `<div class="why-card rv-up"><span class="why-icon">${w.icon}</span><h3>${w.title}</h3><p>${w.desc}</p></div>`).join('')}</div>
+    </div></section>`);
+  }
+
   // 學員見證輪播
   const TMC = window.TESTIMONIALS || [];
   if (TMC.length && TMC[0].quote) {
@@ -1616,7 +1624,7 @@ function course() {
   <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">作品</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a><a href="#plan">學習計畫</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
-      <div class="c-highlights rv-up">${(() => { const hl = chapters.slice(0, 4).map(ch => ch.name); hl.push(`${c.hours} 小時完整教學`, '講師親回覆問題'); return hl.map(t => `<span class="c-hl">${t}</span>`).join(''); })()}</div>
+      <div class="c-highlights rv-up">${(() => { const hl = (window.COURSE_HIGHLIGHTS || {})[c.id]; if (hl && hl.length) return hl.map(t => `<span class="c-hl c-hl-obj">✓ ${t}</span>`).join(''); const fallback = chapters.slice(0, 4).map(ch => ch.name); fallback.push(`${c.hours} 小時完整教學`, '講師親回覆問題'); return fallback.map(t => `<span class="c-hl">${t}</span>`).join(''); })()}</div>
       <div class="points">
       ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。'], ['04', '持續精進', '加碼業界趨勢與 AI 工具應用，讓你保持競爭力。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div>
       ${(()=>{const lv=courseLevel(c);const targets=lv.label==='入門'?['完全沒有相關經驗的初學者','想轉職但不知從何開始的人','對這個領域有興趣，想建立系統性知識的人','希望有人帶著做，不想自己摸索的人']:lv.label==='進階'?['已有基礎，想提升到專業水準的人','想學業界實戰流程與技巧的人','需要完成作品集或升級技能的在職者','想接案或建立個人品牌的創作者']:['有一定基礎，想更深入學習的人','希望系統化整理知識的自學者','想學更多實務技巧的在職人士','準備升級技能、拓展職涯的人'];return `<div class="c-target rv-up"><h3>🎯 適合對象</h3><ul>${targets.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;})()}
