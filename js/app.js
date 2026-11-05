@@ -653,7 +653,7 @@ function searchOverlay() {
   el.querySelector('.kb-close').onclick = () => el.classList.remove('on');
   el.onclick = e => { if (e.target === el) el.classList.remove('on'); };
   addEventListener('keydown', e => {
-    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+    if (document.activeElement.matches('input,textarea,select,[contenteditable]')) return;
     const isPlayer = !!document.querySelector('.plr-shortcuts-overlay');
     if (isPlayer) return;
     if (e.key === '?') { e.preventDefault(); e.stopImmediatePropagation(); el.classList.toggle('on'); }
@@ -1914,7 +1914,7 @@ function course() {
     ov.innerHTML = `<div class="preview-modal"><button class="preview-close" aria-label="關閉">×</button><div class="preview-badge">免費試看</div><video class="preview-video" src="${vid(c)}" poster="${img(c)}" controls autoplay></video><div class="preview-info"><h3>${c.title}</h3><p>${firstLesson ? firstLesson.name : '第一堂課'}</p></div><div class="preview-cta"><p>喜歡這堂課嗎？</p><button class="btn btn-pri preview-buy">以 ${fmt(c.price)} 購買完整課程</button></div></div>`;
     document.body.append(ov);
     requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
-    const closeP = () => { ov.querySelector('video')?.pause(); ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+    const closeP = () => { ov.querySelector('video')?.pause(); ov.classList.remove('on'); setTimeout(() => { ov.remove(); previewBtn.focus(); }, 300); };
     ov.querySelector('.preview-close').onclick = closeP;
     ov.onclick = e => { if (e.target === ov) closeP(); };
     ov.querySelector('.preview-buy').onclick = () => { closeP(); cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
@@ -1932,7 +1932,7 @@ function course() {
     ov.innerHTML = `<div class="gift-modal"><button class="gift-close" aria-label="關閉">×</button><h2>🎁 贈送此課程</h2><div class="gift-course"><img src="${img(c)}" alt="${c.title}"><div><b>${c.title}</b><span>${c.teacher}・${fmt(c.price)}</span></div></div><div class="gift-form"><label>收禮人姓名 <span class="gift-req">*</span></label><input class="gift-input" id="gift-name" placeholder="請輸入收禮人姓名" aria-required="true"><label>收禮人 Email <span class="gift-req">*</span></label><input class="gift-input" id="gift-email" type="email" placeholder="example@mail.com" aria-required="true"><label>祝福訊息（選填）</label><textarea class="gift-input gift-msg" id="gift-msg" placeholder="寫一段話送給對方..." rows="3"></textarea></div><div class="gift-total"><span>贈送金額</span><b>${fmt(c.price)}</b></div><button class="btn btn-pri gift-submit" style="width:100%">確認贈送 →</button><p class="gift-note">付款完成後，對方會收到一封包含課程兌換連結的 Email</p></div>`;
     document.body.append(ov);
     requestAnimationFrame(() => { requestAnimationFrame(() => ov.classList.add('on')); $('#gift-name', ov).focus(); });
-    const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+    const close = () => { ov.classList.remove('on'); setTimeout(() => { ov.remove(); giftBtn.focus(); }, 300); };
     $('.gift-close', ov).onclick = close;
     ov.onclick = e => { if (e.target === ov) close(); };
     document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
@@ -2658,10 +2658,13 @@ function enterprisePage() {
 
 // Book Demo modal (enterprise)
 function openDemoModal() {
+  const trigger = document.activeElement;
   let ov = document.querySelector('.demo-modal-ov');
-  if (ov) { ov.hidden = false; ov.querySelector('input')?.focus(); return; }
+  const restore = () => { if (trigger && trigger.focus) trigger.focus(); };
+  if (ov) { ov.hidden = false; ov.querySelector('input')?.focus(); ov._restore = restore; return; }
   ov = document.createElement('div');
   ov.className = 'demo-modal-ov';
+  ov._restore = restore;
   ov.setAttribute('role', 'dialog');
   ov.setAttribute('aria-modal', 'true');
   ov.setAttribute('aria-label', '預約 Demo');
@@ -2669,7 +2672,7 @@ function openDemoModal() {
     <button class="demo-modal-close" aria-label="關閉">&times;</button>
     <h2>預約專屬 Demo</h2>
     <p>填寫以下資訊，我們的企業顧問會在 1 個工作天內與您聯繫，安排專屬產品展示。</p>
-    <form class="demo-form" onsubmit="event.preventDefault();toast('已收到您的預約申請，顧問將盡快聯繫！','success');this.closest('.demo-modal-ov').hidden=true">
+    <form class="demo-form" onsubmit="event.preventDefault();toast('已收到您的預約申請，顧問將盡快聯繫！','success');const o=this.closest('.demo-modal-ov');o.hidden=true;if(o._restore)o._restore()">
       <input type="text" required placeholder="公司名稱" aria-label="公司名稱">
       <input type="text" required placeholder="聯絡人姓名" aria-label="聯絡人姓名">
       <input type="email" required placeholder="商務 Email" aria-label="商務 Email">
@@ -2680,9 +2683,9 @@ function openDemoModal() {
     </form>
   </div>`;
   document.body.append(ov);
-  ov.querySelector('.demo-modal-close').onclick = () => { ov.hidden = true; };
-  ov.addEventListener('click', e => { if (e.target === ov) ov.hidden = true; });
-  ov.addEventListener('keydown', e => { if (e.key === 'Escape') ov.hidden = true; });
+  ov.querySelector('.demo-modal-close').onclick = () => { ov.hidden = true; ov._restore(); };
+  ov.addEventListener('click', e => { if (e.target === ov) { ov.hidden = true; ov._restore(); } });
+  ov.addEventListener('keydown', e => { if (e.key === 'Escape') { ov.hidden = true; ov._restore(); } });
   ov.querySelector('input')?.focus();
 }
 
@@ -4062,7 +4065,7 @@ function myPage() {
     ov.innerHTML = `<div class="cert-modal"><button class="cert-modal-close" aria-label="關閉">×</button><div class="cert-preview"><div class="cert-card"><div class="cert-ribbon">AI Class</div><h2>結業證書</h2><p class="cert-name">學員</p><p class="cert-course-title">${cc.title}</p><p class="cert-body">已完成由 ${cc.teacher} 教授之課程全部 ${cc.hours} 小時內容，特此證明。</p><div class="cert-foot"><span>${dateStr}</span><span>${certId}</span></div></div></div><div class="cert-actions"><button class="btn btn-pri cert-dl-btn">📥 下載證書圖片</button><button class="btn btn-ghost cert-share-btn">📤 分享</button></div></div>`;
     document.body.append(ov);
     requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
-    const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+    const close = () => { ov.classList.remove('on'); setTimeout(() => { ov.remove(); btn.focus(); }, 300); };
     $('.cert-modal-close', ov).onclick = close;
     ov.onclick = ev => { if (ev.target === ov) close(); };
     $('.cert-dl-btn', ov).onclick = () => toast('證書圖片下載功能開發中');
@@ -6154,8 +6157,9 @@ function communityPage() {
     refreshList();
   });
   const modal = $('#cmy-modal');
-  const closeCmy = () => { modal.hidden = true; };
-  $('#cmy-fab').onclick = () => { modal.hidden = false; trapFocus(modal); };
+  const fab = $('#cmy-fab');
+  const closeCmy = () => { modal.hidden = true; fab.focus(); };
+  fab.onclick = () => { modal.hidden = false; trapFocus(modal); };
   $('#cmy-close').onclick = closeCmy;
   $('#cmy-cancel').onclick = closeCmy;
   $('.cmy-modal-bg', modal).onclick = closeCmy;
@@ -6337,10 +6341,11 @@ function quizPage() {
     </div>
   </div>`;
 
-  let currentQuiz = null, currentQ = 0, answers = [], timerInt = null, elapsed = 0;
+  let currentQuiz = null, currentQ = 0, answers = [], timerInt = null, elapsed = 0, qzTrigger = null;
   const modal = $('.qz-modal', main), result = $('.qz-result', main);
 
   function startQuiz(id) {
+    qzTrigger = document.activeElement;
     const qz = quizzes.find(q => q.id === id); if (!qz) return;
     const shuffled = qz.questions.map((q,i) => ({...q, idx:i})).sort(() => Math.random() - .5);
     currentQuiz = { id, title: qz.title, questions: shuffled };
@@ -6387,8 +6392,8 @@ function quizPage() {
   }
 
   $$('.qz-card', main).forEach(card => card.querySelector('.qz-start').onclick = () => startQuiz(card.dataset.qk));
-  const closeModal = () => { modal.hidden = true; clearInterval(timerInt); document.body.style.overflow = ''; };
-  const closeResult = () => { result.hidden = true; document.body.style.overflow = ''; };
+  const closeModal = () => { modal.hidden = true; clearInterval(timerInt); document.body.style.overflow = ''; if (qzTrigger) qzTrigger.focus(); };
+  const closeResult = () => { result.hidden = true; document.body.style.overflow = ''; if (qzTrigger) qzTrigger.focus(); };
   modal.onclick = e => { e.stopPropagation();
     if (e.target.classList.contains('qz-modal-bg') || e.target.closest('.qz-close')) closeModal();
     if (e.target.closest('.qz-next')) { if (currentQ < currentQuiz.questions.length - 1) { currentQ++; renderQuestion(); } else finishQuiz(); }
@@ -7243,7 +7248,7 @@ function settingsPage() {
     const inp = ov.querySelector('#set-del-confirm'), goBtn = ov.querySelector('.set-del-go');
     inp.oninput = () => { goBtn.disabled = inp.value !== '刪除我的帳號'; };
     inp.focus();
-    const close = () => { ov.classList.remove('show'); setTimeout(() => ov.remove(), 250); };
+    const close = () => { ov.classList.remove('show'); setTimeout(() => { ov.remove(); delBtn.focus(); }, 250); };
     ov.querySelector('.set-del-cancel').onclick = close;
     ov.onclick = e => { if (e.target === ov) close(); };
     goBtn.onclick = () => { close(); toast('帳號刪除申請已送出，將於 3 個工作天內處理', 'warning'); };
@@ -7919,6 +7924,7 @@ if (page === 'article' || page === 'course') {
 
 // ── 課程推薦測驗 ──
 function openRecommendQuiz() {
+  const rqTrigger = document.activeElement;
   const questions = [
     { q: '你目前的學習目標是？', opts: [
       { text: '轉職/跨領域', cats: ['ai','code','data'] },
@@ -7984,7 +7990,7 @@ function openRecommendQuiz() {
     ov.querySelector('.rq-close').onclick = closeQuiz;
   }
   const rqTrap = trapFocus(ov);
-  function closeQuiz() { rqTrap(); ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); }
+  function closeQuiz() { rqTrap(); ov.classList.remove('show'); setTimeout(() => { ov.remove(); if (rqTrigger && rqTrigger.focus) rqTrigger.focus(); }, 300); }
   document.body.append(ov);
   requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
   renderStep();
@@ -8067,10 +8073,10 @@ function openRecommendQuiz() {
   lb.innerHTML = `<button class="lb-close" aria-label="關閉">✕</button><button class="lb-nav lb-prev" aria-label="上一張">‹</button><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="放大檢視" hidden><button class="lb-nav lb-next" aria-label="下一張">›</button><div class="lb-counter"></div>`;
   document.body.append(lb);
   trapFocus(lb);
-  let lbImgs = [], lbIdx = 0;
+  let lbImgs = [], lbIdx = 0, lbTrigger = null;
   const lbImg = lb.querySelector('img'), lbCtr = lb.querySelector('.lb-counter');
   const showLb = i => { lbIdx = (i + lbImgs.length) % lbImgs.length; lbImg.src = lbImgs[lbIdx]; lbImg.hidden = false; lbCtr.textContent = `${lbIdx + 1} / ${lbImgs.length}`; };
-  const closeLb = () => lb.classList.remove('on');
+  const closeLb = () => { lb.classList.remove('on'); if (lbTrigger) lbTrigger.focus(); };
   lb.querySelector('.lb-close').onclick = closeLb;
   lb.querySelector('.lb-prev').onclick = () => showLb(lbIdx - 1);
   lb.querySelector('.lb-next').onclick = () => showLb(lbIdx + 1);
@@ -8084,6 +8090,7 @@ function openRecommendQuiz() {
     const imgEl = clicked.querySelector('img');
     if (!imgEl) return;
     e.preventDefault();
+    lbTrigger = clicked;
     lbImgs = [...g.querySelectorAll('img')].map(i => i.src);
     const ci = lbImgs.indexOf(imgEl.src);
     lb.classList.add('on');
