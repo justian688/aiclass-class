@@ -10,6 +10,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const rafThrottle = fn => { let ticking = false; return (...args) => { if (ticking) return; ticking = true; requestAnimationFrame(() => { fn(...args); ticking = false; }); }; };
 const C = window.COURSES, byId = Object.fromEntries(C.map(c => [c.id, c]));
+const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmt = n => 'NT$' + n.toLocaleString('en-US');
 const pct = c => Math.round((1 - c.price / c.origin) * 100);
 const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
@@ -73,7 +74,7 @@ function getXPProgress() {
 
 /* ---------- Confetti 慶祝動畫 ---------- */
 function showConfetti() {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (prefersReduced) return;
   const cv = document.createElement('canvas'); cv.className = 'confetti-canvas';
   cv.style.cssText = 'position:fixed;inset:0;z-index:9500;pointer-events:none';
   cv.width = innerWidth; cv.height = innerHeight;
@@ -765,7 +766,7 @@ function bindCards(root = document) {
     b.textContent = '✓ 已加入'; b.style.background = 'var(--pri)'; b.style.color = '#fff'; b.style.pointerEvents = 'none';
     const thumb = b.closest('.card')?.querySelector('.thumb img');
     const cartEl = $('.cart-btn') || $('.cart-badge');
-    if (thumb && cartEl && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (thumb && cartEl && !prefersReduced) {
       const sr = thumb.getBoundingClientRect(), dr = cartEl.getBoundingClientRect();
       const fly = document.createElement('img'); fly.src = thumb.src; fly.className = 'fly-cart';
       fly.style.left = sr.left + 'px'; fly.style.top = sr.top + 'px'; fly.style.width = sr.width + 'px'; fly.style.height = sr.height + 'px';
@@ -869,7 +870,6 @@ function home() {
     const el = $('#heroTyped');
     if (el) {
       let pi = 0, ci = 0, deleting = false;
-      const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (prefersReduced) {
         el.textContent = typePhrases[0];
       } else {
@@ -1418,8 +1418,9 @@ function home() {
         const ov = document.createElement('div'); ov.className = 'vid-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', title || '影片預覽');
         ov.innerHTML = `<div class="vid-modal"><button class="vid-modal-close" aria-label="關閉">×</button><video src="${videoSrc}" poster="${imgSrc}" controls autoplay></video><h3>${title}</h3></div>`;
         document.body.append(ov);
+        const relTrap = trapFocus(ov);
         requestAnimationFrame(() => { requestAnimationFrame(() => ov.classList.add('on')); $('.vid-modal-close', ov).focus(); });
-        const close = () => { ov.classList.remove('on'); setTimeout(() => { ov.remove(); if (trigger) trigger.focus(); }, 300); };
+        const close = () => { relTrap(); ov.classList.remove('on'); setTimeout(() => { ov.remove(); if (trigger) trigger.focus(); }, 300); };
         $('.vid-modal-close', ov).onclick = close;
         ov.onclick = e => { if (e.target === ov) close(); };
         document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
@@ -7678,7 +7679,7 @@ if (!$('link[rel="manifest"]')) { const m = document.createElement('link'); m.re
 if (!$('meta[name="apple-mobile-web-app-capable"]')) { const m = document.createElement('meta'); m.name = 'apple-mobile-web-app-capable'; m.content = 'yes'; document.head.append(m); }
 
 // ── Ripple effect on .btn-pri ──
-if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+if (!prefersReduced) {
   document.addEventListener('click', e => {
     const btn = e.target.closest('.btn-pri');
     if (!btn) return;
@@ -7759,7 +7760,8 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
       const nl = document.createElement('div'); nl.className = 'nl-overlay'; nl.setAttribute('role', 'dialog'); nl.setAttribute('aria-modal', 'true'); nl.setAttribute('aria-label', '訂閱電子報');
       nl.innerHTML = `<div class="nl-box"><button class="nl-close" aria-label="關閉">✕</button><div class="nl-icon">📬</div><h3>訂閱學習電子報</h3><p>每週精選課程推薦、學習技巧與獨家優惠，直接送到你的信箱。</p><div class="nl-form"><input type="email" placeholder="輸入 Email 地址" aria-label="Email 地址" required><button class="btn btn-pri">免費訂閱</button></div><div class="nl-err" style="display:none;color:#ff5c8a;font-size:13px;margin-top:8px"></div><small>🔒 我們重視你的隱私，絕不分享個資。隨時可取消訂閱。</small></div>`;
       document.body.append(nl);
-      const nlClose = () => { nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
+      const nlTrap = trapFocus(nl);
+      const nlClose = () => { nlTrap(); nl.classList.remove('show'); setTimeout(() => nl.remove(), 400); };
       requestAnimationFrame(() => requestAnimationFrame(() => nl.classList.add('show')));
       nl.querySelector('.nl-close').onclick = nlClose;
       nl.onclick = e => { if (e.target === nl) nlClose(); };
@@ -7790,8 +7792,9 @@ if (!sessionStorage.getItem('aic-exit-shown') && !('ontouchstart' in window)) {
     const ex = document.createElement('div'); ex.className = 'exit-overlay'; ex.setAttribute('role', 'dialog'); ex.setAttribute('aria-modal', 'true');
     ex.innerHTML = `<div class="exit-box"><button class="exit-close" aria-label="關閉">✕</button><div class="exit-emoji">🎓</div><h3>等一下！別錯過限時優惠</h3><p>全站課程最低 5 折起，還有專屬新學員折扣碼</p><a class="exit-pick" href="course.html?id=${hotPick.id}"><img src="${img(hotPick)}" alt="${hotPick.title}"><div><b>${hotPick.title}</b><span>★ ${hotPick.rating} ・ ${fmt(hotPick.price)}</span></div></a><div class="exit-coupon"><span class="exit-code">WELCOME300</span><span>輸入折扣碼現折 NT$300</span></div><a href="category.html" class="btn btn-pri" style="width:100%;margin-top:16px">逛逛課程 →</a><button class="exit-skip">不了，謝謝</button></div>`;
     document.body.append(ex);
+    const exTrap = trapFocus(ex);
     requestAnimationFrame(() => requestAnimationFrame(() => ex.classList.add('show')));
-    const closeExit = () => { ex.classList.remove('show'); setTimeout(() => ex.remove(), 300); };
+    const closeExit = () => { exTrap(); ex.classList.remove('show'); setTimeout(() => ex.remove(), 300); };
     ex.querySelector('.exit-close').onclick = closeExit;
     ex.querySelector('.exit-skip').onclick = closeExit;
     ex.onclick = e => { if (e.target === ex) closeExit(); };
@@ -7947,7 +7950,8 @@ function openRecommendQuiz() {
     }
     ov.querySelector('.rq-close').onclick = closeQuiz;
   }
-  function closeQuiz() { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); }
+  const rqTrap = trapFocus(ov);
+  function closeQuiz() { rqTrap(); ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); }
   document.body.append(ov);
   requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
   renderStep();
@@ -8029,6 +8033,7 @@ function openRecommendQuiz() {
   const lb = document.createElement('div'); lb.className = 'lb-overlay'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true'); lb.setAttribute('aria-label', '圖片檢視');
   lb.innerHTML = `<button class="lb-close" aria-label="關閉">✕</button><button class="lb-nav lb-prev" aria-label="上一張">‹</button><img alt="放大檢視" hidden><button class="lb-nav lb-next" aria-label="下一張">›</button><div class="lb-counter"></div>`;
   document.body.append(lb);
+  trapFocus(lb);
   let lbImgs = [], lbIdx = 0;
   const lbImg = lb.querySelector('img'), lbCtr = lb.querySelector('.lb-counter');
   const showLb = i => { lbIdx = (i + lbImgs.length) % lbImgs.length; lbImg.src = lbImgs[lbIdx]; lbImg.hidden = false; lbCtr.textContent = `${lbIdx + 1} / ${lbImgs.length}`; };
@@ -8070,7 +8075,6 @@ function openRecommendQuiz() {
 
 // ── 頁面轉場動畫 ──
 {
-  const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href]');
     if (!a) return;
@@ -8317,8 +8321,9 @@ function openRecommendQuiz() {
           <div class="nl-form"><input class="nl-input" type="email" placeholder="你的 Email" aria-label="Email"><button class="btn btn-pri nl-submit">免費訂閱</button></div>
           <span class="nl-hint">訂閱即贈 NT$200 折價券 🎁</span></div>`;
         document.body.append(ov);
+        const nl2Trap = trapFocus(ov);
         requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
-        const close = () => { ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
+        const close = () => { nl2Trap(); ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
         ov.querySelector('.nl-close').onclick = close;
         ov.onclick = e => { if (e.target === ov) close(); };
         ov.querySelector('.nl-submit').onclick = () => { const em = ov.querySelector('.nl-input').value.trim(); if (!em || !em.includes('@')) { toast('請輸入有效的 Email', 'error'); return; } toast('訂閱成功！折價券已寄出 🎉', 'success'); trackEvent('newsletter_subscribe', { email_domain: em.split('@')[1] }); close(); };
@@ -8383,7 +8388,7 @@ function openRecommendQuiz() {
 })();
 
 // ── 頁面退出動畫（支援 View Transitions API）──
-if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+if (!prefersReduced) {
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href]');
     if (!a || a.target === '_blank' || a.getAttribute('href').startsWith('#') || a.getAttribute('href').startsWith('javascript') || a.getAttribute('href').startsWith('mailto') || a.getAttribute('href').startsWith('tel')) return;
