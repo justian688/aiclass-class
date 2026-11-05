@@ -3,6 +3,8 @@
   "short_name": "AI Class",
   "description": "設計、插畫、3D、AI 程式、攝影、音樂、料理、商業行銷，業界職人親授，無限期觀看。",
   "start_url": "/",
+  "scope": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#7c5cff",
