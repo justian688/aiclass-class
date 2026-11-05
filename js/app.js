@@ -5869,7 +5869,7 @@ function searchPage() {
           <div class="srch-empty-icon">🔍</div>
           <h3>找不到相關課程</h3>
           <p>試試其他關鍵字或調整篩選條件</p>
-          <div class="srch-recommend"><h4>為你推薦熱門課程</h4><div class="srch-rec-grid">${C.sort((a,b)=>b.students-a.students).slice(0,4).map(c=>card(c)).join('')}</div></div>
+          <div class="srch-recommend"><h4>為你推薦熱門課程</h4><div class="srch-rec-grid">${[...C].sort((a,b)=>b.students-a.students).slice(0,4).map(c=>card(c)).join('')}</div></div>
           <div class="srch-trending">
             <h4>熱門搜尋</h4>
             <div class="srch-trend-chips">${trending.map(t => `<button class="chip srch-trend">${t}</button>`).join('')}</div>
@@ -7775,7 +7775,7 @@ if (!sessionStorage.getItem('aic-exit-shown') && !('ontouchstart' in window)) {
     if (exitFired || e.relatedTarget || e.toElement) return;
     if (e.clientY > 10) return;
     exitFired = true; sessionStorage.setItem('aic-exit-shown', '1');
-    const hotPick = C.sort((a, b) => b.students - a.students)[0];
+    const hotPick = [...C].sort((a, b) => b.students - a.students)[0];
     const ex = document.createElement('div'); ex.className = 'exit-overlay'; ex.setAttribute('role', 'dialog'); ex.setAttribute('aria-modal', 'true');
     ex.innerHTML = `<div class="exit-box"><button class="exit-close" aria-label="關閉">✕</button><div class="exit-emoji">🎓</div><h3>等一下！別錯過限時優惠</h3><p>全站課程最低 5 折起，還有專屬新學員折扣碼</p><a class="exit-pick" href="course.html?id=${hotPick.id}"><img src="${img(hotPick)}" alt="${hotPick.title}"><div><b>${hotPick.title}</b><span>★ ${hotPick.rating} ・ ${fmt(hotPick.price)}</span></div></a><div class="exit-coupon"><span class="exit-code">WELCOME300</span><span>輸入折扣碼現折 NT$300</span></div><a href="category.html" class="btn btn-pri" style="width:100%;margin-top:16px">逛逛課程 →</a><button class="exit-skip">不了，謝謝</button></div>`;
     document.body.append(ex);
