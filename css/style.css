@@ -16,7 +16,7 @@ img,video{display:block;max-width:100%}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 ::focus-visible{outline:2px solid var(--pri);outline-offset:2px;border-radius:4px}
 :focus:not(:focus-visible){outline:none}
-.skip{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--pri);color:#fff;padding:10px 24px;border-radius:0 0 10px 10px;z-index:99999;font-weight:700;transition:top .2s}
+.skip{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--pri);color:#fff;padding:10px 24px;border-radius:0 0 10px 10px;z-index:10000;font-weight:700;transition:top .2s}
 .skip:focus{top:0}
 .wrap{max-width:1360px;margin:0 auto;padding:0 32px}
 .grad-tx{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -1200,8 +1200,8 @@ body.hdr-hidden .tabs{top:0}
 .legal-body ul li::marker{color:var(--pri)}
 .legal-body a{color:var(--pri);text-decoration:underline}
 /* 載入骨架屏 */
-body::before{content:"";position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .4s,visibility .4s}
-body::after{content:"";position:fixed;z-index:10000;top:50%;left:50%;width:36px;height:36px;margin:-18px 0 0 -18px;border:3px solid var(--line);border-top-color:var(--pri);border-radius:50%;animation:spin .7s linear infinite;transition:opacity .4s}
+body::before{content:"";position:fixed;inset:0;z-index:9100;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .4s,visibility .4s}
+body::after{content:"";position:fixed;z-index:9101;top:50%;left:50%;width:36px;height:36px;margin:-18px 0 0 -18px;border:3px solid var(--line);border-top-color:var(--pri);border-radius:50%;animation:spin .7s linear infinite;transition:opacity .4s}
 @keyframes spin{to{transform:rotate(360deg)}}
 body.loaded::before,body.loaded::after{opacity:0;visibility:hidden;pointer-events:none}
 /* 通知面板 */
@@ -3669,10 +3669,10 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .fbt-card{background:var(--bg2);border-color:var(--line)}
 [data-theme="dark"] .fbt-card:hover{box-shadow:0 6px 20px -8px rgba(124,92,255,.2)}
 /* ---------- Confetti ---------- */
-.confetti-piece{position:fixed;width:10px;height:10px;top:-20px;z-index:99999;border-radius:2px;pointer-events:none;animation:confetti-fall 3s linear forwards}
+.confetti-piece{position:fixed;width:10px;height:10px;top:-20px;z-index:9500;border-radius:2px;pointer-events:none;animation:confetti-fall 3s linear forwards}
 @keyframes confetti-fall{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(100vh) rotate(720deg)}}
 /* ---------- Welcome Tour ---------- */
-.tour-overlay{position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.tour-overlay{position:fixed;inset:0;z-index:9400;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
 .tour-overlay.on{opacity:1;pointer-events:auto}
 .tour-card{background:var(--bg);border-radius:20px;max-width:440px;width:92vw;padding:40px 36px;text-align:center;box-shadow:0 24px 80px -12px rgba(0,0,0,.25);transform:translateY(20px) scale(.96);transition:transform .35s var(--ease);position:relative}
 .tour-overlay.on .tour-card{transform:none}
@@ -4380,7 +4380,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .myp-cert-btn{font-size:12px!important;padding:4px 10px!important}
 
 /* ── Round 36: Article reading progress bar ── */
-.art-read-prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--pink));z-index:10001;width:0;transition:width .1s linear;pointer-events:none}
+.art-read-prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--pink));z-index:9200;width:0;transition:width .1s linear;pointer-events:none}
 
 /* ── Round 37: Welcome back banner ── */
 .wb-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 28px;border-radius:16px;background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(255,92,138,.06));border:1px solid rgba(124,92,255,.15);margin:16px 0 0}
@@ -4518,7 +4518,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .ent-stats-anim{background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(255,92,138,.08))}
 
 /* ── Demo Modal ── */
-.demo-modal-ov{position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
+.demo-modal-ov{position:fixed;inset:0;z-index:9300;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
 .demo-modal{background:var(--bg);border-radius:16px;padding:32px;max-width:480px;width:100%;position:relative;box-shadow:var(--shadow-lg,0 20px 60px rgba(0,0,0,.15))}
 .demo-modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--tx2);padding:4px 8px}
 .demo-modal-close:hover{color:var(--tx)}
@@ -4564,3 +4564,35 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .ctc-err{display:block;font-size:12px;color:#ff3b30;margin-top:4px}
 .ctc-invalid{border-color:#ff3b30!important}
 .ctc-invalid:focus{box-shadow:0 0 0 3px rgba(255,59,48,.15)}
+
+/* ── 訂單完成 分享按鈕 ── */
+.oc-share{text-align:center;padding:24px 0;border-top:1px solid var(--line)}
+.oc-share p{color:var(--tx2);font-size:14px;margin-bottom:12px}
+.oc-share-btns{display:flex;gap:12px;justify-content:center}
+.oc-share-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--tx);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.oc-fb:hover{background:#1877f2;color:#fff;border-color:#1877f2}
+.oc-tw:hover{background:#000;color:#fff;border-color:#000}
+.oc-line:hover{background:#06c755;color:#fff;border-color:#06c755}
+.oc-copy:hover{background:var(--pri);color:#fff;border-color:var(--pri)}
+
+/* ── 首頁 即時學員計數器 ── */
+.live-counter{text-align:center;margin-top:24px;font-size:15px;color:var(--tx2);display:flex;align-items:center;justify-content:center;gap:8px}
+.live-counter-dot{color:#34c759;font-size:10px;animation:livePulse 2s ease infinite}
+.live-counter-num{font-weight:700;color:var(--pri);font-size:18px;font-variant-numeric:tabular-nums}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── 課程頁 成果展示 ── */
+.c-achieve{margin:32px 0;padding:28px;background:linear-gradient(135deg,rgba(124,92,255,.04),rgba(255,92,138,.04));border-radius:16px;border:1px solid rgba(124,92,255,.1)}
+.c-achieve h3{margin-bottom:16px;font-size:18px}
+.c-achieve-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.c-achieve-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:10px;font-size:14px;font-weight:500;box-shadow:var(--shadow-sm)}
+.c-achieve-emoji{font-size:20px;flex-shrink:0}
+[data-theme="dark"] .c-achieve{background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(255,92,138,.06));border-color:rgba(124,92,255,.2)}
+@media(max-width:480px){.c-achieve-grid{grid-template-columns:1fr}}
+
+/* ── 404 插圖 ── */
+.nf-illustration{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.nf-num{font-size:clamp(4rem,12vw,8rem);font-weight:900;background:linear-gradient(135deg,var(--pri),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.nf-planet{font-size:clamp(3rem,10vw,6rem);animation:nfFloat 3s ease-in-out infinite}
+@keyframes nfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@media(prefers-reduced-motion:reduce){.nf-planet{animation:none}.live-counter-dot{animation:none;opacity:1}}

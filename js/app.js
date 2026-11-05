@@ -56,7 +56,7 @@ function getXPProgress() {
 function showConfetti() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const cv = document.createElement('canvas'); cv.className = 'confetti-canvas';
-  cv.style.cssText = 'position:fixed;inset:0;z-index:99999;pointer-events:none';
+  cv.style.cssText = 'position:fixed;inset:0;z-index:9500;pointer-events:none';
   cv.width = innerWidth; cv.height = innerHeight;
   document.body.append(cv);
   const ctx = cv.getContext('2d');
@@ -924,7 +924,15 @@ function home() {
         <div class="stat-item rv-up"><div class="stat-num" data-count="${ps.instructors}" data-unit="">0</div><div class="stat-label">業界講師</div></div>
         <div class="stat-item rv-up"><div class="stat-num" data-count="${ps.completionRate}" data-unit="%">0</div><div class="stat-label">完課率</div></div>
       </div>
+      <div class="live-counter rv-up"><span class="live-counter-dot">●</span> 已有 <span class="live-counter-num" id="liveStudentCount">0</span> 位學員加入學習</div>
     </div></section>`);
+    const lscEl = $('#liveStudentCount');
+    if (lscEl) {
+      let lsc = ps.students - 153;
+      lscEl.textContent = lsc.toLocaleString('en-US');
+      const lscTick = () => { lsc += Math.floor(Math.random() * 3) + 1; lscEl.textContent = lsc.toLocaleString('en-US'); };
+      setInterval(lscTick, 3000 + Math.random() * 4000);
+    }
   }
 
   // 訓練營
@@ -1414,7 +1422,9 @@ function counters() {
 
 /* ---------- 課程頁 ---------- */
 function course() {
-  const c = byId[new URLSearchParams(location.search).get('id')] || C[0];
+  const cid = new URLSearchParams(location.search).get('id');
+  const c = byId[cid];
+  if (!c) { notFoundPage(); return; }
   document.title = `${c.title}｜AI Class`;
   // 記錄最近瀏覽
   let rv = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').filter(x => x !== c.id);
@@ -1720,6 +1730,22 @@ function course() {
       <div class="c-guarantee-item"><div class="c-guarantee-icon">🔄</div><div class="c-guarantee-title">免費課程更新</div><div class="c-guarantee-desc">課程內容持續更新，舊學員自動享有新內容。</div></div>
       <div class="c-guarantee-item"><div class="c-guarantee-icon">💬</div><div class="c-guarantee-title">講師親自回覆</div><div class="c-guarantee-desc">學習遇到問題可直接提問，講師親自回覆。</div></div>
     </div>
+    ${(() => {
+      const achieveMap = {
+        design: [['🎨','獨立完成品牌視覺系統'],['📐','掌握業界設計流程'],['💼','建立可接案的作品集'],['🚀','效率提升 3 倍以上']],
+        drawing: [['✏️','掌握紮實的繪畫基本功'],['🎭','創造有個人風格的作品'],['📱','熟練數位繪圖工具'],['🏆','建立可展示的作品集']],
+        ai: [['🤖','獨立開發 AI 應用'],['📊','用數據解決實際問題'],['⚡','工作效率提升 10 倍'],['💡','掌握最新技術趨勢']],
+        video: [['🎬','做出電影質感的影像'],['🎨','掌握專業調色技巧'],['📱','產出社群爆款內容'],['💰','具備接案變現能力']],
+        creative: [['🎯','找到個人創作風格'],['📝','系統化創作方法'],['🌟','作品獲得專業認可'],['💪','建立持續創作習慣']],
+        baking: [['👨‍🍳','做出專業等級料理'],['🎂','掌握經典食譜技法'],['📸','擺盤拍照吸引眼球'],['🏪','具備開店基礎能力']],
+        game: [['🎮','做出可發行的遊戲'],['🖼️','創造精緻遊戲美術'],['🔧','掌握引擎核心功能'],['🏆','上架 Steam 或 App Store']],
+        career: [['📈','業績或流量翻倍'],['🎯','掌握系統化方法論'],['💬','專業簡報說服力'],['💰','收入成長有感提升']],
+        beauty: [['💇','掌握專業技術流程'],['🌟','做出作品集水準成果'],['📋','具備考照實力'],['🏠','在家也能專業服務']],
+        finance: [['📊','建立理財投資系統'],['💰','創造被動收入來源'],['📈','資產穩定成長'],['🛡️','有效控管風險']]
+      };
+      const items = achieveMap[c.cat] || achieveMap.creative;
+      return `<div class="c-achieve rv-up"><h3>🏆 學完這門課你可以做到</h3><div class="c-achieve-grid">${items.map(([emoji, text]) => `<div class="c-achieve-item"><span class="c-achieve-emoji">${emoji}</span><span>${text}</span></div>`).join('')}</div></div>`;
+    })()}
   </div>
   ${(() => {
     const P = window.POSTS || [];
@@ -2916,7 +2942,8 @@ function articlePage() {
   const main = $('main');
   const id = new URLSearchParams(location.search).get('id');
   const posts = window.POSTS;
-  const post = posts.find(p => p.id === id) || posts[0];
+  const post = posts.find(p => p.id === id);
+  if (!post) { notFoundPage(); return; }
   const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
   catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
   const postTags = new Set(post.tags || []);
@@ -4976,6 +5003,16 @@ function orderCompletePage() {
       </a>`).join('')}</div>
     </div>
 
+    <div class="oc-share">
+      <p>分享你的學習旅程</p>
+      <div class="oc-share-btns">
+        <button class="oc-share-btn oc-fb" data-platform="facebook" aria-label="分享到 Facebook">f</button>
+        <button class="oc-share-btn oc-tw" data-platform="twitter" aria-label="分享到 Twitter">𝕏</button>
+        <button class="oc-share-btn oc-line" data-platform="line" aria-label="分享到 LINE">L</button>
+        <button class="oc-share-btn oc-copy" data-platform="copy" aria-label="複製連結">🔗</button>
+      </div>
+    </div>
+
     <div class="oc-actions">
       <a class="btn btn-pri" href="my.html">我的課程</a>
       <a class="btn btn-ghost" href="index.html">回首頁探索更多</a>
@@ -5018,6 +5055,18 @@ function orderCompletePage() {
     if (alive && frame < 180) requestAnimationFrame(drawConfetti);
     else canvas.remove();
   })();
+
+  // Share buttons
+  const shareText = encodeURIComponent(`我在 AI Class 購買了${items.length}堂精選課程！一起來學習吧 🎓`);
+  const shareUrl = encodeURIComponent('https://aiclass.tw/');
+  $$('.oc-share-btn', main).forEach(btn => btn.onclick = () => {
+    const p = btn.dataset.platform;
+    if (p === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`, '_blank', 'width=600,height=400');
+    else if (p === 'twitter') window.open(`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`, '_blank', 'width=600,height=400');
+    else if (p === 'line') window.open(`https://social-plugins.line.me/lineit/share?url=${shareUrl}&text=${shareText}`, '_blank', 'width=600,height=400');
+    else if (p === 'copy') { navigator.clipboard.writeText('https://aiclass.tw/').then(() => toast('連結已複製', 'success')); }
+    trackEvent('share', { method: p, content_type: 'order' });
+  });
 }
 
 /* ---------- 優惠券 ---------- */
@@ -5150,7 +5199,8 @@ function certificatePage() {
 function pathPage() {
   const main = $('main');
   const pid = new URLSearchParams(location.search).get('id');
-  const p = window.PATHS.find(x => x.id === pid) || window.PATHS[0];
+  const p = window.PATHS.find(x => x.id === pid);
+  if (!p) { notFoundPage(); return; }
   const courses = p.courses.map(id => byId[id]).filter(Boolean);
   const totalHours = courses.reduce((s, c) => s + c.hours, 0);
   seo({ title: `${p.title}｜AI Class 學習路徑`, desc: p.desc || `${p.title} 學習路徑，${courses.length} 門課程，${totalHours} 小時`, url: `https://aiclass.tw/path.html?id=${p.id}` });
@@ -6180,10 +6230,10 @@ function notFoundPage() {
   seo({ title: '找不到頁面｜AI Class', desc: '你要找的頁面不存在，但我們有很多精彩課程等你探索', url: 'https://aiclass.tw/404.html' });
   const main = $('main');
   document.title = '找不到頁面｜AI Class';
-  main.innerHTML = `<section class="nf-hero"><div class="wrap" style="text-align:center;padding:120px 32px">
-    <div class="nf-icon rv-up">🔍</div>
-    <h1 class="rv-up" style="font-size:clamp(2rem,5vw,3.5rem);margin:24px 0 12px">找不到頁面</h1>
-    <p class="rv-up" style="color:var(--tx2);font-size:18px;max-width:480px;margin:0 auto 32px">你要找的頁面可能已被移除、改名，或暫時無法使用。</p>
+  main.innerHTML = `<section class="nf-hero"><div class="wrap" style="text-align:center;padding:80px 32px">
+    <div class="nf-illustration rv-up"><span class="nf-num">4</span><span class="nf-planet">🪐</span><span class="nf-num">4</span></div>
+    <h1 class="rv-up" style="font-size:clamp(1.5rem,4vw,2.5rem);margin:24px 0 12px">哎呀，這裡什麼都沒有</h1>
+    <p class="rv-up" style="color:var(--tx2);font-size:16px;max-width:480px;margin:0 auto 32px">你可能迷路了 🗺️ 這個頁面已被移除或不存在，但別擔心，我們有很多精彩內容等你探索！</p>
     <div class="nf-search rv-up">
       <input type="text" class="nf-search-input" placeholder="搜尋課程或文章…" aria-label="搜尋">
       <button class="btn btn-pri nf-search-btn">搜尋</button>
