@@ -644,6 +644,8 @@ function searchOverlay() {
   el.onclick = e => { if (e.target === el) el.classList.remove('on'); };
   addEventListener('keydown', e => {
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+    const isPlayer = !!document.querySelector('.plr-shortcuts-overlay');
+    if (isPlayer) return;
     if (e.key === '?') { e.preventDefault(); e.stopImmediatePropagation(); el.classList.toggle('on'); }
     else if (e.key === 'Escape' && el.classList.contains('on')) el.classList.remove('on');
     else if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey && !document.querySelector('.overlay.on')) location.href = 'index.html';

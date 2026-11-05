@@ -3053,6 +3053,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .lvl-badge.lvl-adv{background:rgba(198,40,40,.15)}
 /* ===== 播放器快捷鍵面板 ===== */
 .plr-shortcuts-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000}
+.plr-shortcuts-overlay[hidden]{display:none}
 .plr-shortcuts-panel{background:#14141e;border-radius:20px;padding:32px 36px;max-width:480px;width:90%;box-shadow:0 24px 80px rgba(0,0,0,.5);color:#e8e8ec}
 .plr-shortcuts-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
 .plr-shortcuts-head h3{font-size:18px;font-weight:700;margin:0}
