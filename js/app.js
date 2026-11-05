@@ -8455,6 +8455,7 @@ document.addEventListener('error', e => {
 // ── 頁面退出動畫（支援 View Transitions API）──
 if (!prefersReduced) {
   document.addEventListener('click', e => {
+    if (!e.target.closest) return;
     const a = e.target.closest('a[href]');
     if (!a || a.target === '_blank' || a.getAttribute('href').startsWith('#') || a.getAttribute('href').startsWith('javascript') || a.getAttribute('href').startsWith('mailto') || a.getAttribute('href').startsWith('tel')) return;
     const href = a.getAttribute('href');
