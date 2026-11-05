@@ -8,6 +8,7 @@ window.trackEvent = (name, params) => { if (typeof gtag === 'function') gtag('ev
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const rafThrottle = fn => { let ticking = false; return (...args) => { if (ticking) return; ticking = true; requestAnimationFrame(() => { fn(...args); ticking = false; }); }; };
 const C = window.COURSES, byId = Object.fromEntries(C.map(c => [c.id, c]));
 const fmt = n => 'NT$' + n.toLocaleString('en-US');
 const pct = c => Math.round((1 - c.price / c.origin) * 100);
@@ -170,10 +171,11 @@ function smartRecommend(current) {
 /* ---------- 快速預覽彈窗 ---------- */
 function quickPreview(courseId) {
   const c = byId[courseId]; if (!c) return;
+  const prevFocus = document.activeElement;
   const cat = window.CATS.find(x => x.id === c.cat) || { name: '' };
-  const ov = document.createElement('div'); ov.className = 'qp-overlay';
+  const ov = document.createElement('div'); ov.className = 'qp-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', c.title + ' 快速預覽');
   ov.innerHTML = `<div class="qp-box">
-    <button class="qp-close">×</button>
+    <button class="qp-close" aria-label="關閉">×</button>
     <div class="qp-vid"><video src="${vid(c)}" poster="${img(c)}" muted loop playsinline preload="metadata"></video><button class="qp-play">▶</button></div>
     <div class="qp-body">
       <span class="qp-cat">${cat.name}</span>
@@ -191,11 +193,13 @@ function quickPreview(courseId) {
   </div>`;
   document.body.append(ov);
   requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('show')));
-  ov.querySelector('.qp-close').onclick = () => { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); };
-  ov.onclick = e => { if (e.target === ov) { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); } };
+  const closeQP = () => { ov.classList.remove('show'); setTimeout(() => { ov.remove(); if (prevFocus) prevFocus.focus(); }, 300); };
+  ov.querySelector('.qp-close').onclick = closeQP;
+  ov.onclick = e => { if (e.target === ov) closeQP(); };
   ov.querySelector('.qp-play').onclick = () => { const v = ov.querySelector('video'); v.play(); ov.querySelector('.qp-play').style.display = 'none'; };
   ov.querySelector('.qp-cart').onclick = () => { cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); window.trackEvent('add_to_cart', { item_id: c.id, item_name: c.title, value: c.price }); };
-  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { ov.classList.remove('show'); setTimeout(() => ov.remove(), 300); document.removeEventListener('keydown', esc); } });
+  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { closeQP(); document.removeEventListener('keydown', esc); } });
+  requestAnimationFrame(() => ov.querySelector('.qp-close').focus());
 }
 window.quickPreview = quickPreview;
 
@@ -255,8 +259,12 @@ function shell() {
   const umBtn = $('.user-menu-btn', hdr);
   if (umBtn) {
     const drop = $('.user-menu-drop', hdr);
-    umBtn.onclick = () => { drop.hidden = !drop.hidden; };
-    document.addEventListener('click', e => { if (!e.target.closest('.user-menu-wrap')) drop.hidden = true; });
+    umBtn.setAttribute('aria-expanded', 'false');
+    umBtn.setAttribute('aria-haspopup', 'true');
+    const toggleUM = (open) => { const isOpen = open ?? !drop.hidden; drop.hidden = !isOpen; umBtn.setAttribute('aria-expanded', String(isOpen)); };
+    umBtn.onclick = () => toggleUM();
+    document.addEventListener('click', e => { if (!e.target.closest('.user-menu-wrap')) toggleUM(false); });
+    drop.addEventListener('keydown', e => { if (e.key === 'Escape') { toggleUM(false); umBtn.focus(); } });
     const logoutBtn = $('#aic-logout', hdr);
     if (logoutBtn) logoutBtn.onclick = () => { localStorage.removeItem('aic-user'); location.reload(); };
   }
@@ -313,8 +321,13 @@ function shell() {
   // 通知面板
   const notifBtn = $('.notif-btn', hdr), notifPanel = $('.notif-panel', hdr);
   if (notifBtn) {
-    notifBtn.onclick = () => { notifPanel.classList.toggle('on'); };
-    document.addEventListener('click', e => { if (!e.target.closest('.notif-wrap')) notifPanel.classList.remove('on'); });
+    notifBtn.setAttribute('aria-expanded', 'false');
+    notifBtn.setAttribute('aria-controls', 'notif-panel-id');
+    notifPanel.id = 'notif-panel-id';
+    const toggleNotif = (open) => { const isOpen = open ?? !notifPanel.classList.contains('on'); notifPanel.classList.toggle('on', isOpen); notifBtn.setAttribute('aria-expanded', String(isOpen)); };
+    notifBtn.onclick = () => toggleNotif();
+    document.addEventListener('click', e => { if (!e.target.closest('.notif-wrap')) toggleNotif(false); });
+    notifPanel.addEventListener('keydown', e => { if (e.key === 'Escape') { toggleNotif(false); notifBtn.focus(); } });
     const updateBadge = () => {
       const count = $$('.notif-item.unread', notifPanel).length;
       const badge = $('.notif-badge-count', notifBtn);
@@ -363,7 +376,7 @@ function shell() {
 
   // 頁首：往下捲隱藏、往上捲出現
   let lastY = scrollY;
-  addEventListener('scroll', () => {
+  addEventListener('scroll', rafThrottle(() => {
     const y = scrollY, h = document.documentElement.scrollHeight - innerHeight;
     prog.style.width = (h > 0 ? y / h * 100 : 0) + '%';
     hdr.classList.toggle('scrolled', y > 10);
@@ -372,7 +385,7 @@ function shell() {
     document.body.classList.toggle('hdr-hidden', hide);
     btt.classList.toggle('show', y > 600);
     lastY = y;
-  }, { passive: true });
+  }), { passive: true });
 
   searchOverlay();
 
@@ -1050,7 +1063,7 @@ function home() {
   const fb = document.createElement('div'); fb.className = 'float-bar';
   fb.innerHTML = `<button onclick="toast('示範網站：優惠功能開發中')"><span style="font-size:20px">🎁</span><span class="fb-tip">優惠</span></button><button onclick="toast('示範網站：App 下載中')"><span style="font-size:20px">📱</span><span class="fb-tip">App</span></button><button onclick="toast('示範網站：客服功能開發中')"><span style="font-size:20px">💬</span><span class="fb-tip">客服</span></button><button onclick="scrollTo({top:0,behavior:'smooth'})"><span style="font-size:20px">⬆</span><span class="fb-tip">回頂部</span></button>`;
   document.body.append(fb);
-  addEventListener('scroll', () => fb.classList.toggle('show', scrollY > innerHeight), { passive: true });
+  addEventListener('scroll', rafThrottle(() => fb.classList.toggle('show', scrollY > innerHeight)), { passive: true });
 
   // Sticky 促銷底欄
   if (!sessionStorage.getItem('aic-promo-closed')) {
@@ -1179,7 +1192,7 @@ function heroSlider() {
   // 捲出畫面暫停
   new IntersectionObserver(([e]) => { const v = $('video', slides[cur]); e.isIntersecting ? (!paused && v.play().catch(() => {})) : v.pause(); }).observe(hero);
   // 視差
-  addEventListener('scroll', () => { const y = scrollY; if (y < innerHeight) $$('.txt', hero).forEach(t => t.style.transform = `translateY(${y * .25}px)`); }, { passive: true });
+  addEventListener('scroll', rafThrottle(() => { const y = scrollY; if (y < innerHeight) $$('.txt', hero).forEach(t => t.style.transform = `translateY(${y * .25}px)`); }), { passive: true });
   sched();
 }
 
@@ -1692,18 +1705,18 @@ function course() {
     const target = $(a.getAttribute('href'));
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }));
-  addEventListener('scroll', () => {
+  addEventListener('scroll', rafThrottle(() => {
     let n = 0; secs.forEach((s, i) => { if (s.getBoundingClientRect().top < 180) n = i; });
     tabs.forEach((a, i) => a.classList.toggle('on', i === n));
-  }, { passive: true });
+  }), { passive: true });
 
   // Reading progress bar
   const progBar = document.createElement('div'); progBar.className = 'c-read-prog';
   document.body.append(progBar);
-  addEventListener('scroll', () => {
+  addEventListener('scroll', rafThrottle(() => {
     const h = document.documentElement.scrollHeight - innerHeight;
     progBar.style.width = h > 0 ? (scrollY / h * 100) + '%' : '0';
-  }, { passive: true });
+  }), { passive: true });
 
   // Sticky purchase bar (all viewports)
   if (!isOwned) {
@@ -1712,7 +1725,7 @@ function course() {
     sbar.innerHTML = `<div class="wrap"><div class="sticky-buy-info"><img class="sticky-buy-thumb" src="${img(c)}" alt="${c.title}"><span class="sticky-buy-title">${c.title}</span></div><span class="sticky-buy-origin">${fmt(c.origin)}</span><span class="sticky-buy-price">${fmt(c.price)}</span><span class="sb-disc">-${disc}%</span><button class="btn btn-ghost sticky-cart-btn"><span class="sb-cart-txt">加入購物車</span><span class="sb-cart-ok" hidden>✓ 已加入</span></button><button class="btn btn-pri sticky-buy-btn"><span class="sb-buy-full">立即購買</span><span class="sb-buy-short">購買</span></button></div>`;
     document.body.append(sbar);
     const buyAside = $('.buy');
-    addEventListener('scroll', () => { sbar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }, { passive: true });
+    addEventListener('scroll', rafThrottle(() => { sbar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }), { passive: true });
     $('.sticky-buy-btn', sbar).onclick = () => toast('示範網站：尚未串接金流');
     const sbCartBtn = $('.sticky-cart-btn', sbar);
     sbCartBtn.onclick = () => {
@@ -6832,20 +6845,20 @@ if (page === 'home' || page === 'course' || page === 'category') {
   document.body.append(btt);
   btt.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
   const prog = btt.querySelector('.btt-prog');
-  addEventListener('scroll', () => {
+  addEventListener('scroll', rafThrottle(() => {
     const pct = scrollY / (document.documentElement.scrollHeight - innerHeight);
     btt.classList.toggle('show', scrollY > 300);
     if (prog) prog.style.strokeDashoffset = (125.66 * (1 - Math.min(pct, 1))).toFixed(1);
-  }, { passive: true });
+  }), { passive: true });
 }
 
 // ── 文章頁閱讀進度條 ──
 if (page === 'article' || page === 'course') {
   const bar = document.createElement('div'); bar.className = 'read-bar'; document.body.append(bar);
-  addEventListener('scroll', () => {
+  addEventListener('scroll', rafThrottle(() => {
     const pct = scrollY / (document.documentElement.scrollHeight - innerHeight) * 100;
     bar.style.width = Math.min(pct, 100) + '%';
-  }, { passive: true });
+  }), { passive: true });
 }
 
 // ── 課程推薦測驗 ──
