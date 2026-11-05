@@ -8,5 +8,9 @@ Disallow: /my.html
 Disallow: /wishlist.html
 Disallow: /order-history.html
 Disallow: /cart.html
+Disallow: /settings.html
+Disallow: /notebook.html
+Disallow: /certificate.html
+Disallow: /report.html
 
 Sitemap: https://aiclass.tw/sitemap.xml
