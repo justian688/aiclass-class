@@ -858,7 +858,11 @@ const cdHTML = `<div class="cd" data-cd><div><b data-h>00</b><small>時</small><
 function home() {
   const main = $('main');
   main.innerHTML = '';
-  seo({ title: 'AI Class｜跟著業界職人，把熱情學成專業', desc: '精選線上課程平台，涵蓋設計、程式、AI、攝影、音樂等領域，由業界職人親授。無限期觀看、隨時隨地學習，把熱情學成專業。', url: 'https://aiclass.tw/', ogType: 'website', jsonLd: { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://aiclass.tw/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class' } } })) } });
+  seo({ title: 'AI Class｜跟著業界職人，把熱情學成專業', desc: '精選線上課程平台，涵蓋設計、程式、AI、攝影、音樂等領域，由業界職人親授。無限期觀看、隨時隨地學習，把熱情學成專業。', url: 'https://aiclass.tw/', ogType: 'website', jsonLd: [
+    { '@context': 'https://schema.org', '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/', logo: 'https://aiclass.tw/assets/icon-512.png', description: '精選線上課程平台，由業界職人親授設計、程式、AI、攝影、音樂等領域課程', sameAs: [] },
+    { '@context': 'https://schema.org', '@type': 'WebSite', name: 'AI Class', url: 'https://aiclass.tw/', potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: 'https://aiclass.tw/search.html?q={search_term_string}' }, 'query-input': 'required name=search_term_string' } },
+    { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://aiclass.tw/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class' } } })) }
+  ] });
   // Hero
   const slides = window.HERO.map(id => byId[id]);
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程" aria-roledescription="carousel">
@@ -2227,7 +2231,9 @@ function course() {
 
 /* ---------- 活動頁 ---------- */
 function eventPage() {
-  seo({ title: '限時活動｜AI Class', desc: '限時優惠活動，搶購精選課程享超值折扣', url: 'https://aiclass.tw/event.html' });
+  seo({ title: '限時活動｜AI Class', desc: '限時優惠活動，搶購精選課程享超值折扣', url: 'https://aiclass.tw/event.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'Event', name: 'AI Class Black Friday 2026', description: '精選課程限時優惠，全站 85 折起', startDate: '2026-11-20', endDate: '2026-11-23', eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode', eventStatus: 'https://schema.org/EventScheduled', location: { '@type': 'VirtualLocation', url: 'https://aiclass.tw/event.html' }, organizer: { '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/' }, offers: { '@type': 'AggregateOffer', lowPrice: 990, highPrice: 4990, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' } }
+  });
   const main = $('main');
   const bfDeadline = new Date('2026-11-23T23:59:59').getTime();
   const featured = C.filter(c => c.tag === 'HOT' || c.tag === 'BEST').slice(0, 8);
@@ -3450,7 +3456,9 @@ function instructorPage() {
 /* ---------- 分類瀏覽 ---------- */
 function categoryPage() {
   const main = $('main');
-  seo({ title: '課程分類｜AI Class', desc: '探索所有課程分類：設計、繪畫、AI、攝影、料理等', url: 'https://aiclass.tw/category.html' });
+  seo({ title: '課程分類｜AI Class', desc: '探索所有課程分類：設計、繪畫、AI、攝影、料理等', url: 'https://aiclass.tw/category.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '課程分類', description: '探索所有課程分類', url: 'https://aiclass.tw/category.html', mainEntity: { '@type': 'ItemList', itemListElement: window.CATS.filter(c => c.id !== 'all').map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: `https://aiclass.tw/category.html?cat=${c.id}` })) } }
+  });
   const catId = new URLSearchParams(location.search).get('cat');
   const cats = window.CATS.filter(c => c.id !== 'all');
 
@@ -4103,7 +4111,9 @@ function myPage() {
 /* ---------- 關於我們 ---------- */
 function aboutPage() {
   const main = $('main');
-  seo({ title: '關於我們｜AI Class', desc: '認識 AI Class 團隊與我們的使命', url: 'https://aiclass.tw/about.html' });
+  seo({ title: '關於我們｜AI Class', desc: '認識 AI Class 團隊與我們的使命', url: 'https://aiclass.tw/about.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'Organization', name: 'AI Class', url: 'https://aiclass.tw/', logo: 'https://aiclass.tw/assets/icon-512.png', description: '跟著業界職人，把熱情學成專業。AI Class 匯集各行業頂尖職人，提供系統化線上課程。', foundingDate: '2024', numberOfEmployees: { '@type': 'QuantitativeValue', value: 30 } }
+  });
   const totalStudents = C.reduce((s, c) => s + c.students, 0);
   const teacherCount = [...new Set(C.map(c => c.teacher))].length;
 
@@ -5495,7 +5505,9 @@ function certificatePage() {
 /* ---------- 學習路徑列表 ---------- */
 function pathListPage() {
   const main = $('main');
-  seo({ title: '學習路徑｜AI Class', desc: '系統化學習路徑，從入門到專業，循序漸進培養即戰力', url: 'https://aiclass.tw/path.html' });
+  seo({ title: '學習路徑｜AI Class', desc: '系統化學習路徑，從入門到專業，循序漸進培養即戰力', url: 'https://aiclass.tw/path.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'ItemList', name: '學習路徑', description: '系統化課程規劃，循序漸進培養完整技能', url: 'https://aiclass.tw/path.html', itemListElement: (window.PATHS || []).map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: `https://aiclass.tw/path.html?id=${p.id}` })) }
+  });
   const paths = window.PATHS || [];
   main.innerHTML = `<section class="sec-wrap rv-up"><div class="wrap">
     <div class="crumb"><a href="index.html">首頁</a> › 學習路徑</div>
