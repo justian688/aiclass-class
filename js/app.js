@@ -15,7 +15,7 @@ const fmt = n => 'NT$' + n.toLocaleString('en-US');
 const escH = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const pct = c => Math.round((1 - c.price / c.origin) * 100);
 const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
-document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" fill="%23e8e8ec"><rect width="400" height="225"/><text x="50%" y="50%" text-anchor="middle" fill="%23aeaeb2" font-size="14" dy=".3em">圖片載入失敗</text></svg>')}`; } }, true);
+document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' fill='%23e5e5ea'%3E%3Crect width='400' height='225' rx='12'/%3E%3Ctext x='200' y='120' text-anchor='middle' font-family='system-ui' font-size='14' fill='%23aeaeb2'%3E圖片載入失敗%3C/text%3E%3C/svg%3E"; e.target.alt = '圖片暫時無法顯示'; } }, true);
 const page = document.body.dataset.page;
 const ls = (key, fallback) => { try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; } catch { localStorage.removeItem(key); return fallback; } };
 const wish = new Set(ls('aic-wish', []));
@@ -141,7 +141,7 @@ function notesWidget(courseId) {
   const notes = allNotes[courseId] || [];
   return `<section class="c-sec" id="notes"><h2 class="rv-up">📝 我的學習筆記 ${notes.length ? `<button class="notes-export btn btn-ghost btn-sm" style="font-size:13px;margin-left:12px">📥 匯出筆記</button>` : ''}</h2>
     <div class="notes-add rv-up"><textarea class="notes-input" placeholder="記錄你的學習重點..." rows="3" aria-label="學習筆記"></textarea><button class="btn btn-pri notes-save">儲存筆記</button></div>
-    <div class="notes-list">${notes.map((n, i) => `<div class="note-item rv-up"><div class="note-date">${new Date(n.ts).toLocaleDateString('zh-TW')} ${new Date(n.ts).toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${n.text}</p><button class="note-del" data-ni="${i}">刪除</button></div>`).join('')}${!notes.length ? '<p class="notes-empty">還沒有筆記，開始記錄你的學習心得吧！</p>' : ''}</div></section>`;
+    <div class="notes-list">${notes.map((n, i) => `<div class="note-item rv-up"><div class="note-date">${new Date(n.ts).toLocaleDateString('zh-TW')} ${new Date(n.ts).toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${escH(n.text)}</p><button class="note-del" data-ni="${i}">刪除</button></div>`).join('')}${!notes.length ? '<p class="notes-empty">還沒有筆記，開始記錄你的學習心得吧！</p>' : ''}</div></section>`;
 }
 function bindNotes(courseId, main) {
   const saveBtn = $('.notes-save', main);
@@ -154,7 +154,7 @@ function bindNotes(courseId, main) {
     saveNotes(); ta.value = '';
     const list = $('.notes-list', main);
     const item = document.createElement('div'); item.className = 'note-item rv-up in';
-    item.innerHTML = `<div class="note-date">${new Date().toLocaleDateString('zh-TW')} ${new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${txt}</p><button class="note-del" data-ni="0">刪除</button>`;
+    item.innerHTML = `<div class="note-date">${new Date().toLocaleDateString('zh-TW')} ${new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'})}</div><p class="note-text">${escH(txt)}</p><button class="note-del" data-ni="0">刪除</button>`;
     const empty = $('.notes-empty', list); if (empty) empty.remove();
     list.prepend(item);
     reveal(list);
@@ -229,7 +229,7 @@ function renderUserReviews(courseId, container) {
   if (!reviews.length) { container.innerHTML = ''; return; }
   container.innerHTML = `<h4 style="margin:24px 0 12px;font-size:16px">我的評價</h4>` + reviews.map((r, i) => `<div class="review-item ur-mine">
     <div class="ri-head"><div class="ri-avatar" style="background:var(--pri)">我</div><div class="ri-meta"><b>我的評價</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${new Date(r.ts).toLocaleDateString('zh-TW')}</span></div></div><button class="ur-del" data-uri="${i}">刪除</button></div>
-    <p>${r.text}</p></div>`).join('');
+    <p>${escH(r.text)}</p></div>`).join('');
   $$('.ur-del', container).forEach(b => b.onclick = () => {
     userReviews[courseId].splice(+b.dataset.uri, 1); saveReviews(); renderUserReviews(courseId, container); toast('評價已刪除');
   });
@@ -7308,7 +7308,7 @@ function notebookPage() {
       }
     });
     const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI-Class-全部筆記-${new Date().toISOString().slice(0,10)}.txt`; a.click();
+    const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `AI-Class-全部筆記-${new Date().toISOString().slice(0,10)}.txt`; a.click(); URL.revokeObjectURL(u);
     toast('全部筆記已匯出');
   };
   reveal(main);
@@ -8017,7 +8017,7 @@ function openRecommendQuiz() {
     tech: '常見問題：<br>• 影片無法播放 → 清除快取重試<br>• 進度未儲存 → 確認已登入<br>• 下載問題 → 用 Chrome 瀏覽器<br>如仍有問題，到<a href="contact.html">聯繫我們</a>。',
     other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 support@aiclass.tw'
   };
-  function cwAddMsg(text, bot) { const d = document.createElement('div'); d.className = 'cw-msg ' + (bot ? 'cw-bot' : 'cw-user'); d.innerHTML = bot ? `<div class="cw-av">🤖</div><div class="cw-bub">${text}</div>` : `<div class="cw-bub">${text}</div>`; const q = cwBody.querySelector('.cw-quick'); if (q) q.remove(); cwBody.append(d); cwBody.scrollTop = cwBody.scrollHeight; }
+  function cwAddMsg(text, bot) { const d = document.createElement('div'); d.className = 'cw-msg ' + (bot ? 'cw-bot' : 'cw-user'); d.innerHTML = bot ? `<div class="cw-av">🤖</div><div class="cw-bub">${text}</div>` : `<div class="cw-bub">${escH(text)}</div>`; const q = cwBody.querySelector('.cw-quick'); if (q) q.remove(); cwBody.append(d); cwBody.scrollTop = cwBody.scrollHeight; }
   function cwBot(text) { const t = document.createElement('div'); t.className = 'cw-msg cw-bot cw-typing'; t.innerHTML = '<div class="cw-av">🤖</div><div class="cw-bub"><span class="cw-dots"><i></i><i></i><i></i></span></div>'; cwBody.append(t); cwBody.scrollTop = cwBody.scrollHeight; setTimeout(() => { t.remove(); cwAddMsg(text, true); }, 800 + Math.random() * 500); }
   cw.querySelectorAll('[data-cq]').forEach(b => b.onclick = () => { cwAddMsg(b.textContent, false); cwBot(cwReplies[b.dataset.cq]); });
   function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！這是示範網站，客服功能開發中。到<a href="faq.html">常見問題</a>或<a href="contact.html">聯繫我們</a>取得幫助 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="coupon.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
@@ -8370,13 +8370,6 @@ function openRecommendQuiz() {
   window.addEventListener('hashchange', run);
 })();
 
-// ── 圖片載入失敗回退 ──
-document.addEventListener('error', e => {
-  if (e.target.tagName !== 'IMG' || e.target.dataset.fallback) return;
-  e.target.dataset.fallback = '1';
-  e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23e5e5ea'%3E%3Crect width='400' height='300' rx='12'/%3E%3Ctext x='200' y='158' text-anchor='middle' font-family='system-ui' font-size='16' fill='%23aeaeb2'%3E圖片載入失敗%3C/text%3E%3C/svg%3E";
-  e.target.alt = '圖片暫時無法顯示';
-}, true);
 
 // ── 頁面退出動畫（支援 View Transitions API）──
 if (!prefersReduced) {
