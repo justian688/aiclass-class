@@ -384,6 +384,22 @@ body.hdr-hidden .tabs{top:0}
 .rv-filter-clear{background:none;border:none;color:var(--pri);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:6px}
 .rv-filter-clear:hover{background:color-mix(in srgb,var(--pri) 15%,transparent)}
 .c-share-btn.copied{color:var(--pri);font-weight:600}
+.rv-hidden{display:none}
+.rv-load-more{width:100%;margin-top:16px;height:46px;border-radius:12px;border:1.5px solid var(--line);font-size:14px;color:var(--tx2)}
+.rv-load-more:hover{border-color:var(--pri);color:var(--pri)}
+.c-related-bundle h2{font-size:22px}
+.c-bundle-list{display:grid;gap:20px}
+.c-bundle-card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:24px;position:relative;overflow:hidden}
+.c-bundle-tag{position:absolute;top:16px;right:16px;background:var(--grad);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px}
+.c-bundle-card h3{font-size:18px;margin-bottom:6px;padding-right:80px}
+.c-bundle-card p{font-size:14px;color:var(--tx2);margin-bottom:14px}
+.c-bundle-courses{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.c-bundle-chip{font-size:12px;padding:4px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);color:var(--tx2)}
+.c-bundle-chip.current{background:color-mix(in srgb,var(--pri) 12%,transparent);border-color:var(--pri);color:var(--pri);font-weight:600}
+.c-bundle-price{display:flex;align-items:baseline;gap:10px}
+.c-bundle-now{font-size:22px;font-weight:900;color:var(--pri)}
+.c-bundle-price del{font-size:14px;color:var(--tx3)}
+.c-bundle-save{font-size:13px;color:#34c759;font-weight:700}
 .ri-sub{font-size:13px;color:#ffc35c;letter-spacing:1px}
 .ri-date{color:var(--tx3);font-size:12px;letter-spacing:0}
 .c-share{display:flex;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
@@ -3160,6 +3176,9 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 [data-theme="dark"] .rv-vote.voted{background:rgba(124,92,255,.2)}
 [data-theme="dark"] .rv-sort-btn{background:var(--card);border-color:var(--line);color:var(--tx2)}
 [data-theme="dark"] .rv-sort-btn.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+[data-theme="dark"] .rv-load-more{border-color:var(--line);color:var(--tx2)}
+[data-theme="dark"] .c-bundle-card{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .c-bundle-chip{background:var(--bg2);border-color:var(--line)}
 [data-theme="dark"] .rv-filter-status{background:rgba(124,92,255,.12)}
 /* ===== 我的頁面 - 追蹤講師 ===== */
 .my-following-grid{display:grid;grid-template-columns:1fr;gap:16px}

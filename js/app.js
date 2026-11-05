@@ -1443,11 +1443,12 @@ function course() {
           <button class="rv-filter-clear" id="rv-filter-clear">✕ 清除篩選</button>
         </div>
       </div>
-      <div class="review-list" id="review-list">${reviewData.map((r, i) => `<div class="review-item rv-up" data-rating="${r.rating}" data-date="${r.date}" data-helpful="${12+i*3}">
+      <div class="review-list" id="review-list">${reviewData.map((r, i) => `<div class="review-item rv-up${i >= 3 ? ' rv-hidden' : ''}" data-rating="${r.rating}" data-date="${r.date}" data-helpful="${12+i*3}">
         <div class="ri-head"><div class="ri-avatar">${r.initial}</div><div class="ri-meta"><b>${r.name}</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${r.date}</span></div></div></div>
         <p>${r.text}</p>
         <div class="rv-helpful"><span>這則評價有幫助嗎？</span><button class="rv-vote rv-up-vote ${reviewVotes[c.id+'-'+i]==='up'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="up">👍 有幫助 <span class="rv-vote-n">${12+i*3+(reviewVotes[c.id+'-'+i]==='up'?1:0)}</span></button><button class="rv-vote rv-dn-vote ${reviewVotes[c.id+'-'+i]==='dn'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="dn">👎</button></div>
       </div>`).join('')}</div>
+      ${reviewData.length > 3 ? `<button class="btn btn-ghost rv-load-more rv-up" id="rv-load-more">查看更多評價（${reviewData.length - 3}）</button>` : ''}
       <div class="ur-form rv-up"><h3>撰寫你的評價</h3>
         <div class="ur-stars"><span data-ur="1">☆</span><span data-ur="2">☆</span><span data-ur="3">☆</span><span data-ur="4">☆</span><span data-ur="5">☆</span></div>
         <textarea class="ur-text" placeholder="分享你的學習心得…（至少 10 個字）" rows="4" aria-label="課程評價"></textarea>
@@ -1455,6 +1456,7 @@ function course() {
       </div>
       <div class="ur-user-list"></div>
     </section>
+    ${(() => { const B = window.BUNDLES || []; const related = B.filter(b => b.courses.includes(c.id)); if (!related.length) return ''; return `<section class="c-sec c-related-bundle rv-up" id="bundle"><h2>🎁 這堂課的超值組合</h2><div class="c-bundle-list">${related.map(b => { const bCourses = b.courses.map(id => byId[id]).filter(Boolean); return `<div class="c-bundle-card"><div class="c-bundle-tag">${b.tag || '組合包'}</div><h3>${b.name}</h3><p>${b.desc}</p><div class="c-bundle-courses">${bCourses.map(bc => `<span class="c-bundle-chip ${bc.id === c.id ? 'current' : ''}">${bc.title.split('：')[0]}</span>`).join('')}</div><div class="c-bundle-price"><span class="c-bundle-now">${fmt(b.price)}</span><del>${fmt(b.original)}</del><span class="c-bundle-save">省 ${fmt(b.save)}</span></div><button class="btn btn-pri" style="width:100%;margin-top:12px" onclick="toast('已將組合包加入購物車 🛒')">整組加入購物車</button></div>`; }).join('')}</div></section>`; })()}
     ${notesWidget(c.id)}
     <section class="c-sec" id="qa"><h2 class="rv-up">💬 學員問答 <span class="qa-count">${6 + (c.id.charCodeAt(2) % 8)} 則討論</span></h2>
       <div class="qa-post rv-up">
@@ -1616,6 +1618,15 @@ function course() {
     if (numEl) { const base = +numEl.textContent; numEl.textContent = reviewVotes[key] === 'up' ? base + 1 : base; }
     toast(dir === 'up' ? '感謝你的回饋！' : '已記錄');
   });
+
+  // Load more reviews
+  const rvMoreBtn = $('#rv-load-more', main);
+  if (rvMoreBtn) {
+    rvMoreBtn.onclick = () => {
+      $$('.rv-hidden', main).forEach(el => { el.classList.remove('rv-hidden'); el.classList.add('in'); });
+      rvMoreBtn.remove();
+    };
+  }
 
   // Review sort
   const rvList = $('#review-list', main);
