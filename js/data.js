@@ -16,38 +16,38 @@ window.CATS = [
 window.COURSES = [
   // ── 設計 ──
   { id: 'c01', v: '50598', cat: 'design', sub: '品牌設計', title: '品牌字體設計：從草圖到完整字型系統', teacher: '林予安', role: '字體設計師・前品牌顧問', price: 4980, origin: 8900, rating: 4.9, students: 3820, tag: 'BEST', hours: 18, desc: '從手繪開始，到 Glyphs 建立一套完整的品牌字型，涵蓋中英文配字、排版測試與授權設定。', ai: '18 小時帶你從手繪草圖到完成一套中英品牌字型系統' },
-  { id: 'c02', v: '13228', cat: 'design', sub: 'UX/UI', title: 'UI/UX 實戰：用 Figma 打造上線等級的 App 介面', teacher: '陳柏睿', role: '資深產品設計師', price: 5280, origin: 9600, rating: 4.8, students: 5210, tag: 'HOT', hours: 22, desc: '元件系統、Auto Layout、Prototype 到 Dev Mode 交付，完整走過一個 App 的設計流程。', ai: '完整走過一個 App 的 UI/UX 設計流程，從元件到交付' },
+  { id: 'c02', v: '13228', cat: 'design', sub: 'UX/UI', title: 'UI/UX 實戰：用 Figma 打造上線等級的 App 介面', teacher: '陳柏睿', role: '資深產品設計師', price: 5280, origin: 9600, rating: 4.8, students: 5210, tag: 'HOT', hours: 22, desc: '元件系統、Auto Layout、Prototype 到 Dev Mode 交付，完整走過一個 App 的設計流程。', ai: '完整走過一個 App 的 UI/UX 設計流程，從元件到交付', pro: true },
   { id: 'c19', v: '14540', cat: 'design', sub: '網頁/前端', title: '網頁設計全攻略：響應式佈局與視覺系統', teacher: '蘇敏慧', role: '網頁設計總監', price: 4680, origin: 8400, rating: 4.8, students: 3190, tag: 'NEW', hours: 20, desc: '從 wireframe 到高保真稿，建立一套可交付的響應式網頁設計系統。' },
   { id: 'c20', v: '9757', cat: 'design', sub: 'UX/UI', title: '設計思考工作坊：從用戶研究到原型驗證', teacher: '方翊倫', role: '設計策略顧問', price: 3980, origin: 7200, rating: 4.7, students: 2780, tag: '', hours: 14, desc: '用 Design Thinking 方法論帶你走過需求訪談、定義問題、發想、原型到驗證的完整循環。' },
 
   // ── 繪畫 ──
-  { id: 'c05', v: '785', cat: 'drawing', sub: '角色', title: '數位插畫角色設計：建立你的原創角色宇宙', teacher: '張雨萱', role: '插畫家・角色設計師', price: 4580, origin: 8200, rating: 5.0, students: 4470, tag: 'BEST', hours: 20, desc: '角色設定、配色邏輯、表情變化與姿勢動態，從零到一建立你的原創角色 IP。', ai: '從零建立你的原創角色 IP，學會設定、配色與動態表現' },
+  { id: 'c05', v: '785', cat: 'drawing', sub: '角色', title: '數位插畫角色設計：建立你的原創角色宇宙', teacher: '張雨萱', role: '插畫家・角色設計師', price: 4580, origin: 8200, rating: 5.0, students: 4470, tag: 'BEST', hours: 20, desc: '角色設定、配色邏輯、表情變化與姿勢動態，從零到一建立你的原創角色 IP。', ai: '從零建立你的原創角色 IP，學會設定、配色與動態表現', pro: true },
   { id: 'c07', v: '2858', cat: 'drawing', sub: '手繪', title: '鉛筆素描基礎：光影、比例與質感的觀察術', teacher: '王思妤', role: '藝術教育工作者', price: 2980, origin: 5400, rating: 4.7, students: 2890, tag: '', hours: 12, desc: '從削鉛筆開始，學會觀察光源方向、掌握人體比例、畫出不同材質的質感表現。' },
   { id: 'c13', v: '30232', cat: 'drawing', sub: '手繪', title: '油畫人物肖像：古典技法與現代筆觸', teacher: '周婉婷', role: '專業畫家', price: 4280, origin: 7600, rating: 4.9, students: 1980, tag: '', hours: 17, desc: '從古典油畫三層法到現代直接畫法，學會畫出有溫度的人物肖像。' },
-  { id: 'c14', v: '9339', cat: 'drawing', sub: '概念設計', title: '概念藝術：把想像畫成故事的世界觀設計', teacher: '何俊廷', role: '遊戲概念美術', price: 5180, origin: 9200, rating: 4.9, students: 3540, tag: 'BEST', hours: 24, desc: '從影響圖到最終彩稿，學會設計場景、生物與武器，建立完整的視覺世界觀。' },
+  { id: 'c14', v: '9339', cat: 'drawing', sub: '概念設計', title: '概念藝術：把想像畫成故事的世界觀設計', teacher: '何俊廷', role: '遊戲概念美術', price: 5180, origin: 9200, rating: 4.9, students: 3540, tag: 'BEST', hours: 24, desc: '從影響圖到最終彩稿，學會設計場景、生物與武器，建立完整的視覺世界觀。', pro: true },
   { id: 'c21', v: '32085', cat: 'drawing', sub: '手繪', title: '水彩風景寫生：戶外取景與濕中濕技法', teacher: '曾翠蓮', role: '水彩藝術家', price: 3480, origin: 6200, rating: 4.8, students: 2340, tag: 'NEW', hours: 13, desc: '帶你走出畫室，用水彩捕捉光線、空氣感和遠近層次，10 張完整作品實作。' },
   { id: 'c22', v: '49557', cat: 'drawing', sub: '手繪', title: '西洋書法入門：哥德體到現代花體字', teacher: '鄭雅文', role: '書法藝術家・品牌聯名設計師', price: 2880, origin: 5200, rating: 4.8, students: 1860, tag: '', hours: 10, desc: '從握筆角度、基本筆畫到完整字母，掌握三種經典字體風格。' },
 
   // ── 影像/動畫 ──
-  { id: 'c06', v: '29997', cat: 'video', sub: 'Blender', title: 'Blender 3D 建模：從道具到完整場景', teacher: '許家豪', role: '3D 美術總監', price: 5480, origin: 9800, rating: 4.9, students: 3360, tag: 'HOT', hours: 28, desc: '硬表面建模、雕刻、UV 展開、PBR 材質、HDRI 燈光到最終算圖，一條龍教學。', ai: '28 小時一條龍學完 3D 建模到算圖，做出完整場景作品' },
+  { id: 'c06', v: '29997', cat: 'video', sub: 'Blender', title: 'Blender 3D 建模：從道具到完整場景', teacher: '許家豪', role: '3D 美術總監', price: 5480, origin: 9800, rating: 4.9, students: 3360, tag: 'HOT', hours: 28, desc: '硬表面建模、雕刻、UV 展開、PBR 材質、HDRI 燈光到最終算圖，一條龍教學。', ai: '28 小時一條龍學完 3D 建模到算圖，做出完整場景作品', pro: true },
   { id: 'c12', v: '99786', cat: 'video', sub: '2D', title: '動態設計入門：After Effects 視覺特效', teacher: '楊凱文', role: '動態設計師', price: 4780, origin: 8600, rating: 4.8, students: 2760, tag: 'NEW', hours: 19, desc: '關鍵影格、圖層動畫、表達式入門到粒子特效，做出社群短影音和品牌動態。' },
-  { id: 'c15', v: '14540', cat: 'video', sub: 'CG/VFX', title: '電影級 CG 場景：宇宙與星球視覺製作', teacher: '謝昀達', role: 'VFX 合成師', price: 6280, origin: 11200, rating: 4.8, students: 1720, tag: '', hours: 30, desc: '使用 Houdini 與 Nuke 製作太空場景，從建模、特效模擬到合成的完整流程。' },
+  { id: 'c15', v: '14540', cat: 'video', sub: 'CG/VFX', title: '電影級 CG 場景：宇宙與星球視覺製作', teacher: '謝昀達', role: 'VFX 合成師', price: 6280, origin: 11200, rating: 4.8, students: 1720, tag: '', hours: 30, desc: '使用 Houdini 與 Nuke 製作太空場景，從建模、特效模擬到合成的完整流程。', pro: true },
   { id: 'c23', v: '33853', cat: 'video', sub: '3D', title: 'Cinema 4D 風格化場景：夢幻低多邊形世界', teacher: '許家豪', role: '3D 美術總監', price: 4280, origin: 7800, rating: 4.7, students: 2100, tag: '', hours: 16, desc: '用 C4D 做出 IG 上流行的風格化 3D 插畫場景，從建模到 Octane 渲染。' },
 
   // ── AI/科技 ──
-  { id: 'c03', v: '41654', cat: 'ai', sub: 'AI 技術', title: '生成式 AI 應用開發：打造你的第一個智慧助理', teacher: '黃士誠', role: 'AI 工程師', price: 5980, origin: 10800, rating: 4.9, students: 6120, tag: 'NEW', hours: 26, desc: '從 Prompt Engineering 到 RAG、Function Calling 與部署，做出能真正上線的 AI 助手。', ai: '這堂課會帶你用 3 個月時間，從零到能獨立開發 AI 應用' },
+  { id: 'c03', v: '41654', cat: 'ai', sub: 'AI 技術', title: '生成式 AI 應用開發：打造你的第一個智慧助理', teacher: '黃士誠', role: 'AI 工程師', price: 5980, origin: 10800, rating: 4.9, students: 6120, tag: 'NEW', hours: 26, desc: '從 Prompt Engineering 到 RAG、Function Calling 與部署，做出能真正上線的 AI 助手。', ai: '這堂課會帶你用 3 個月時間，從零到能獨立開發 AI 應用', pro: true },
   { id: 'c16', v: '46635', cat: 'ai', sub: '程式開發', title: '零基礎 Python：自動化你的日常工作', teacher: '羅志偉', role: '軟體工程師', price: 3480, origin: 6200, rating: 4.9, students: 7330, tag: 'HOT', hours: 20, desc: '不需要任何程式基礎，從安裝到實作 10 個自動化腳本，省下每天兩小時的重複工作。', ai: '零基礎到寫出 10 個自動化腳本，每天省下兩小時' },
-  { id: 'c24', v: '9757', cat: 'ai', sub: '程式開發', title: '前端工程師養成：HTML / CSS / JavaScript 完整入門', teacher: '蔡承恩', role: '全端工程師', price: 4280, origin: 7600, rating: 4.8, students: 4560, tag: 'BEST', hours: 32, desc: '從第一行程式碼到部署上線，做出 5 個完整網頁專案，進入前端工程師的大門。', ai: '從第一行程式碼到 5 個完整網頁專案上線，進入前端領域' },
+  { id: 'c24', v: '9757', cat: 'ai', sub: '程式開發', title: '前端工程師養成：HTML / CSS / JavaScript 完整入門', teacher: '蔡承恩', role: '全端工程師', price: 4280, origin: 7600, rating: 4.8, students: 4560, tag: 'BEST', hours: 32, desc: '從第一行程式碼到部署上線，做出 5 個完整網頁專案，進入前端工程師的大門。', ai: '從第一行程式碼到 5 個完整網頁專案上線，進入前端領域', pro: true },
   { id: 'c25', v: '47321', cat: 'ai', sub: '程式開發', title: '資料分析實戰：用 Python 做出老闆要的報表', teacher: '林佳穎', role: '資料科學家', price: 4580, origin: 8200, rating: 4.8, students: 3870, tag: '', hours: 18, desc: 'Pandas、視覺化到自動寄信，把 Excel 手工作業全部自動化。' },
-  { id: 'c26', v: '46353', cat: 'ai', sub: '程式開發', title: 'React 進階實戰：打造 SaaS 產品前端', teacher: '蔡承恩', role: '全端工程師', price: 5880, origin: 10400, rating: 4.9, students: 2940, tag: 'NEW', hours: 28, desc: 'Next.js App Router、Server Actions、Zustand 狀態管理到 Stripe 串接，做出完整 SaaS。' },
+  { id: 'c26', v: '46353', cat: 'ai', sub: '程式開發', title: 'React 進階實戰：打造 SaaS 產品前端', teacher: '蔡承恩', role: '全端工程師', price: 5880, origin: 10400, rating: 4.9, students: 2940, tag: 'NEW', hours: 28, desc: 'Next.js App Router、Server Actions、Zustand 狀態管理到 Stripe 串接，做出完整 SaaS。', pro: true },
 
   // ── 創作/生活 ──
   { id: 'c08', v: '34408', cat: 'creative', sub: '攝影', title: '戶外人像攝影：自然光下的構圖與調色', teacher: '李承翰', role: '商業攝影師', price: 3980, origin: 7200, rating: 4.8, students: 3010, tag: 'NEW', hours: 14, desc: '從選時段、找光線到 Lightroom 調色，用一機一鏡拍出雜誌質感的人像。' },
-  { id: 'c27', v: '46353', cat: 'creative', sub: '攝影', title: '短影音拍攝與節奏感剪輯', teacher: '趙宥翔', role: '影像創作者・百萬訂閱', price: 3280, origin: 5800, rating: 4.9, students: 5430, tag: 'HOT', hours: 11, desc: '手機拍攝技巧、運鏡節奏、CapCut 剪輯到上字幕配樂，做出會被分享的短影音。', ai: '手機拍攝到剪輯上字幕，做出高互動的短影音內容' },
+  { id: 'c27', v: '46353', cat: 'creative', sub: '攝影', title: '短影音拍攝與節奏感剪輯', teacher: '趙宥翔', role: '影像創作者・百萬訂閱', price: 3280, origin: 5800, rating: 4.9, students: 5430, tag: 'HOT', hours: 11, desc: '手機拍攝技巧、運鏡節奏、CapCut 剪輯到上字幕配樂，做出會被分享的短影音。', ai: '手機拍攝到剪輯上字幕，做出高互動的短影音內容', pro: true },
 
   // ── 創作/生活（音樂） ──
   { id: 'c04', v: '33936', cat: 'creative', sub: '作曲/音樂', title: '鋼琴即興與編曲：流行歌曲伴奏完全攻略', teacher: '吳若晴', role: '作曲家・鋼琴演奏者', price: 3680, origin: 6800, rating: 4.8, students: 2150, tag: '', hours: 15, desc: '從基礎和弦到華麗填音，學會即興改編任何一首流行歌曲的伴奏版本。' },
-  { id: 'c10', v: '42824', cat: 'creative', sub: '作曲/音樂', title: '吉他自學完整路線：從和弦到 Solo', teacher: '鄭宇恆', role: '樂團吉他手', price: 3280, origin: 5900, rating: 4.7, students: 2440, tag: '', hours: 16, desc: '不看譜也能彈，從開放和弦到五聲音階 Solo，附 15 首經典歌曲的彈法解析。' },
+  { id: 'c10', v: '42824', cat: 'creative', sub: '作曲/音樂', title: '吉他自學完整路線：從和弦到 Solo', teacher: '鄭宇恆', role: '樂團吉他手', price: 3280, origin: 5900, rating: 4.7, students: 2440, tag: '', hours: 16, desc: '不看譜也能彈，從開放和弦到五聲音階 Solo，附 15 首經典歌曲的彈法解析。', pro: true },
   { id: 'c28', v: '17521', cat: 'creative', sub: '作曲/音樂', title: '電子音樂製作：用 Ableton 做出你的第一首 Beat', teacher: '吳若晴', role: '作曲家・音樂製作人', price: 4280, origin: 7600, rating: 4.8, students: 1930, tag: 'NEW', hours: 18, desc: '從鼓機 Pattern、合成器音色到 Mixing，完整做出一首可以發行的電子音樂。' },
 
   // ── 烘焙/料理 ──

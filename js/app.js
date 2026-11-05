@@ -321,7 +321,7 @@ function shell() {
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
     <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
-    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn"><span class="hdr-level-badge" title="${getXPLevel().name}">Lv.${getXPLevel().lv}</span>👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><div class="um-xp-row"><span class="hdr-level-badge lg">${getXPLevel().name}</span><span>${xpData.total.toLocaleString()} XP</span></div><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
+    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">${localStorage.getItem('aic-pro')?'<span class="hdr-pro-badge">PRO</span>':''}<span class="hdr-level-badge" title="${getXPLevel().name}">Lv.${getXPLevel().lv}</span>👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><div class="um-xp-row"><span class="hdr-level-badge lg">${getXPLevel().name}</span><span>${xpData.total.toLocaleString()} XP</span></div><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
   </div>`;
   top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
 
@@ -354,6 +354,7 @@ function shell() {
     <div class="ft-col"><h4 class="ft-col-hd">下載 App<i class="ft-arrow">›</i></h4><ul><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 App Store（iOS）</a></li><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Google Play（Android）</a></li></ul>
       <div class="ft-lang"><select onchange="toast('語言切換功能開發中')" aria-label="語言選擇"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
   </div>
+  <div class="ft-pay"><span>支援付款方式</span><span class="ft-pay-icon">💳 VISA</span><span class="ft-pay-icon">💳 Mastercard</span><span class="ft-pay-icon">💳 JCB</span><span class="ft-pay-icon">📱 LINE Pay</span><span class="ft-pay-icon">📱 街口支付</span></div>
   <div class="ft-bottom">
     <p>© ${new Date().getFullYear()} AI Class. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
   </div></div>`;
@@ -1249,6 +1250,18 @@ function home() {
     autoTm();
   }
 
+  // AI Class Pro 訂閱方案
+  main.insertAdjacentHTML('beforeend', `<section class="sec pro-sec" id="pro"><div class="wrap">
+    <div class="pro-header rv-up"><span class="pro-crown">👑</span><h2>AI Class <span class="pro-gradient">Pro</span></h2><p>解鎖全站課程，無限學習</p></div>
+    <div class="pro-plans rv-up">
+      <div class="pro-plan"><div class="pro-plan-name">月付方案</div><div class="pro-plan-price"><span class="pro-currency">NT$</span><span class="pro-amount">599</span><span class="pro-period">/月</span></div><p class="pro-plan-note">隨時取消，無綁約</p><button class="btn btn-ghost pro-plan-btn" onclick="toast('示範網站：訂閱功能開發中')">選擇月付</button></div>
+      <div class="pro-plan popular"><div class="pro-plan-badge">最划算</div><div class="pro-plan-name">年付方案</div><div class="pro-plan-price"><span class="pro-currency">NT$</span><span class="pro-amount">4,990</span><span class="pro-period">/年</span></div><p class="pro-plan-note">平均每月 $416，省 30%</p><button class="btn btn-pri pro-plan-btn" onclick="toast('示範網站：訂閱功能開發中')">選擇年付</button></div>
+    </div>
+    <div class="pro-features rv-up">
+      ${[['🎬','全站 80+ 堂課程暢看','不用單堂購買，所有課程隨選隨看'],['⭐','Pro 獨家課程','搶先觀看 Pro 專屬的進階內容'],['📥','離線下載','支援離線觀看，通勤也能學習'],['🚫','無廣告體驗','專注學習，零干擾'],['🎓','優先新課通知','新課上線第一時間搶先看'],['💬','講師優先回覆','Pro 會員的問題優先處理']].map(f => `<div class="pro-feat"><span class="pro-feat-icon">${f[0]}</span><div><b>${f[1]}</b><p>${f[2]}</p></div></div>`).join('')}
+    </div>
+  </div></section>`);
+
   // FAQ
   main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap faq"><div class="sec-head rv-up"><div><h2>常見問題</h2></div></div>
     ${window.FAQ.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
@@ -1571,6 +1584,7 @@ function course() {
         ${(() => { const prog = progress[c.id]; const doneCnt = prog ? prog.done.length : 0; const pctDone = totalLessonCount > 0 ? Math.round(doneCnt / totalLessonCount * 100) : 0; const remain = totalLessonCount - doneCnt; const remMin = Math.round(remain * c.hours * 60 / totalLessonCount); return `<div class="c-owned-progress" id="side-prog"><div class="c-owned-bar"><div class="c-owned-fill" id="side-prog-fill" style="width:${pctDone}%"></div></div><span id="side-prog-txt">${pctDone}% 完成（${doneCnt}/${totalLessonCount}）</span>${remain > 0 ? `<div class="c-remain-time" id="side-remain">⏱ 預估剩餘 ${remMin >= 60 ? Math.floor(remMin/60) + ' 小時 ' + (remMin%60) + ' 分鐘' : remMin + ' 分鐘'}</div>` : `<div class="c-remain-time c-done-badge">🎉 已完成全部課程！</div>`}</div>`; })()}
         <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">${progress[c.id] ? '繼續學習 →' : '開始上課 →'}</a>
       ` : `
+        ${c.pro ? '<div class="c-pro-tag">👑 Pro 會員免費觀看</div>' : ''}
         <div class="c-live-view"><span class="c-live-dot"></span>${12 + (c.id.charCodeAt(1) % 30)} 人正在瀏覽此課程</div>
         <div class="c-recent-buy">🔥 過去 24 小時內有 ${38 + (c.id.charCodeAt(2) % 45)} 人購買</div>
         <div><span class="pct">${pct(c)}%</span> <del>${fmt(c.origin)}</del></div>
@@ -3699,6 +3713,54 @@ function myPage() {
             return `<div class="dash-streak-day" style="--h:${h / 4 * 100}%" title="第 ${i+1} 天：${h} 小時"></div>`;
           }).join('')}</div>
           <div class="dash-streak-label">過去 30 天學習趨勢</div>
+        </div>
+        <div class="dash-analytics rv-up">
+          <div class="dash-chart-card">
+            <h4>📈 最近 7 天學習時間</h4>
+            <svg class="dash-line-chart" viewBox="0 0 300 120" aria-label="最近 7 天學習時間折線圖">
+              ${(() => {
+                const days = ['一','二','三','四','五','六','日'];
+                const hrs = [1.5, 2.0, 0.5, 1.0, 2.5, 3.0, 1.5];
+                const mx = Math.max(...hrs);
+                const pts = hrs.map((h, i) => `${20 + i * 43},${100 - h / mx * 80}`);
+                return `<defs><linearGradient id="lcGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--pri)" stop-opacity=".3"/><stop offset="1" stop-color="var(--pri)" stop-opacity="0"/></linearGradient></defs>
+                <polygon fill="url(#lcGrad)" points="20,100 ${pts.join(' ')} 278,100"/>
+                <polyline fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${pts.join(' ')}"/>
+                ${pts.map((p, i) => `<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="4" fill="var(--pri)"/><text x="${p.split(',')[0]}" y="115" text-anchor="middle" fill="var(--tx3)" font-size="10">${days[i]}</text><text x="${p.split(',')[0]}" y="${+p.split(',')[1] - 8}" text-anchor="middle" fill="var(--tx)" font-size="9" font-weight="600">${hrs[i]}h</text>`).join('')}`;
+              })()}
+            </svg>
+            <div class="dash-chart-summary"><span>本週 <b>${[1.5,2,0.5,1,2.5,3,1.5].reduce((a,b)=>a+b,0).toFixed(1)}</b> 小時</span><span>日均 <b>${([1.5,2,0.5,1,2.5,3,1.5].reduce((a,b)=>a+b,0)/7).toFixed(1)}</b> 小時</span></div>
+          </div>
+          <div class="dash-chart-card">
+            <h4>📊 學習分類分佈</h4>
+            <div class="dash-pie-wrap">
+              <svg class="dash-pie" viewBox="0 0 120 120" aria-label="學習分類圓餅圖">
+                ${(() => {
+                  const segs = [{name:'設計',pct:35,color:'#7c5cff'},{name:'AI/科技',pct:25,color:'#ff5c8a'},{name:'繪畫',pct:20,color:'#34c759'},{name:'攝影',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}];
+                  const r = 45, cx = 60, cy = 60;
+                  let acc = 0;
+                  return segs.map(s => {
+                    const start = acc; acc += s.pct;
+                    const a1 = (start / 100) * 2 * Math.PI - Math.PI / 2;
+                    const a2 = (acc / 100) * 2 * Math.PI - Math.PI / 2;
+                    const lg = s.pct > 50 ? 1 : 0;
+                    const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+                    const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+                    return `<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${lg} 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${s.color}" opacity=".85"/>`;
+                  }).join('');
+                })()}
+              </svg>
+              <div class="dash-pie-legend">
+                ${[{name:'設計',pct:35,color:'#7c5cff'},{name:'AI/科技',pct:25,color:'#ff5c8a'},{name:'繪畫',pct:20,color:'#34c759'},{name:'攝影',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}].map(s => `<div class="dash-pie-item"><span class="dash-pie-dot" style="background:${s.color}"></span>${s.name} ${s.pct}%</div>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-milestones rv-up">
+          <h4>🏅 學習里程碑</h4>
+          <div class="dash-ml-timeline">
+            ${[{icon:'🎉',title:'加入 AI Class',date:'2026/03/15',done:true},{icon:'🛒',title:'購買第一堂課',date:'2026/03/16',done:true},{icon:'▶',title:'完成第一堂課時',date:'2026/03/18',done:true},{icon:'🔥',title:'連續學習 7 天',date:'2026/03/24',done:true},{icon:'📚',title:'購買第 5 堂課',date:'2026/05/10',done:true},{icon:'🏆',title:'完成第一門課程',date:'2026/06/02',done:true},{icon:'💎',title:'累積 1,000 XP',date:'2026/07/15',done:true},{icon:'🌟',title:'連續學習 30 天',date:'進行中…',done:false}].map(m => `<div class="dash-ml-item ${m.done ? 'done' : 'pending'}"><div class="dash-ml-icon">${m.icon}</div><div class="dash-ml-body"><b>${m.title}</b><span>${m.date}</span></div></div>`).join('')}
+          </div>
         </div>
       </section>
 
@@ -8204,12 +8266,16 @@ function openRecommendQuiz() {
   const btn = document.createElement('button');
   btn.className = 'scroll-top';
   btn.setAttribute('aria-label', '回到頂端');
-  btn.innerHTML = '↑';
+  btn.innerHTML = '<svg class="stt-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="var(--line)" stroke-width="2.5"/><circle class="stt-prog" cx="22" cy="22" r="20" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="125.66" stroke-dashoffset="125.66" stroke-linecap="round" transform="rotate(-90 22 22)"/></svg><span class="stt-arrow">↑</span>';
   document.body.append(btn);
+  const progCircle = btn.querySelector('.stt-prog');
   let visible = false;
   const check = rafThrottle(() => {
     const show = window.scrollY > 600;
     if (show !== visible) { visible = show; btn.classList.toggle('show', show); }
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = total > 0 ? Math.min(1, window.scrollY / total) : 0;
+    progCircle.style.strokeDashoffset = (125.66 * (1 - pct)).toFixed(2);
   });
   window.addEventListener('scroll', check, { passive: true });
   btn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -1,4 +1,4 @@
-const CACHE = 'aic-v88';
+const CACHE = 'aic-v89';
 const STATIC = ['/offline.html', '/404.html', '/css/style.css', '/js/data.js', '/js/app.js', '/manifest.json', '/assets/favicon.svg'];
 
 self.addEventListener('install', e => {
