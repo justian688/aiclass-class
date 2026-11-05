@@ -747,6 +747,36 @@ function home() {
       <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
   </section>`);
 
+  // Hero 打字動畫
+  {
+    const typePhrases = ['設計', '程式開發', 'AI 應用', '插畫繪圖', '影片剪輯', '烘焙料理', '攝影後製', '遊戲開發', '品牌行銷', '理財投資'];
+    main.insertAdjacentHTML('beforeend', `<div class="hero-typed-bar"><div class="wrap"><span class="hero-typed-pre">在 AI Class 學</span><span class="hero-typed-word" id="heroTyped"></span><span class="hero-typed-cursor">|</span><span class="hero-typed-suf">，開啟你的職涯新篇章</span></div></div>`);
+    const el = $('#heroTyped');
+    if (el) {
+      let pi = 0, ci = 0, deleting = false;
+      const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) {
+        el.textContent = typePhrases[0];
+      } else {
+        const tick = () => {
+          const word = typePhrases[pi];
+          if (!deleting) {
+            el.textContent = word.slice(0, ci + 1);
+            ci++;
+            if (ci >= word.length) { deleting = true; setTimeout(tick, 2000); return; }
+            setTimeout(tick, 100 + Math.random() * 60);
+          } else {
+            ci--;
+            el.textContent = word.slice(0, ci);
+            if (ci <= 0) { deleting = false; pi = (pi + 1) % typePhrases.length; setTimeout(tick, 400); return; }
+            setTimeout(tick, 50);
+          }
+        };
+        setTimeout(tick, 800);
+      }
+    }
+  }
+
   // Welcome back (returning user)
   const hasHistory = JSON.parse(localStorage.getItem('aic-recent-view') || '[]').length > 0 || owned.size > 0;
   if (hasHistory && !sessionStorage.getItem('aic-wb')) {
@@ -3008,6 +3038,36 @@ function categoryPage() {
       <p class="catp-empty" id="catp-empty" style="display:none;text-align:center;color:var(--tx3);padding:60px 0">沒有符合條件的課程</p>
     </div></section>`;
     const getF = fg => $(`[data-fg="${fg}"] .chip.on`, main)?.dataset.fv || 'all';
+    const updateFilterCounts = () => {
+      const pf = getF('price'), lf = getF('level');
+      const countFor = (fg, fv) => {
+        return courses.filter(c => {
+          const pp = fg === 'price' ? fv : pf;
+          const ll = fg === 'level' ? fv : lf;
+          if (pp === '0-2000' && c.price > 2000) return false;
+          if (pp === '2000-5000' && (c.price < 2000 || c.price > 5000)) return false;
+          if (pp === '5000+' && c.price < 5000) return false;
+          if (ll !== 'all' && levelOf(c) !== ll) return false;
+          return true;
+        }).length;
+      };
+      $$('[data-fg="price"] .chip', main).forEach(btn => {
+        const fv = btn.dataset.fv; if (fv === 'all') return;
+        const n = countFor('price', fv);
+        let badge = btn.querySelector('.chip-count');
+        if (!badge) { badge = document.createElement('span'); badge.className = 'chip-count'; btn.append(badge); }
+        badge.textContent = n;
+        badge.style.display = n ? '' : 'none';
+      });
+      $$('[data-fg="level"] .chip', main).forEach(btn => {
+        const fv = btn.dataset.fv; if (fv === 'all') return;
+        const n = countFor('level', fv);
+        let badge = btn.querySelector('.chip-count');
+        if (!badge) { badge = document.createElement('span'); badge.className = 'chip-count'; btn.append(badge); }
+        badge.textContent = n;
+        badge.style.display = n ? '' : 'none';
+      });
+    };
     const filterCat = () => {
       const pf = getF('price'), lf = getF('level'), sf = getF('sort');
       let list = courses.filter(c => {
@@ -3026,7 +3086,9 @@ function categoryPage() {
       setTimeout(() => { grid.innerHTML = list.map(c => card(c)).join(''); bindCards(grid); reveal(grid); grid.style.opacity = '1'; }, 250);
       $('#catp-total', main).textContent = `共 ${list.length} 堂課程`;
       $('#catp-empty', main).style.display = list.length ? 'none' : '';
+      updateFilterCounts();
     };
+    updateFilterCounts();
     $$('.catp-fbtns', main).forEach(g => $$('.chip', g).forEach(btn => btn.onclick = () => {
       $$('.chip', g).forEach(b => b.classList.toggle('on', b === btn));
       filterCat();
@@ -4433,9 +4495,9 @@ function checkoutPage() {
           <div class="ck-divider"></div>
           <div class="ck-row"><span>商品小計 (${items.length} 件)</span><span>${fmt(subtotal)}</span></div>
           <div class="ck-row ck-saved"><span>已省下</span><span>-${fmt(saved)}</span></div>
-          <div class="ck-row" style="color:var(--tx3)"><span>優惠碼折扣</span><span>—</span></div>
+          <div class="ck-row ck-discount-row" id="ckDiscountRow" style="color:var(--tx3)"><span>優惠碼折扣</span><span id="ckDiscountAmt">—</span></div>
           <div class="ck-divider"></div>
-          <div class="ck-row ck-total"><span>應付金額</span><span>${fmt(subtotal)}</span></div>
+          <div class="ck-row ck-total"><span>應付金額</span><span id="ckTotalAmt">${fmt(subtotal)}</span></div>
           <button class="btn btn-pri ck-submit" id="ckSubmit">確認付款 ${fmt(subtotal)}</button>
           <ul class="ck-perks"><li>🔒 SSL 加密安全付款</li><li>✓ 7 天無條件退費保證</li><li>✓ 付款後立即開通課程</li><li>🎓 含完課結業證書</li></ul>
           ${subtotal >= 3000 ? `<div class="ck-installment"><span>🏦</span> 可分 3 期 0 利率，每期 ${fmt(Math.ceil(subtotal / 3))}</div>` : ''}
@@ -4474,8 +4536,47 @@ function checkoutPage() {
   }
   if (cvv) cvv.oninput = () => { cvv.value = cvv.value.replace(/\D/g, '').slice(0, 4); };
 
+  let appliedCoupon = null;
+  let finalTotal = subtotal;
   const ckCouponBtn = $('#ckCouponBtn', main);
-  if (ckCouponBtn) ckCouponBtn.onclick = () => toast('示範網站：優惠碼功能開發中');
+  const ckCouponInput = $('#ckCoupon', main);
+  if (ckCouponBtn) ckCouponBtn.onclick = () => {
+    const code = ckCouponInput.value.trim().toUpperCase();
+    if (!code) { toast('請輸入優惠碼', 'error'); ckCouponInput.focus(); return; }
+    if (appliedCoupon) { toast('已套用優惠碼，請先移除再更換', 'info'); return; }
+    const coupon = (window.COUPONS || []).find(c => c.code === code);
+    if (!coupon) { toast('無效的優惠碼', 'error'); ckCouponInput.classList.add('ck-coupon-err'); setTimeout(() => ckCouponInput.classList.remove('ck-coupon-err'), 600); return; }
+    if (new Date(coupon.expires) < new Date()) { toast('此優惠碼已過期', 'error'); return; }
+    if (coupon.min && subtotal < coupon.min) { toast(`訂單金額需滿 ${fmt(coupon.min)} 才能使用`, 'error'); return; }
+    if (coupon.cats) { const match = items.some(c => coupon.cats.includes(c.cat)); if (!match) { toast('此優惠碼不適用於目前的課程類別', 'error'); return; } }
+    appliedCoupon = coupon;
+    const disc = coupon.type === 'percent' ? Math.round(subtotal * coupon.discount / 100) : coupon.discount;
+    finalTotal = Math.max(0, subtotal - disc);
+    $('#ckDiscountAmt', main).textContent = `-${fmt(disc)}`;
+    $('#ckDiscountRow', main).style.color = '#34c759';
+    $('#ckTotalAmt', main).textContent = fmt(finalTotal);
+    const submitBtn2 = $('#ckSubmit', main);
+    submitBtn2.textContent = `確認付款 ${fmt(finalTotal)}`;
+    ckCouponBtn.textContent = '移除';
+    ckCouponInput.disabled = true;
+    ckCouponInput.classList.add('ck-coupon-ok');
+    toast(`優惠碼已套用：${coupon.desc}`, 'success');
+    window.trackEvent('apply_coupon', { coupon_code: code, discount: disc });
+    ckCouponBtn.onclick = () => {
+      appliedCoupon = null;
+      finalTotal = subtotal;
+      $('#ckDiscountAmt', main).textContent = '—';
+      $('#ckDiscountRow', main).style.color = 'var(--tx3)';
+      $('#ckTotalAmt', main).textContent = fmt(subtotal);
+      $('#ckSubmit', main).textContent = `確認付款 ${fmt(subtotal)}`;
+      ckCouponBtn.textContent = '套用';
+      ckCouponInput.disabled = false;
+      ckCouponInput.value = '';
+      ckCouponInput.classList.remove('ck-coupon-ok');
+      toast('已移除優惠碼');
+      ckCouponBtn.onclick = arguments.callee;
+    };
+  };
 
   const submitBtn = $('#ckSubmit', main);
   submitBtn.onclick = () => {
@@ -4485,7 +4586,7 @@ function checkoutPage() {
     items.forEach(c => owned.add(c.id));
     localStorage.setItem('aic-owned', JSON.stringify([...owned]));
     const orderId = 'AIC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
-    localStorage.setItem('aic-last-order', JSON.stringify({ id: orderId, items: items.map(c => c.id), total: subtotal, time: Date.now() }));
+    localStorage.setItem('aic-last-order', JSON.stringify({ id: orderId, items: items.map(c => c.id), total: finalTotal, coupon: appliedCoupon?.code || null, time: Date.now() }));
     cart.clear(); saveCart(); updateCartBadge();
     setTimeout(() => { location.href = 'order-complete.html'; }, 1200);
   };
