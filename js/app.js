@@ -1517,7 +1517,7 @@ function story() {
       vids.forEach((v, i) => { v.classList.toggle('on', i === n); i === n ? v.play().catch(() => {}) : v.pause(); });
     }
   };
-  addEventListener('scroll', upd, { passive: true }); upd();
+  addEventListener('scroll', rafThrottle(upd), { passive: true }); upd();
   if (innerWidth <= 760) vids.forEach(v => { v.classList.add('on'); });
 }
 
