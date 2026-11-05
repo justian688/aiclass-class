@@ -1098,7 +1098,7 @@ function home() {
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員真實心得</h2><div class="sub">來自真實學員的學習故事</div></div></div></div>
       <div class="rv-wrap"><div class="reviews">${[...TM, ...TM].map(t => {
         const cc = byId[t.course];
-        return `<div class="rv rv-detailed rv-up"><div class="rv-hdr"><span class="rv-avatar">${t.avatar}</span><div><b>${t.name}</b><span class="rv-role">${t.role}</span></div></div><div class="s">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div><p>${t.text}</p>${cc ? `<a class="rv-course-link" href="course.html?id=${cc.id}">📚 ${cc.title.slice(0, 20)}${cc.title.length > 20 ? '…' : ''}</a>` : ''}</div>`;
+        return `<div class="rv rv-detailed rv-up"><div class="rv-hdr"><span class="rv-avatar">${t.avatar}</span><div><b>${t.name}</b><span class="rv-role">${t.role}</span></div></div><div class="s">${'★'.repeat(t.rating || 5)}${'☆'.repeat(5 - (t.rating || 5))}</div><p>${t.quote}</p>${cc ? `<a class="rv-course-link" href="course.html?id=${cc.id}">📚 ${cc.title.slice(0, 20)}${cc.title.length > 20 ? '…' : ''}</a>` : ''}</div>`;
       }).join('')}</div></div></section>`);
   } else {
     const R = window.REVIEWS;
@@ -1490,7 +1490,7 @@ function story() {
 function counters() {
   const ob = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return; ob.unobserve(e.target);
-    const el = e.target, to = +el.dataset.count, u = el.dataset.unit, dec = to % 1 ? 1 : 0, t0 = performance.now();
+    const el = e.target, to = +el.dataset.count, u = el.dataset.unit || '', dec = to % 1 ? 1 : 0, t0 = performance.now();
     const f = t => { const k = Math.min(1, (t - t0) / 1600), v = to * (1 - Math.pow(1 - k, 4)); el.textContent = (dec ? v.toFixed(1) : Math.round(v).toLocaleString()) + u; k < 1 && requestAnimationFrame(f); };
     requestAnimationFrame(f);
   }), { threshold: .5 });
@@ -4170,7 +4170,7 @@ function aboutPage() {
       countObs.disconnect();
       statsEl.querySelectorAll('[data-count]').forEach(b => {
         const target = +b.dataset.count;
-        const suffix = b.dataset.suffix || '+';
+        const suffix = b.dataset.suffix || '';
         let cur = 0;
         const step = Math.max(1, Math.ceil(target / 40));
         const iv = setInterval(() => {
@@ -7854,7 +7854,7 @@ if (page === 'home' || page === 'course' || page === 'category') {
     });
   }, { threshold: 0.3 });
   requestAnimationFrame(() => {
-    $$('.myp-stat b, .dash-card-head + .dash-ring .dash-ring-text b, .myp-aside-stats b, .hs-item b[data-count]').forEach(el => {
+    $$('.myp-stat b, .dash-card-head + .dash-ring .dash-ring-text b, .myp-aside-stats b').forEach(el => {
       if (/\d/.test(el.textContent)) countIO.observe(el);
     });
   });
