@@ -12,6 +12,7 @@ const rafThrottle = fn => { let ticking = false; return (...args) => { if (ticki
 const C = window.COURSES, byId = Object.fromEntries(C.map(c => [c.id, c]));
 const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmt = n => 'NT$' + n.toLocaleString('en-US');
+const escH = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const pct = c => Math.round((1 - c.price / c.origin) * 100);
 const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
 document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" fill="%23e8e8ec"><rect width="400" height="225"/><text x="50%" y="50%" text-anchor="middle" fill="%23aeaeb2" font-size="14" dy=".3em">圖片載入失敗</text></svg>')}`; } }, true);
@@ -618,7 +619,7 @@ function searchOverlay() {
     const q = inp.value.trim().toLowerCase();
     const list = q ? C.filter(c => (c.title + c.teacher + c.role + (c.sub || '')).toLowerCase().includes(q)) : [];
     const hl = (t) => { const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return t.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>'); };
-    res.innerHTML = !q ? '' : list.length ? `<div class="sres-count">找到 ${list.length} 筆結果</div>` + list.slice(0, 8).map((c, i) => { const catName = (window.CATS.find(x => x.id === c.cat) || {}).name || c.cat; return `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt="${c.title}"><div><b>${hl(c.title)}</b><div class="sres-info"><span class="sres-star">★ ${c.rating}</span><span>${hl(c.teacher)}・${fmt(c.price)}</span></div><span class="sres-cat">${catName}</span>${c.sub ? `<span class="sres-cat" style="margin-left:4px">${c.sub}</span>` : ''}</div></a>`; }).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${inp.value}」相關課程</div>`;
+    res.innerHTML = !q ? '' : list.length ? `<div class="sres-count">找到 ${list.length} 筆結果</div>` + list.slice(0, 8).map((c, i) => { const catName = (window.CATS.find(x => x.id === c.cat) || {}).name || c.cat; return `<a href="course.html?id=${c.id}" class="sres-item" data-si="${i}"><img src="${img(c)}" alt="${c.title}"><div><b>${hl(c.title)}</b><div class="sres-info"><span class="sres-star">★ ${c.rating}</span><span>${hl(c.teacher)}・${fmt(c.price)}</span></div><span class="sres-cat">${catName}</span>${c.sub ? `<span class="sres-cat" style="margin-left:4px">${c.sub}</span>` : ''}</div></a>`; }).join('') + `<a class="sres-all" href="search.html?q=${encodeURIComponent(inp.value.trim())}">查看全部 ${list.length} 筆結果 →</a>` : `<div class="empty">找不到「${escH(inp.value)}」相關課程</div>`;
   };
   const updSel = () => { $$('.sres-item', res).forEach((a, i) => a.classList.toggle('sres-active', i === selIdx)); };
   inp.oninput = run;
@@ -1649,9 +1650,9 @@ function course() {
       <div class="c-share rv-up">
         <span>分享課程</span>
         <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>
-        <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="LINE 分享">💬 LINE</a>
-        <a class="c-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="Facebook 分享">📘 Facebook</a>
-        <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — AI Class')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener" title="X 分享">𝕏 Twitter</a>
+        <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="LINE 分享">💬 LINE</a>
+        <a class="c-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="Facebook 分享">📘 Facebook</a>
+        <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — AI Class')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="X 分享">𝕏 Twitter</a>
         ${navigator.share ? `<button class="c-share-btn" data-native-share title="更多分享方式">📤 分享</button>` : ''}
       </div>
     </div>
@@ -3172,9 +3173,9 @@ function articlePage() {
       <div class="art-share rv-up">
         <span>分享這篇文章</span>
         <button onclick="navigator.clipboard.writeText(location.href);toast('已複製連結')">📋 複製連結</button>
-        <a href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">💬 LINE</a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener">📘 Facebook</a>
-        <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener">🐦 Twitter</a>
+        <a href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener noreferrer">💬 LINE</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}" target="_blank" rel="noopener noreferrer">📘 Facebook</a>
+        <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://aiclass.tw/article.html?id=' + post.id)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener noreferrer">🐦 Twitter</a>
         ${navigator.share ? `<button onclick="navigator.share({title:'${post.title.replace(/'/g,"\\'")}',url:location.href}).catch(()=>{})">📤 更多</button>` : ''}
       </div>
       <div class="art-cta rv-up">
@@ -5816,11 +5817,11 @@ function searchPage() {
 
   main.innerHTML = `
   <div class="wrap srch-wrap">
-    <div class="crumb rv-up"><a href="index.html">首頁</a> › 搜尋${initQ ? `「${initQ}」` : ''}</div>
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 搜尋${initQ ? `「${escH(initQ)}」` : ''}</div>
     <div class="srch-top rv-up">
       <div class="srch-input-wrap">
         <span class="srch-icon">⌕</span>
-        <input class="srch-input" type="text" value="${initQ.replace(/"/g, '&quot;')}" placeholder="搜尋課程、講師、關鍵字…" autofocus aria-label="搜尋課程">
+        <input class="srch-input" type="text" value="${escH(initQ)}" placeholder="搜尋課程、講師、關鍵字…" autofocus aria-label="搜尋課程">
         <button class="srch-clear" style="display:${initQ ? 'flex' : 'none'}">✕</button>
       </div>
     </div>
@@ -5925,7 +5926,7 @@ function searchPage() {
       if (q) {
         const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
         $$('.card h3, .card .teacher', grid).forEach(el => {
-          if (re.test(el.textContent)) el.innerHTML = el.textContent.replace(re, '<mark class="srch-hl">$1</mark>');
+          if (re.test(el.textContent)) el.innerHTML = escH(el.textContent).replace(re, '<mark class="srch-hl">$1</mark>');
         });
       }
       grid.style.display = '';
@@ -6931,7 +6932,7 @@ function contactPage() {
           <div class="ctc-map-pin">📍</div>
           <p>台北市信義區松仁路 100 號 10 樓</p>
           <span>AI Class 總部</span>
-          <a class="btn btn-ghost" href="https://maps.google.com/?q=台北市信義區松仁路100號" target="_blank" rel="noopener" style="margin-top:12px;font-size:13px">在 Google Maps 開啟 →</a>
+          <a class="btn btn-ghost" href="https://maps.google.com/?q=台北市信義區松仁路100號" target="_blank" rel="noopener noreferrer" style="margin-top:12px;font-size:13px">在 Google Maps 開啟 →</a>
         </div>
       </div>
     </section>
