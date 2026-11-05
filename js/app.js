@@ -27,9 +27,6 @@ const follows = new Set(ls('aic-follows', []));
 function saveFollows() { localStorage.setItem('aic-follows', JSON.stringify([...follows])); }
 const reviewVotes = ls('aic-rvotes', {});
 function saveReviewVotes() { localStorage.setItem('aic-rvotes', JSON.stringify(reviewVotes)); }
-const _timers = [];
-function regInterval(fn, ms) { const id = setInterval(fn, ms); _timers.push(id); return id; }
-function clearTimers() { _timers.forEach(id => clearInterval(id)); _timers.length = 0; }
 
 function trapFocus(el) {
   const sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
