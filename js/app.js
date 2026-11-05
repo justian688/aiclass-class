@@ -3586,7 +3586,7 @@ function myPage() {
     { icon: '🎓', text: '獲得結業證書：' + enrolled[2].title.slice(0,10), time: '4 天前', color: 'var(--pink)' },
     { icon: '🛒', text: '購買了「' + enrolled[5].title.slice(0,12) + '…」', time: '5 天前', color: 'var(--pri)' },
     { icon: '🏆', text: '解鎖成就徽章「連續 7 天學習」', time: '1 週前', color: '#ff5c8a' },
-    { icon: '♡', text: '收藏了「' + C[15].title.slice(0,12) + '…」', time: '1 週前', color: '#ff5c8a' },
+    { icon: '♡', text: '收藏了「' + C[C.length - 1].title.slice(0,12) + '…」', time: '1 週前', color: '#ff5c8a' },
   ];
 
   // Learning calendar (last 30 days)
