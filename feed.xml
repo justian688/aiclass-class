@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>AI Class 學習專欄</title>
+  <link>https://aiclass.tw/blog.html</link>
+  <description>精選線上課程平台，涵蓋設計、程式、AI、攝影、音樂等領域，由業界職人親授。</description>
+  <language>zh-TW</language>
+  <lastBuildDate>Wed, 06 Nov 2026 00:00:00 +0800</lastBuildDate>
+  <atom:link href="https://aiclass.tw/feed.xml" rel="self" type="application/rss+xml"/>
+  <item>
+    <title>2026 年最值得學的 5 項 AI 技能</title>
+    <link>https://aiclass.tw/article.html?id=p1</link>
+    <guid>https://aiclass.tw/article.html?id=p1</guid>
+    <pubDate>Sun, 01 Nov 2026 00:00:00 +0800</pubDate>
+    <description>AI 正在重塑每個產業，掌握這五項核心技能，讓你在職場上脫穎而出。從 Prompt Engineering 到 RAG 架構，一次掌握 AI 時代的關鍵能力。</description>
+    <author>黃士誠</author>
+  </item>
+  <item>
+    <title>插畫接案指南：如何定價與找到客戶</title>
+    <link>https://aiclass.tw/article.html?id=p3</link>
+    <guid>https://aiclass.tw/article.html?id=p3</guid>
+    <pubDate>Sun, 25 Oct 2026 00:00:00 +0800</pubDate>
+    <description>從定價策略到客戶開發，分享插畫接案的完整流程與實戰經驗，讓你的創作技能變成穩定收入。</description>
+    <author>張雨萱</author>
+  </item>
+  <item>
+    <title>Blender vs Cinema 4D：新手該選哪個？</title>
+    <link>https://aiclass.tw/article.html?id=p4</link>
+    <guid>https://aiclass.tw/article.html?id=p4</guid>
+    <pubDate>Thu, 22 Oct 2026 00:00:00 +0800</pubDate>
+    <description>兩款主流 3D 軟體的完整比較，從學習曲線、功能差異到就業市場需求一次分析清楚。</description>
+    <author>許家豪</author>
+  </item>
+  <item>
+    <title>UI 設計師的一天：工作流程大公開</title>
+    <link>https://aiclass.tw/article.html?id=p5</link>
+    <guid>https://aiclass.tw/article.html?id=p5</guid>
+    <pubDate>Sun, 18 Oct 2026 00:00:00 +0800</pubDate>
+    <description>資深 UI 設計師的真實工作日常，從晨會需求討論到交付開發的完整流程分享。</description>
+    <author>陳柏睿</author>
+  </item>
+  <item>
+    <title>居家健身新手必知的 10 個觀念</title>
+    <link>https://aiclass.tw/article.html?id=p7</link>
+    <guid>https://aiclass.tw/article.html?id=p7</guid>
+    <pubDate>Mon, 12 Oct 2026 00:00:00 +0800</pubDate>
+    <description>不需要昂貴器材也能有效訓練，掌握正確觀念讓你少走彎路、事半功倍，在家也能練出好身材。</description>
+    <author>陳冠宏</author>
+  </item>
+  <item>
+    <title>烘焙入門：5 款零失敗甜點食譜</title>
+    <link>https://aiclass.tw/article.html?id=p9</link>
+    <guid>https://aiclass.tw/article.html?id=p9</guid>
+    <pubDate>Mon, 05 Oct 2026 00:00:00 +0800</pubDate>
+    <description>不需要烤箱也能做的簡單甜點，新手第一次就能成功，送禮或下午茶都超合適。</description>
+    <author>蔡明哲</author>
+  </item>
+  <item>
+    <title>AI 繪圖 vs 手繪：設計師該如何定位自己？</title>
+    <link>https://aiclass.tw/article.html?id=p16</link>
+    <guid>https://aiclass.tw/article.html?id=p16</guid>
+    <pubDate>Sat, 12 Sep 2026 00:00:00 +0800</pubDate>
+    <description>AI 工具席捲設計圈，手繪還有競爭力嗎？從產業觀點分析設計師的不可取代性與轉型方向。</description>
+    <author>張雨萱</author>
+  </item>
+  <item>
+    <title>從零開始學投資：給完全新手的理財入門指南</title>
+    <link>https://aiclass.tw/article.html?id=p18</link>
+    <guid>https://aiclass.tw/article.html?id=p18</guid>
+    <pubDate>Sat, 05 Sep 2026 00:00:00 +0800</pubDate>
+    <description>別讓通膨吃掉你的存款。從記帳、存錢到第一筆 ETF 投資，最簡單的理財起步方式。</description>
+    <author>郭書瑜</author>
+  </item>
+  <item>
+    <title>遊戲開發入門：選 Unity 還是 Unreal？</title>
+    <link>https://aiclass.tw/article.html?id=p19</link>
+    <guid>https://aiclass.tw/article.html?id=p19</guid>
+    <pubDate>Tue, 01 Sep 2026 00:00:00 +0800</pubDate>
+    <description>兩大遊戲引擎的完整比較，從學習成本、適用類型到就業前景，幫你選對第一步。</description>
+    <author>陳威宏</author>
+  </item>
+  <item>
+    <title>Midjourney 進階：10 個讓出圖品質翻倍的 Prompt 技巧</title>
+    <link>https://aiclass.tw/article.html?id=p20</link>
+    <guid>https://aiclass.tw/article.html?id=p20</guid>
+    <pubDate>Fri, 28 Aug 2026 00:00:00 +0800</pubDate>
+    <description>不只是打字讓 AI 畫圖，學會參數控制、風格指定和負面提示，讓 AI 繪圖成為你的生產力工具。</description>
+    <author>黃士誠</author>
+  </item>
+  <item>
+    <title>2026 年值得關注的 10 個設計趨勢</title>
+    <link>https://aiclass.tw/article.html?id=p24</link>
+    <guid>https://aiclass.tw/article.html?id=p24</guid>
+    <pubDate>Sat, 15 Aug 2026 00:00:00 +0800</pubDate>
+    <description>從 3D 互動到 AI 輔助設計，盤點今年最值得設計師關注的視覺與體驗趨勢。</description>
+    <author>陳柏睿</author>
+  </item>
+  <item>
+    <title>居家運動計畫：適合忙碌上班族的 15 分鐘訓練</title>
+    <link>https://aiclass.tw/article.html?id=p25</link>
+    <guid>https://aiclass.tw/article.html?id=p25</guid>
+    <pubDate>Wed, 12 Aug 2026 00:00:00 +0800</pubDate>
+    <description>不用早起、不用去健身房，利用午休或下班後 15 分鐘，維持基本體能和線條。</description>
+    <author>陳冠宏</author>
+  </item>
+</channel>
+</rss>
