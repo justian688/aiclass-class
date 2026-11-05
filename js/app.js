@@ -19,6 +19,7 @@ document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.t
 const page = document.body.dataset.page;
 const ls = (key, fallback) => { try { const v = localStorage.getItem(key); if (v == null) return fallback; try { return JSON.parse(v); } catch { return v; } } catch { return fallback; } };
 const ss = (key, val) => { try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {} };
+const rs = (key) => { try { localStorage.removeItem(key); } catch {} };
 const wish = new Set(ls('aic-wish', []));
 const cart = new Set(ls('aic-cart', []));
 const aicUser = ls('aic-user', null);
@@ -341,7 +342,7 @@ function shell() {
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
     <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
-    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">${localStorage.getItem('aic-pro')?'<span class="hdr-pro-badge">PRO</span>':''}<span class="hdr-level-badge" title="${getXPLevel().name}">Lv.${getXPLevel().lv}</span>👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><div class="um-xp-row"><span class="hdr-level-badge lg">${getXPLevel().name}</span><span>${xpData.total.toLocaleString()} XP</span></div><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
+    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">${ls('aic-pro')?'<span class="hdr-pro-badge">PRO</span>':''}<span class="hdr-level-badge" title="${getXPLevel().name}">Lv.${getXPLevel().lv}</span>👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><div class="um-xp-row"><span class="hdr-level-badge lg">${getXPLevel().name}</span><span>${xpData.total.toLocaleString()} XP</span></div><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
   </div>`;
   top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
 
@@ -355,7 +356,7 @@ function shell() {
     document.addEventListener('click', e => { if (!e.target.closest('.user-menu-wrap')) toggleUM(false); });
     drop.addEventListener('keydown', e => { if (e.key === 'Escape') { toggleUM(false); umBtn.focus(); } });
     const logoutBtn = $('#aic-logout', hdr);
-    if (logoutBtn) logoutBtn.onclick = () => { localStorage.removeItem('aic-user'); location.reload(); };
+    if (logoutBtn) logoutBtn.onclick = () => { rs('aic-user'); location.reload(); };
   }
 
   const prog = document.createElement('div'); prog.id = 'progress'; document.body.append(prog);
@@ -445,7 +446,7 @@ function shell() {
   }
 
   // 深色模式切換
-  const saved = localStorage.getItem('aic-theme');
+  const saved = ls('aic-theme');
   const dark = saved === 'dark';
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   const tBtn = $('[data-theme-toggle]', hdr);
@@ -457,7 +458,7 @@ function shell() {
   // 字體大小調整
   const sizes = ['normal', 'large', 'xlarge'];
   const sizeLabels = ['標準', '大', '特大'];
-  let sizeIdx = sizes.indexOf(localStorage.getItem('aic-fontsize') || 'normal');
+  let sizeIdx = sizes.indexOf(ls('aic-fontsize', 'normal'));
   if (sizeIdx < 0) sizeIdx = 0;
   document.documentElement.dataset.fontsize = sizes[sizeIdx];
   const fsBtn = document.createElement('button');
@@ -511,7 +512,7 @@ function shell() {
   }
 
   // Cookie 同意橫幅
-  if (!localStorage.getItem('aic-cookie-ok')) {
+  if (!ls('aic-cookie-ok')) {
     const ck = document.createElement('div'); ck.className = 'cookie-bar';
     ck.innerHTML = `<p>我們使用 Cookie 來提供更好的瀏覽體驗與個人化推薦。詳情請參閱 <a href="privacy.html">隱私權政策</a>。</p><div class="cookie-btns"><button class="btn btn-ghost cookie-decline">僅必要</button><button class="btn btn-pri cookie-ok">全部接受</button></div>`;
     document.body.append(ck);
@@ -522,7 +523,7 @@ function shell() {
   }
 
   // 首次訪客歡迎導覽
-  if (!localStorage.getItem('aic-toured') && page === 'home') {
+  if (!ls('aic-toured') && page === 'home') {
     const steps = [
       { icon: '🎓', title: '歡迎來到 AI Class', text: `跟著業界頂尖職人，把你的熱情學成專業。${C.length} 堂精選課程，涵蓋設計、插畫、AI、攝影等 10 大領域。` },
       { icon: '🎬', title: '業界職人親自授課', text: '每堂課由業界講師精心製作，提供完整專案檔、練習素材與 PDF 講義，學完就能產出作品。' },
@@ -610,7 +611,7 @@ function searchOverlay() {
     const r = getRecent();
     recentEl.innerHTML = r.length ? `<h5>最近搜尋 <button class="clear-recent">全部清除</button></h5><div class="recent-list">${r.map(k => `<span class="recent-item"><span class="ri-text">${escH(k)}</span><button class="ri-del" aria-label="刪除">×</button></span>`).join('')}</div>` : '';
     const clrBtn = $('.clear-recent', ov);
-    if (clrBtn) clrBtn.onclick = () => { localStorage.removeItem(recentKey); renderRecent(); };
+    if (clrBtn) clrBtn.onclick = () => { rs(recentKey); renderRecent(); };
     $$('.recent-item', ov).forEach(el => {
       const text = $('.ri-text', el).textContent;
       el.onclick = e => { if (!e.target.closest('.ri-del')) { inp.value = text; run(); } };
@@ -4595,7 +4596,7 @@ function playerPage() {
     if (Math.floor(vid_el.currentTime) % 5 === 0) ss(posKey, vid_el.currentTime.toFixed(1));
   };
   vid_el.addEventListener('loadedmetadata', () => {
-    const saved = +localStorage.getItem(posKey);
+    const saved = +(ls(posKey, 0));
     if (saved > 5 && saved < vid_el.duration - 5) {
       vid_el.currentTime = saved;
       toast(`已恢復上次播放位置 ${fmtTime(saved)}`);
@@ -4671,7 +4672,7 @@ function playerPage() {
     doneSet.add(lessonId(curCh, curLs));
     curCh = ci; curLs = li;
     posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
-    const saved = +localStorage.getItem(posKey);
+    const saved = +(ls(posKey, 0));
     vid_el.currentTime = (saved > 5) ? saved : 0;
     vid_el.play();
     const sb = $('#plr-sb-list');
@@ -4752,7 +4753,7 @@ function playerPage() {
   // Notes (localStorage)
   const noteKey = 'aic-note-' + c.id;
   const noteEl = $('#plr-note');
-  noteEl.value = localStorage.getItem(noteKey) || '';
+  noteEl.value = ls(noteKey, '');
   noteEl.oninput = () => ss(noteKey, noteEl.value);
 
   // Timestamp stamp button
@@ -5629,7 +5630,7 @@ function pathPage() {
 function invitePage() {
   const main = $('main');
   seo({ title: '邀請好友｜AI Class', desc: '邀請好友加入 AI Class，雙方各得優惠券', url: 'https://aiclass.tw/invite.html' });
-  const code = localStorage.getItem('aic-invite-code') || (() => { const c = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase(); ss('aic-invite-code', c); return c; })();
+  const code = ls('aic-invite-code') || (() => { const c = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase(); ss('aic-invite-code', c); return c; })();
   const link = 'https://aiclass.tw/invite?ref=' + code;
   const stats = { invited: 3, registered: 2, earned: 1000 };
 
@@ -6437,7 +6438,7 @@ function achievementPage() {
   const rarityMap = { common: { label: '普通', color: '#6e6e73' }, rare: { label: '稀有', color: '#00b4d8' }, epic: { label: '史詩', color: '#a855f7' }, legendary: { label: '傳說', color: '#ffd700' } };
   const achievements = badges.map(b => {
     let earned = false, prog = 0, total = 1;
-    if (b.id === 'bg1') { earned = !!localStorage.getItem('aic-user'); }
+    if (b.id === 'bg1') { earned = !!ls('aic-user'); }
     else if (b.id === 'bg2') { const pVals = Object.values(progress); earned = pVals.some(p => p > 0); prog = pVals.filter(p => p > 0).length; }
     else if (b.id === 'bg3') { const hrs = Object.values(progress).reduce((s,v) => s+v, 0) * 0.5; earned = hrs >= 10; prog = Math.min(Math.round(hrs), 10); total = 10; }
     else if (b.id === 'bg4') { const done = Object.values(progress).filter(v => v >= 100).length; earned = done >= 1; prog = done; }
@@ -8033,7 +8034,7 @@ function openRecommendQuiz() {
   let startTs = timerState.start;
   if (running && startTs) elapsed += (Date.now() - startTs) / 1000;
   const todayKey = 'aic-study-' + new Date().toISOString().slice(0, 10);
-  let todayMins = +(localStorage.getItem(todayKey) || 0);
+  let todayMins = +(ls(todayKey, 0));
   totalEl.textContent = todayMins;
   const fmtTime = s => { const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = Math.floor(s % 60); return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`; };
   display.textContent = fmtTime(elapsed);
@@ -8397,8 +8398,8 @@ function openRecommendQuiz() {
 // ── 購物車催促橫幅 ──
 {
   if (cart.size > 0 && page !== 'checkout' && page !== 'order-complete') {
-    const cartTs = +(localStorage.getItem('aic-cart-ts') || Date.now());
-    if (!localStorage.getItem('aic-cart-ts')) ss('aic-cart-ts', Date.now());
+    const cartTs = +(ls('aic-cart-ts') || Date.now());
+    if (!ls('aic-cart-ts')) ss('aic-cart-ts', Date.now());
     const elapsed = Date.now() - cartTs;
     if (elapsed > 1800000) {
       setTimeout(() => {
