@@ -4384,10 +4384,7 @@ function playerPage() {
 
   let curCh = 0, curLs = 0;
   const totalLessons = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
-  const doneSet = new Set();
-  for (let i = 0; i < 7; i++) doneSet.add(`0-${i < 4 ? i : ''}`);
-  doneSet.add('0-0'); doneSet.add('0-1'); doneSet.add('0-2'); doneSet.add('0-3');
-  doneSet.add('1-0'); doneSet.add('1-1'); doneSet.add('1-2');
+  const doneSet = new Set(['0-0','0-1','0-2','0-3','1-0','1-1','1-2']);
 
   function lessonId(ci, li) { return ci + '-' + li; }
   function progress() { return Math.round(doneSet.size / totalLessons * 100); }
@@ -4562,7 +4559,7 @@ function playerPage() {
   vid_el.onclick = () => { vid_el.paused ? vid_el.play() : vid_el.pause(); };
   vid_el.onplay = () => { playBtn.textContent = '⏸'; };
   vid_el.onpause = () => { playBtn.textContent = '▶'; };
-  const posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
+  let posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
   vid_el.ontimeupdate = () => {
     if (!vid_el.duration) return;
     const pctVal = vid_el.currentTime / vid_el.duration * 100;
@@ -4648,7 +4645,9 @@ function playerPage() {
   function goLesson(ci, li) {
     doneSet.add(lessonId(curCh, curLs));
     curCh = ci; curLs = li;
-    vid_el.currentTime = 0;
+    posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
+    const saved = +localStorage.getItem(posKey);
+    vid_el.currentTime = (saved > 5) ? saved : 0;
     vid_el.play();
     const sb = $('#plr-sb-list');
     sb.innerHTML = renderSidebar();
@@ -8029,11 +8028,11 @@ function openRecommendQuiz() {
 // ── 圖片 Lightbox ──
 {
   const lb = document.createElement('div'); lb.className = 'lb-overlay'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true'); lb.setAttribute('aria-label', '圖片檢視');
-  lb.innerHTML = `<button class="lb-close" aria-label="關閉">✕</button><button class="lb-nav lb-prev" aria-label="上一張">‹</button><img alt=""><button class="lb-nav lb-next" aria-label="下一張">›</button><div class="lb-counter"></div>`;
+  lb.innerHTML = `<button class="lb-close" aria-label="關閉">✕</button><button class="lb-nav lb-prev" aria-label="上一張">‹</button><img alt="放大檢視" hidden><button class="lb-nav lb-next" aria-label="下一張">›</button><div class="lb-counter"></div>`;
   document.body.append(lb);
   let lbImgs = [], lbIdx = 0;
   const lbImg = lb.querySelector('img'), lbCtr = lb.querySelector('.lb-counter');
-  const showLb = i => { lbIdx = (i + lbImgs.length) % lbImgs.length; lbImg.src = lbImgs[lbIdx]; lbCtr.textContent = `${lbIdx + 1} / ${lbImgs.length}`; };
+  const showLb = i => { lbIdx = (i + lbImgs.length) % lbImgs.length; lbImg.src = lbImgs[lbIdx]; lbImg.hidden = false; lbCtr.textContent = `${lbIdx + 1} / ${lbImgs.length}`; };
   const closeLb = () => lb.classList.remove('on');
   lb.querySelector('.lb-close').onclick = closeLb;
   lb.querySelector('.lb-prev').onclick = () => showLb(lbIdx - 1);
