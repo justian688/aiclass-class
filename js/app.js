@@ -236,7 +236,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="upcoming.html">即將開課</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="upcoming.html">即將開課</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="sale.html" style="color:var(--pink)">🔥 特賣</a><a href="skillmap.html">技能地圖</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -272,7 +272,7 @@ function shell() {
   ft.innerHTML = `<div class="wrap"><div class="cols">
     <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
       <div class="ft-social"><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div></div>
-    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="gallery.html">學員作品牆</a></li><li><a href="live.html">直播教室</a></li></ul></div>
+    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="gallery.html">學員作品牆</a></li><li><a href="live.html">直播教室</a></li><li><a href="sale.html">限時特賣</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">下載 App<i class="ft-arrow">›</i></h4><ul><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 App Store（iOS）</a></li><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Google Play（Android）</a></li></ul>
       <div class="ft-lang"><select onchange="toast('語言切換功能開發中')" aria-label="語言選擇"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
@@ -6273,6 +6273,144 @@ function reportPage() {
   reveal(main);
 }
 
+/* ---------- 限時特賣 ---------- */
+function salePage() {
+  const main = $('main');
+  seo({ title: '限時特賣｜AI Class', desc: '精選課程最低 5 折起，限時搶購倒數中！', url: 'https://aiclass.tw/sale.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'OfferCatalog', name: '限時特賣', description: 'AI Class 精選課程限時優惠' }
+  });
+
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + 3);
+  endDate.setHours(23, 59, 59, 0);
+  const endTs = endDate.getTime();
+
+  const deals = [
+    { id: 'flash', label: '閃購特惠', badge: '⚡ 限量', discount: 50, courses: C.filter(c => c.rating >= 4.8).slice(0, 4) },
+    { id: 'bundle', label: '組合優惠', badge: '🎁 買二送一', discount: 33, courses: C.filter(c => ['design','ai'].includes(c.cat)).slice(0, 6) },
+    { id: 'new', label: '新課首發價', badge: '🆕 新課', discount: 20, courses: C.slice(-6) }
+  ];
+  const coupons = [
+    { code: 'DOUBLE11', desc: '全站 85 折', min: 3000, badge: '雙 11' },
+    { code: 'FIRST500', desc: '新會員折 $500', min: 2000, badge: '限新會員' },
+    { code: 'VIP30', desc: 'VIP 再享 7 折', min: 5000, badge: 'VIP 專屬' }
+  ];
+
+  main.innerHTML = `
+  <section class="sale-hero">
+    <div class="wrap">
+      <div class="sale-hero-inner rv-up">
+        <span class="sale-hero-badge">🔥 限時活動</span>
+        <h1>雙 11 限時特賣</h1>
+        <p>全站精選課程最低 5 折起，把握機會提升自我</p>
+        <div class="sale-countdown" id="sale-cd">
+          <div class="sale-cd-item"><span class="sale-cd-num" id="cd-d">00</span><span class="sale-cd-label">天</span></div>
+          <div class="sale-cd-sep">:</div>
+          <div class="sale-cd-item"><span class="sale-cd-num" id="cd-h">00</span><span class="sale-cd-label">時</span></div>
+          <div class="sale-cd-sep">:</div>
+          <div class="sale-cd-item"><span class="sale-cd-num" id="cd-m">00</span><span class="sale-cd-label">分</span></div>
+          <div class="sale-cd-sep">:</div>
+          <div class="sale-cd-item"><span class="sale-cd-num" id="cd-s">00</span><span class="sale-cd-label">秒</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec"><div class="wrap">
+    <div class="sale-coupons rv-up">
+      <h2>🎟️ 領取優惠券</h2>
+      <div class="sale-coupon-grid">${coupons.map(cp => `<div class="sale-coupon">
+        <span class="sale-cp-badge">${cp.badge}</span>
+        <div class="sale-cp-code">${cp.code}</div>
+        <p class="sale-cp-desc">${cp.desc}</p>
+        <span class="sale-cp-min">滿 NT$${cp.min.toLocaleString()} 可用</span>
+        <button class="btn btn-pri btn-sm sale-cp-btn" onclick="navigator.clipboard?.writeText('${cp.code}');toast('已複製優惠碼 ${cp.code}')">領取優惠券</button>
+      </div>`).join('')}</div>
+    </div>
+  </div></section>
+
+  ${deals.map(d => `<section class="sec" id="sale-${d.id}"><div class="wrap">
+    <div class="sec-head rv-up"><div><h2>${d.label}</h2><div class="sub">限時 ${d.discount}% OFF</div></div><span class="sale-sec-badge">${d.badge}</span></div>
+    <div class="sale-grid">${d.courses.map(c => {
+      const salePrice = Math.round(c.price * (1 - d.discount / 100));
+      return `<a class="sale-card rv-up" href="course.html?id=${c.id}">
+        <div class="sale-card-img"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sale-off">-${d.discount}%</span></div>
+        <div class="sale-card-body">
+          <h3>${c.title}</h3>
+          <p class="sale-card-teacher">${c.teacher}</p>
+          <div class="sale-card-meta"><span>⭐ ${c.rating}</span><span>👥 ${c.students.toLocaleString()}</span><span>⏱ ${c.hours}h</span></div>
+          <div class="sale-card-price"><span class="sale-new">${fmt(salePrice)}</span><del>${fmt(c.origin)}</del><span class="sale-save">省 ${fmt(c.origin - salePrice)}</span></div>
+          <button class="btn btn-pri btn-sm" style="width:100%;margin-top:8px" onclick="event.preventDefault();toast('已加入購物車')">加入購物車</button>
+        </div>
+      </a>`;
+    }).join('')}</div>
+  </div></section>`).join('')}
+
+  <section class="sec sale-cta-sec"><div class="wrap">
+    <div class="sale-cta rv-up">
+      <h2>錯過就沒有了！</h2>
+      <p>活動倒數中，立即把握全年最低價</p>
+      <a href="index.html" class="btn btn-pri btn-lg">探索全部課程 →</a>
+    </div>
+  </div></section>`;
+
+  function tickSale() {
+    const diff = Math.max(0, endTs - Date.now());
+    const d = Math.floor(diff / 864e5), h = Math.floor(diff % 864e5 / 36e5), m = Math.floor(diff % 36e5 / 6e4), s = Math.floor(diff % 6e4 / 1e3);
+    const $d = byId['cd-d'], $h = byId['cd-h'], $m = byId['cd-m'], $s = byId['cd-s'];
+    if ($d) { $d.textContent = String(d).padStart(2, '0'); $h.textContent = String(h).padStart(2, '0'); $m.textContent = String(m).padStart(2, '0'); $s.textContent = String(s).padStart(2, '0'); }
+  }
+  tickSale();
+  setInterval(tickSale, 1000);
+  reveal(main);
+}
+
+/* ---------- 技能地圖 ---------- */
+function skillmapPage() {
+  const main = $('main');
+  seo({ title: '技能地圖｜AI Class', desc: '視覺化呈現你的學習路線，找到適合你的進階方向', url: 'https://aiclass.tw/skillmap.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '技能地圖', description: '學習路線視覺化' }
+  });
+
+  const catNameMap = Object.fromEntries((window.CATS || []).map(ct => [ct.id, ct.name]));
+  const catColors = { drawing: '#7c5cff', video: '#ff5c8a', game: '#34c759', baking: '#ff9500', design: '#00b4d8', ai: '#a855f7', creative: '#f59e0b', beauty: '#ec4899', finance: '#10b981', career: '#6366f1' };
+  const trees = (window.CATS || []).map(cat => {
+    const courses = C.filter(c => c.cat === cat.id).sort((a, b) => a.hours - b.hours);
+    const beginner = courses.filter(c => c.hours <= 12);
+    const intermediate = courses.filter(c => c.hours > 12 && c.hours <= 20);
+    const advanced = courses.filter(c => c.hours > 20);
+    return { ...cat, color: catColors[cat.id] || 'var(--pri)', courses, beginner, intermediate, advanced };
+  }).filter(t => t.courses.length > 0);
+
+  main.innerHTML = `
+  <section class="sec"><div class="wrap" style="padding-top:100px">
+    <div class="crumb rv-up"><a href="index.html">首頁</a> › 技能地圖</div>
+    <div class="sm-header rv-up">
+      <h1>技能地圖</h1>
+      <p>探索每個領域的學習路線，從入門到專業</p>
+    </div>
+    <div class="sm-legend rv-up">
+      <span class="sm-legend-item"><span class="sm-dot sm-dot-beginner"></span>入門</span>
+      <span class="sm-legend-item"><span class="sm-dot sm-dot-mid"></span>進階</span>
+      <span class="sm-legend-item"><span class="sm-dot sm-dot-adv"></span>專精</span>
+      <span class="sm-legend-item"><span class="sm-dot sm-dot-owned"></span>已擁有</span>
+    </div>
+    <div class="sm-trees">
+      ${trees.map(t => `<div class="sm-tree rv-up" style="--tree-color:${t.color}">
+        <div class="sm-tree-head"><span class="sm-tree-icon" style="background:${t.color}">${t.name[0]}</span><h2>${t.name}</h2><span class="sm-tree-count">${t.courses.length} 門課程</span></div>
+        <div class="sm-tree-body">
+          ${t.beginner.length ? `<div class="sm-tier"><h3 class="sm-tier-label">🌱 入門</h3><div class="sm-tier-courses">${t.beginner.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
+          ${t.beginner.length && t.intermediate.length ? '<div class="sm-arrow">↓</div>' : ''}
+          ${t.intermediate.length ? `<div class="sm-tier"><h3 class="sm-tier-label">🚀 進階</h3><div class="sm-tier-courses">${t.intermediate.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
+          ${t.intermediate.length && t.advanced.length ? '<div class="sm-arrow">↓</div>' : ''}
+          ${t.advanced.length ? `<div class="sm-tier"><h3 class="sm-tier-label">💎 專精</h3><div class="sm-tier-courses">${t.advanced.map(c => `<a class="sm-node ${owned.has(c.id) ? 'sm-owned' : ''}" href="course.html?id=${c.id}" title="${c.title}"><img src="${img(c)}" alt="${c.title}" loading="lazy"><span class="sm-node-title">${c.title.length > 18 ? c.title.slice(0,18) + '…' : c.title}</span><span class="sm-node-meta">⭐ ${c.rating} · ${c.hours}h</span>${owned.has(c.id) ? '<span class="sm-node-check">✓</span>' : ''}</a>`).join('')}</div></div>` : ''}
+        </div>
+      </div>`).join('')}
+    </div>
+  </div></section>`;
+  reveal(main);
+}
+
 /* ---------- 鍵盤快捷鍵說明面板 ---------- */
 {
   const shortcuts = [
@@ -6380,6 +6518,8 @@ else if (page === 'settings') settingsPage();
 else if (page === 'gallery') galleryPage();
 else if (page === 'notebook') notebookPage();
 else if (page === 'report') reportPage();
+else if (page === 'sale') salePage();
+else if (page === 'skillmap') skillmapPage();
 else notFoundPage();
 reveal();
 gtag('event', 'page_view', { page_title: document.title, page_location: location.href, page_path: location.pathname + location.search });

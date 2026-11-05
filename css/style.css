@@ -4330,3 +4330,88 @@ h3{font-size:clamp(18px,2.2vw,24px)}
   .rpt-course-row{flex-wrap:wrap}
   .rpt-course-prog{width:100%}
 }
+
+/* ── Sale Page ── */
+.sale-hero{background:linear-gradient(135deg,#1a0533 0%,#0b0b10 40%,#1a0533 100%);padding:120px 0 60px;text-align:center;position:relative;overflow:hidden}
+.sale-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 40%,rgba(124,92,255,.2),transparent 60%),radial-gradient(circle at 70% 60%,rgba(255,92,138,.15),transparent 60%)}
+.sale-hero-inner{position:relative;z-index:1}
+.sale-hero-badge{display:inline-block;background:linear-gradient(135deg,var(--pri),var(--pink));padding:6px 18px;border-radius:20px;font-size:.85rem;font-weight:600;color:#fff;margin-bottom:16px}
+.sale-hero h1{font-size:2.8rem;font-weight:900;color:#fff;margin:0 0 12px;letter-spacing:-.02em}
+.sale-hero p{font-size:1.1rem;color:rgba(255,255,255,.7);margin:0 0 32px}
+.sale-countdown{display:flex;justify-content:center;gap:8px;align-items:center}
+.sale-cd-item{text-align:center}
+.sale-cd-num{display:block;font-size:2.4rem;font-weight:900;color:#fff;background:rgba(255,255,255,.1);border-radius:12px;width:64px;line-height:64px;backdrop-filter:blur(8px)}
+.sale-cd-label{font-size:.75rem;color:rgba(255,255,255,.5);margin-top:4px;display:block}
+.sale-cd-sep{font-size:2rem;font-weight:700;color:rgba(255,255,255,.3);margin-top:-12px}
+.sale-coupons{margin-bottom:40px}
+.sale-coupons h2{font-size:1.4rem;margin:0 0 20px}
+.sale-coupon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sale-coupon{background:var(--bg);border:2px dashed var(--pri);border-radius:14px;padding:24px;text-align:center;position:relative}
+.sale-cp-badge{position:absolute;top:-1px;right:16px;background:var(--pri);color:#fff;font-size:.7rem;padding:4px 10px;border-radius:0 0 8px 8px;font-weight:600}
+.sale-cp-code{font-size:1.5rem;font-weight:900;color:var(--pri);letter-spacing:2px;margin:12px 0 8px}
+.sale-cp-desc{font-size:.95rem;margin:0 0 4px}
+.sale-cp-min{font-size:.8rem;color:var(--tx2);display:block;margin-bottom:12px}
+.sale-sec-badge{background:linear-gradient(135deg,var(--pri),var(--pink));color:#fff;padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;white-space:nowrap}
+.sale-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.sale-card{display:block;background:var(--bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--tx);transition:transform .2s,box-shadow .2s}
+.sale-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(124,92,255,.12)}
+.sale-card-img{position:relative;aspect-ratio:16/9;overflow:hidden}
+.sale-card-img img{width:100%;height:100%;object-fit:cover}
+.sale-off{position:absolute;top:10px;right:10px;background:#ff3b30;color:#fff;font-weight:700;font-size:.85rem;padding:4px 10px;border-radius:8px}
+.sale-card-body{padding:16px}
+.sale-card-body h3{font-size:.95rem;margin:0 0 6px;line-height:1.4}
+.sale-card-teacher{font-size:.8rem;color:var(--tx2);margin:0 0 8px}
+.sale-card-meta{display:flex;gap:10px;font-size:.8rem;color:var(--tx2);margin-bottom:10px}
+.sale-card-price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sale-new{font-size:1.2rem;font-weight:700;color:#ff3b30}
+.sale-card-price del{font-size:.85rem;color:var(--tx2)}
+.sale-save{font-size:.75rem;background:rgba(255,59,48,.1);color:#ff3b30;padding:2px 8px;border-radius:4px}
+.sale-cta-sec .sale-cta{text-align:center;padding:60px 20px;background:linear-gradient(135deg,rgba(124,92,255,.06),rgba(255,92,138,.06));border-radius:20px}
+.sale-cta h2{font-size:1.8rem;margin:0 0 8px}
+.sale-cta p{color:var(--tx2);margin:0 0 20px}
+.btn-lg{padding:16px 40px;font-size:1.05rem}
+[data-theme="dark"] .sale-coupon{background:var(--card);border-color:var(--pri)}
+[data-theme="dark"] .sale-card{background:var(--card);border-color:var(--line)}
+@media(max-width:760px){
+  .sale-hero h1{font-size:2rem}
+  .sale-cd-num{font-size:1.6rem;width:48px;line-height:48px}
+  .sale-coupon-grid{grid-template-columns:1fr}
+  .sale-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){.sale-grid{grid-template-columns:1fr}}
+
+/* ── Skill Map Page ── */
+.sm-header{text-align:center;margin-bottom:32px}
+.sm-header h1{font-size:2rem;margin:0 0 8px}
+.sm-header p{color:var(--tx2);margin:0}
+.sm-legend{display:flex;justify-content:center;gap:24px;margin-bottom:40px}
+.sm-legend-item{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--tx2)}
+.sm-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sm-dot-beginner{background:#34c759}
+.sm-dot-mid{background:#ff9500}
+.sm-dot-adv{background:#ff3b30}
+.sm-dot-owned{background:var(--pri);box-shadow:0 0 0 3px rgba(124,92,255,.3)}
+.sm-trees{display:flex;flex-direction:column;gap:40px}
+.sm-tree{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:28px;overflow:hidden}
+.sm-tree-head{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.sm-tree-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#fff;flex-shrink:0}
+.sm-tree-head h2{font-size:1.3rem;margin:0;flex:1}
+.sm-tree-count{font-size:.85rem;color:var(--tx2);white-space:nowrap}
+.sm-tier{margin-bottom:12px}
+.sm-tier-label{font-size:.9rem;margin:0 0 12px;color:var(--tx2)}
+.sm-tier-courses{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.sm-node{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--tx);transition:transform .2s,border-color .2s;position:relative}
+.sm-node:hover{transform:translateY(-2px);border-color:var(--tree-color,var(--pri))}
+.sm-owned{border-color:var(--pri);background:rgba(124,92,255,.04)}
+.sm-node img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.sm-node-title{padding:8px 10px 0;font-size:.8rem;font-weight:600;line-height:1.3}
+.sm-node-meta{padding:4px 10px 10px;font-size:.7rem;color:var(--tx2)}
+.sm-node-check{position:absolute;top:6px;right:6px;background:var(--pri);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700}
+.sm-arrow{text-align:center;font-size:1.4rem;color:var(--tx2);margin:8px 0;opacity:.5}
+[data-theme="dark"] .sm-tree{background:var(--card);border-color:var(--line)}
+[data-theme="dark"] .sm-node{background:var(--bg);border-color:var(--line)}
+@media(max-width:760px){
+  .sm-tier-courses{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .sm-legend{flex-wrap:wrap;gap:12px}
+}
+@media(max-width:480px){.sm-tier-courses{grid-template-columns:1fr 1fr}}
