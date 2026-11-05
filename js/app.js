@@ -7763,6 +7763,7 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
       requestAnimationFrame(() => requestAnimationFrame(() => nl.classList.add('show')));
       nl.querySelector('.nl-close').onclick = nlClose;
       nl.onclick = e => { if (e.target === nl) nlClose(); };
+      document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { nlClose(); document.removeEventListener('keydown', esc); } });
       const nlInput = nl.querySelector('input[type="email"]');
       const nlErr = nl.querySelector('.nl-err');
       nl.querySelector('.nl-form button').onclick = () => {
@@ -7796,6 +7797,7 @@ if (!sessionStorage.getItem('aic-exit-shown') && !('ontouchstart' in window)) {
     ex.querySelector('.exit-close').onclick = closeExit;
     ex.querySelector('.exit-skip').onclick = closeExit;
     ex.onclick = e => { if (e.target === ex) closeExit(); };
+    document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { closeExit(); document.removeEventListener('keydown', esc); } });
   });
 }
 
@@ -8309,6 +8311,7 @@ function openRecommendQuiz() {
         const close = () => { nl2Trap(); ov.classList.remove('on'); setTimeout(() => ov.remove(), 300); };
         ov.querySelector('.nl-close').onclick = close;
         ov.onclick = e => { if (e.target === ov) close(); };
+        document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
         ov.querySelector('.nl-submit').onclick = () => { const em = ov.querySelector('.nl-input').value.trim(); if (!em || !em.includes('@')) { toast('請輸入有效的 Email', 'error'); return; } toast('訂閱成功！折價券已寄出 🎉', 'success'); trackEvent('newsletter_subscribe', { email_domain: em.split('@')[1] }); close(); };
       }, 5000);
     }

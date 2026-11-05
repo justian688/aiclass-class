@@ -782,6 +782,7 @@ body.hdr-hidden .tabs{top:0}
 .trn-table th{text-align:left;padding:14px 16px;font-size:13px;font-weight:600;color:var(--tx3);border-bottom:1px solid var(--line);white-space:nowrap}
 .trn-table td{padding:14px 16px;border-bottom:1px solid var(--line)}
 .trn-table tr:last-child td{border-bottom:0}
+.trn-table tr{transition:background .2s}
 .trn-table tr:hover{background:rgba(0,0,0,.02)}
 .trn-emp-avatar{width:32px;height:32px;border-radius:10px;background:var(--card);display:grid;place-items:center;font-size:13px;font-weight:800;flex:none;color:var(--pri)}
 .trn-status{font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px;background:var(--pri-12);color:var(--pri)}
