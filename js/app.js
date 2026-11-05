@@ -4345,12 +4345,15 @@ function playerPage() {
                   </div>
                 </div>
                 <label class="plr-autoplay"><input type="checkbox" id="plr-auto" checked><span>自動播放</span></label>
+                <button id="plr-sub" class="plr-ctrl-btn plr-sub-on" aria-label="字幕" title="字幕開關">CC</button>
+                <button id="plr-bm-add" class="plr-ctrl-btn" aria-label="加入書籤" title="B: 加入書籤">🔖</button>
                 <button id="plr-pip" class="plr-ctrl-btn" aria-label="子母畫面">⧉</button>
                 <button id="plr-fs" class="plr-ctrl-btn" aria-label="全螢幕">⛶</button>
-                <button id="plr-keys" class="plr-ctrl-btn" aria-label="快捷鍵" title="Space: 播放/暫停\n←→: 前/後 10 秒\nF: 全螢幕\nP: 子母畫面">⌨</button>
+                <button id="plr-keys" class="plr-ctrl-btn" aria-label="快捷鍵" title="Space: 播放/暫停\n←→: 前/後 10 秒\nF: 全螢幕\nB: 書籤">⌨</button>
               </div>
             </div>
           </div>
+          <div class="plr-subtitle-bar" id="plr-subtitle" aria-live="polite"></div>
           <div class="plr-lesson-bar" id="plr-lesson-bar">
             <span class="plr-lb-chapter">第 1 章</span>
             <span class="plr-lb-sep">›</span>
@@ -4373,6 +4376,7 @@ function playerPage() {
             <div class="plr-sc-item"><kbd>M</kbd><span>靜音切換</span></div>
             <div class="plr-sc-item"><kbd>F</kbd><span>全螢幕</span></div>
             <div class="plr-sc-item"><kbd>P</kbd><span>子母畫面</span></div>
+            <div class="plr-sc-item"><kbd>B</kbd><span>加入書籤</span></div>
             <div class="plr-sc-item"><kbd>?</kbd><span>顯示此面板</span></div>
           </div>
         </div>
@@ -4383,6 +4387,7 @@ function playerPage() {
         <div class="plr-sb-tabs">
           <button class="plr-sb-tab on" data-tab="chapters">章節目錄</button>
           <button class="plr-sb-tab" data-tab="notes">筆記</button>
+          <button class="plr-sb-tab" data-tab="bookmarks">書籤</button>
           <button class="plr-sb-tab" data-tab="qa">Q&A</button>
           <button class="plr-sb-tab" data-tab="downloads">下載</button>
         </div>
@@ -4393,6 +4398,10 @@ function playerPage() {
           </div>
           <div class="plr-sb-list" id="plr-sb-list">${renderSidebar()}</div>
           <div class="plr-minimap" id="plr-minimap"><h4>章節進度地圖</h4>${chapters.map((ch, ci) => `<div class="plr-mm-ch"><span class="plr-mm-label">${ci+1}</span><div class="plr-mm-dots">${ch.lessons.map((_, li) => `<span class="plr-mm-dot ${doneSet.has(lessonId(ci,li))?'done':''} ${ci===curCh&&li===curLs?'active':''}" data-ch="${ci}" data-ls="${li}" title="${ci+1}-${li+1} ${ch.lessons[li].t}"></span>`).join('')}</div></div>`).join('')}</div>
+        </div>
+        <div class="plr-sb-panel" id="plr-panel-bookmarks" hidden>
+          <div class="plr-bm-list" id="plr-bm-list"></div>
+          <div class="plr-bm-empty" id="plr-bm-empty">按 <kbd>B</kbd> 或點 🔖 在目前播放位置加入書籤</div>
         </div>
         <div class="plr-sb-panel" id="plr-panel-notes" hidden>
           <div class="plr-notes-sb">
@@ -4646,6 +4655,7 @@ function playerPage() {
     if (e.code === 'KeyM') { vid_el.muted = !vid_el.muted; muteBtn.textContent = vid_el.muted ? '🔇' : '🔊'; }
     if (e.code === 'KeyF') { const w = $('.plr-video-wrap'); document.fullscreenElement ? document.exitFullscreen() : w.requestFullscreen(); }
     if (e.code === 'KeyP') { if (vid_el.requestPictureInPicture) { document.pictureInPictureElement ? document.exitPictureInPicture() : vid_el.requestPictureInPicture(); } }
+    if (e.code === 'KeyB') addBookmark();
     if (e.key === '?' || (e.shiftKey && e.code === 'Slash')) toggleSc();
     if (e.code === 'Escape' && !scOverlay.hidden) toggleSc();
   };
@@ -4665,6 +4675,64 @@ function playerPage() {
     miniClose.onclick = () => { vid_el.pause(); videoWrap.classList.remove('plr-mini'); };
     videoWrap.append(miniClose);
   }
+
+  // Subtitles
+  const subtitleEl = $('#plr-subtitle');
+  const subBtn = $('#plr-sub');
+  let subtitleOn = true;
+  const subtitleKeys = chapters.flatMap((ch, ci) => ch.lessons.map((ls, li) => ({
+    ci, li, text: `${ch.name}：${ls.t}`
+  })));
+  function updateSubtitle() {
+    if (!subtitleOn || !subtitleEl) return;
+    const key = subtitleKeys.find(k => k.ci === curCh && k.li === curLs);
+    if (key) {
+      const t = vid_el.currentTime || 0, d = vid_el.duration || 1;
+      const pct = t / d;
+      const tips = [key.text, `學習重點：掌握${key.text}的核心觀念`, `實作練習：跟著講師一步步完成`];
+      const idx = Math.min(Math.floor(pct * tips.length), tips.length - 1);
+      subtitleEl.textContent = tips[idx];
+      subtitleEl.style.display = '';
+    }
+  }
+  vid_el.addEventListener('timeupdate', updateSubtitle);
+  if (subBtn) subBtn.onclick = () => {
+    subtitleOn = !subtitleOn;
+    subBtn.classList.toggle('plr-sub-on', subtitleOn);
+    subtitleEl.style.display = subtitleOn ? '' : 'none';
+    if (!subtitleOn) subtitleEl.textContent = '';
+    toast(subtitleOn ? '字幕已開啟' : '字幕已關閉');
+  };
+
+  // Bookmarks
+  const bmKey = 'aic-bookmarks-' + c.id;
+  let bookmarks = JSON.parse(localStorage.getItem(bmKey) || '[]');
+  function renderBookmarks() {
+    const list = $('#plr-bm-list'), empty = $('#plr-bm-empty');
+    if (!list) return;
+    if (!bookmarks.length) { list.innerHTML = ''; empty.style.display = ''; return; }
+    empty.style.display = 'none';
+    list.innerHTML = bookmarks.map((bm, i) => `<div class="plr-bm-item" data-bmi="${i}">
+      <button class="plr-bm-jump" data-bmtime="${bm.time}" title="跳轉到 ${fmtTime(bm.time)}">
+        <span class="plr-bm-time">${fmtTime(bm.time)}</span>
+        <span class="plr-bm-label">${bm.label}</span>
+      </button>
+      <button class="plr-bm-del" data-bmdel="${i}" aria-label="刪除書籤">✕</button>
+    </div>`).join('');
+    $$('.plr-bm-jump', list).forEach(b => b.onclick = () => { vid_el.currentTime = +b.dataset.bmtime; vid_el.play(); });
+    $$('.plr-bm-del', list).forEach(b => b.onclick = () => { bookmarks.splice(+b.dataset.bmdel, 1); localStorage.setItem(bmKey, JSON.stringify(bookmarks)); renderBookmarks(); });
+  }
+  renderBookmarks();
+  function addBookmark() {
+    const time = vid_el.currentTime;
+    const label = `${chapters[curCh].name} - ${chapters[curCh].lessons[curLs].t}`;
+    bookmarks.push({ time, label, ch: curCh, ls: curLs });
+    bookmarks.sort((a, b) => a.time - b.time);
+    localStorage.setItem(bmKey, JSON.stringify(bookmarks));
+    renderBookmarks();
+    toast(`已加入書籤 ${fmtTime(time)}`);
+  }
+  $('#plr-bm-add').onclick = addBookmark;
 
   // 學習休息提醒（每 25 分鐘）
   let studyMins = 0;
@@ -5092,7 +5160,8 @@ function orderCompletePage() {
     </div>
 
     <div class="oc-actions">
-      <a class="btn btn-pri" href="my.html">我的課程</a>
+      ${items[0] ? `<a class="btn btn-pri" href="player.html?id=${items[0].id}">▶ 立即開始學習</a>` : ''}
+      <a class="btn btn-pri" href="my.html" style="background:var(--tx);color:var(--bg)">我的課程</a>
       <a class="btn btn-ghost" href="index.html">回首頁探索更多</a>
     </div>
   </div>`;
@@ -6935,7 +7004,26 @@ function settingsPage() {
 
   const delBtn = $('.set-delete-btn', main);
   if (delBtn) delBtn.onclick = () => {
-    if (confirm('確定要刪除帳號嗎？此操作無法復原。')) toast('帳號刪除申請已送出，將於 3 個工作天內處理', 'warning');
+    const ov = document.createElement('div'); ov.className = 'set-del-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    ov.innerHTML = `<div class="set-del-modal">
+      <div class="set-del-icon">⚠️</div>
+      <h3>確定要刪除帳號嗎？</h3>
+      <p>此操作<b>無法復原</b>，你的所有課程、學習紀錄、成就和筆記將永久刪除。</p>
+      <div class="set-del-field"><label>請輸入「刪除我的帳號」以確認</label><input type="text" id="set-del-confirm" placeholder="刪除我的帳號" aria-label="確認文字"></div>
+      <div class="set-del-btns">
+        <button class="btn btn-ghost set-del-cancel">取消</button>
+        <button class="btn set-del-go" disabled>確認刪除</button>
+      </div>
+    </div>`;
+    document.body.append(ov);
+    requestAnimationFrame(() => ov.classList.add('show'));
+    const inp = ov.querySelector('#set-del-confirm'), goBtn = ov.querySelector('.set-del-go');
+    inp.oninput = () => { goBtn.disabled = inp.value !== '刪除我的帳號'; };
+    inp.focus();
+    const close = () => { ov.classList.remove('show'); setTimeout(() => ov.remove(), 250); };
+    ov.querySelector('.set-del-cancel').onclick = close;
+    ov.onclick = e => { if (e.target === ov) close(); };
+    goBtn.onclick = () => { close(); toast('帳號刪除申請已送出，將於 3 個工作天內處理', 'warning'); };
   };
 
   const avatarBtn = $('.set-avatar-btn', main);
