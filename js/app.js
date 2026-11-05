@@ -718,7 +718,7 @@ function card(c, i, rank) {
     <div class="tw">${rank ? `<span class="num">${i + 1}</span>` : ''}<div class="thumb">
       ${isOwned ? '<span class="badge owned-badge">已購買</span>' : c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
       <button class="wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" aria-label="收藏">${wish.has(c.id) ? '♥' : '♡'}</button>
-      <img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async">
+      <img src="${img(c)}" alt="${c.title}" width="640" height="400" loading="lazy" decoding="async">
       <span class="hours">${c.hours} 小時</span>
     </div></div>
     <div class="meta">
@@ -867,7 +867,7 @@ function home() {
   const slides = window.HERO.map(id => byId[id]);
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程" aria-roledescription="carousel">
     ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
-      <img class="poster" src="${img(c)}" alt="${c.title}"${i ? ' loading="lazy"' : ' fetchpriority="high"'}>
+      <img class="poster" src="${img(c)}" alt="${c.title}" width="1920" height="1080"${i ? ' loading="lazy"' : ' fetchpriority="high"'}>
       <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
       <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span><h1>${h}</h1><p>${p}</p>
       <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">${owned.has(c.id) ? '繼續學習 →' : cart.has(c.id) ? '前往結帳 →' : '立即了解 →'}</a> <a class="btn btn-ghost" href="${owned.has(c.id) ? `player.html?id=${c.id}` : `course.html?id=${c.id}#preview`}" style="margin-left:8px">${owned.has(c.id) ? '🎬 進入播放器' : '▶ 試看'}</a></div></div></div></div>`; }).join('')}
