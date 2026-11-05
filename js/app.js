@@ -1548,6 +1548,7 @@ function course() {
       <h1 class="c-title">${c.title}</h1>
       <p class="c-sub">${c.teacher}・${c.role}　<span class="stars"><b>★ ${c.rating.toFixed(1)}</b>・${c.students.toLocaleString()} 位學員・${c.hours} 小時</span></p>
       ${c.desc ? `<p class="c-desc">${c.desc}</p>` : ''}
+      ${(() => { const pids = (window.PREREQS || {})[c.id]; if (!pids || !pids.length) return ''; const pcs = pids.map(id => byId[id]).filter(Boolean); if (!pcs.length) return ''; return `<div class="c-prereq rv-up"><span class="c-prereq-label">📚 建議先修</span>${pcs.map(pc => `<a class="c-prereq-link" href="course.html?id=${pc.id}"><img src="${img(pc)}" alt="${pc.title}"><span>${pc.title}</span></a>`).join('')}</div>`; })()}
       <div class="c-share rv-up">
         <span>分享課程</span>
         <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>

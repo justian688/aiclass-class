@@ -4799,3 +4799,22 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(.tm-dot):not(.wish),select,textarea{transition:border-color .3s ease,box-shadow .3s ease}
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(124,92,255,.12);outline:none}
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,[data-theme="dark"] select:focus,[data-theme="dark"] textarea:focus{box-shadow:0 0 0 3px rgba(124,92,255,.2)}
+
+/* ── 課程先修建議 ── */
+.c-prereq{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px;padding:14px 16px;background:rgba(124,92,255,.04);border-radius:12px;border:1px solid rgba(124,92,255,.1)}
+.c-prereq-label{font-size:13px;font-weight:600;color:var(--pri);white-space:nowrap}
+.c-prereq-link{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--line);font-size:13px;color:var(--tx);text-decoration:none;transition:all .2s}
+.c-prereq-link:hover{border-color:var(--pri);background:rgba(124,92,255,.06)}
+.c-prereq-link img{width:32px;height:32px;border-radius:6px;object-fit:cover}
+[data-theme="dark"] .c-prereq{background:rgba(124,92,255,.08);border-color:rgba(124,92,255,.15)}
+[data-theme="dark"] .c-prereq-link{background:var(--card);border-color:rgba(255,255,255,.08)}
+@media(max-width:480px){.c-prereq{padding:12px}.c-prereq-link{font-size:12px;padding:4px 10px 4px 4px}.c-prereq-link img{width:28px;height:28px}}
+
+/* ── 列印樣式 ── */
+@media print{
+  .nav,.mnav,.float-bar,.chat-widget,.scroll-top,.page-progress,.cookie-bar,.sticky-buy,.sp-toast,.cart-reminder,.nl-overlay{display:none!important}
+  body{background:#fff;color:#000;font-size:12pt}
+  .card,.buy,.c-video video{break-inside:avoid}
+  a{color:#000;text-decoration:underline}
+  .btn{border:1px solid #000;background:none;color:#000}
+}
