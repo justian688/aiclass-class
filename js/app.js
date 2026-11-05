@@ -1811,6 +1811,7 @@ function course() {
           <div class="qa-actions"><button class="qa-like" data-qa-i="${i}"><span class="qa-like-icon">👍</span> <span class="qa-like-num">${item.likes}</span></button><span class="qa-reply-count">${item.replies} 則回覆</span></div>
         </div>`).join('')}
       </div>
+      ${(() => { const cp = (window.COMMUNITY_POSTS || []).filter(p => p.course === c.id); if (!cp.length) return ''; return `<div class="qa-community rv-up"><h3>🌐 社群討論</h3><p class="qa-community-sub">來自學習社群的相關討論</p>${cp.map(p => `<a class="qa-cp-card" href="community.html"><div class="qa-cp-head"><span class="qa-cp-avatar">${p.avatar}</span><b>${p.author}</b><span class="qa-cp-time">${p.time}</span></div><h4>${p.title}</h4><p>${p.content.length > 80 ? p.content.slice(0,80) + '…' : p.content}</p><div class="qa-cp-meta"><span>❤ ${p.likes}</span><span>💬 ${p.replies} 回覆</span>${(p.tags||[]).map(t => `<span class="qa-cp-tag">${t}</span>`).join('')}</div></a>`).join('')}<a href="community.html" class="btn btn-ghost" style="width:100%;margin-top:12px">前往社群看更多 →</a></div>`; })()}
     </section>
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}<div class="faq-more rv-up"><p>找不到你要的答案？</p><a href="faq.html" class="btn btn-ghost">前往幫助中心</a> <button class="btn btn-ghost" onclick="toast('示範網站：客服功能開發中')">💬 聯繫客服</button></div></section>
     <section class="c-sec c-changelog rv-up" id="changelog"><h2>📋 課程更新日誌</h2>
@@ -1917,6 +1918,7 @@ function course() {
     ov.onclick = e => { if (e.target === ov) closeP(); };
     ov.querySelector('.preview-buy').onclick = () => { closeP(); cart.add(c.id); saveCart(); updateCartBadge(); toast('已加入購物車 🛒'); };
     document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { closeP(); document.removeEventListener('keydown', esc); } });
+    trapFocus(ov);
     trackEvent('course_preview', { item_id: c.id, item_name: c.title });
   };
   const copyBtn = $('[data-copy-link]');
@@ -1933,8 +1935,7 @@ function course() {
     $('.gift-close', ov).onclick = close;
     ov.onclick = e => { if (e.target === ov) close(); };
     document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
-    const focusable = $$('input,textarea,button', ov);
-    ov.addEventListener('keydown', e => { if (e.key !== 'Tab') return; const first = focusable[0], last = focusable[focusable.length - 1]; if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } });
+    trapFocus(ov);
     $('.gift-submit', ov).onclick = () => {
       const name = $('#gift-name', ov).value.trim(), email = $('#gift-email', ov).value.trim();
       if (!name) { toast('請輸入收禮人姓名', 'error'); $('#gift-name', ov).focus(); return; }
@@ -2141,7 +2142,7 @@ function course() {
     if (!txt) { toast('請輸入問題內容'); return; }
     const list = $('.qa-list', main);
     const item = document.createElement('div'); item.className = 'qa-item rv-up in';
-    item.innerHTML = `<div class="qa-item-head"><div class="qa-avatar">學</div><div class="qa-meta"><b>學員</b><span>剛剛</span></div></div><p class="qa-question">${txt.replace(/</g,'&lt;')}</p><div class="qa-answer"><div class="qa-answer-head"><span class="qa-teacher-badge">講師</span><b>${c.teacher}</b></div><p>謝謝你的提問！我會在 24 小時內回覆，請稍候。</p></div><div class="qa-actions"><button class="qa-like"><span class="qa-like-icon">👍</span> <span class="qa-like-num">0</span></button><span class="qa-reply-count">0 則回覆</span></div>`;
+    item.innerHTML = `<div class="qa-item-head"><div class="qa-avatar">學</div><div class="qa-meta"><b>學員</b><span>剛剛</span></div></div><p class="qa-question">${escH(txt)}</p><div class="qa-answer"><div class="qa-answer-head"><span class="qa-teacher-badge">講師</span><b>${c.teacher}</b></div><p>謝謝你的提問！我會在 24 小時內回覆，請稍候。</p></div><div class="qa-actions"><button class="qa-like"><span class="qa-like-icon">👍</span> <span class="qa-like-num">0</span></button><span class="qa-reply-count">0 則回覆</span></div>`;
     list.prepend(item); ta.value = ''; toast('問題已送出，講師將盡快回覆');
     reveal(list);
   };

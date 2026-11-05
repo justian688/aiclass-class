@@ -4565,6 +4565,19 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .c-preview-btn:hover{background:#34c759!important;color:#fff!important}
 [data-theme="dark"] .preview-modal{background:var(--card)}
 @media(max-width:480px){.preview-modal{border-radius:12px}.preview-video{max-height:240px}}
+.qa-community{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+.qa-community h3{font-size:18px;font-weight:700;margin-bottom:4px}
+.qa-community-sub{font-size:14px;color:var(--tx2);margin-bottom:16px}
+.qa-cp-card{display:block;background:var(--bg2);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--line);transition:border-color .2s,transform .2s;text-decoration:none;color:var(--tx)}
+.qa-cp-card:hover{border-color:var(--pri);transform:translateY(-2px)}
+.qa-cp-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:14px}
+.qa-cp-avatar{font-size:20px}
+.qa-cp-time{color:var(--tx3);font-size:12px;margin-left:auto}
+.qa-cp-card h4{font-size:15px;font-weight:600;margin-bottom:6px;line-height:1.4}
+.qa-cp-card p{font-size:13px;color:var(--tx2);line-height:1.5;margin-bottom:8px}
+.qa-cp-meta{display:flex;gap:12px;font-size:12px;color:var(--tx3);align-items:center;flex-wrap:wrap}
+.qa-cp-tag{background:var(--pri);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+[data-theme="dark"] .qa-cp-card{background:var(--card)}
 
 /* ── 本週學習週報 ── */
 .wk-report{background:var(--bg2);border-radius:16px;padding:28px;border:1px solid var(--line)}
