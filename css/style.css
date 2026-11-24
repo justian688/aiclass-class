@@ -4876,3 +4876,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 @media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
+
+/* ── 上線前：隱藏範本的假評價、假見證與假統計（有真實資料後再移除這段） ── */
+#reviews, .review-stats, .live-counter, .c-completion, .insd-reviews, .tm-sec,
+.ent-testimonials, .sec:has(.ent-testi-grid), .sec:has(.rv-wrap), section:has(> .wrap > .ent-testi-grid) { display: none !important; }
+.srch-group:has(input[name=srch-rating]) { display: none !important; }

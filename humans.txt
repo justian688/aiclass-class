@@ -1,6 +1,6 @@
 /* TEAM */
 Platform: AI Class
-Contact: hi [at] aiclass.tw
+Contact: hi [at] okaiclass.com
 Location: Taiwan
 
 /* SITE */

@@ -13,4 +13,4 @@ Disallow: /notebook.html
 Disallow: /certificate.html
 Disallow: /report.html
 
-Sitemap: https://aiclass.tw/sitemap.xml
+Sitemap: https://okaiclass.com/sitemap.xml
