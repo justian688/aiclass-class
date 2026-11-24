@@ -4906,3 +4906,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 /* 首頁輪播文字在深色影片上改成白字 */
 .slide .txt h1,.slide .txt .eyebrow{color:#fff!important}
 .slide .txt .btn-ghost{color:#fff!important;border-color:rgba(255,255,255,.7)!important}
+/* 試看模式 / 鎖定 */
+.plr-trial{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;margin-bottom:10px;border-radius:12px;background:linear-gradient(90deg,rgba(124,92,255,.22),rgba(255,92,138,.18));color:#fff;font-size:14px;font-weight:600}
+.plr-ls.locked{opacity:.55}
+.plr-lock{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px}
+.plr-lock-box{background:var(--card,#fff);color:var(--tx,#111);max-width:420px;width:100%;border-radius:18px;padding:28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.plr-lock-ic{font-size:40px}.plr-lock-box h3{margin:8px 0}.plr-lock-box p{color:var(--tx2,#555);font-size:14px;line-height:1.6;margin:6px 0}
+.plr-lock-g{font-weight:600}
+.plr-lock-btns{display:flex;flex-direction:column;gap:10px;margin-top:16px}

@@ -10,6 +10,7 @@ window.trackEvent = (name, params) => { if (typeof gtag === 'function') gtag('ev
 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
   window.onerror = (msg, src, line, col) => { window.toast?.(`⚠ ${msg} (${src?.split('/').pop()}:${line}:${col})`, 'error'); };
   window.onunhandledrejection = e => { window.toast?.(`⚠ Unhandled: ${e.reason}`, 'error'); };
+  if (!window.toast) window.toast = (msg) => { const t = document.createElement("div"); t.textContent = msg; t.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:10px;z-index:99999;font-size:14px"; document.body.append(t); setTimeout(() => t.remove(), 2500); };
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -977,13 +978,13 @@ function home() {
 
   // 為什麼選擇 OKAI課程網
   main.insertAdjacentHTML('beforeend', `<section class="usp-section" id="why"><div class="wrap">
-    <h2 class="usp-title rv-up">為什麼超過 60,000 人選擇 OKAI課程網</h2>
-    <p class="usp-sub rv-up">我們打造最好的線上學習體驗</p>
+    <h2 class="usp-title rv-up">只教 AI・中文實作・學完就能用</h2>
+    <p class="usp-sub rv-up">不是什麼都教的大平台，OKAI課程網 只專心做一件事：讓你把 AI 真正用在工作上</p>
     <div class="usp-grid">
       ${[
-        { icon: '🎬', title: '業界講師親授', desc: '每堂課都由業界頂尖講師精心製作，把第一線實戰經驗毫無保留地分享給你。' },
-        { icon: '📚', title: '系統化課程設計', desc: '從入門到進階，循序漸進的學習路徑，讓你不再東學西湊、走冤枉路。' },
-        { icon: '💬', title: '講師親自回覆', desc: '學習遇到問題直接提問，講師親自回覆，不怕卡關沒人幫。' },
+        { icon: '🤖', title: '只教 AI', desc: '所有課程都圍繞生成式 AI：寫程式、繪圖、影片、音樂、行銷、理財，跟著工具更新一起更新。' },
+        { icon: '🇹🇼', title: '中文實作', desc: '全中文講解、台灣在地案例，每章都有實作練習，不用再啃英文教學。' },
+        { icon: '▶️', title: '免費試看', desc: '每堂課第 1 章前 2 個單元免費看，先確認適合自己再報名。' },
         { icon: '🔄', title: '免費終身更新', desc: '一次購買永久觀看，課程持續更新不加價，永遠學到最新內容。' },
         { icon: '🏆', title: '結業證書', desc: '完成課程後獲得 OKAI課程網 認證證書，為你的履歷和作品集加分。' },
         { icon: '🛡️', title: '七天退費保證', desc: '購買後七天內不滿意全額退費，讓你安心學習零風險。' }
@@ -1674,13 +1675,10 @@ function course() {
         <div class="c-recent-buy">🔥 過去 24 小時內有 ${38 + (c.id.charCodeAt(2) % 45)} 人購買</div>
         <div><span class="pct">${pct(c)}%</span> <del>${fmt(c.origin)}</del></div>
         <div class="big">${fmt(c.price)}</div>
-        <div style="color:var(--tx2);font-size:14px">或 3 期 0 利率，每期 ${fmt(Math.ceil(c.price / 3))}</div>
         <div class="c-urgency"><span class="c-urgency-label">⏰ 限時優惠倒數</span>${cdHTML}</div>
         <button class="btn btn-pri c-buy-pulse" data-buy>立即購買</button>
         <button class="btn btn-ghost" data-cart>加入購物車</button>
-        <button class="btn btn-ghost c-preview-btn" data-preview>▶ 免費試看第一堂</button>
-        <button class="btn btn-ghost" data-gift style="margin-top:6px">🎁 贈送此課程</button>
-        <button class="btn btn-ghost" onclick="toast('已設定降價通知')" style="margin-top:6px">🔔 降價通知</button>
+        <a class="btn btn-ghost c-preview-btn" href="player.html?id=${c.id}">▶ 免費試看 2 個單元</a>
         ${(() => {
           const pts = []; const now = c.price; const orig = c.origin;
           for (let i = 0; i < 7; i++) { const t = i === 6 ? now : Math.round(orig - (orig - now) * (0.3 + Math.sin(i * 1.2) * 0.25 + i * 0.08)); pts.push(Math.max(now, Math.min(orig, t))); }
@@ -2010,8 +2008,7 @@ function course() {
     if (li) li.style.cursor = 'pointer';
     if (li) li.onclick = e => {
       if (e.target.closest('button')) return;
-      const box = $('.c-video'), v = $('video', box);
-      if (v && box) { v.play(); box.classList.add('playing'); box.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      location.href = 'player.html?id=' + c.id;
     };
   });
   $$('.qa button').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
@@ -2515,10 +2512,10 @@ function enterprisePage() {
         <a class="btn btn-ghost" href="#contact" style="height:52px;padding:0 32px;font-size:17px">預約諮詢</a>
       </div>
       <div class="ent-hero-stats rv-up">
-        <div><b>500+</b><span>企業客戶</span></div>
-        <div><b>98%</b><span>續約率</span></div>
-        <div><b>150%</b><span>培訓 ROI 提升</span></div>
-        <div><b>60,000+</b><span>企業學員</span></div>
+        <div><b>100%</b><span>AI 專門課程</span></div>
+        <div><b>中文</b><span>在地實作案例</span></div>
+        <div><b>客製</b><span>依產業規劃內訓</span></div>
+        <div><b>報表</b><span>學習進度可追蹤</span></div>
       </div>
     </div>
   </section>
@@ -4403,7 +4400,31 @@ function playerPage() {
 
   let curCh = 0, curLs = 0;
   const totalLessons = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
-  const doneSet = new Set(['0-0','0-1','0-2','0-3','1-0','1-1','1-2']);
+  const isOwned = new Set(ls('aic-owned', [])).has(c.id);
+  const canPlay = (ci, li) => isOwned || (ci === 0 && li < 2);
+  const doneSet = new Set(ls('aic-done-' + c.id, []));
+  const _addDone = doneSet.add.bind(doneSet);
+  doneSet.add = v => {
+    const [ci, li] = v.split('-').map(Number);
+    if (!canPlay(ci, li)) return doneSet;
+    _addDone(v); ss('aic-done-' + c.id, [...doneSet]);
+    const pg = ls('aic-progress', {}); pg[c.id] = Math.round(doneSet.size / totalLessons * 100); ss('aic-progress', pg);
+    if (isOwned && doneSet.size >= totalLessons) {
+      const certs = ls('aic-certs', {});
+      if (!certs[c.id]) { const d = new Date(); certs[c.id] = { date: `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`, no: 'OKAI-' + c.id.toUpperCase() + '-' + d.getTime().toString(36).slice(-6).toUpperCase() }; ss('aic-certs', certs); setTimeout(() => showCompletionCelebration(c), 600); }
+    }
+    return doneSet;
+  };
+  function showLock() {
+    if (document.querySelector('.plr-lock')) return;
+    const n = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
+    const ov = document.createElement('div'); ov.className = 'plr-lock'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    ov.innerHTML = `<div class="plr-lock-box"><div class="plr-lock-ic">🔒</div><h3>這個單元需要報名後觀看</h3><p>免費試看：第 1 章前 2 個單元。報名後解鎖全部 ${n} 個單元，並可在完課後取得結業證書。</p><p class="plr-lock-g">🛡️ 7 天內、觀看進度低於 20% 可申請全額退費</p><div class="plr-lock-btns"><button class="btn btn-pri" data-enroll>報名完整課程 ${fmt(c.price)}</button><button class="btn btn-ghost" data-close>繼續試看</button></div></div>`;
+    document.body.append(ov);
+    ov.querySelector('[data-enroll]').onclick = () => { cart.add(c.id); saveCart(); location.href = 'checkout.html'; };
+    ov.querySelector('[data-close]').onclick = () => ov.remove();
+    ov.onclick = e => { if (e.target === ov) ov.remove(); };
+  }
 
   function lessonId(ci, li) { return ci + '-' + li; }
   function progress() { return Math.round(doneSet.size / totalLessons * 100); }
@@ -4419,8 +4440,9 @@ function playerPage() {
         <div class="plr-lessons">${ch.lessons.map((ls, li) => {
           const done = doneSet.has(lessonId(ci, li));
           const active = ci === curCh && li === curLs;
-          return `<button class="plr-ls ${active ? 'active' : ''} ${done ? 'done' : ''}" data-ch="${ci}" data-ls="${li}">
-            <span class="plr-ls-icon">${done ? '✓' : active ? '▶' : '○'}</span>
+          const lock = !canPlay(ci, li);
+          return `<button class="plr-ls ${active ? 'active' : ''} ${done ? 'done' : ''} ${lock ? 'locked' : ''}" data-ch="${ci}" data-ls="${li}">
+            <span class="plr-ls-icon">${lock ? '🔒' : done ? '✓' : active ? '▶' : '○'}</span>
             <span class="plr-ls-title">${ci + 1}-${li + 1}　${ls.t}</span>
             <span class="plr-ls-dur">${ls.dur}</span>
           </button>`;
@@ -4450,6 +4472,7 @@ function playerPage() {
     </header>
     <div class="plr-body">
       <div class="plr-main">
+        ${isOwned ? '' : `<div class="plr-trial"><span>▶ 試看模式：第 1 章前 2 個單元免費觀看</span><button class="btn btn-pri btn-sm" data-trial-enroll>報名完整課程 ${fmt(c.price)}</button></div>`}
         <div class="plr-video-wrap">
           <video id="plr-vid" src="${vid(c)}" poster="${img(c)}" preload="metadata" playsinline></video>
           <div class="plr-controls">
@@ -4662,6 +4685,7 @@ function playerPage() {
 
   // Lesson navigation
   function goLesson(ci, li) {
+    if (!canPlay(ci, li)) { showLock(); return; }
     doneSet.add(lessonId(curCh, curLs));
     curCh = ci; curLs = li;
     posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
@@ -4681,6 +4705,8 @@ function playerPage() {
     if (countEl) countEl.textContent = `${doneSet.size}/${totalLessons} 課完成`;
   }
 
+  const _te = () => { const b = document.querySelector('[data-trial-enroll]'); if (b) b.onclick = () => { cart.add(c.id); saveCart(); location.href = 'checkout.html'; }; };
+  setTimeout(_te, 0);
   function bindSidebar() {
     $$('.plr-ch-btn').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
     $$('.plr-ls').forEach(b => b.onclick = () => goLesson(+b.dataset.ch, +b.dataset.ls));
@@ -4730,7 +4756,7 @@ function playerPage() {
       ov.querySelector('#ap-now').onclick = goNext;
       ov.querySelector('#ap-cancel').onclick = cancel;
     } else if (!hasNext) {
-      toast('恭喜完成所有課程！🎉'); showCompletionCelebration(c);
+      toast('恭喜完成所有課程！🎉');
     }
   };
 
@@ -5419,12 +5445,12 @@ function certificatePage() {
   seo({ title: '結業證書｜OKAI課程網', desc: '查看你的結業證書', url: 'https://okaiclass.com/certificate.html' });
   const ownedIds = new Set(ls('aic-owned', []));
   const progress = ls('aic-progress', {});
-  const completedCourses = C.filter(c => ownedIds.has(c.id) && (progress[c.id] === 100 || progress[c.id] === undefined));
-  const certificates = completedCourses.map(c => ({
+  const certMap = ls('aic-certs', {});
+  const certificates = C.filter(c => ownedIds.has(c.id) && certMap[c.id]).map(c => ({
     ...c,
     student: aicUser?.name || '學員',
-    completedDate: '2026/10/25',
-    certId: 'CERT-' + c.id.toUpperCase() + '-' + Date.now().toString(36).slice(-6).toUpperCase()
+    completedDate: certMap[c.id].date,
+    certId: certMap[c.id].no
   }));
 
   main.innerHTML = `
