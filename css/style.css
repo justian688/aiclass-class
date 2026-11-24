@@ -4914,3 +4914,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .plr-lock-ic{font-size:40px}.plr-lock-box h3{margin:8px 0}.plr-lock-box p{color:var(--tx2,#555);font-size:14px;line-height:1.6;margin:6px 0}
 .plr-lock-g{font-weight:600}
 .plr-lock-btns{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+/* 播放器側欄（深色底）文字可讀性 */
+.plr-sidebar .plr-ch-name{color:#e9e9f2}
+.plr-sidebar .plr-ls-title{color:#c4c4d0}
+.plr-sidebar .plr-ls.active .plr-ls-title{color:#fff;font-weight:700}
+.plr-sidebar .plr-sb-count,.plr-sidebar .plr-ch-prog,.plr-sidebar .plr-ls-dur{color:#9a9aab}
+.plr-sidebar .plr-ls.locked .plr-ls-title{color:#8a8a99}
