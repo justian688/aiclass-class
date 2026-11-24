@@ -4902,3 +4902,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .nl-sec,.blog-newsletter{display:none!important}
 .ctc-channels{display:flex!important;justify-content:center}.ctc-channels .ctc-ch{max-width:420px;width:100%}
 .sec:has(.showcase-overlay){display:none!important}
+
+/* 首頁輪播文字在深色影片上改成白字 */
+.slide .txt h1,.slide .txt .eyebrow{color:#fff!important}
+.slide .txt .btn-ghost{color:#fff!important;border-color:rgba(255,255,255,.7)!important}
