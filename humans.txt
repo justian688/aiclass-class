@@ -1,5 +1,5 @@
 /* TEAM */
-Platform: AI Class
+Platform: OKAI課程網
 Contact: hi [at] okaiclass.com
 Location: Taiwan
 

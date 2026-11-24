@@ -127,7 +127,7 @@ function seo(opts = {}) {
   setMeta('property', 'og:url', dUrl);
   setMeta('property', 'og:image', dImg);
   setMeta('property', 'og:locale', 'zh_TW');
-  setMeta('property', 'og:site_name', 'AI Class');
+  setMeta('property', 'og:site_name', 'OKAI課程網');
   setMeta('property', 'og:type', opts.ogType || 'website');
   setMeta('name', 'twitter:card', opts.twitterCard || 'summary_large_image');
   setMeta('name', 'twitter:title', dTitle);
@@ -182,7 +182,7 @@ function bindNotes(courseId, main) {
     const ns = allNotes[courseId] || [];
     if (!ns.length) { toast('沒有筆記可匯出'); return; }
     const cTitle = (byId[courseId] || {}).title || courseId;
-    const md = `# ${cTitle} — 學習筆記\n\n> 匯出自 AI Class ・ ${new Date().toLocaleString('zh-TW')}\n\n---\n\n` +
+    const md = `# ${cTitle} — 學習筆記\n\n> 匯出自 OKAI課程網 ・ ${new Date().toLocaleString('zh-TW')}\n\n---\n\n` +
       ns.map((n, i) => `### 筆記 ${i + 1}\n\n📅 ${new Date(n.ts).toLocaleString('zh-TW')}\n\n${n.text}\n\n---\n`).join('\n');
     const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `AI-Class-筆記-${cTitle.slice(0,20)}.md`; a.click();
@@ -311,9 +311,9 @@ function shell() {
   const top = document.createElement('div');
   if (!sessionStorage.getItem('aic-topbar')) {
     top.className = 'topbar';
-    const anns = window.ANNOUNCEMENTS || [{ text: '雙 11 全站課程最低 5 折，今日倒數', link: '/coupon.html' }];
+    const anns = window.ANNOUNCEMENTS || [{ text: 'OKAI課程網 全新上線', link: '/category.html' }];
     let annIdx = 0;
-    const annText = () => anns[annIdx].text + (anns[annIdx].link ? '' : '') + `・今日倒數 <b data-cd-inline>--:--:--</b>`;
+    const annText = () => anns[annIdx].text;
     top.innerHTML = `<span class="topbar-txt">${annText()}</span><button class="topbar-prev" aria-label="上一則">‹</button><button class="topbar-next" aria-label="下一則">›</button><button class="x" aria-label="關閉">×</button>`;
     const txt = $('.topbar-txt', top);
     const cycle = dir => { annIdx = (annIdx + dir + anns.length) % anns.length; txt.style.opacity = 0; setTimeout(() => { txt.innerHTML = annText(); txt.style.opacity = 1; }, 200); };
@@ -328,7 +328,7 @@ function shell() {
   const hdr = document.createElement('header');
   hdr.className = 'hdr';
   hdr.innerHTML = `<div class="wrap">
-    <a class="logo" href="index.html" aria-label="AI Class 首頁"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#lg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg></a>
+    <a class="logo" href="index.html" aria-label="OKAI課程網 首頁"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#lg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">OKAI課程網</text></svg></a>
     <div class="mega-wrap">
       <button class="mega-btn" aria-expanded="false">☰ 所有分類</button>
       <div class="mega-drop" hidden>
@@ -369,12 +369,12 @@ function shell() {
 
   if (!$('.nl-sec')) {
     const nl = document.createElement('section'); nl.className = 'nl-sec';
-    nl.innerHTML = `<div class="wrap"><div class="nl-inner"><div class="nl-left"><h2>訂閱 AI Class 電子報</h2><p>每週精選課程推薦、學習技巧與獨家優惠，直送你的信箱</p></div><form class="nl-form" onsubmit="event.preventDefault();toast('感謝訂閱！示範網站不會寄送郵件','success');this.querySelector('input').value='';"><input type="email" placeholder="輸入 Email" required aria-label="Email 訂閱"><button class="btn btn-pri" type="submit">免費訂閱</button></form></div></div>`;
+    nl.innerHTML = `<div class="wrap"><div class="nl-inner"><div class="nl-left"><h2>訂閱 OKAI課程網 電子報</h2><p>每週精選課程推薦、學習技巧與獨家優惠，直送你的信箱</p></div><form class="nl-form" onsubmit="event.preventDefault();toast('感謝訂閱！示範網站不會寄送郵件','success');this.querySelector('input').value='';"><input type="email" placeholder="輸入 Email" required aria-label="Email 訂閱"><button class="btn btn-pri" type="submit">免費訂閱</button></form></div></div>`;
     document.body.append(nl);
   }
   const ft = document.createElement('footer');
   ft.innerHTML = `<div class="wrap"><div class="cols">
-    <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">AI Class</text></svg><p>跟著業界職人，把熱情學成專業。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
+    <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">OKAI課程網</text></svg><p>學 AI，學完就能用。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
       <div class="ft-social"><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div></div>
     <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="gallery.html">學員作品牆</a></li><li><a href="live.html">直播教室</a></li><li><a href="sale.html">限時特賣</a></li><li><a href="event.html">限時活動</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
@@ -383,7 +383,7 @@ function shell() {
   </div>
   <div class="ft-pay"><span>支援付款方式</span><span class="ft-pay-icon">💳 VISA</span><span class="ft-pay-icon">💳 Mastercard</span><span class="ft-pay-icon">💳 JCB</span><span class="ft-pay-icon">📱 LINE Pay</span><span class="ft-pay-icon">📱 街口支付</span></div>
   <div class="ft-bottom">
-    <p>© ${new Date().getFullYear()} AI Class. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
+    <p>© ${new Date().getFullYear()} OKAI課程網. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
   </div></div>`;
   document.body.append(ft);
   if (innerWidth <= 760) $$('.ft-col-hd', ft).forEach(h => { h.onclick = () => h.parentNode.classList.toggle('ft-open'); });
@@ -530,11 +530,11 @@ function shell() {
   }
 
   // 首次訪客歡迎導覽
-  if (!ls('aic-toured') && page === 'home') {
+  if (false) { // 歡迎導覽彈窗已關閉
     const steps = [
-      { icon: '🎓', title: '歡迎來到 AI Class', text: `跟著業界頂尖職人，把你的熱情學成專業。${C.length} 堂精選課程，涵蓋設計、插畫、AI、攝影等 10 大領域。` },
-      { icon: '🎬', title: '業界職人親自授課', text: '每堂課由業界講師精心製作，提供完整專案檔、練習素材與 PDF 講義，學完就能產出作品。' },
-      { icon: '🚀', title: '開始你的學習之旅', text: '按 ⌘K 搜尋課程、按 ? 查看快捷鍵。首購享折扣碼 WELCOME — 現在就探索適合你的課程！' }
+      { icon: '🎓', title: '歡迎來到 OKAI課程網', text: `專注 AI 的實戰課程平台。${C.length} 堂 AI 課程，涵蓋 AI 開發、AI 繪圖、AI 影片、AI 行銷與產業應用。` },
+      { icon: '🤖', title: '學完就能用', text: '每堂課都有實作，跟著做就能把 AI 用在自己的工作與生活上。' },
+      { icon: '🚀', title: '開始你的學習之旅', text: '按 ⌘K 搜尋課程、按 ? 查看快捷鍵。現在就探索適合你的 AI 課程！' }
     ];
     let si = 0;
     const tov = document.createElement('div'); tov.className = 'tour-overlay';
@@ -862,10 +862,10 @@ const cdHTML = `<div class="cd" data-cd><div><b data-h>00</b><small>時</small><
 function home() {
   const main = $('main');
   main.innerHTML = '';
-  seo({ title: 'AI Class｜跟著業界職人，把熱情學成專業', desc: '精選線上課程平台，涵蓋設計、程式、AI、攝影、音樂等領域，由業界職人親授。無限期觀看、隨時隨地學習，把熱情學成專業。', url: 'https://okaiclass.com/', ogType: 'website', jsonLd: [
-    { '@context': 'https://schema.org', '@type': 'Organization', name: 'AI Class', url: 'https://okaiclass.com/', logo: 'https://okaiclass.com/assets/icon-512.png', description: '精選線上課程平台，由業界職人親授設計、程式、AI、攝影、音樂等領域課程', sameAs: [] },
-    { '@context': 'https://schema.org', '@type': 'WebSite', name: 'AI Class', url: 'https://okaiclass.com/', potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: 'https://okaiclass.com/search.html?q={search_term_string}' }, 'query-input': 'required name=search_term_string' } },
-    { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://okaiclass.com/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class' } } })) }
+  seo({ title: 'OKAI課程網｜學 AI，學完就能用', desc: 'OKAI課程網 是專注 AI 的線上課程平台：ChatGPT、AI 繪圖、AI 影片、AI Agent、AI 寫程式與 AI 行銷，零基礎也能學，學完就能用。', url: 'https://okaiclass.com/', ogType: 'website', jsonLd: [
+    { '@context': 'https://schema.org', '@type': 'Organization', name: 'OKAI課程網', url: 'https://okaiclass.com/', logo: 'https://okaiclass.com/assets/icon-512.png', description: '專注 AI 的線上課程平台', sameAs: [] },
+    { '@context': 'https://schema.org', '@type': 'WebSite', name: 'OKAI課程網', url: 'https://okaiclass.com/', potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: 'https://okaiclass.com/search.html?q={search_term_string}' }, 'query-input': 'required name=search_term_string' } },
+    { '@context': 'https://schema.org', '@type': 'ItemList', name: '精選線上課程', itemListElement: C.slice(0, 12).map((c, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Course', name: c.title, url: `https://okaiclass.com/course.html?id=${c.id}`, description: c.desc || '', provider: { '@type': 'Organization', name: 'OKAI課程網' } } })) }
   ] });
   // Hero
   const slides = window.HERO.map(id => byId[id]);
@@ -881,8 +881,8 @@ function home() {
 
   // Hero 打字動畫
   {
-    const typePhrases = ['設計', '程式開發', 'AI 應用', '插畫繪圖', '影片剪輯', '烘焙料理', '攝影後製', '遊戲開發', '品牌行銷', '理財投資'];
-    main.insertAdjacentHTML('beforeend', `<div class="hero-typed-bar"><div class="wrap"><span class="hero-typed-pre">在 AI Class 學</span><span class="hero-typed-word" id="heroTyped"></span><span class="hero-typed-cursor">|</span><span class="hero-typed-suf">，開啟你的職涯新篇章</span></div></div>`);
+    const typePhrases = ['ChatGPT', 'AI 繪圖', 'AI 影片', 'AI Agent', 'AI 寫程式', 'AI 行銷', 'AI 自動化', 'AI 修圖', 'AI 作曲', 'AI 自媒體'];
+    main.insertAdjacentHTML('beforeend', `<div class="hero-typed-bar"><div class="wrap"><span class="hero-typed-pre">在 OKAI課程網 學</span><span class="hero-typed-word" id="heroTyped"></span><span class="hero-typed-cursor">|</span><span class="hero-typed-suf">，開啟你的職涯新篇章</span></div></div>`);
     const el = $('#heroTyped');
     if (el) {
       let pi = 0, ci = 0, deleting = false;
@@ -976,9 +976,9 @@ function home() {
     }
   }
 
-  // 為什麼選擇 AI Class
+  // 為什麼選擇 OKAI課程網
   main.insertAdjacentHTML('beforeend', `<section class="usp-section" id="why"><div class="wrap">
-    <h2 class="usp-title rv-up">為什麼超過 60,000 人選擇 AI Class</h2>
+    <h2 class="usp-title rv-up">為什麼超過 60,000 人選擇 OKAI課程網</h2>
     <p class="usp-sub rv-up">我們打造最好的線上學習體驗</p>
     <div class="usp-grid">
       ${[
@@ -986,7 +986,7 @@ function home() {
         { icon: '📚', title: '系統化課程設計', desc: '從入門到進階，循序漸進的學習路徑，讓你不再東學西湊、走冤枉路。' },
         { icon: '💬', title: '講師親自回覆', desc: '學習遇到問題直接提問，講師親自回覆，不怕卡關沒人幫。' },
         { icon: '🔄', title: '免費終身更新', desc: '一次購買永久觀看，課程持續更新不加價，永遠學到最新內容。' },
-        { icon: '🏆', title: '結業證書', desc: '完成課程後獲得 AI Class 認證證書，為你的履歷和作品集加分。' },
+        { icon: '🏆', title: '結業證書', desc: '完成課程後獲得 OKAI課程網 認證證書，為你的履歷和作品集加分。' },
         { icon: '🛡️', title: '七天退費保證', desc: '購買後七天內不滿意全額退費，讓你安心學習零風險。' }
       ].map((u, i) => `<div class="usp-card rv-up" style="transition-delay:${(i % 3) * 80}ms">
         <div class="usp-icon">${u.icon}</div>
@@ -1018,7 +1018,7 @@ function home() {
   }
 
   // 訓練營
-  if (window.BOOTCAMPS) {
+  if (window.BOOTCAMPS && window.BOOTCAMPS.length) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="bootcamp"><div class="wrap"><div class="sec-head rv-up"><div><h2>訓練營</h2><div class="sub">免費報名，就業導向密集訓練</div></div></div>
       <div class="bootcamps">${window.BOOTCAMPS.map(b => `<div class="bootcamp rv-up"><span class="bc-badge">${b.badge}</span><span class="bc-tag">${b.tag}</span><h3>${b.name}</h3><p class="bc-desc">${b.desc}</p><div class="bc-meta"><span>📚 ${b.courses.length} 堂課程</span></div><div class="bc-price"><span class="free">NT$0</span><del>NT$${b.original.toLocaleString()}</del></div><button class="bc-enroll" onclick="toast('示範網站：報名功能開發中')">立即報名 →</button></div>`).join('')}</div></div></section>`);
   }
@@ -1066,7 +1066,7 @@ function home() {
 
   // 捲動敘事
   const storyV = ['c06', 'c05', 'c03'].map(id => byId[id]);
-  const steps = [['01 / 職人親授', '跟著業界職人\n學真正用得到的技術', '每位講師都在第一線工作，把多年累積的流程與心法，整理成一步步可以跟著做的課程。'],
+  const steps = [['01 / 實作導向', '學真正用得到的\nAI 技能', '每堂課都從實際案例出發，一步步跟著做，學完就能用在工作與生活上。'],
                  ['02 / 專案實作', '每堂課都是\n一個完整作品', '附上講師原始專案檔與素材，從零開始跟著做，上完課就有能放進作品集的成果。'],
                  ['03 / 無限期觀看', '一次購買\n隨時隨地重溫', '電腦、手機、平板都能看，支援倍速與字幕，課程更新內容免費開放。']];
   main.insertAdjacentHTML('beforeend', `<section class="story"><div class="pin">
@@ -1091,7 +1091,7 @@ function home() {
     const msH = String(Math.floor(msLeft/3600)).padStart(2,'0'), msM = String(Math.floor(msLeft%3600/60)).padStart(2,'0'), msS = String(msLeft%60).padStart(2,'0');
     const badgeColors = { '簡單': '#34c759', '中等': '#ff9500', '挑戰': '#ff5c8a' };
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="missions"><div class="wrap"><div class="sec-head rv-up"><div><h2>每日學習挑戰</h2><div class="sub">完成任務賺取經驗值・每日重置倒數 <b class="ms-cd">${msH}:${msM}:${msS}</b></div></div></div>
-      <div class="mission-stats rv-up">累計已完成 <b>${window.MISSION_STATS.total.toLocaleString()}</b> 個任務・今日 <b>${window.MISSION_STATS.today.toLocaleString()}</b> 個・完成 <b>${msDone.length}/${window.MISSIONS.length}</b></div>
+      <div class="mission-stats rv-up">今日完成 <b>${msDone.length}/${window.MISSIONS.length}</b></div>
       <div class="missions"><div class="mission-list">${window.MISSIONS.map((m,i) => {
         const done = msDone.includes(i);
         return `<div class="mission-card rv-up${done ? ' ms-done' : ''}">
@@ -1125,16 +1125,14 @@ function home() {
   main.insertAdjacentHTML('beforeend', railSec('best', '評價最高', '五星好評不斷', sortBy('rating').slice(0, 10)));
 
   // 影音學習
-  if (window.VIDEO_CONTENT) {
+  if (window.VIDEO_CONTENT && window.VIDEO_CONTENT.length) {
     const vTabs = ['全部', '最新', '學員分享', '講師訪談', '幕後花絮'];
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="videos"><div class="wrap"><div class="sec-head rv-up"><div><h2>影音學習</h2><div class="sub">免費觀看精選影片</div></div></div>
       <div class="video-tabs">${vTabs.map((t, i) => `<button class="video-tab ${i ? '' : 'on'}" data-vtab="${t}">${t}</button>`).join('')}</div>
       <div class="video-grid" id="vgrid">${window.VIDEO_CONTENT.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="${vc.title}" loading="lazy" decoding="async"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('')}</div></div></section>`);
   }
 
-  // 限時優惠
-  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="promo"><div class="promo rv-up"><video src="${vid(byId.c06)}" autoplay muted loop playsinline poster="${img(byId.c06)}" aria-hidden="true"></video>
-    <div class="in"><div><span class="eyebrow">限時優惠</span><h2>雙 11 全站最低 5 折<br>今天午夜結束</h2><p>任選兩堂再折 NT$500，結帳自動套用</p><a class="btn" style="background:#fff;color:#000;margin-top:20px" href="#top10">查看優惠課程 →</a></div>${cdHTML}</div></div></div>`);
+  // 限時優惠區塊：有真實活動再放回
 
   // 講師
   const INS = window.INSTRUCTORS || [];
@@ -1162,9 +1160,9 @@ function home() {
   }
 
   // 合作品牌
-  if (window.PARTNERS) {
+  if (window.PARTNERS && window.PARTNERS.length) {
     const pts = window.PARTNERS;
-    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>合作品牌與機構</h2><div class="sub">超過 ${pts.length} 家企業信賴 AI Class 的教育品質</div></div></div>
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>合作品牌與機構</h2><div class="sub">超過 ${pts.length} 家企業信賴 OKAI課程網 的教育品質</div></div></div>
       <div class="partners-marquee rv-up"><div class="partners-track">${[...pts,...pts].map(p => `<span class="partner-logo">${p}</span>`).join('')}</div></div></div></section>`);
   }
 
@@ -1194,7 +1192,7 @@ function home() {
 
   // 學員成功故事
   if (window.SUCCESS_STORIES) {
-    main.insertAdjacentHTML('beforeend', `<section class="sec" id="stories"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員成功故事</h2><div class="sub">他們在 AI Class 找到了新的可能</div></div></div>
+    main.insertAdjacentHTML('beforeend', `<section class="sec" id="stories"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員成功故事</h2><div class="sub">他們在 OKAI課程網 找到了新的可能</div></div></div>
       <div class="story-grid">${window.SUCCESS_STORIES.map(s => `<div class="story-card rv-up">
         <div class="story-hdr"><div class="story-avatar">${s.avatar}</div><div class="story-meta"><h3>${s.name}</h3><span>${s.role}</span></div></div>
         <div class="story-body">${s.story}</div>
@@ -1213,7 +1211,7 @@ function home() {
   </div></section>`);
 
   // 即將上架
-  if (window.UPCOMING_COURSES) {
+  if (window.UPCOMING_COURSES && window.UPCOMING_COURSES.length) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="upcoming"><div class="wrap"><div class="sec-head rv-up"><div><h2>即將上架</h2><div class="sub">搶先登記，開課通知第一手</div></div></div>
       <div class="upcoming-grid">${window.UPCOMING_COURSES.map(uc => {
         const [y,m] = uc.expected.split('-').map(Number);
@@ -1315,10 +1313,10 @@ function home() {
     </div>
   </div></section>`);
 
-  // 為什麼選擇 AI Class
+  // 為什麼選擇 OKAI課程網
   const whyData = window.WHY_AICLASS || [];
   if (whyData.length) {
-    main.insertAdjacentHTML('beforeend', `<section class="sec why-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>為什麼選擇 AI Class？</h2><div class="sub">從零開始、用得上的 AI 實戰課程</div></div></div>
+    main.insertAdjacentHTML('beforeend', `<section class="sec why-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>為什麼選擇 OKAI課程網？</h2><div class="sub">從零開始、用得上的 AI 實戰課程</div></div></div>
       <div class="why-grid">${whyData.map(w => `<div class="why-card rv-up"><span class="why-icon">${w.icon}</span><h3>${w.title}</h3><p>${w.desc}</p></div>`).join('')}</div>
     </div></section>`);
   }
@@ -1339,9 +1337,9 @@ function home() {
     autoTm();
   }
 
-  // AI Class Pro 訂閱方案
+  // OKAI課程網 Pro 訂閱方案
   main.insertAdjacentHTML('beforeend', `<section class="sec pro-sec" id="pro"><div class="wrap">
-    <div class="pro-header rv-up"><span class="pro-crown">👑</span><h2>AI Class <span class="pro-gradient">Pro</span></h2><p>解鎖全站課程，無限學習</p></div>
+    <div class="pro-header rv-up"><span class="pro-crown">👑</span><h2>OKAI課程網 <span class="pro-gradient">Pro</span></h2><p>解鎖全站課程，無限學習</p></div>
     <div class="pro-plans rv-up">
       <div class="pro-plan"><div class="pro-plan-name">月付方案</div><div class="pro-plan-price"><span class="pro-currency">NT$</span><span class="pro-amount">599</span><span class="pro-period">/月</span></div><p class="pro-plan-note">隨時取消，無綁約</p><button class="btn btn-ghost pro-plan-btn" onclick="toast('示範網站：訂閱功能開發中')">選擇月付</button></div>
       <div class="pro-plan popular"><div class="pro-plan-badge">最划算</div><div class="pro-plan-name">年付方案</div><div class="pro-plan-price"><span class="pro-currency">NT$</span><span class="pro-amount">4,990</span><span class="pro-period">/年</span></div><p class="pro-plan-note">平均每月 $416，省 30%</p><button class="btn btn-pri pro-plan-btn" onclick="toast('示範網站：訂閱功能開發中')">選擇年付</button></div>
@@ -1376,7 +1374,7 @@ function home() {
   addEventListener('scroll', rafThrottle(() => fb.classList.toggle('show', scrollY > innerHeight)), { passive: true });
 
   // Sticky 促銷底欄
-  if (!sessionStorage.getItem('aic-promo-closed')) {
+  if (false && !sessionStorage.getItem('aic-promo-closed')) {
     const ps = document.createElement('div'); ps.className = 'promo-sticky';
     ps.innerHTML = `<span class="ps-text">🔥 雙 11 全站最低 5 折｜折扣碼 <span class="ps-code">DOUBLE11</span> 滿 5,000 再折 800</span><button class="ps-close" aria-label="關閉">✕</button>`;
     document.body.append(ps);
@@ -1414,7 +1412,7 @@ function home() {
   $$('.video-tab').forEach(b => b.onclick = () => {
     $$('.video-tab').forEach(x => x.classList.toggle('on', x === b));
     const grid = $('#vgrid'), cat = b.dataset.vtab;
-    const list = cat === '全部' ? window.VIDEO_CONTENT : window.VIDEO_CONTENT.filter(v => v.cat === cat);
+    const list = cat === '全部' ? (window.VIDEO_CONTENT||[]) : (window.VIDEO_CONTENT||[]).filter(v => v.cat === cat);
     grid.innerHTML = list.slice(0, 6).map(vc => { const cc = byId[vc.course]; return `<div class="vid-card rv-up"><div class="vid-thumb"><img src="${cc ? img(cc) : ''}" alt="${vc.title}" loading="lazy" decoding="async"><div class="vid-play"><span>▶</span></div></div><div class="vid-info"><h4>${vc.title}</h4><span>${vc.views.toLocaleString()} 次觀看</span></div></div>`; }).join('');
     reveal(grid);
     bindVidCards();
@@ -1558,7 +1556,7 @@ function course() {
   const cid = new URLSearchParams(location.search).get('id');
   const c = byId[cid];
   if (!c) { notFoundPage(); return; }
-  document.title = `${c.title}｜AI Class`;
+  document.title = `${c.title}｜OKAI課程網`;
   // 記錄最近瀏覽
   let rv = ls('aic-recent-view', []).filter(x => x !== c.id);
   rv.unshift(c.id); ss('aic-recent-view', rv.slice(0, 10));
@@ -1628,14 +1626,11 @@ function course() {
 
   // 課程 FAQ（通用 + 分類相關）
   const catFaqMap = {
-    design: [['需要會畫畫才能學設計嗎？', '不需要。設計更重要的是邏輯思考和審美能力，課程會從工具操作開始教起，零繪畫基礎也能上手。']],
-    drawing: [['需要準備繪圖板嗎？', '建議購買入門款繪圖板（如 Wacom Intuos），課程前幾章會介紹推薦配備。滑鼠也能練習，但效率較低。']],
-    ai: [['需要懂程式才能學 AI 嗎？', '大部分 AI 工具課程不需要程式基礎。若是 AI 開發課程，課程會從 Python 基礎教起。']],
-    video: [['需要什麼等級的電腦？', '建議至少 16GB RAM、獨立顯卡。課程中會說明各軟體的最低與建議配備。']],
-    baking: [['沒有烤箱可以學嗎？', '部分課程有無烤箱替代方案。建議至少有基本烤箱，課程會推薦平價入門機型。']],
-    music: [['需要什麼軟體？', '課程會使用業界標準 DAW（如 Logic Pro、Ableton），部分有免費替代方案的教學。']],
-    beauty: [['需要先買齊所有工具嗎？', '不用，課程開頭會列出必備清單，建議先買基本款，隨課程進度再擴充。']],
-    game: [['需要會 3D 建模嗎？', '依課程內容而定，部分遊戲開發課程會包含基礎建模教學，也可搭配其他課程學習。']]
+    ai: [['需要懂程式才能學嗎？', 'AI 開發課程需要基本的 Python 概念，課程會從 API 串接教起。']],
+    drawing: [['需要會畫畫嗎？', '不需要，AI 繪圖的重點是 Prompt 與工具操作。']],
+    design: [['不會寫程式可以學嗎？', '可以，課程會教你用 AI 工具產生與修改程式碼。']],
+    video: [['需要剪輯經驗嗎？', '不需要，課程會從基本剪輯流程教起。']],
+    game: [['需要會寫程式嗎？', '不需要，課程用 AI 工具帶你寫程式。']]
   };
   const cFaqs = (window.COURSE_FAQS || {})[c.id] || [];
   const courseFaq = [
@@ -1665,7 +1660,7 @@ function course() {
         <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>
         <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="LINE 分享">💬 LINE</a>
         <a class="c-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="Facebook 分享">📘 Facebook</a>
-        <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — AI Class')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="X 分享">𝕏 Twitter</a>
+        <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — OKAI課程網')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="X 分享">𝕏 Twitter</a>
         ${navigator.share ? `<button class="c-share-btn" data-native-share title="更多分享方式">📤 分享</button>` : ''}
       </div>
     </div>
@@ -1737,7 +1732,7 @@ function course() {
       ${(()=>{const lv=courseLevel(c);const targets=lv.label==='入門'?['完全沒有相關經驗的初學者','想轉職但不知從何開始的人','對這個領域有興趣，想建立系統性知識的人','希望有人帶著做，不想自己摸索的人']:lv.label==='進階'?['已有基礎，想提升到專業水準的人','想學業界實戰流程與技巧的人','需要完成作品集或升級技能的在職者','想接案或建立個人品牌的創作者']:['有一定基礎，想更深入學習的人','希望系統化整理知識的自學者','想學更多實務技巧的在職人士','準備升級技能、拓展職涯的人'];return `<div class="c-target rv-up"><h3>🎯 適合對象</h3><ul>${targets.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;})()}
       ${(()=>{const chs=window.CHAPTERS&&window.CHAPTERS[c.id];if(!chs)return '';const outcomes=chs.flatMap(ch=>ch.lessons.slice(0,2)).slice(0,8);return `<div class="c-outcomes rv-up"><h3>✅ 完成這堂課，你將能夠</h3><div class="c-outcomes-grid">${outcomes.map(o=>`<div class="c-outcome-item"><span class="c-outcome-check">✓</span>${o}</div>`).join('')}</div></div>`;})()}
       ${(()=>{const lv=courseLevel(c);const prereqs=lv.label==='入門'?['不需要任何先備知識，從零開始','準備一台電腦（Windows / Mac 皆可）','對本領域有興趣和學習熱忱']:lv.label==='進階'?['建議先完成相關入門課程或有半年以上經驗','了解基本操作和常用工具','具備自主練習和解決問題的能力']:['建議有基礎概念和初步操作經驗','準備對應的軟體或工具（課程內會說明版本）','願意花時間練習和完成作業'];return `<div class="c-prereq rv-up"><h3>📋 學習前需要</h3><div class="c-prereq-list">${prereqs.map(p=>`<div class="c-prereq-item"><span class="c-prereq-icon">${lv.label==='入門'?'✅':'📌'}</span>${p}</div>`).join('')}</div><div class="c-prereq-level"><span class="lvl-badge ${lv.cls}">${lv.label}</span><span>建議學習時間 ${lv.weeks} 週（每週 ${lv.label==='入門'?'5':'3-4'} 小時）</span></div></div>`;})()}
-      ${(()=>{const toolMap={design:[{icon:'🎨',name:'Adobe Photoshop',ver:'2024 以上',note:'修圖與合成'},{icon:'✏️',name:'Adobe Illustrator',ver:'2024 以上',note:'向量繪圖'},{icon:'🖥️',name:'Figma',ver:'免費版即可',note:'UI 設計協作'}],drawing:[{icon:'🖌️',name:'Procreate',ver:'最新版',note:'iPad 繪圖'},{icon:'✏️',name:'Adobe Photoshop',ver:'2024 以上',note:'數位繪圖'},{icon:'📱',name:'繪圖板',ver:'入門款即可',note:'如 Wacom Intuos'}],ai:[{icon:'🐍',name:'Python',ver:'3.10+',note:'程式語言'},{icon:'📓',name:'Jupyter Notebook',ver:'最新版',note:'互動式開發'},{icon:'💻',name:'VS Code',ver:'最新版',note:'程式編輯器'}],video:[{icon:'🎬',name:'Adobe Premiere Pro',ver:'2024 以上',note:'影片剪輯'},{icon:'🎞️',name:'After Effects',ver:'2024 以上',note:'動態特效'},{icon:'🎵',name:'Audition',ver:'2024 以上',note:'音訊處理'}],music:[{icon:'🎹',name:'Logic Pro / Ableton',ver:'最新版',note:'數位音樂工作站'},{icon:'🎧',name:'監聽耳機',ver:'入門款即可',note:'混音監聽必備'},{icon:'🎤',name:'MIDI 鍵盤',ver:'25 鍵以上',note:'選配，提高效率'}],photo:[{icon:'📷',name:'Adobe Lightroom',ver:'Classic 或 CC',note:'照片後製'},{icon:'🎨',name:'Adobe Photoshop',ver:'2024 以上',note:'進階修圖'},{icon:'📸',name:'相機',ver:'可換鏡頭或手機',note:'拍攝工具'}],game:[{icon:'🎮',name:'Unity',ver:'2022 LTS',note:'遊戲引擎'},{icon:'💻',name:'Visual Studio',ver:'2022',note:'C# 開發'},{icon:'🖥️',name:'Blender',ver:'3.x',note:'3D 建模（選配）'}],beauty:[{icon:'💄',name:'基礎彩妝工具',ver:'',note:'刷具與海綿組'},{icon:'🪞',name:'化妝鏡',ver:'帶燈',note:'清楚觀察細節'},{icon:'📱',name:'手機',ver:'',note:'記錄練習成果'}],baking:[{icon:'🍳',name:'烤箱',ver:'家用即可',note:'基本烘焙設備'},{icon:'⚖️',name:'電子秤',ver:'精度 1g',note:'精確秤量'},{icon:'🥣',name:'攪拌器',ver:'手持或桌上型',note:'打發麵糊'}]};const tools=toolMap[c.cat]||[{icon:'💻',name:'電腦',ver:'Windows / Mac',note:'基本設備'},{icon:'🌐',name:'瀏覽器',ver:'Chrome 最新版',note:'課程觀看'},{icon:'📱',name:'手機或平板',ver:'選配',note:'行動學習'}];return `<div class="c-tools rv-up"><h3>🛠️ 需要工具 / 軟體</h3><div class="c-tools-grid">${tools.map(t=>`<div class="c-tool-item"><span class="c-tool-icon">${t.icon}</span><div class="c-tool-info"><b>${t.name}</b>${t.ver?`<span class="c-tool-ver">${t.ver}</span>`:''}<span class="c-tool-note">${t.note}</span></div></div>`).join('')}</div></div>`;})()}
+      ${(()=>{const toolMap={ai:[{icon:'🐍',name:'Python',ver:'3.10+',note:'程式語言'},{icon:'💻',name:'VS Code',ver:'最新版',note:'程式編輯器'},{icon:'🔑',name:'AI API 帳號',ver:'',note:'OpenAI / Anthropic 等'}],drawing:[{icon:'🎨',name:'Midjourney',ver:'訂閱方案',note:'AI 繪圖'},{icon:'🖼️',name:'Stable Diffusion / ComfyUI',ver:'免費',note:'本機 AI 繪圖'},{icon:'💬',name:'ChatGPT 或 Claude',ver:'免費版即可',note:'發想與 Prompt'}],design:[{icon:'🖥️',name:'Figma',ver:'免費版即可',note:'介面設計'},{icon:'💬',name:'ChatGPT 或 Claude',ver:'免費版即可',note:'文案與程式'},{icon:'⌨️',name:'Cursor',ver:'免費版即可',note:'AI 寫程式'}],video:[{icon:'🎬',name:'AI 影片工具',ver:'Sora / Kling / Runway',note:'影片生成'},{icon:'✂️',name:'CapCut',ver:'免費版即可',note:'剪輯'},{icon:'🗣️',name:'AI 配音工具',ver:'',note:'配音與字幕'}],creative:[{icon:'🎵',name:'Suno',ver:'免費額度可開始',note:'AI 作曲'},{icon:'📷',name:'Adobe Lightroom / Photoshop',ver:'最新版',note:'AI 修圖'},{icon:'💬',name:'ChatGPT 或 Claude',ver:'免費版即可',note:'歌詞與發想'}],career:[{icon:'💬',name:'ChatGPT 或 Claude',ver:'免費版即可',note:'文案與企劃'},{icon:'✂️',name:'CapCut',ver:'免費版即可',note:'短影音'},{icon:'📊',name:'Google Search Console',ver:'免費',note:'SEO 成效'}],baking:[{icon:'💬',name:'ChatGPT',ver:'免費版即可',note:'文案與企劃'},{icon:'📱',name:'手機',ver:'',note:'拍照與經營社群'},{icon:'💚',name:'LINE 官方帳號',ver:'免費方案即可',note:'自動回覆'}],game:[{icon:'⌨️',name:'Cursor',ver:'免費版即可',note:'AI 寫程式'},{icon:'💬',name:'Claude 或 ChatGPT',ver:'免費版即可',note:'寫程式與除錯'},{icon:'🎨',name:'AI 繪圖工具',ver:'',note:'遊戲素材'}],finance:[{icon:'💬',name:'ChatGPT 或 Claude',ver:'免費版即可',note:'摘要與整理'},{icon:'📊',name:'Google 試算表 / Excel',ver:'',note:'記帳與預算'},{icon:'📄',name:'公開資訊觀測站',ver:'免費',note:'財報資料'}],beauty:[{icon:'💬',name:'ChatGPT 或 Gemini',ver:'免費版即可',note:'生活規劃'},{icon:'📅',name:'行事曆 App',ver:'',note:'時間管理'},{icon:'📱',name:'手機',ver:'',note:'記錄'}]};const tools=toolMap[c.cat]||[{icon:'💻',name:'電腦',ver:'Windows / Mac',note:'基本設備'},{icon:'🌐',name:'瀏覽器',ver:'Chrome 最新版',note:'課程觀看'},{icon:'📱',name:'手機或平板',ver:'選配',note:'行動學習'}];return `<div class="c-tools rv-up"><h3>🛠️ 需要工具 / 軟體</h3><div class="c-tools-grid">${tools.map(t=>`<div class="c-tool-item"><span class="c-tool-icon">${t.icon}</span><div class="c-tool-info"><b>${t.name}</b>${t.ver?`<span class="c-tool-ver">${t.ver}</span>`:''}<span class="c-tool-note">${t.note}</span></div></div>`).join('')}</div></div>`;})()}
     </section>
     <section class="c-sec" id="works"><h2 class="rv-up">課程作品</h2><div class="gallery">
       <div class="rv-up"><video src="${vid(c)}" muted loop playsinline autoplay poster="${img(c)}" aria-hidden="true"></video></div>
@@ -1876,15 +1871,15 @@ function course() {
     ${(() => {
       const achieveMap = {
         design: [['🎨','獨立完成品牌視覺系統'],['📐','掌握業界設計流程'],['💼','建立可接案的作品集'],['🚀','效率提升 3 倍以上']],
-        drawing: [['✏️','掌握紮實的繪畫基本功'],['🎭','創造有個人風格的作品'],['📱','熟練數位繪圖工具'],['🏆','建立可展示的作品集']],
+        drawing: [['🎨','用 AI 做出風格一致的作品'],['🎭','打造原創角色與素材'],['📱','熟練 AI 繪圖工具'],['🏆','建立可展示的作品集']],
         ai: [['🤖','獨立開發 AI 應用'],['📊','用數據解決實際問題'],['⚡','工作效率提升 10 倍'],['💡','掌握最新技術趨勢']],
-        video: [['🎬','做出電影質感的影像'],['🎨','掌握專業調色技巧'],['📱','產出社群爆款內容'],['💰','具備接案變現能力']],
-        creative: [['🎯','找到個人創作風格'],['📝','系統化創作方法'],['🌟','作品獲得專業認可'],['💪','建立持續創作習慣']],
-        baking: [['👨‍🍳','做出專業等級料理'],['🎂','掌握經典食譜技法'],['📸','擺盤拍照吸引眼球'],['🏪','具備開店基礎能力']],
-        game: [['🎮','做出可發行的遊戲'],['🖼️','創造精緻遊戲美術'],['🔧','掌握引擎核心功能'],['🏆','上架 Steam 或 App Store']],
-        career: [['📈','業績或流量翻倍'],['🎯','掌握系統化方法論'],['💬','專業簡報說服力'],['💰','收入成長有感提升']],
-        beauty: [['💇','掌握專業技術流程'],['🌟','做出作品集水準成果'],['📋','具備考照實力'],['🏠','在家也能專業服務']],
-        finance: [['📊','建立理財投資系統'],['💰','創造被動收入來源'],['📈','資產穩定成長'],['🛡️','有效控管風險']]
+        video: [['🎬','用 AI 做出廣告級短片'],['🗣️','完成 AI 配音與字幕'],['📱','穩定產出社群短影音'],['💰','具備接案變現能力']],
+        creative: [['🎵','用 AI 完成音樂與修圖作品'],['📝','建立 AI 創作流程'],['⚡','大幅縮短製作時間'],['💪','建立持續創作習慣']],
+        baking: [['🏪','把 AI 用在店家經營'],['📝','自動產出行銷文案'],['📸','做出吸睛的商品照片'],['💬','設定 AI 客服自動回覆']],
+        game: [['🎮','做出一款可以玩的遊戲'],['🖼️','用 AI 生成遊戲素材'],['🤖','學會用 AI 寫程式'],['🔧','學會用 AI 除錯']],
+        career: [['📈','用 AI 穩定產出內容'],['🎯','找到個人品牌定位'],['✍️','寫出有效的文案與腳本'],['🔍','掌握 AI 時代的 SEO']],
+        beauty: [['🏃','用 AI 規劃運動計畫'],['🥗','用 AI 管理飲食記錄'],['📅','用 AI 管理時間'],['🏠','打造 AI 生活系統']],
+        finance: [['📊','用 AI 讀懂財報'],['🗂️','有系統地整理資訊'],['🧮','建立記帳與預算表'],['🛡️','學會查證 AI 的答案']]
       };
       const items = achieveMap[c.cat] || achieveMap.creative;
       return `<div class="c-achieve rv-up"><h3>🏆 學完這門課你可以做到</h3><div class="c-achieve-grid">${items.map(([emoji, text]) => `<div class="c-achieve-item"><span class="c-achieve-emoji">${emoji}</span><span>${text}</span></div>`).join('')}</div></div>`;
@@ -1907,13 +1902,13 @@ function course() {
   ${railSec('more', '你可能也會喜歡', '', others)}`;
 
   seo({
-    title: `${c.title}｜AI Class`,
+    title: `${c.title}｜OKAI課程網`,
     desc: c.desc || c.ai || '',
     url: `https://okaiclass.com/course.html?id=${c.id}`,
     img: `https://okaiclass.com/${img(c)}`,
     ogType: 'course',
     jsonLd: [
-      { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'AI Class', url: 'https://okaiclass.com/', sameAs: 'https://okaiclass.com/' }, instructor: { '@type': 'Person', name: c.teacher, jobTitle: c.role }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock', url: `https://okaiclass.com/course.html?id=${c.id}`, validFrom: '2026-01-01' }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H`, inLanguage: 'zh-TW' }, educationalLevel: c.hours <= 10 ? 'Beginner' : c.hours <= 20 ? 'Intermediate' : 'Advanced', numberOfLessons: totalLessonCount, timeRequired: `PT${c.hours}H`, image: `https://okaiclass.com/${img(c)}`, inLanguage: 'zh-TW' },
+      { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'OKAI課程網', url: 'https://okaiclass.com/', sameAs: 'https://okaiclass.com/' }, instructor: { '@type': 'Person', name: c.teacher, jobTitle: c.role }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock', url: `https://okaiclass.com/course.html?id=${c.id}`, validFrom: '2026-01-01' }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H`, inLanguage: 'zh-TW' }, educationalLevel: c.hours <= 10 ? 'Beginner' : c.hours <= 20 ? 'Intermediate' : 'Advanced', numberOfLessons: totalLessonCount, timeRequired: `PT${c.hours}H`, image: `https://okaiclass.com/${img(c)}`, inLanguage: 'zh-TW' },
       { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://okaiclass.com/' }, { '@type': 'ListItem', position: 2, name: cat.name, item: `https://okaiclass.com/category.html?cat=${c.cat}` }, { '@type': 'ListItem', position: 3, name: c.title }] },
       { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: courseFaq.map(f => ({ '@type': 'Question', name: f[0], acceptedAnswer: { '@type': 'Answer', text: f[1] } })) }
     ]
@@ -1945,7 +1940,7 @@ function course() {
   const copyBtn = $('[data-copy-link]');
   if (copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(location.href); const orig = copyBtn.textContent; copyBtn.textContent = '✓ 已複製！'; copyBtn.classList.add('copied'); setTimeout(() => { copyBtn.textContent = orig; copyBtn.classList.remove('copied'); }, 1500); toast('已複製課程連結，可以貼給朋友', 'success'); window.trackEvent('share', { method: 'copy_link', content_type: 'course', item_id: c.id }); };
   const nativeShare = $('[data-native-share]');
-  if (nativeShare) nativeShare.onclick = () => navigator.share({ title: c.title + '｜AI Class', url: location.href }).then(() => window.trackEvent('share', { method: 'native', content_type: 'course', item_id: c.id })).catch(() => {});
+  if (nativeShare) nativeShare.onclick = () => navigator.share({ title: c.title + '｜OKAI課程網', url: location.href }).then(() => window.trackEvent('share', { method: 'native', content_type: 'course', item_id: c.id })).catch(() => {});
   const giftBtn = $('[data-gift]');
   if (giftBtn) giftBtn.onclick = () => {
     const ov = document.createElement('div'); ov.className = 'gift-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','贈送課程');
@@ -2232,8 +2227,8 @@ function course() {
 
 /* ---------- 活動頁 ---------- */
 function eventPage() {
-  seo({ title: '限時活動｜AI Class', desc: '限時優惠活動，搶購精選課程享超值折扣', url: 'https://okaiclass.com/event.html',
-    jsonLd: { '@context': 'https://schema.org', '@type': 'Event', name: 'AI Class Black Friday 2026', description: '精選課程限時優惠，全站 85 折起', startDate: '2026-11-20', endDate: '2026-11-23', eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode', eventStatus: 'https://schema.org/EventScheduled', location: { '@type': 'VirtualLocation', url: 'https://okaiclass.com/event.html' }, organizer: { '@type': 'Organization', name: 'AI Class', url: 'https://okaiclass.com/' }, offers: { '@type': 'AggregateOffer', lowPrice: 990, highPrice: 4990, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' } }
+  seo({ title: '限時活動｜OKAI課程網', desc: '限時優惠活動，搶購精選課程享超值折扣', url: 'https://okaiclass.com/event.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'Event', name: 'OKAI課程網 Black Friday 2026', description: '精選課程限時優惠，全站 85 折起', startDate: '2026-11-20', endDate: '2026-11-23', eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode', eventStatus: 'https://schema.org/EventScheduled', location: { '@type': 'VirtualLocation', url: 'https://okaiclass.com/event.html' }, organizer: { '@type': 'Organization', name: 'OKAI課程網', url: 'https://okaiclass.com/' }, offers: { '@type': 'AggregateOffer', lowPrice: 990, highPrice: 4990, priceCurrency: 'TWD', availability: 'https://schema.org/InStock' } }
   });
   const main = $('main');
   const bfDeadline = new Date('2026-11-23T23:59:59').getTime();
@@ -2249,7 +2244,7 @@ function eventPage() {
     <div class="ev-particles"></div>
     <div class="ev-hero-inner">
       <div class="crumb" style="color:rgba(255,255,255,.7)"><a href="index.html" style="color:rgba(255,255,255,.7)">首頁</a> › 限時活動</div>
-      <div class="ev-eyebrow">AI Class 年度最大優惠</div>
+      <div class="ev-eyebrow">OKAI課程網 年度最大優惠</div>
       <h1 class="ev-title">BLACK<br>FRIDAY</h1>
       <p class="ev-sub">全站課程最低 5 折起・限時搶購倒數中</p>
       <span class="ev-status ev-status-live">🟢 活動進行中</span>
@@ -2335,7 +2330,7 @@ function eventPage() {
 
 /* ---------- 購物車頁 ---------- */
 function cartPage() {
-  seo({ title: '購物車｜AI Class', desc: '查看你的購物車，完成結帳開始學習', url: 'https://okaiclass.com/cart.html' });
+  seo({ title: '購物車｜OKAI課程網', desc: '查看你的購物車，完成結帳開始學習', url: 'https://okaiclass.com/cart.html' });
   const main = $('main');
   function render() {
     const items = [...cart].map(id => byId[id]).filter(Boolean);
@@ -2410,7 +2405,7 @@ function cartPage() {
 
 /* ---------- 登入頁 ---------- */
 function loginPage() {
-  seo({ title: '登入 / 註冊｜AI Class', desc: '登入或建立 AI Class 帳號，開始你的學習之旅', url: 'https://okaiclass.com/login.html' });
+  seo({ title: '登入 / 註冊｜OKAI課程網', desc: '登入或建立 OKAI課程網 帳號，開始你的學習之旅', url: 'https://okaiclass.com/login.html' });
   const main = $('main');
   const mosaic = C.slice(0, 16).map((c, i) => {
     const size = 60 + Math.random() * 50;
@@ -2425,9 +2420,9 @@ function loginPage() {
     <div class="login-left">${mosaic}</div>
     <div class="login-right">
       <div class="login-form">
-        <a href="index.html" class="login-logo"><img src="assets/logo.svg" alt="AI Class" style="height:28px"></a>
+        <a href="index.html" class="login-logo"><img src="assets/logo.svg" alt="OKAI課程網" style="height:28px"></a>
         <h1>歡迎回來</h1>
-        <p>登入你的 AI Class 帳號，繼續學習之旅</p>
+        <p>登入你的 OKAI課程網 帳號，繼續學習之旅</p>
         <div class="login-socials">
           <button class="login-social login-google" onclick="toast('示範網站：Google 登入功能開發中')"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.56c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.77c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>使用 Google 帳號登入</button>
           <button class="login-social login-line" onclick="toast('示範網站：LINE 登入功能開發中')"><svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M12 2C6.48 2 2 5.88 2 10.54c0 4.02 3.56 7.38 8.37 8.26.32.07.76.22.87.5.1.26.07.66.03.92l-.14.85c-.04.26-.2 1.01.88.55s5.89-3.47 8.03-5.93C21.94 13.54 22 11.92 22 10.54 22 5.88 17.52 2 12 2z"/></svg>使用 LINE 帳號登入</button>
@@ -2460,7 +2455,7 @@ function loginPage() {
     const h1 = $('h1', main), p = $('h1+p', main), footer = $('.login-footer', main), submit = $('#login-go', main);
     const isLogin = h1.textContent === '歡迎回來';
     h1.textContent = isLogin ? '建立帳號' : '歡迎回來';
-    p.textContent = isLogin ? '免費註冊，開始你的學習之旅' : '登入你的 AI Class 帳號，繼續學習之旅';
+    p.textContent = isLogin ? '免費註冊，開始你的學習之旅' : '登入你的 OKAI課程網 帳號，繼續學習之旅';
     submit.textContent = isLogin ? '免費註冊' : '登入';
     const pw = $('input[type="password"]', main); if (pw) pw.autocomplete = isLogin ? 'new-password' : 'current-password';
     footer.innerHTML = isLogin ? '已有帳號？<a href="#" id="login-toggle">返回登入</a>' : '還沒有帳號？<a href="#" id="login-toggle">Email 註冊</a>';
@@ -2474,7 +2469,7 @@ function loginPage() {
 /* ---------- 企業培訓行銷頁 ---------- */
 function enterprisePage() {
   const main = $('main');
-  seo({ title: '企業方案｜AI Class', desc: 'AI Class 企業培訓方案，客製化課程與團隊管理', url: 'https://okaiclass.com/enterprise.html' });
+  seo({ title: '企業方案｜OKAI課程網', desc: 'OKAI課程網 企業培訓方案，客製化課程與團隊管理', url: 'https://okaiclass.com/enterprise.html' });
   const features = [
     { icon: '🎯', title: '客製化課程', desc: '根據企業需求量身打造培訓內容，涵蓋 AI、設計、行銷、管理等領域。' },
     { icon: '📊', title: '學習數據追蹤', desc: '即時掌握每位員工的學習進度、完成率、測驗成績，讓培訓效果可視化。' },
@@ -2495,7 +2490,7 @@ function enterprisePage() {
     { name: '旗艦方案', price: '聯繫我們', unit: '', desc: '適合大型企業', features: ['無限員工帳號', '全站課程 + 客製課程', '完整 API 串接', '無限影片儲存空間', '專屬客服經理', '到府教育訓練', 'SSO 企業登入'], cta: '預約諮詢', ghost: true }
   ];
   const testimonials = [
-    { company: '科技新創 A 公司', role: '人資總監', text: '導入 AI Class 企業培訓後，員工技能提升速度快了 3 倍，離職率也下降了 20%。', name: '陳經理' },
+    { company: '科技新創 A 公司', role: '人資總監', text: '導入 OKAI課程網 企業培訓後，員工技能提升速度快了 3 倍，離職率也下降了 20%。', name: '陳經理' },
     { company: '知名設計公司', role: '執行長', text: '客製化的課程內容完全貼合我們的需求，團隊設計能力有了質的飛躍。', name: '林總監' },
     { company: '金融集團', role: '教育訓練處長', text: '學習數據分析讓我們能精準掌握每位同仁的成長軌跡，培訓 ROI 提升了 150%。', name: '王處長' }
   ];
@@ -2513,8 +2508,8 @@ function enterprisePage() {
     <div class="ent-hero-bg"></div>
     <div class="wrap ent-hero-inner">
       <div class="crumb rv-up" style="margin-bottom:16px"><a href="index.html">首頁</a> / 企業方案</div>
-      <span class="ent-eyebrow rv-up">AI Class for Business</span>
-      <h1 class="ent-title rv-up">企業培訓<br>交給 AI Class</h1>
+      <span class="ent-eyebrow rv-up">OKAI課程網 for Business</span>
+      <h1 class="ent-title rv-up">企業培訓<br>交給 OKAI課程網</h1>
       <p class="ent-sub rv-up">為您的團隊提供業界頂尖的線上培訓方案<br>從 AI 技術到創意設計，全面提升企業競爭力</p>
       <div class="ent-hero-cta rv-up">
         <a class="btn btn-pri" href="#pricing" style="height:52px;padding:0 32px;font-size:17px">查看方案 →</a>
@@ -2531,7 +2526,7 @@ function enterprisePage() {
 
   <section class="ent-features" id="features">
     <div class="wrap">
-      <h2 class="ent-sec-title rv-up">為什麼選擇 AI Class？</h2>
+      <h2 class="ent-sec-title rv-up">為什麼選擇 OKAI課程網？</h2>
       <p class="ent-sec-sub rv-up">完整的企業培訓生態系，從課程到管理一站搞定</p>
       <div class="ent-feature-grid">
         ${features.map((f, i) => `<div class="ent-feature rv-up" style="transition-delay:${(i % 3) * 80}ms">
@@ -2545,9 +2540,9 @@ function enterprisePage() {
 
   <section class="ent-partners">
     <div class="wrap">
-      <h2 class="ent-sec-title rv-up">信賴 AI Class 的企業</h2>
+      <h2 class="ent-sec-title rv-up">信賴 OKAI課程網 的企業</h2>
       <div class="ent-partner-logos rv-up">${['台積電 TSMC','聯發科 MediaTek','宏碁 Acer','華碩 ASUS','LINE Taiwan','趨勢科技','國泰金控','富邦金控'].map(p => `<span class="ent-partner-logo">${p}</span>`).join('')}</div>
-      <p class="ent-sec-sub rv-up" style="margin-top:12px;font-size:14px">以及超過 500 家企業選擇 AI Class 作為培訓夥伴</p>
+      <p class="ent-sec-sub rv-up" style="margin-top:12px;font-size:14px">以及超過 500 家企業選擇 OKAI課程網 作為培訓夥伴</p>
     </div>
   </section>
 
@@ -2714,7 +2709,7 @@ function openDemoModal() {
 /* ---------- 企業培訓後台 ---------- */
 function trainingPage() {
   const main = $('main');
-  seo({ title: '訓練營｜AI Class', desc: '密集訓練營課程，有系統地學習新技能', url: 'https://okaiclass.com/training.html' });
+  seo({ title: '訓練營｜OKAI課程網', desc: '密集訓練營課程，有系統地學習新技能', url: 'https://okaiclass.com/training.html' });
   const demoCourses = [
     { id: 't1', title: '新人入職培訓', cat: '必修', progress: 85, employees: 48, hours: 4.5, status: '進行中' },
     { id: 't2', title: 'AI 工具實戰應用', cat: 'AI', progress: 62, employees: 32, hours: 8, status: '進行中' },
@@ -2752,7 +2747,7 @@ function trainingPage() {
   main.innerHTML = `<div class="trn-layout">
     <aside class="trn-sidebar">
       <div class="trn-sidebar-logo">
-        <a href="index.html"><img src="assets/logo.svg" alt="AI Class" style="height:24px;filter:brightness(10)"></a>
+        <a href="index.html"><img src="assets/logo.svg" alt="OKAI課程網" style="height:24px;filter:brightness(10)"></a>
         <span class="trn-sidebar-tag">企業版</span>
       </div>
       <div class="trn-sidebar-company">
@@ -2994,15 +2989,15 @@ function trainingPage() {
 /* ---------- 部落格列表 ---------- */
 function blogPage() {
   const main = $('main');
-  seo({ title: '學習專欄｜AI Class', desc: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://okaiclass.com/blog.html',
+  seo({ title: '學習專欄｜OKAI課程網', desc: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://okaiclass.com/blog.html',
     jsonLd: [
-      { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學習專欄', description: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://okaiclass.com/blog.html', publisher: { '@type': 'Organization', name: 'AI Class' }, mainEntity: { '@type': 'ItemList', itemListElement: window.POSTS.slice(0, 10).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://okaiclass.com/article.html?id=${p.id}` })) } },
+      { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學習專欄', description: '最新學習技巧、課程推薦與職涯成長文章', url: 'https://okaiclass.com/blog.html', publisher: { '@type': 'Organization', name: 'OKAI課程網' }, mainEntity: { '@type': 'ItemList', itemListElement: window.POSTS.slice(0, 10).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://okaiclass.com/article.html?id=${p.id}` })) } },
       { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://okaiclass.com/' }, { '@type': 'ListItem', position: 2, name: '學習專欄' }] }
     ]
   });
   const posts = window.POSTS;
   const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
-  catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
+  catMap.career = 'AI 行銷與自媒體'; catMap.beauty = 'AI 生活應用'; catMap.baking = 'AI 產業應用';
   const cats = [...new Set(posts.map(p => p.cat))];
   const featured = posts[0];
 
@@ -3118,7 +3113,7 @@ function articlePage() {
   const post = posts.find(p => p.id === id);
   if (!post) { notFoundPage(); return; }
   const catMap = Object.fromEntries(window.CATS.map(c => [c.id, c.name]));
-  catMap.career = '創業/職涯'; catMap.beauty = '美髮/美容'; catMap.baking = '烘焙/料理';
+  catMap.career = 'AI 行銷與自媒體'; catMap.beauty = 'AI 生活應用'; catMap.baking = 'AI 產業應用';
   const postTags = new Set(post.tags || []);
   const related = posts.filter(p => p.id !== post.id)
     .map(p => {
@@ -3129,15 +3124,15 @@ function articlePage() {
     })
     .sort((a, b) => b._score - a._score)
     .slice(0, 3);
-  document.title = post.title + '｜AI Class 學習專欄';
+  document.title = post.title + '｜OKAI課程網 學習專欄';
   seo({
-    title: post.title + '｜AI Class 學習專欄',
+    title: post.title + '｜OKAI課程網 學習專欄',
     desc: post.excerpt,
     url: `https://okaiclass.com/article.html?id=${post.id}`,
     img: `https://okaiclass.com/assets/img/v${post.v}.jpg`,
     ogType: 'article',
     jsonLd: [
-      { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.excerpt, author: { '@type': 'Person', name: post.author }, datePublished: post.date, image: `https://okaiclass.com/assets/img/v${post.v}.jpg`, publisher: { '@type': 'Organization', name: 'AI Class', url: 'https://okaiclass.com/' } },
+      { '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.excerpt, author: { '@type': 'Person', name: post.author }, datePublished: post.date, image: `https://okaiclass.com/assets/img/v${post.v}.jpg`, publisher: { '@type': 'Organization', name: 'OKAI課程網', url: 'https://okaiclass.com/' } },
       { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://okaiclass.com/' }, { '@type': 'ListItem', position: 2, name: '學習專欄', item: 'https://okaiclass.com/blog.html' }, { '@type': 'ListItem', position: 3, name: post.title }] }
     ]
   });
@@ -3151,7 +3146,7 @@ function articlePage() {
 <h3>2. 實作是最好的老師</h3>
 <p>光看影片是不夠的，真正的學習來自動手實作。每學完一個章節，就試著做一個小專案。</p>
 <h3>3. 加入學習社群</h3>
-<p>與志同道合的人一起學習，可以大幅提升學習效率。在 AI Class 的每堂課程都設有討論區。</p>
+<p>與志同道合的人一起學習，可以大幅提升學習效率。在 OKAI課程網 的每堂課程都設有討論區。</p>
 <h2>結語</h2>
 <p>學習是一場馬拉松，不是短跑。保持耐心、持續練習，你一定能看到成果。</p>`;
 
@@ -3184,7 +3179,7 @@ function articlePage() {
         <div class="art-author-avatar"><img src="assets/img/v${post.v}.jpg" alt="${post.author}" loading="lazy" decoding="async"></div>
         <div class="art-author-info">
           <h4>${post.author}</h4>
-          <p>AI Class 特約作者，專注於 ${catMap[post.cat] || post.cat} 領域，持續分享業界洞見與實戰經驗。</p>
+          <p>OKAI課程網 特約作者，專注於 ${catMap[post.cat] || post.cat} 領域，持續分享業界洞見與實戰經驗。</p>
           <a href="blog.html" class="art-author-more">查看更多文章 →</a>
         </div>
       </div>
@@ -3317,13 +3312,13 @@ function instructorPage() {
     const BIOS = window.INSTRUCTOR_BIOS || {};
     const bioData = BIOS[t.name];
     const bio = bioData ? bioData.detail : '擁有豐富的業界實戰經驗，專注於將專業知識轉化為易懂的教學內容。教學風格注重實作，強調「做中學」的學習理念。';
-    seo({ title: `${t.name}｜AI Class 講師`, desc: `${t.name} — ${t.role}，${t.courses.length} 門課程`, url: `https://okaiclass.com/instructor.html?name=${encodeURIComponent(t.name)}`, ogType: 'profile',
+    seo({ title: `${t.name}｜OKAI課程網 講師`, desc: `${t.name} — ${t.role}，${t.courses.length} 門課程`, url: `https://okaiclass.com/instructor.html?name=${encodeURIComponent(t.name)}`, ogType: 'profile',
       jsonLd: [
         { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { '@type': 'Person', name: t.name, jobTitle: t.role, description: bio } },
         { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://okaiclass.com/' }, { '@type': 'ListItem', position: 2, name: '講師', item: 'https://okaiclass.com/instructor.html' }, { '@type': 'ListItem', position: 3, name: t.name }] }
       ]
     });
-    document.title = `${t.name}｜AI Class 講師`;
+    document.title = `${t.name}｜OKAI課程網 講師`;
     main.innerHTML = `
     <section class="insd-hero"><div class="wrap">
       <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="instructor.html">講師</a> › ${t.name}</div>
@@ -3391,8 +3386,8 @@ function instructorPage() {
 
   const roles = [...new Set(teachers.map(t => t.role))];
 
-  seo({ title: '所有講師｜AI Class', desc: `${teachers.length} 位業界職人講師陣容`, url: 'https://okaiclass.com/instructor.html',
-    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '所有講師', description: `${teachers.length} 位業界職人講師陣容`, url: 'https://okaiclass.com/instructor.html', mainEntity: { '@type': 'ItemList', itemListElement: teachers.slice(0, 12).map((t, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Person', name: t.name, jobTitle: t.role } })) } }
+  seo({ title: '所有講師｜OKAI課程網', desc: `${teachers.length} 位 AI 講師`, url: 'https://okaiclass.com/instructor.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '所有講師', description: `${teachers.length} 位 AI 講師`, url: 'https://okaiclass.com/instructor.html', mainEntity: { '@type': 'ItemList', itemListElement: teachers.slice(0, 12).map((t, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Person', name: t.name, jobTitle: t.role } })) } }
   });
 
   main.innerHTML = `
@@ -3460,7 +3455,7 @@ function instructorPage() {
 /* ---------- 分類瀏覽 ---------- */
 function categoryPage() {
   const main = $('main');
-  seo({ title: '課程分類｜AI Class', desc: '探索所有課程分類：設計、繪畫、AI、攝影、料理等', url: 'https://okaiclass.com/category.html',
+  seo({ title: '課程分類｜OKAI課程網', desc: '探索所有 AI 課程分類：AI 開發、AI 繪圖、AI 影片、AI 行銷、AI 產業應用等', url: 'https://okaiclass.com/category.html',
     jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '課程分類', description: '探索所有課程分類', url: 'https://okaiclass.com/category.html', mainEntity: { '@type': 'ItemList', itemListElement: window.CATS.filter(c => c.id !== 'all').map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: `https://okaiclass.com/category.html?cat=${c.id}` })) } }
   });
   const catId = new URLSearchParams(location.search).get('cat');
@@ -3469,7 +3464,7 @@ function categoryPage() {
   if (catId) {
     const cat = cats.find(c => c.id === catId) || cats[0];
     const courses = C.filter(c => c.cat === catId);
-    document.title = cat.name + '｜AI Class 課程分類';
+    document.title = cat.name + '｜OKAI課程網 課程分類';
     const bcScript = document.createElement('script'); bcScript.type = 'application/ld+json'; bcScript.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://okaiclass.com/' }, { '@type': 'ListItem', position: 2, name: '分類', item: 'https://okaiclass.com/category.html' }, { '@type': 'ListItem', position: 3, name: cat.name }] }); document.head.append(bcScript);
     const levelOf = c => c.hours < 10 ? '入門' : c.hours <= 20 ? '進階' : '專業';
     main.innerHTML = `
@@ -3567,7 +3562,7 @@ function categoryPage() {
 
 /* ---------- 收藏頁 ---------- */
 function wishlistPage() {
-  seo({ title: '我的收藏｜AI Class', desc: '查看你收藏的課程，隨時加入購物車', url: 'https://okaiclass.com/wishlist.html' });
+  seo({ title: '我的收藏｜OKAI課程網', desc: '查看你收藏的課程，隨時加入購物車', url: 'https://okaiclass.com/wishlist.html' });
   const main = $('main');
   let wishSort = 'added';
 
@@ -3630,7 +3625,7 @@ function wishlistPage() {
 
 /* ---------- 我的學習 ---------- */
 function myPage() {
-  seo({ title: '我的學習｜AI Class', desc: '管理你的課程進度、學習紀錄與成績', url: 'https://okaiclass.com/my.html' });
+  seo({ title: '我的學習｜OKAI課程網', desc: '管理你的課程進度、學習紀錄與成績', url: 'https://okaiclass.com/my.html' });
   const main = $('main');
   const enrolled = C.slice(0, 7).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62, 33, 91][i], lastWatch: ['2 小時前', '昨天', '3 天前', '5 分鐘前', '1 天前', '4 小時前', '剛剛'][i] }));
   const totalHours = enrolled.reduce((s, c) => s + c.hours, 0);
@@ -3643,9 +3638,7 @@ function myPage() {
     { id: 'ORD-20260920-003', date: '2026/09/20', items: [C[2]], total: 4580, status: '已完成' },
   ];
   const coupons = [
-    { code: 'WELCOME20', desc: '新會員 8 折券', expire: '2026/12/31', min: 3000, used: false },
-    { code: 'DOUBLE11', desc: '雙 11 滿 5,000 折 800', expire: '2026/11/15', min: 5000, used: false },
-    { code: 'BDAY500', desc: '生日禮 $500 折抵', expire: '2026/11/30', min: 2000, used: true },
+
   ];
   const activity = [
     { icon: '▶', text: '繼續觀看「' + enrolled[0].title.slice(0,12) + '…」第 7 章', time: '2 小時前', color: 'var(--pri)' },
@@ -3821,7 +3814,7 @@ function myPage() {
           <div class="dash-card">
             <div class="dash-card-head">技能分佈</div>
             <div class="dash-skills">${[
-              {name:'設計',pct:80},{name:'AI/科技',pct:65},{name:'繪畫',pct:45},{name:'攝影',pct:30},{name:'音樂',pct:20}
+              {name:'AI 開發',pct:80},{name:'AI 繪圖',pct:65},{name:'AI 影片',pct:45},{name:'AI 行銷',pct:30},{name:'AI 自動化',pct:20}
             ].map(s => `<div class="dash-skill"><span>${s.name}</span><div class="dash-skill-bar"><div class="dash-skill-fill" style="width:${s.pct}%"></div></div><span>${s.pct}%</span></div>`).join('')}</div>
           </div>
         </div>
@@ -3854,7 +3847,7 @@ function myPage() {
             <div class="dash-pie-wrap">
               <svg class="dash-pie" viewBox="0 0 120 120" aria-label="學習分類圓餅圖">
                 ${(() => {
-                  const segs = [{name:'設計',pct:35,color:'#7c5cff'},{name:'AI/科技',pct:25,color:'#ff5c8a'},{name:'繪畫',pct:20,color:'#34c759'},{name:'攝影',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}];
+                  const segs = [{name:'AI 開發',pct:35,color:'#7c5cff'},{name:'AI 繪圖',pct:25,color:'#ff5c8a'},{name:'AI 影片',pct:20,color:'#34c759'},{name:'AI 行銷',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}];
                   const r = 45, cx = 60, cy = 60;
                   let acc = 0;
                   return segs.map(s => {
@@ -3869,7 +3862,7 @@ function myPage() {
                 })()}
               </svg>
               <div class="dash-pie-legend">
-                ${[{name:'設計',pct:35,color:'#7c5cff'},{name:'AI/科技',pct:25,color:'#ff5c8a'},{name:'繪畫',pct:20,color:'#34c759'},{name:'攝影',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}].map(s => `<div class="dash-pie-item"><span class="dash-pie-dot" style="background:${s.color}"></span>${s.name} ${s.pct}%</div>`).join('')}
+                ${[{name:'AI 開發',pct:35,color:'#7c5cff'},{name:'AI 繪圖',pct:25,color:'#ff5c8a'},{name:'AI 影片',pct:20,color:'#34c759'},{name:'AI 行銷',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}].map(s => `<div class="dash-pie-item"><span class="dash-pie-dot" style="background:${s.color}"></span>${s.name} ${s.pct}%</div>`).join('')}
               </div>
             </div>
           </div>
@@ -3877,7 +3870,7 @@ function myPage() {
         <div class="dash-milestones rv-up">
           <h4>🏅 學習里程碑</h4>
           <div class="dash-ml-timeline">
-            ${[{icon:'🎉',title:'加入 AI Class',date:'2026/03/15',done:true},{icon:'🛒',title:'購買第一堂課',date:'2026/03/16',done:true},{icon:'▶',title:'完成第一堂課時',date:'2026/03/18',done:true},{icon:'🔥',title:'連續學習 7 天',date:'2026/03/24',done:true},{icon:'📚',title:'購買第 5 堂課',date:'2026/05/10',done:true},{icon:'🏆',title:'完成第一門課程',date:'2026/06/02',done:true},{icon:'💎',title:'累積 1,000 XP',date:'2026/07/15',done:true},{icon:'🌟',title:'連續學習 30 天',date:'進行中…',done:false}].map(m => `<div class="dash-ml-item ${m.done ? 'done' : 'pending'}"><div class="dash-ml-icon">${m.icon}</div><div class="dash-ml-body"><b>${m.title}</b><span>${m.date}</span></div></div>`).join('')}
+            ${[{icon:'🎉',title:'加入 OKAI課程網',date:'2026/03/15',done:true},{icon:'🛒',title:'購買第一堂課',date:'2026/03/16',done:true},{icon:'▶',title:'完成第一堂課時',date:'2026/03/18',done:true},{icon:'🔥',title:'連續學習 7 天',date:'2026/03/24',done:true},{icon:'📚',title:'購買第 5 堂課',date:'2026/05/10',done:true},{icon:'🏆',title:'完成第一門課程',date:'2026/06/02',done:true},{icon:'💎',title:'累積 1,000 XP',date:'2026/07/15',done:true},{icon:'🌟',title:'連續學習 30 天',date:'進行中…',done:false}].map(m => `<div class="dash-ml-item ${m.done ? 'done' : 'pending'}"><div class="dash-ml-icon">${m.icon}</div><div class="dash-ml-body"><b>${m.title}</b><span>${m.date}</span></div></div>`).join('')}
           </div>
         </div>
       </section>
@@ -4090,14 +4083,14 @@ function myPage() {
     const ov = document.createElement('div'); ov.className = 'cert-overlay'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
     const certId = 'AIC-' + cc.id.toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
     const dateStr = new Date().toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric'});
-    ov.innerHTML = `<div class="cert-modal"><button class="cert-modal-close" aria-label="關閉">×</button><div class="cert-preview"><div class="cert-card"><div class="cert-ribbon">AI Class</div><h2>結業證書</h2><p class="cert-name">學員</p><p class="cert-course-title">${cc.title}</p><p class="cert-body">已完成由 ${cc.teacher} 教授之課程全部 ${cc.hours} 小時內容，特此證明。</p><div class="cert-foot"><span>${dateStr}</span><span>${certId}</span></div></div></div><div class="cert-actions"><button class="btn btn-pri cert-dl-btn">📥 下載證書圖片</button><button class="btn btn-ghost cert-share-btn">📤 分享</button></div></div>`;
+    ov.innerHTML = `<div class="cert-modal"><button class="cert-modal-close" aria-label="關閉">×</button><div class="cert-preview"><div class="cert-card"><div class="cert-ribbon">OKAI課程網</div><h2>結業證書</h2><p class="cert-name">學員</p><p class="cert-course-title">${cc.title}</p><p class="cert-body">已完成由 ${cc.teacher} 教授之課程全部 ${cc.hours} 小時內容，特此證明。</p><div class="cert-foot"><span>${dateStr}</span><span>${certId}</span></div></div></div><div class="cert-actions"><button class="btn btn-pri cert-dl-btn">📥 下載證書圖片</button><button class="btn btn-ghost cert-share-btn">📤 分享</button></div></div>`;
     document.body.append(ov);
     requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('on')));
     const close = () => { ov.classList.remove('on'); setTimeout(() => { ov.remove(); btn.focus(); }, 300); };
     $('.cert-modal-close', ov).onclick = close;
     ov.onclick = ev => { if (ev.target === ov) close(); };
     $('.cert-dl-btn', ov).onclick = () => toast('證書圖片下載功能開發中');
-    $('.cert-share-btn', ov).onclick = () => { navigator.clipboard.writeText(`我完成了 AI Class「${cc.title}」課程！ #AIClass #學習`); toast('已複製分享文字到剪貼簿', 'success'); };
+    $('.cert-share-btn', ov).onclick = () => { navigator.clipboard.writeText(`我完成了 OKAI課程網「${cc.title}」課程！ #OKAI課程網 #學習`); toast('已複製分享文字到剪貼簿', 'success'); };
   });
 
   // "繼續學習" 查看全部 → 跳到課程 tab
@@ -4116,8 +4109,8 @@ function myPage() {
 /* ---------- 關於我們 ---------- */
 function aboutPage() {
   const main = $('main');
-  seo({ title: '關於我們｜AI Class', desc: '認識 AI Class 團隊與我們的使命', url: 'https://okaiclass.com/about.html',
-    jsonLd: { '@context': 'https://schema.org', '@type': 'Organization', name: 'AI Class', url: 'https://okaiclass.com/', logo: 'https://okaiclass.com/assets/icon-512.png', description: '跟著業界職人，把熱情學成專業。AI Class 匯集各行業頂尖職人，提供系統化線上課程。', foundingDate: '2024', numberOfEmployees: { '@type': 'QuantitativeValue', value: 30 } }
+  seo({ title: '關於我們｜OKAI課程網', desc: '認識 OKAI課程網 團隊與我們的使命', url: 'https://okaiclass.com/about.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'Organization', name: 'OKAI課程網', url: 'https://okaiclass.com/', logo: 'https://okaiclass.com/assets/icon-512.png', description: '學 AI，學完就能用。OKAI課程網 匯集各行業頂尖職人，提供系統化線上課程。', foundingDate: '2024', numberOfEmployees: { '@type': 'QuantitativeValue', value: 30 } }
   });
   const totalStudents = C.reduce((s, c) => s + c.students, 0);
   const teacherCount = [...new Set(C.map(c => c.teacher))].length;
@@ -4125,15 +4118,15 @@ function aboutPage() {
   main.innerHTML = `
   <section class="abt-hero"><div class="wrap">
     <div class="crumb rv-up"><a href="index.html">首頁</a> › 關於我們</div>
-    <h1 class="abt-title rv-up">關於 AI Class</h1>
-    <p class="abt-sub rv-up">跟著業界職人，把熱情學成專業</p>
+    <h1 class="abt-title rv-up">關於 OKAI課程網</h1>
+    <p class="abt-sub rv-up">學 AI，學完就能用</p>
   </div></section>
 
   <section class="sec"><div class="wrap">
     <div class="abt-mission rv-up">
       <h2>我們的使命</h2>
-      <p>AI Class 相信，每個人都有潛力成為自己領域的專家。我們匯集了來自各行業的頂尖職人，將他們多年積累的實戰經驗，轉化為系統化的線上課程，讓學習不再受限於時間和地點。</p>
-      <p>從設計、繪畫、AI 科技到料理烘焙，我們涵蓋了超過 10 大領域，課程一次購買即可無限期觀看，讓你用自己的節奏學習，真正把熱情變成專業能力。</p>
+      <p>OKAI課程網 相信，每個人都能學會用 AI。我們把最實用的 AI 工具與應用整理成一步步跟著做的線上課程，讓不懂技術的人也能把 AI 用在工作與生活上。</p>
+      <p>從 ChatGPT、AI 繪圖、AI 影片到 AI Agent 與 AI 寫程式，課程一次購買即可無限期觀看，讓你用自己的節奏學習。</p>
     </div>
     <div class="abt-vmv rv-up" style="margin-top:40px">
       <div class="abt-vmv-card"><div class="abt-vmv-icon">🎯</div><h3>願景 Vision</h3><p>成為亞洲最值得信賴的線上學習平台，讓每個人都能用最短的路徑，掌握改變人生的專業技能。</p></div>
@@ -4151,15 +4144,7 @@ function aboutPage() {
     </div>
   </div></section>
 
-  <section class="sec"><div class="wrap">
-    <h2 class="ent-sec-title rv-up">發展歷程</h2>
-    <div class="abt-timeline">
-      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2023</span><h3>平台創立</h3><p>以「讓每個人都能跟頂尖職人學習」為理念，AI Class 正式上線</p></div></div>
-      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2024</span><h3>精選課程上線</h3><p>與 ${teacherCount}+ 位業界講師合作，涵蓋設計、程式、AI、攝影等 10 大領域</p></div></div>
-      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2025</span><h3>AI 學習助手上線</h3><p>導入 AI 技術，提供個人化學習路徑推薦與智慧筆記功能</p></div></div>
-      <div class="abt-tl-item rv-up"><div class="abt-tl-dot"></div><div class="abt-tl-content"><span class="abt-tl-year">2026</span><h3>邁向國際</h3><p>累積超過 ${Math.round(totalStudents / 10000)} 萬學員，持續擴展更多語言與領域</p></div></div>
-    </div>
-  </div></section>
+  <!-- 發展歷程：等有真實里程碑再放回 -->
 
   <section class="sec"><div class="wrap">
     <h2 class="ent-sec-title rv-up">我們的價值觀</h2>
@@ -4253,8 +4238,8 @@ function faqPage() {
 
   const allQ = faqData.flatMap(g => g.items);
   seo({
-    title: '常見問題｜AI Class',
-    desc: '關於 AI Class 課程、付款、退費等常見問題解答',
+    title: '常見問題｜OKAI課程網',
+    desc: '關於 OKAI課程網 課程、付款、退費等常見問題解答',
     url: 'https://okaiclass.com/faq.html',
     jsonLd: { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: allQ.slice(0, 20).map(q => ({ '@type': 'Question', name: q[0], acceptedAnswer: { '@type': 'Answer', text: q[1] } })) }
   });
@@ -4285,7 +4270,7 @@ function faqPage() {
 /* ---------- 成為講師 ---------- */
 function teachPage() {
   const main = $('main');
-  seo({ title: '成為講師｜AI Class', desc: '在 AI Class 開課，讓你的專業被看見', url: 'https://okaiclass.com/teach.html' });
+  seo({ title: '成為講師｜OKAI課程網', desc: '在 OKAI課程網 開課，讓你的專業被看見', url: 'https://okaiclass.com/teach.html' });
   const totalStudents = C.reduce((s, c) => s + c.students, 0);
   const teacherCount = [...new Set(C.map(c => c.teacher))].length;
 
@@ -4294,28 +4279,21 @@ function teachPage() {
     <div class="crumb rv-up"><a href="index.html">首頁</a> › 成為講師</div>
     <div class="tch-hero-inner rv-up">
       <span class="ent-eyebrow">JOIN US</span>
-      <h1 class="tch-title">在 AI Class 開課<br>讓你的專業被看見</h1>
-      <p class="tch-sub">把你多年累積的實戰經驗，轉化為線上課程，分享給更多有熱情的學習者。我們提供完整的課程製作支援、行銷資源與透明的分潤制度。</p>
+      <h1 class="tch-title">在 OKAI課程網 開課<br>讓你的專業被看見</h1>
+      <p class="tch-sub">把你多年累積的實戰經驗，轉化為線上課程，分享給更多有熱情的學習者。我們提供課程規劃與製作建議、平台行銷與透明的分潤制度。</p>
       <a class="btn btn-pri" href="#tch-apply" style="height:52px;font-size:16px;padding:0 32px">立即申請開課</a>
     </div>
   </div></section>
 
-  <section class="sec"><div class="wrap">
-    <div class="stats rv-up">
-      <div class="stat"><b>${(totalStudents / 10000).toFixed(1)} 萬+</b><span>平台學員</span></div>
-      <div class="stat"><b>${teacherCount}+</b><span>合作講師</span></div>
-      <div class="stat"><b>70%</b><span>講師分潤</span></div>
-      <div class="stat"><b>0 元</b><span>開課費用</span></div>
-    </div>
-  </div></section>
+  
 
   <section class="sec"><div class="wrap">
-    <h2 class="ent-sec-title rv-up">為什麼選擇 AI Class？</h2>
+    <h2 class="ent-sec-title rv-up">為什麼選擇 OKAI課程網？</h2>
     <p class="ent-sec-sub rv-up">我們幫你處理技術和行銷，你只需要專注在教學</p>
     <div class="ent-feature-grid">
-      <div class="ent-feature rv-up"><div class="ent-feature-icon">🎬</div><h3>專業拍攝支援</h3><p>提供攝影棚、專業器材與拍攝團隊，讓你的課程影片達到業界水準。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">🎬</div><h3>錄製建議</h3><p>提供錄製規格與流程建議，在家用電腦錄螢幕就能開始。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">📣</div><h3>行銷推廣資源</h3><p>社群媒體、Email 行銷、SEO 優化，我們用全方位策略為你的課程帶來曝光。</p></div>
-      <div class="ent-feature rv-up"><div class="ent-feature-icon">💰</div><h3>透明分潤制度</h3><p>業界最高 70% 講師分潤比例，每月結算，收入透明可追蹤。</p></div>
+      <div class="ent-feature rv-up"><div class="ent-feature-icon">💰</div><h3>透明分潤制度</h3><p>分潤比例依合約約定，每月結算，收入透明可追蹤。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">📊</div><h3>數據分析儀表板</h3><p>即時查看課程銷售、學員互動、評價等數據，持續優化你的課程。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🎨</div><h3>課程設計顧問</h3><p>資深課程設計師一對一協助，從大綱規劃到章節安排，確保學習效果。</p></div>
       <div class="ent-feature rv-up"><div class="ent-feature-icon">🌐</div><h3>全球市場觸及</h3><p>課程上架後觸及全球華語學習者，品牌影響力不受地域限制。</p></div>
@@ -4328,7 +4306,7 @@ function teachPage() {
     <div class="ent-step-grid">
       <div class="ent-step rv-up"><div class="ent-step-num">01</div><h3>提交申請</h3><p>填寫開課申請表，附上你的專業經歷與課程構想</p><span class="ent-step-arrow">→</span></div>
       <div class="ent-step rv-up"><div class="ent-step-num">02</div><h3>課程規劃</h3><p>與課程設計師一起規劃大綱、章節與教材</p><span class="ent-step-arrow">→</span></div>
-      <div class="ent-step rv-up"><div class="ent-step-num">03</div><h3>錄製拍攝</h3><p>使用我們的攝影棚或遠端錄製，製作高品質影片</p><span class="ent-step-arrow">→</span></div>
+      <div class="ent-step rv-up"><div class="ent-step-num">03</div><h3>錄製拍攝</h3><p>依錄製規格自行錄製或遠端錄製</p><span class="ent-step-arrow">→</span></div>
       <div class="ent-step rv-up"><div class="ent-step-num">04</div><h3>審核上架</h3><p>通過品質審核後正式上架，開始觸及全球學員</p></div>
     </div>
   </div></section>
@@ -4338,9 +4316,9 @@ function teachPage() {
     <p class="ent-sec-sub rv-up">聽聽他們怎麼說</p>
     <div class="ent-testi-grid">
       ${[
-        { name: '張明哲', role: '資深 UI 設計師 → AI Class 講師', text: '從兼職開課到月收入超過正職薪水，AI Class 的行銷團隊幫我帶來了超乎想像的學員數。現在我可以全心投入教學，做自己最熱愛的事。', stat: '累計學員 8,000+' },
+        { name: '張明哲', role: '資深 UI 設計師 → OKAI課程網 講師', text: '從兼職開課到月收入超過正職薪水，OKAI課程網 的行銷團隊幫我帶來了超乎想像的學員數。現在我可以全心投入教學，做自己最熱愛的事。', stat: '累計學員 8,000+' },
         { name: '李婉如', role: '前 Google 工程師 → AI 課程講師', text: '我一開始很擔心不會教，但課程設計師手把手協助我規劃大綱，拍攝團隊也很專業。上架第一個月就賣了 500 套，完全超出預期。', stat: '首月銷售 500+' },
-        { name: '陳冠廷', role: '自由接案攝影師 → 攝影教學講師', text: '開課讓我的個人品牌大幅提升，不只課程收入穩定，接案報價也因為「講師」身份翻倍。AI Class 真的改變了我的職涯。', stat: '接案報價提升 200%' },
+        { name: '陳冠廷', role: '自由接案攝影師 → 攝影教學講師', text: '開課讓我的個人品牌大幅提升，不只課程收入穩定，接案報價也因為「講師」身份翻倍。OKAI課程網 真的改變了我的職涯。', stat: '接案報價提升 200%' },
       ].map((s, i) => `<div class="ent-testi rv-up" style="transition-delay:${i * 80}ms">
         <div class="ent-testi-stars">★★★★★</div>
         <p>"${s.text}"</p>
@@ -4365,9 +4343,9 @@ function teachPage() {
     <h2 class="ent-sec-title rv-up">講師常見問題</h2>
     ${[
       ['需要什麼資格才能申請？', '只要你在某個領域有 3 年以上實戰經驗，並且有熱情想分享所學，就可以申請。我們重視的是實務能力，不限制學歷或證照。'],
-      ['課程拍攝需要自備器材嗎？', '不需要！我們在台北設有專業攝影棚，提供完整的拍攝設備和團隊。如果你在外縣市或海外，也可以使用我們的遠端錄製方案。'],
+      ['課程拍攝需要自備器材嗎？', 'AI 課程多以螢幕錄製為主，一台電腦加一支麥克風就能開始，我們會提供錄製規格建議。'],
       ['收入什麼時候入帳？', '每月 15 日結算上個月的銷售收入，扣除平台手續費後，次月 1 日前匯入指定帳戶。後台可即時查看銷售數據。'],
-      ['可以同時在其他平台開課嗎？', '可以。我們不要求獨家授權，但 AI Class 獨家的課程會獲得更多行銷資源和曝光機會。'],
+      ['可以同時在其他平台開課嗎？', '可以。我們不要求獨家授權，但 OKAI課程網 獨家的課程會獲得更多行銷資源和曝光機會。'],
       ['課程上架後可以修改嗎？', '可以隨時更新課程內容、新增章節或修改價格。我們鼓勵講師持續更新課程，保持內容的時效性。'],
     ].map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}
   </div></section>
@@ -4406,8 +4384,8 @@ function teachPage() {
 function playerPage() {
   const c = byId[new URLSearchParams(location.search).get('id')];
   if (!c) { notFoundPage(); return; }
-  seo({ title: `${c.title}｜AI Class 播放器`, desc: `正在觀看：${c.title}，由 ${c.teacher} 授課`, url: `https://okaiclass.com/player.html?id=${c.id}` });
-  document.title = `${c.title}｜AI Class 播放器`;
+  seo({ title: `${c.title}｜OKAI課程網 播放器`, desc: `正在觀看：${c.title}，由 ${c.teacher} 授課`, url: `https://okaiclass.com/player.html?id=${c.id}` });
+  document.title = `${c.title}｜OKAI課程網 播放器`;
   window.trackEvent('begin_content', { item_id: c.id, item_name: c.title });
   document.body.style.setProperty('--bg', '#070710');
 
@@ -4463,7 +4441,7 @@ function playerPage() {
   main.innerHTML = `
   <div class="plr-wrap">
     <header class="plr-hdr">
-      <a href="index.html" class="plr-logo">AI Class</a>
+      <a href="index.html" class="plr-logo">OKAI課程網</a>
       <span class="plr-course-name">${c.title}</span>
       <div class="plr-hdr-right">
         <span class="plr-prog-txt">${progress()}% 完成</span>
@@ -4932,7 +4910,7 @@ function showCompletionCelebration(c) {
 
 /* ---------- 服務條款 ---------- */
 function termsPage() {
-  seo({ title: '服務條款｜AI Class', desc: 'AI Class 服務條款與使用規範', url: 'https://okaiclass.com/terms.html' });
+  seo({ title: '服務條款｜OKAI課程網', desc: 'OKAI課程網 服務條款與使用規範', url: 'https://okaiclass.com/terms.html' });
   const main = $('main');
   main.innerHTML = `
   <section class="legal-hero"><div class="wrap">
@@ -4943,7 +4921,7 @@ function termsPage() {
   <section class="sec"><div class="wrap">
     <div class="legal-body rv-up">
       <h2>一、總則</h2>
-      <p>歡迎使用 AI Class 線上課程平台（以下簡稱「本平台」）。當您註冊帳號、瀏覽網站或購買課程時，即表示您已閱讀、瞭解並同意接受本服務條款的所有內容。若您不同意本條款的任何部分，請勿使用本平台的服務。</p>
+      <p>歡迎使用 OKAI課程網 線上課程平台（以下簡稱「本平台」）。當您註冊帳號、瀏覽網站或購買課程時，即表示您已閱讀、瞭解並同意接受本服務條款的所有內容。若您不同意本條款的任何部分，請勿使用本平台的服務。</p>
       <p>本平台保留隨時修訂本條款的權利，修訂後的條款將公布於本頁面，並於公布時立即生效。建議您定期查閱本頁面以了解最新條款。</p>
 
       <h2>二、帳號管理</h2>
@@ -5001,7 +4979,7 @@ function termsPage() {
 
 /* ---------- 隱私權政策 ---------- */
 function privacyPage() {
-  seo({ title: '隱私權政策｜AI Class', desc: 'AI Class 隱私權保護政策', url: 'https://okaiclass.com/privacy.html' });
+  seo({ title: '隱私權政策｜OKAI課程網', desc: 'OKAI課程網 隱私權保護政策', url: 'https://okaiclass.com/privacy.html' });
   const main = $('main');
   main.innerHTML = `
   <section class="legal-hero"><div class="wrap">
@@ -5012,7 +4990,7 @@ function privacyPage() {
   <section class="sec"><div class="wrap">
     <div class="legal-body rv-up">
       <h2>一、前言</h2>
-      <p>AI Class（以下簡稱「本平台」）非常重視您的隱私。本隱私權政策說明我們如何收集、使用、儲存與保護您的個人資料。使用本平台的服務即表示您同意本政策的內容。</p>
+      <p>OKAI課程網（以下簡稱「本平台」）非常重視您的隱私。本隱私權政策說明我們如何收集、使用、儲存與保護您的個人資料。使用本平台的服務即表示您同意本政策的內容。</p>
 
       <h2>二、資料收集</h2>
       <h3>我們收集的資料類型</h3>
@@ -5095,7 +5073,7 @@ function privacyPage() {
 
 /* ---------- 結帳頁 ---------- */
 function checkoutPage() {
-  seo({ title: '結帳｜AI Class', desc: '確認訂單並完成付款', url: 'https://okaiclass.com/checkout.html' });
+  seo({ title: '結帳｜OKAI課程網', desc: '確認訂單並完成付款', url: 'https://okaiclass.com/checkout.html' });
   const main = $('main');
   const items = [...cart].map(id => byId[id]).filter(Boolean);
   if (!items.length) { location.href = 'cart.html'; return; }
@@ -5267,7 +5245,7 @@ function checkoutPage() {
 
 /* ---------- 訂單完成頁 ---------- */
 function orderCompletePage() {
-  seo({ title: '訂單完成｜AI Class', desc: '恭喜！你的訂單已完成，課程已開通', url: 'https://okaiclass.com/order-complete.html' });
+  seo({ title: '訂單完成｜OKAI課程網', desc: '恭喜！你的訂單已完成，課程已開通', url: 'https://okaiclass.com/order-complete.html' });
   const main = $('main');
   const order = ls('aic-last-order', null);
   if (!order) { location.href = 'index.html'; return; }
@@ -5358,7 +5336,7 @@ function orderCompletePage() {
   })();
 
   // Share buttons
-  const shareText = encodeURIComponent(`我在 AI Class 購買了${items.length}堂精選課程！一起來學習吧 🎓`);
+  const shareText = encodeURIComponent(`我在 OKAI課程網 購買了${items.length}堂精選課程！一起來學習吧 🎓`);
   const shareUrl = encodeURIComponent('https://okaiclass.com/');
   $$('.oc-share-btn', main).forEach(btn => btn.onclick = () => {
     const p = btn.dataset.platform;
@@ -5373,7 +5351,7 @@ function orderCompletePage() {
 /* ---------- 優惠券 ---------- */
 function couponPage() {
   const main = $('main');
-  seo({ title: '優惠券中心｜AI Class', desc: '領取最新優惠券，享受課程折扣', url: 'https://okaiclass.com/coupon.html' });
+  seo({ title: '優惠券中心｜OKAI課程網', desc: '領取最新優惠券，享受課程折扣', url: 'https://okaiclass.com/coupon.html' });
   const now = new Date();
   const coupons = (window.COUPONS || []).map(cp => {
     const amountTxt = cp.type === 'percent' ? `${cp.discount}% OFF` : `NT$${cp.discount}`;
@@ -5427,7 +5405,7 @@ function couponPage() {
         <li>優惠券需在有效期限內使用，逾期自動失效</li>
         <li>部分優惠券有最低消費金額限制，請注意使用條件</li>
         <li>優惠券不可兌換現金，折抵金額不找零</li>
-        <li>AI Class 保留優惠券活動的最終解釋權</li>
+        <li>OKAI課程網 保留優惠券活動的最終解釋權</li>
       </ul>
     </div>
   </div>`;
@@ -5452,7 +5430,7 @@ function couponPage() {
 /* ---------- 結業證書 ---------- */
 function certificatePage() {
   const main = $('main');
-  seo({ title: '結業證書｜AI Class', desc: '查看你的結業證書', url: 'https://okaiclass.com/certificate.html' });
+  seo({ title: '結業證書｜OKAI課程網', desc: '查看你的結業證書', url: 'https://okaiclass.com/certificate.html' });
   const ownedIds = new Set(ls('aic-owned', []));
   const progress = ls('aic-progress', {});
   const completedCourses = C.filter(c => ownedIds.has(c.id) && (progress[c.id] === 100 || progress[c.id] === undefined));
@@ -5502,7 +5480,7 @@ function certificatePage() {
     </div>`}
   </div>`;
   $$('.cert-share-btn', main).forEach(btn => btn.onclick = () => {
-    if (navigator.share) navigator.share({ title: 'AI Class 結業證書', text: '我在 AI Class 完成了課程！', url: location.href }).catch(() => {});
+    if (navigator.share) navigator.share({ title: 'OKAI課程網 結業證書', text: '我在 OKAI課程網 完成了課程！', url: location.href }).catch(() => {});
     else { navigator.clipboard.writeText(location.href).then(() => toast('已複製分享連結', 'success')); }
   });
   reveal(main);
@@ -5511,7 +5489,7 @@ function certificatePage() {
 /* ---------- 學習路徑列表 ---------- */
 function pathListPage() {
   const main = $('main');
-  seo({ title: '學習路徑｜AI Class', desc: '系統化學習路徑，從入門到專業，循序漸進培養即戰力', url: 'https://okaiclass.com/path.html',
+  seo({ title: '學習路徑｜OKAI課程網', desc: '系統化學習路徑，從入門到專業，循序漸進培養即戰力', url: 'https://okaiclass.com/path.html',
     jsonLd: { '@context': 'https://schema.org', '@type': 'ItemList', name: '學習路徑', description: '系統化課程規劃，循序漸進培養完整技能', url: 'https://okaiclass.com/path.html', itemListElement: (window.PATHS || []).map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: `https://okaiclass.com/path.html?id=${p.id}` })) }
   });
   const paths = window.PATHS || [];
@@ -5550,9 +5528,9 @@ function pathPage() {
   if (!p) { notFoundPage(); return; }
   const courses = p.courses.map(id => byId[id]).filter(Boolean);
   const totalHours = courses.reduce((s, c) => s + c.hours, 0);
-  seo({ title: `${p.name}｜AI Class 學習路徑`, desc: p.desc || `${p.name} 學習路徑，${courses.length} 門課程，${totalHours} 小時`, url: `https://okaiclass.com/path.html?id=${p.id}` });
+  seo({ title: `${p.name}｜OKAI課程網 學習路徑`, desc: p.desc || `${p.name} 學習路徑，${courses.length} 門課程，${totalHours} 小時`, url: `https://okaiclass.com/path.html?id=${p.id}` });
   const totalStudents = Math.min(...courses.map(c => c.students));
-  document.title = `${p.name}｜AI Class 學習路徑`;
+  document.title = `${p.name}｜OKAI課程網 學習路徑`;
 
   const ownedArr = ls('aic-owned', []);
   const pathDone = courses.filter(c => ownedArr.includes(c.id)).length;
@@ -5647,7 +5625,7 @@ function pathPage() {
 /* ---------- 邀請好友 ---------- */
 function invitePage() {
   const main = $('main');
-  seo({ title: '邀請好友｜AI Class', desc: '邀請好友加入 AI Class，雙方各得優惠券', url: 'https://okaiclass.com/invite.html' });
+  seo({ title: '邀請好友｜OKAI課程網', desc: '邀請好友加入 OKAI課程網，雙方各得優惠券', url: 'https://okaiclass.com/invite.html' });
   const code = ls('aic-invite-code') || (() => { const c = 'AICLASS' + Math.random().toString(36).slice(2, 7).toUpperCase(); ss('aic-invite-code', c); return c; })();
   const link = 'https://okaiclass.com/invite?ref=' + code;
   const stats = { invited: 3, registered: 2, earned: 1000 };
@@ -5689,7 +5667,7 @@ function invitePage() {
       <h2>如何運作？</h2>
       <div class="inv-step-grid">
         <div class="inv-step"><div class="inv-step-icon">🔗</div><div class="inv-step-num">1</div><h3>分享邀請連結</h3><p>將你的專屬推薦連結分享給朋友</p></div>
-        <div class="inv-step"><div class="inv-step-icon">👤</div><div class="inv-step-num">2</div><h3>好友註冊</h3><p>好友透過你的連結註冊 AI Class 帳號</p></div>
+        <div class="inv-step"><div class="inv-step-icon">👤</div><div class="inv-step-num">2</div><h3>好友註冊</h3><p>好友透過你的連結註冊 OKAI課程網 帳號</p></div>
         <div class="inv-step"><div class="inv-step-icon">🛒</div><div class="inv-step-num">3</div><h3>好友購課</h3><p>好友完成第一筆課程購買</p></div>
         <div class="inv-step"><div class="inv-step-icon">🎁</div><div class="inv-step-num">4</div><h3>雙方獲獎</h3><p>你和好友各獲得 NT$500 折價券</p></div>
       </div>
@@ -5707,12 +5685,12 @@ function invitePage() {
     <div class="inv-rules rv-up">
       <h3>活動規則</h3>
       <ul>
-        <li>被推薦者須為新用戶（從未註冊過 AI Class）</li>
+        <li>被推薦者須為新用戶（從未註冊過 OKAI課程網）</li>
         <li>被推薦者需透過推薦連結或推薦碼完成註冊</li>
         <li>被推薦者首筆購課金額需達 NT$2,000 以上</li>
         <li>折價券有效期限為發放後 30 天</li>
         <li>每人最多可邀請 50 位好友</li>
-        <li>AI Class 保留活動最終解釋權</li>
+        <li>OKAI課程網 保留活動最終解釋權</li>
       </ul>
     </div>
   </div>`;
@@ -5737,7 +5715,7 @@ function invitePage() {
 
 /* ---------- 訂單紀錄 ---------- */
 function orderHistoryPage() {
-  seo({ title: '訂單紀錄｜AI Class', desc: '查看你的所有訂單紀錄與發票', url: 'https://okaiclass.com/order-history.html' });
+  seo({ title: '訂單紀錄｜OKAI課程網', desc: '查看你的所有訂單紀錄與發票', url: 'https://okaiclass.com/order-history.html' });
   const main = $('main');
   const img_ = c => `assets/img/v${c.v}.jpg`;
   const demoOrders = [
@@ -5871,9 +5849,9 @@ function searchPage() {
   const main = $('main');
   const params = new URLSearchParams(location.search);
   const initQ = params.get('q') || '';
-  if (initQ) seo({ title: `搜尋「${escH(initQ)}」｜AI Class`, desc: `AI Class 課程搜尋結果：${escH(initQ)}`, url: `https://okaiclass.com/search.html?q=${encodeURIComponent(initQ)}` });
+  if (initQ) seo({ title: `搜尋「${escH(initQ)}」｜OKAI課程網`, desc: `OKAI課程網 課程搜尋結果：${escH(initQ)}`, url: `https://okaiclass.com/search.html?q=${encodeURIComponent(initQ)}` });
   const cats = window.CATS.slice(1);
-  const trending = window.TRENDING_SEARCHES || ['AI', 'Figma', '插畫', 'Blender', '攝影', '料理', 'Python', '健身', '剪輯', '文案'];
+  const trending = window.TRENDING_SEARCHES || ['ChatGPT', 'AI 繪圖', 'AI 影片'];
 
   const state = { q: initQ, cats: new Set(), priceRange: 'all', minRating: 0, sort: 'relevance' };
 
@@ -6069,7 +6047,7 @@ function searchPage() {
 /* ---------- 學習社群 ---------- */
 function communityPage() {
   const main = $('main');
-  seo({ title: '學習社群｜AI Class', desc: '與同學交流學習心得、分享作品', url: 'https://okaiclass.com/community.html' });
+  seo({ title: '學習社群｜OKAI課程網', desc: '與同學交流學習心得、分享作品', url: 'https://okaiclass.com/community.html' });
   const posts = (window.COMMUNITY_POSTS || []).slice();
   const cmyLiked = new Set(ls('aic-cmy-likes', []));
   const tagSet = new Set(); posts.forEach(p => (p.tags||[]).forEach(t => tagSet.add(t)));
@@ -6215,7 +6193,7 @@ function communityPage() {
     const emoji = e.target.closest('.cmy-emoji');
     if (emoji) { toast(`已按 ${emoji.textContent} 表情反應`); emoji.closest('.cmy-react-picker').hidden = true; return; }
     const share = e.target.closest('.cmy-share-btn');
-    if (share) { navigator.clipboard?.writeText(`AI Class 社群 — ${share.dataset.share}\nhttps://okaiclass.com/community.html`).then(() => toast('已複製分享連結')).catch(() => toast('複製失敗')); }
+    if (share) { navigator.clipboard?.writeText(`OKAI課程網 社群 — ${share.dataset.share}\nhttps://okaiclass.com/community.html`).then(() => toast('已複製分享連結')).catch(() => toast('複製失敗')); }
   });
   const pollVotes = new Set(ls('aic-poll-votes', []));
   main.querySelectorAll('.poll-option').forEach(opt => {
@@ -6240,7 +6218,7 @@ function communityPage() {
 /* ---------- 直播教室 ---------- */
 function livePage() {
   const main = $('main');
-  seo({ title: '直播教室｜AI Class', desc: '即時直播課程與講師互動', url: 'https://okaiclass.com/live.html' });
+  seo({ title: '直播教室｜OKAI課程網', desc: '即時直播課程與講師互動', url: 'https://okaiclass.com/live.html' });
   const events = (window.LIVE_EVENTS || []).slice();
   const upcoming = events.filter(e => e.status === 'upcoming').sort((a,b) => new Date(a.date) - new Date(b.date));
   const ended = events.filter(e => e.status === 'ended');
@@ -6316,7 +6294,7 @@ function livePage() {
 /* ---------- 技能測驗 ---------- */
 function quizPage() {
   const main = $('main');
-  seo({ title: '學習測驗｜AI Class', desc: '測驗你的學習成果，挑戰各科知識', url: 'https://okaiclass.com/quiz.html' });
+  seo({ title: '學習測驗｜OKAI課程網', desc: '測驗你的學習成果，挑戰各科知識', url: 'https://okaiclass.com/quiz.html' });
   const quizzes = window.QUIZZES || [];
   const saved = ls('aic-quiz-results', {});
   const totalQ = quizzes.reduce((s, q) => s + q.questions.length, 0);
@@ -6436,7 +6414,7 @@ function quizPage() {
     if (e.target.classList.contains('qz-modal-bg') || e.target.closest('.qz-close')) closeResult();
     if (e.target.closest('.qz-retry')) { closeResult(); startQuiz(currentQuiz.id); }
     if (e.target.closest('.qz-back-btn')) closeResult();
-    if (e.target.closest('.qz-share-btn') && currentQuiz) { const txt = `我在 AI Class 的「${currentQuiz.title}」測驗中答對了 ${saved[currentQuiz.id].score}/${saved[currentQuiz.id].total} 題！`; if (navigator.share) navigator.share({title:'AI Class 測驗成績',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt).then(()=>toast('成績已複製')).catch(()=>{}); } }
+    if (e.target.closest('.qz-share-btn') && currentQuiz) { const txt = `我在 OKAI課程網 的「${currentQuiz.title}」測驗中答對了 ${saved[currentQuiz.id].score}/${saved[currentQuiz.id].total} 題！`; if (navigator.share) navigator.share({title:'OKAI課程網 測驗成績',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt).then(()=>toast('成績已複製')).catch(()=>{}); } }
   };
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (!modal.hidden) closeModal(); if (!result.hidden) closeResult(); } });
   reveal(main);
@@ -6446,7 +6424,7 @@ function quizPage() {
 /* ---------- 成就系統 ---------- */
 function achievementPage() {
   const main = $('main');
-  seo({ title: '學習成就｜AI Class', desc: '查看你的學習徽章與成就收藏', url: 'https://okaiclass.com/achievement.html' });
+  seo({ title: '學習成就｜OKAI課程網', desc: '查看你的學習徽章與成就收藏', url: 'https://okaiclass.com/achievement.html' });
   const badges = window.BADGES || [];
   const owned = ls('aic-owned', []);
   const quizResults = ls('aic-quiz-results', {});
@@ -6549,7 +6527,7 @@ function achievementPage() {
 
 function leaderboardPage() {
   const main = $('main');
-  seo({ title: '學習排行榜｜AI Class', desc: '查看學習積分排行榜與本週之星', url: 'https://okaiclass.com/leaderboard.html' });
+  seo({ title: '學習排行榜｜OKAI課程網', desc: '查看學習積分排行榜與本週之星', url: 'https://okaiclass.com/leaderboard.html' });
   const lb = window.LEADERBOARD || [];
   const medals = ['🥇','🥈','🥉'];
   const podiumColors = ['#ffd700','#c0c0c0','#cd7f32'];
@@ -6634,9 +6612,9 @@ function leaderboardPage() {
 
 /* ---------- 404 ---------- */
 function notFoundPage() {
-  seo({ title: '找不到頁面｜AI Class', desc: '你要找的頁面不存在，但我們有很多精彩課程等你探索', url: 'https://okaiclass.com/404.html' });
+  seo({ title: '找不到頁面｜OKAI課程網', desc: '你要找的頁面不存在，但我們有很多精彩課程等你探索', url: 'https://okaiclass.com/404.html' });
   const main = $('main');
-  document.title = '找不到頁面｜AI Class';
+  document.title = '找不到頁面｜OKAI課程網';
   main.innerHTML = `<section class="nf-hero"><div class="wrap" style="text-align:center;padding:80px 32px">
     <div class="nf-illustration rv-up"><span class="nf-num">4</span><span class="nf-planet">🪐</span><span class="nf-num">4</span></div>
     <h1 class="rv-up" style="font-size:clamp(1.5rem,4vw,2.5rem);margin:24px 0 12px">哎呀，這裡什麼都沒有</h1>
@@ -6663,7 +6641,7 @@ function notFoundPage() {
 /* ---------- 影片內容 ---------- */
 function videoPage() {
   const main = $('main');
-  seo({ title: '影片專區｜AI Class', desc: '學員作品、講師訪談、幕後花絮、新課預告', url: 'https://okaiclass.com/video.html' });
+  seo({ title: '影片專區｜OKAI課程網', desc: '學員作品、講師訪談、幕後花絮、新課預告', url: 'https://okaiclass.com/video.html' });
   const vcs = window.VIDEO_CONTENT || [];
   const cats = ['全部', ...new Set(vcs.map(v => v.cat))];
   main.innerHTML = `<div class="wrap" style="padding-top:100px">
@@ -6806,7 +6784,7 @@ function bundlePage() {
 
 /* ---------- 學員成功故事頁面 ---------- */
 function successPage() {
-  seo({ title: '學員成功故事', desc: '看看 AI Class 學員如何透過線上學習轉職加薪、創業圓夢，真實故事激勵你的學習之路。', ogType: 'website' });
+  seo({ title: '學員成功故事', desc: '看看 OKAI課程網 學員如何透過線上學習轉職加薪、創業圓夢，真實故事激勵你的學習之路。', ogType: 'website' });
   const stories = window.SUCCESS_STORIES || [];
   const main = $('#main');
   const totalSalaryUp = stories.filter(s => s.salary.includes('→')).length;
@@ -6815,7 +6793,7 @@ function successPage() {
     <div class="scs-hero rv-up">
       <span class="scs-eyebrow">Success Stories</span>
       <h1>他們的故事，你的未來</h1>
-      <p>每一位學員都從零開始，透過 AI Class 的課程一步步實現目標<br>這些真實故事，證明學習的力量</p>
+      <p>每一位學員都從零開始，透過 OKAI課程網 的課程一步步實現目標<br>這些真實故事，證明學習的力量</p>
       <div class="scs-hero-stats">
         <div><b>${stories.length}</b><span>位學員</span></div>
         <div><b>${totalSalaryUp}</b><span>成功轉職</span></div>
@@ -6867,7 +6845,7 @@ function successPage() {
 
 /* ---------- 即將開課頁面 ---------- */
 function upcomingPage() {
-  seo({ title: '即將開課', desc: '搶先預覽 AI Class 即將推出的新課程，登記早鳥優惠第一時間開課通知。', ogType: 'website' });
+  seo({ title: '即將開課', desc: '搶先預覽 OKAI課程網 即將推出的新課程，登記早鳥優惠第一時間開課通知。', ogType: 'website' });
   const upcoming = window.UPCOMING_COURSES || [];
   const main = $('#main');
   const catMap = {};
@@ -6925,7 +6903,7 @@ function upcomingPage() {
 
 /* ---------- 聯絡我們頁面 ---------- */
 function contactPage() {
-  seo({ title: '聯絡我們', desc: 'AI Class 客服中心——常見問題、聯絡表單、線上客服，我們隨時為你的學習之旅提供協助。', ogType: 'website' });
+  seo({ title: '聯絡我們', desc: 'OKAI課程網 客服中心——常見問題、聯絡表單、線上客服，我們隨時為你的學習之旅提供協助。', ogType: 'website' });
   const main = $('#main');
   const quickFAQ = [
     { q: '如何購買課程？', a: '在課程頁面點擊「加入購物車」，前往購物車頁面完成結帳即可。支援信用卡、超商付款、ATM 轉帳等付款方式。' },
@@ -6933,7 +6911,7 @@ function contactPage() {
     { q: '忘記密碼怎麼辦？', a: '點擊登入頁面的「忘記密碼」，輸入註冊信箱即可收到重設密碼連結。信件通常 5 分鐘內送達。' },
     { q: '課程有觀看期限嗎？', a: '所有課程皆為無限期觀看，購買後可隨時回來複習，且享有課程更新保證。' },
     { q: '如何取得完課證書？', a: '完成課程所有章節並通過課後測驗後，系統會自動發放電子證書，可在「我的學習」頁面下載。' },
-    { q: '可以用手機觀看嗎？', a: '可以。AI Class 支援所有裝置，包括桌面電腦、平板和手機，也可安裝 PWA 離線使用。' }
+    { q: '可以用手機觀看嗎？', a: '可以。OKAI課程網 支援所有裝置，包括桌面電腦、平板和手機，也可安裝 PWA 離線使用。' }
   ];
   main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
     <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>聯絡我們</span></nav>
@@ -6985,9 +6963,9 @@ function contactPage() {
       </form>
     </section>
     <section class="ctc-info rv-up" style="margin-top:48px">
-      <h2>AI Class 公司資訊</h2>
+      <h2>OKAI課程網 公司資訊</h2>
       <div class="ctc-info-grid">
-        <div><b>公司名稱</b><p>AI Class 股份有限公司</p></div>
+        <div><b>公司名稱</b><p>OKAI課程網 股份有限公司</p></div>
         <div><b>統一編號</b><p>12345678</p></div>
         <div><b>公司地址</b><p>台北市信義區松仁路 100 號 10 樓</p></div>
         <div><b>營業時間</b><p>週一至週五 09:00 - 18:00</p></div>
@@ -6999,14 +6977,14 @@ function contactPage() {
         <div class="ctc-map-placeholder">
           <div class="ctc-map-pin">📍</div>
           <p>台北市信義區松仁路 100 號 10 樓</p>
-          <span>AI Class 總部</span>
+          <span>OKAI課程網 總部</span>
           <a class="btn btn-ghost" href="https://maps.google.com/?q=台北市信義區松仁路100號" target="_blank" rel="noopener noreferrer" style="margin-top:12px;font-size:13px">在 Google Maps 開啟 →</a>
         </div>
       </div>
     </section>
     <section class="ctc-social rv-up" style="margin-top:40px;text-align:center">
       <h2>追蹤我們</h2>
-      <p style="color:var(--tx2);margin-bottom:20px">在社群媒體上關注 AI Class 最新消息</p>
+      <p style="color:var(--tx2);margin-bottom:20px">在社群媒體上關注 OKAI課程網 最新消息</p>
       <div class="ctc-social-links">
         <a href="#" class="ctc-social-btn" aria-label="Facebook">📘 Facebook</a>
         <a href="#" class="ctc-social-btn" aria-label="Instagram">📸 Instagram</a>
@@ -7050,7 +7028,7 @@ function galleryPage() {
   const main = $('main');
   const G = window.GALLERY || [];
   const cats = ['全部', ...new Set(G.map(g => g.cat))];
-  seo({ title: '學員作品牆｜AI Class', desc: `探索 ${G.length} 件學員精彩作品`, url: 'https://okaiclass.com/gallery.html',
+  seo({ title: '學員作品牆｜OKAI課程網', desc: `探索 ${G.length} 件學員精彩作品`, url: 'https://okaiclass.com/gallery.html',
     jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '學員作品牆', description: `${G.length} 件學員作品展示` }
   });
   const galLikes = ls('aic-gal-likes', {});
@@ -7059,7 +7037,7 @@ function galleryPage() {
   <section class="sec"><div class="wrap" style="padding-top:100px">
     <div class="crumb rv-up"><a href="index.html">首頁</a> › 學員作品牆</div>
     <div class="gal-header rv-up">
-      <div class="gal-header-text"><h1>學員作品牆</h1><p>看看 AI Class 學員們的精彩創作成果</p></div>
+      <div class="gal-header-text"><h1>學員作品牆</h1><p>看看 OKAI課程網 學員們的精彩創作成果</p></div>
       <div class="gal-header-stats"><div class="gal-stat"><b>${G.length}</b><span>作品</span></div><div class="gal-stat"><b>${G.reduce((s,g) => s+g.likes, 0).toLocaleString()}</b><span>總讚數</span></div><div class="gal-stat"><b>${new Set(G.map(g => g.author)).size}</b><span>創作者</span></div></div>
     </div>
     <div class="chips rv-up" id="gal-chips">${cats.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-gcat="${c}">${c}</button>`).join('')}</div>
@@ -7126,8 +7104,8 @@ function galleryPage() {
 /* ---------- 帳號設定 ---------- */
 function settingsPage() {
   const main = $('main');
-  seo({ title: '帳號設定｜AI Class', desc: '管理你的 AI Class 帳號設定、個人資料與通知偏好。', url: 'https://okaiclass.com/settings.html' });
-  document.title = '帳號設定｜AI Class';
+  seo({ title: '帳號設定｜OKAI課程網', desc: '管理你的 OKAI課程網 帳號設定、個人資料與通知偏好。', url: 'https://okaiclass.com/settings.html' });
+  document.title = '帳號設定｜OKAI課程網';
   const user = aicUser || { name: '學員', email: 'user@okaiclass.com' };
   const isDark = document.documentElement.dataset.theme === 'dark';
   const prefs = ls('aic-settings', {emailNews:true,emailCourse:true,emailPromo:false,lang:'zh-TW',autoplay:true,subtitle:true});
@@ -7303,7 +7281,7 @@ function settingsPage() {
 function notebookPage() {
   const main = $('main');
   const allNotes = ls('aic-notes', {});
-  seo({ title: '學習筆記｜AI Class', desc: '管理你的所有課程學習筆記', url: 'https://okaiclass.com/notebook.html' });
+  seo({ title: '學習筆記｜OKAI課程網', desc: '管理你的所有課程學習筆記', url: 'https://okaiclass.com/notebook.html' });
 
   const flat = [];
   Object.entries(allNotes).forEach(([cid, notes]) => {
@@ -7317,7 +7295,7 @@ function notebookPage() {
   <section class="sec"><div class="wrap" style="padding-top:100px">
     <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="my.html">我的學習</a> › 學習筆記</div>
     <div class="nb-header rv-up">
-      <div class="nb-header-text"><h1>學習筆記</h1><p>你在 AI Class 的所有學習筆記</p></div>
+      <div class="nb-header-text"><h1>學習筆記</h1><p>你在 OKAI課程網 的所有學習筆記</p></div>
       <div class="nb-header-stats">
         <div class="nb-stat"><b>${flat.length}</b><span>總筆記</span></div>
         <div class="nb-stat"><b>${courseList.length}</b><span>課程</span></div>
@@ -7369,7 +7347,7 @@ function notebookPage() {
 
   const exportAll = $('#nb-export-all', main);
   if (exportAll) exportAll.onclick = () => {
-    let txt = `# AI Class — 全部學習筆記\n匯出時間：${new Date().toLocaleString('zh-TW')}\n${'─'.repeat(40)}\n\n`;
+    let txt = `# OKAI課程網 — 全部學習筆記\n匯出時間：${new Date().toLocaleString('zh-TW')}\n${'─'.repeat(40)}\n\n`;
     Object.entries(allNotes).forEach(([cid, notes]) => {
       const cc = byId[cid];
       if (cc && notes.length) {
@@ -7388,7 +7366,7 @@ function notebookPage() {
 /* ---------- 學習報告 ---------- */
 function reportPage() {
   const main = $('main');
-  seo({ title: '學習報告｜AI Class', desc: '你的個人學習報告——時數、進度、技能與目標追蹤', url: 'https://okaiclass.com/report.html' });
+  seo({ title: '學習報告｜OKAI課程網', desc: '你的個人學習報告——時數、進度、技能與目標追蹤', url: 'https://okaiclass.com/report.html' });
 
   const demoProgress = [78, 45, 100, 12, 62, 33, 91, 55, 88, 20, 95, 38, 67];
   const enrolled = C.map((c, i) => ({ ...c, progress: demoProgress[i % demoProgress.length] }));
@@ -7411,8 +7389,8 @@ function reportPage() {
   const catEntries = Object.entries(catDist).sort((a, b) => b[1] - a[1]);
   const catMax = Math.max(...catEntries.map(e => e[1]));
   const skills = [
-    { name: 'UI/UX 設計', pct: 85 }, { name: 'AI 應用', pct: 70 }, { name: '插畫繪圖', pct: 55 },
-    { name: '攝影後製', pct: 40 }, { name: '音樂製作', pct: 25 }, { name: '3D 建模', pct: 30 }
+    { name: 'AI 應用', pct: 85 }, { name: 'Prompt 設計', pct: 70 }, { name: 'AI 繪圖', pct: 55 },
+    { name: 'AI 影片', pct: 40 }, { name: 'AI 自動化', pct: 25 }, { name: 'AI 寫程式', pct: 30 }
   ];
   const goals = [
     { title: '每週學習 10 小時', current: 18.4, target: 10, unit: '小時', done: true },
@@ -7425,7 +7403,7 @@ function reportPage() {
     { date: '2026/10/28', text: '購買第 7 堂課程', icon: '🛒' },
     { date: '2026/10/20', text: '連續學習突破 14 天', icon: '🔥' },
     { date: '2026/10/15', text: '獲得「測驗達人」徽章', icon: '🏆' },
-    { date: '2026/09/20', text: '加入 AI Class', icon: '🎉' }
+    { date: '2026/09/20', text: '加入 OKAI課程網', icon: '🎉' }
   ];
 
   main.innerHTML = `
@@ -7494,8 +7472,8 @@ function reportPage() {
 /* ---------- 限時特賣 ---------- */
 function salePage() {
   const main = $('main');
-  seo({ title: '限時特賣｜AI Class', desc: '精選課程最低 5 折起，限時搶購倒數中！', url: 'https://okaiclass.com/sale.html',
-    jsonLd: { '@context': 'https://schema.org', '@type': 'OfferCatalog', name: '限時特賣', description: 'AI Class 精選課程限時優惠' }
+  seo({ title: '限時特賣｜OKAI課程網', desc: '精選課程最低 5 折起，限時搶購倒數中！', url: 'https://okaiclass.com/sale.html',
+    jsonLd: { '@context': 'https://schema.org', '@type': 'OfferCatalog', name: '限時特賣', description: 'OKAI課程網 精選課程限時優惠' }
   });
 
   const endDate = new Date();
@@ -7586,7 +7564,7 @@ function salePage() {
 /* ---------- 技能地圖 ---------- */
 function skillmapPage() {
   const main = $('main');
-  seo({ title: '技能地圖｜AI Class', desc: '視覺化呈現你的學習路線，找到適合你的進階方向', url: 'https://okaiclass.com/skillmap.html',
+  seo({ title: '技能地圖｜OKAI課程網', desc: '視覺化呈現你的學習路線，找到適合你的進階方向', url: 'https://okaiclass.com/skillmap.html',
     jsonLd: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '技能地圖', description: '學習路線視覺化' }
   });
 
@@ -8075,9 +8053,9 @@ function openRecommendQuiz() {
   const cw = document.createElement('div'); cw.className = 'chat-widget';
   cw.innerHTML = `<button class="cw-fab" aria-label="客服聊天"><span class="cw-fab-icon">💬</span><span class="cw-fab-badge" hidden>1</span></button>
     <div class="cw-panel" hidden role="dialog" aria-modal="false" aria-label="客服聊天">
-      <div class="cw-head"><span class="cw-dot">●</span> AI Class 客服中心<button class="cw-min" aria-label="最小化">－</button></div>
+      <div class="cw-head"><span class="cw-dot">●</span> OKAI課程網 客服中心<button class="cw-min" aria-label="最小化">－</button></div>
       <div class="cw-body">
-        <div class="cw-msg cw-bot"><div class="cw-av">🤖</div><div class="cw-bub">你好！我是 AI Class 智能客服 🎓<br>有什麼可以幫你的嗎？</div></div>
+        <div class="cw-msg cw-bot"><div class="cw-av">🤖</div><div class="cw-bub">你好！我是 OKAI課程網 智能客服 🎓<br>有什麼可以幫你的嗎？</div></div>
         <div class="cw-quick"><button data-cq="course">課程諮詢</button><button data-cq="refund">退費問題</button><button data-cq="tech">技術問題</button><button data-cq="other">其他問題</button></div>
       </div>
       <div class="cw-foot"><input class="cw-input" placeholder="輸入訊息…" aria-label="聊天訊息"><button class="cw-send">送出</button></div>
@@ -8088,7 +8066,7 @@ function openRecommendQuiz() {
   cw.querySelector('.cw-min').onclick = () => { cwPanel.hidden = true; cw.classList.remove('open'); cw.querySelector('.cw-fab').focus(); };
   cwPanel.addEventListener('keydown', e => { if (e.key === 'Escape') { cwPanel.hidden = true; cw.classList.remove('open'); cw.querySelector('.cw-fab').focus(); } });
   const cwReplies = {
-    course: `我們有 ${C.length} 堂精選課程，涵蓋設計、繪畫、AI、影像等 10 大領域。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！`,
+    course: `我們有 ${C.length} 堂 AI 課程，涵蓋 AI 開發、AI 繪圖、AI 影片、AI 行銷等主題。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！`,
     refund: '購買後 7 天內，觀看進度低於 20%，可申請全額退費。到<a href="contact.html">聯繫我們</a>提交申請，3 個工作天內處理。',
     tech: '常見問題：<br>• 影片無法播放 → 清除快取重試<br>• 進度未儲存 → 確認已登入<br>• 下載問題 → 用 Chrome 瀏覽器<br>如仍有問題，到<a href="contact.html">聯繫我們</a>。',
     other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 support@okaiclass.com'
@@ -8193,7 +8171,7 @@ function openRecommendQuiz() {
     const navLinks = $$('a', mnav);
     const submenus = {
       0: [{ icon: '🔥', text: '熱門課程', href: 'category.html?sort=popular' }, { icon: '🆕', text: '最新上架', href: 'upcoming.html' }],
-      2: [{ icon: '🎨', text: '設計', href: 'category.html?cat=design' }, { icon: '✏️', text: '繪畫', href: 'category.html?cat=drawing' }, { icon: '🤖', text: 'AI', href: 'category.html?cat=ai' }],
+      2: [{ icon: '🤖', text: 'AI 開發', href: 'category.html?cat=ai' }, { icon: '🎨', text: 'AI 繪圖', href: 'category.html?cat=drawing' }, { icon: '🎬', text: 'AI 影片', href: 'category.html?cat=video' }],
       4: [{ icon: '📊', text: '學習報告', href: 'report.html' }, { icon: '⚙️', text: '帳號設定', href: 'settings.html' }]
     };
     Object.entries(submenus).forEach(([idx, items]) => {
@@ -8266,7 +8244,7 @@ function openRecommendQuiz() {
       const banner = document.createElement('div');
       banner.className = 'pwa-install';
       banner.innerHTML = `<div class="pwa-icon">📱</div>
-        <div class="pwa-text"><h4>安裝 AI Class App</h4><p>加入主畫面，離線也能學習</p></div>
+        <div class="pwa-text"><h4>安裝 OKAI課程網 App</h4><p>加入主畫面，離線也能學習</p></div>
         <button class="pwa-install-btn">安裝</button>
         <button class="pwa-install-close" aria-label="關閉">×</button>`;
       document.body.append(banner);
@@ -8275,7 +8253,7 @@ function openRecommendQuiz() {
         if (deferredPrompt) {
           deferredPrompt.prompt();
           const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') toast('已成功安裝 AI Class！', 'success');
+          if (outcome === 'accepted') toast('已成功安裝 OKAI課程網！', 'success');
           deferredPrompt = null;
         }
         banner.classList.remove('show');

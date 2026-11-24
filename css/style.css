@@ -2917,7 +2917,7 @@ h3{font-size:clamp(18px,2.2vw,24px)}
 .plr-sc-item{display:flex;align-items:center;gap:12px;padding:8px 0}
 .plr-sc-item kbd{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:32px;padding:0 10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;color:#fff}
 .plr-sc-item span{font-size:14px;color:#a0a0b0}
-/* ===== 為什麼選擇 AI Class (USP) ===== */
+/* ===== 為什麼選擇 OKAI課程網 (USP) ===== */
 .usp-section{padding:80px 0;background:var(--bg)}
 .usp-title{text-align:center;font-size:clamp(1.5rem,3vw,2rem);font-weight:800;margin-bottom:8px}
 .usp-sub{text-align:center;color:var(--tx2);margin-bottom:48px;font-size:1.05rem}
@@ -4654,7 +4654,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 [data-theme="dark"] .c-prereq-link{background:var(--card);border-color:rgba(255,255,255,.08)}
 @media(max-width:480px){.c-prereq{padding:12px}.c-prereq-link{font-size:12px;padding:4px 10px 4px 4px}.c-prereq-link img{width:28px;height:28px}}
 
-/* ── 為什麼選擇 AI Class ── */
+/* ── 為什麼選擇 OKAI課程網 ── */
 .why-sec{background:var(--bg2)}
 .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .why-card{background:var(--bg);border-radius:16px;padding:28px 24px;border:1px solid var(--line);text-align:center;transition:transform .25s ease,box-shadow .25s ease}
@@ -4881,3 +4881,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 #reviews, .review-stats, .live-counter, .c-completion, .insd-reviews, .tm-sec,
 .ent-testimonials, .sec:has(.ent-testi-grid), .sec:has(.rv-wrap), section:has(> .wrap > .ent-testi-grid) { display: none !important; }
 .srch-group:has(input[name=srch-rating]) { display: none !important; }
+.exit-overlay, .promo-sticky, .c-urgency, #promo, [data-cd-inline] { display: none !important; }
+.sec:has(.tch-calc) { display: none !important; }
+
+/* 客服移到右下角，回到頂端按鈕往上讓位 */
+.chat-widget{left:auto!important;right:24px}
+.cw-panel{left:auto;right:0}
+.btt{bottom:92px}
+@media (max-width:768px){.chat-widget{right:12px;bottom:12px}.btt{bottom:80px}}

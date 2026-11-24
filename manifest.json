@@ -1,7 +1,7 @@
 {
-  "name": "AI Class｜跟著業界職人，把熱情學成專業",
-  "short_name": "AI Class",
-  "description": "設計、插畫、3D、AI 程式、攝影、音樂、料理、商業行銷，業界職人親授，無限期觀看。",
+  "name": "OKAI課程網｜學 AI，學完就能用",
+  "short_name": "OKAI課程網",
+  "description": "專注 AI 的線上課程平台，零基礎也能學，學完就能用。",
   "start_url": "/",
   "scope": "/",
   "id": "/",
@@ -25,7 +25,7 @@
     { "name": "社群討論", "short_name": "社群", "url": "/community.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
   ],
   "screenshots": [
-    { "src": "assets/img/og-cover.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "AI Class 首頁 — 精選業界職人課程" },
+    { "src": "assets/img/og-cover.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "OKAI課程網 首頁 — AI 實戰課程" },
     { "src": "assets/img/v785.jpg", "sizes": "1280x720", "type": "image/jpeg", "form_factor": "wide", "label": "課程詳情頁 — 完整章節與學員評價" }
   ]
 }
