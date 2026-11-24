@@ -4949,3 +4949,4 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .tch-mod span{font-size:13px;color:var(--tx2)}
 .tch-check{columns:2;max-width:760px;margin:0 auto;font-size:14px;line-height:2}
 @media(max-width:640px){.tch-check{columns:1}}
+.cookie-bar{display:none!important}

@@ -519,7 +519,7 @@ function shell() {
   }
 
   // Cookie 同意橫幅
-  if (!ls('aic-cookie-ok')) {
+  if (false && !ls('aic-cookie-ok')) {
     const ck = document.createElement('div'); ck.className = 'cookie-bar';
     ck.innerHTML = `<p>我們使用 Cookie 來提供更好的瀏覽體驗與個人化推薦。詳情請參閱 <a href="privacy.html">隱私權政策</a>。</p><div class="cookie-btns"><button class="btn btn-ghost cookie-decline">僅必要</button><button class="btn btn-pri cookie-ok">全部接受</button></div>`;
     document.body.append(ck);
