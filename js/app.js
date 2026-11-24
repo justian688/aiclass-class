@@ -315,12 +315,11 @@ function shell() {
     const anns = window.ANNOUNCEMENTS || [{ text: 'OKAI課程網 全新上線', link: '/category.html' }];
     let annIdx = 0;
     const annText = () => anns[annIdx].text;
-    top.innerHTML = `<span class="topbar-txt">${annText()}</span><button class="topbar-prev" aria-label="上一則">‹</button><button class="topbar-next" aria-label="下一則">›</button><button class="x" aria-label="關閉">×</button>`;
+    top.innerHTML = `<span class="topbar-txt">${annText()}</span>${anns.length > 1 ? '<button class="topbar-prev" aria-label="上一則">‹</button><button class="topbar-next" aria-label="下一則">›</button>' : ''}<button class="x" aria-label="關閉">×</button>`;
     const txt = $('.topbar-txt', top);
     const cycle = dir => { annIdx = (annIdx + dir + anns.length) % anns.length; txt.style.opacity = 0; setTimeout(() => { txt.innerHTML = annText(); txt.style.opacity = 1; }, 200); };
     if (anns.length > 1) { let autoAnn = setInterval(() => cycle(1), 5000); top.addEventListener('mouseenter', () => clearInterval(autoAnn)); top.addEventListener('mouseleave', () => { autoAnn = setInterval(() => cycle(1), 5000); }); }
-    $('.topbar-prev', top).onclick = () => cycle(-1);
-    $('.topbar-next', top).onclick = () => cycle(1);
+    if ($('.topbar-prev', top)) { $('.topbar-prev', top).onclick = () => cycle(-1); $('.topbar-next', top).onclick = () => cycle(1); }
     txt.onclick = () => { if (anns[annIdx].link) location.href = anns[annIdx].link; };
     txt.style.cursor = 'pointer';
     document.body.prepend(top);
@@ -336,7 +335,7 @@ function shell() {
         <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="bundle.html">組合包</a><a href="blog.html">學習專欄</a><a href="quiz.html">測驗</a><a href="skillmap.html">技能地圖</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#paths">學習路徑</a><a href="bundle.html">組合包</a><a href="blog.html">學習專欄</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -1370,8 +1369,7 @@ function home() {
   // 浮動側邊欄
   const fb = document.createElement('div'); fb.className = 'float-bar';
   fb.innerHTML = `<button onclick="toast('優惠功能即將開放，需要協助請來信 hi@okaiclass.com','info')"><span style="font-size:20px">🎁</span><span class="fb-tip">優惠</span></button><button onclick="toast('App 下載中','info')"><span style="font-size:20px">📱</span><span class="fb-tip">App</span></button><button onclick="document.querySelector('.cw-fab')&&document.querySelector('.cw-fab').click()"><span style="font-size:20px">💬</span><span class="fb-tip">客服</span></button><button onclick="scrollTo({top:0,behavior:'smooth'})"><span style="font-size:20px">⬆</span><span class="fb-tip">回頂部</span></button>`;
-  document.body.append(fb);
-  addEventListener('scroll', rafThrottle(() => fb.classList.toggle('show', scrollY > innerHeight)), { passive: true });
+  if (false) document.body.append(fb);
 
   // Sticky 促銷底欄
   if (false && !sessionStorage.getItem('aic-promo-closed')) {
@@ -8028,7 +8026,6 @@ function openRecommendQuiz() {
   function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！目前線上客服是自動回覆，真人客服請寄信到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>，或看<a href="faq.html">常見問題</a> 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="coupon.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
   cw.querySelector('.cw-send').onclick = cwSend;
   cwInput.addEventListener('keydown', e => { if (e.key === 'Enter') cwSend(); });
-  setTimeout(() => { if (cwPanel.hidden) { cwBadge.hidden = false; cwBadge.textContent = '1'; } }, 12000);
 }
 
 // ── 圖片 Lightbox ──

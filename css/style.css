@@ -4950,3 +4950,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .tch-check{columns:2;max-width:760px;margin:0 auto;font-size:14px;line-height:2}
 @media(max-width:640px){.tch-check{columns:1}}
 .cookie-bar{display:none!important}
+/* 分類選單不透明、導覽列不截字 */
+.mega-drop{background:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:0 30px 90px -10px rgba(0,0,0,.35)!important}
+[data-theme=dark] .mega-drop,.dark .mega-drop{background:#15131f!important}
+.nav a{white-space:nowrap}
+.float-bar{display:none!important}
+@media(min-width:900px){.font-size-btn{display:none!important}}
+@media(max-width:1360px) and (min-width:900px){.nav a{padding:8px 7px;font-size:13.5px}.notif-btn{display:none!important}}
+@media(max-width:1270px) and (min-width:900px){.nav a[href="bundle.html"]{display:none}}
+@media(max-width:1200px) and (min-width:900px){.nav a[href="enterprise.html"]{display:none}.search{max-width:200px}}
+@media(max-width:1160px) and (min-width:900px){.nav a[href="index.html#paths"]{display:none}}

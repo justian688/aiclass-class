@@ -2,16 +2,16 @@
 // 價格、講師、日期等目前是預設值，正式上線前請換成真實資料
 window.CATS = [
   { id: 'all', name: '全部課程' },
-  { id: 'ai', name: 'AI 開發', subs: ['AI 應用開發', 'AI Agent', 'RAG 知識庫', 'API 串接'] },
-  { id: 'drawing', name: 'AI 繪圖', subs: ['Midjourney', 'Stable Diffusion', 'ComfyUI', '角色設計', 'LINE 貼圖'] },
-  { id: 'design', name: 'AI 設計', subs: ['品牌設計', 'Logo 設計', '網頁設計', 'App 介面'] },
-  { id: 'video', name: 'AI 影片', subs: ['影片生成', 'AI 動畫', 'AI 3D', '短影音'] },
-  { id: 'creative', name: 'AI 音樂與攝影', subs: ['AI 作曲', 'AI 配音', 'AI 修圖', 'AI 攝影後製'] },
-  { id: 'career', name: 'AI 行銷與自媒體', subs: ['AI 文案', 'AI 社群經營', 'AI SEO', '個人品牌'] },
-  { id: 'baking', name: 'AI 產業應用', subs: ['餐飲業', '零售電商', '中小企業', '客服自動化'] },
-  { id: 'game', name: 'AI 遊戲開發', subs: ['AI 寫程式', 'AI 遊戲素材', 'Vibe Coding'] },
-  { id: 'finance', name: 'AI 理財與副業', subs: ['AI 財報分析', 'AI 投資研究', 'AI 副業'] },
-  { id: 'beauty', name: 'AI 生活應用', subs: ['AI 健身規劃', 'AI 飲食規劃', 'AI 時間管理'] }
+  { id: 'ai', name: 'AI 開發', subs: ['AI 應用開發'] },
+  { id: 'drawing', name: 'AI 繪圖', subs: ['Midjourney', '角色設計'] },
+  { id: 'design', name: 'AI 設計', subs: ['品牌設計', '網頁設計'] },
+  { id: 'video', name: 'AI 影片', subs: ['影片生成'] },
+  { id: 'creative', name: 'AI 音樂與攝影', subs: ['AI 作曲', 'AI 修圖'] },
+  { id: 'career', name: 'AI 行銷與自媒體', subs: ['個人品牌'] },
+  { id: 'baking', name: 'AI 產業應用', subs: ['餐飲業'] },
+  { id: 'game', name: 'AI 遊戲開發', subs: ['AI 遊戲開發'] },
+  { id: 'finance', name: 'AI 理財與副業', subs: ['AI 財報分析'] },
+  { id: 'beauty', name: 'AI 生活應用', subs: ['運動・飲食・時間管理'] }
 ];
 
 const T = 'OKAI 講師團隊', R = 'OKAI課程網 專業講師';
@@ -26,9 +26,9 @@ window.COURSES = [
   { id: 'c08', v: '34408', cat: 'creative', sub: 'AI 修圖', title: 'AI 攝影修圖：Lightroom AI 與 Photoshop 生成式填色', teacher: T, role: R, price: 3280, origin: 3280, rating: 0, students: 0, tag: '', hours: 12, desc: 'AI 遮色片、AI 降噪、生成式填色與擴展、商品去背換景，大幅縮短修圖時間。', ai: '用 AI 修圖功能，把修圖時間縮短到原本的一小部分' },
   { id: 'c11', v: '4809', cat: 'career', sub: '個人品牌', title: 'AI 自媒體經營：用 ChatGPT 與 Claude 打造個人品牌', teacher: T, role: R, price: 3480, origin: 3480, rating: 0, students: 0, tag: 'HOT', hours: 11, desc: '用 AI 找定位、規劃內容、寫文案、做短影音腳本與 SEO 文章，建立能持續經營的個人品牌。', ai: '用 AI 規劃內容、寫文案與腳本，穩定經營自媒體' },
   { id: 'c09', v: '49231', cat: 'baking', sub: '餐飲業', title: '餐飲業 AI 應用：菜單、社群行銷與客服自動化', teacher: T, role: R, price: 2680, origin: 2680, rating: 0, students: 0, tag: '', hours: 8, desc: '用 AI 設計菜單文案、拍出好看的餐點照片、經營社群與 Google 地圖評論，並用 LINE 機器人自動回覆訂位。', ai: '餐廳老闆也能上手的 AI 行銷與客服自動化' },
-  { id: 'c38', v: '42648', cat: 'game', sub: 'Vibe Coding', title: 'AI 遊戲開發：用 AI 寫程式做出 2D 遊戲', teacher: T, role: R, price: 4280, origin: 4280, rating: 0, students: 0, tag: 'NEW', hours: 16, desc: '不熟程式也能開始：用 Claude、Cursor 寫遊戲程式，用 AI 生成角色與場景素材，完成一款可以玩的 2D 遊戲。', ai: '用 AI 寫程式加 AI 素材，完成一款可以玩的 2D 遊戲' },
+  { id: 'c38', v: '42648', cat: 'game', sub: 'AI 遊戲開發', title: 'AI 遊戲開發：用 AI 寫程式做出 2D 遊戲', teacher: T, role: R, price: 4280, origin: 4280, rating: 0, students: 0, tag: 'NEW', hours: 16, desc: '不熟程式也能開始：用 Claude、Cursor 寫遊戲程式，用 AI 生成角色與場景素材，完成一款可以玩的 2D 遊戲。', ai: '用 AI 寫程式加 AI 素材，完成一款可以玩的 2D 遊戲' },
   { id: 'c41', v: '26676', cat: 'finance', sub: 'AI 財報分析', title: 'AI 理財研究：用 ChatGPT 讀財報與整理投資資訊', teacher: T, role: R, price: 2980, origin: 2980, rating: 0, students: 0, tag: '', hours: 8, desc: '用 AI 快速讀懂財報、整理新聞與法說會重點、建立記帳與預算表。本課程只教工具與方法，不提供投資建議。', ai: '用 AI 讀財報、整理資訊，理財研究更有效率' },
-  { id: 'c31', v: '23056', cat: 'beauty', sub: 'AI 健身規劃', title: 'AI 生活應用：用 AI 規劃運動、飲食與時間', teacher: T, role: R, price: 1980, origin: 1980, rating: 0, students: 0, tag: '', hours: 6, desc: '用 AI 排出適合自己的運動計畫、記錄飲食、安排行程與學習計畫，把 AI 變成生活小助理。內容不取代醫療或專業建議。', ai: '把 AI 變成生活助理：運動、飲食與時間管理' }
+  { id: 'c31', v: '23056', cat: 'beauty', sub: '運動・飲食・時間管理', title: 'AI 生活應用：用 AI 規劃運動、飲食與時間', teacher: T, role: R, price: 1980, origin: 1980, rating: 0, students: 0, tag: '', hours: 6, desc: '用 AI 排出適合自己的運動計畫、記錄飲食、安排行程與學習計畫，把 AI 變成生活小助理。內容不取代醫療或專業建議。', ai: '把 AI 變成生活助理：運動、飲食與時間管理' }
 ];
 
 window.HERO = ['c03', 'c47', 'c06', 'c02', 'c11', 'c09'];
@@ -673,7 +673,7 @@ window.ARTICLE_BODIES = {
 };
 
 window.NOTIFICATIONS = [
-  { id: 'n1', type: 'system', title: '歡迎來到 OKAI課程網', body: '開始探索 AI 課程，找到最適合你的學習路線', time: '剛剛', read: false, link: '/category.html' }
+  { id: 'n1', type: 'system', title: '歡迎來到 OKAI課程網', body: '開始探索 AI 課程，找到最適合你的學習路線', time: '剛剛', read: true, link: '/category.html' }
 ];
 
 window.INSTRUCTOR_BIOS = {
