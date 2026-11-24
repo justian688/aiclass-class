@@ -1692,7 +1692,7 @@ function course() {
         <div class="c-side-row"><span>💬</span><span>課程問題：來信 hi@okaiclass.com</span></div>
       </div>
       <div class="c-buy-terms"><h4>購買前請先了解</h4><ul>
-        <li><b>開通時間：</b>付款確認後 1 個工作天內開通，開通當天起算觀看</li>
+        <li><b>開通時間：</b>付款確認後 2 個工作天內開通，開通當天起算觀看</li>
         <li><b>退費：</b>開通後 7 天內、觀看進度低於 20%，可來信申請全額退費</li>
         <li><b>發票：</b>電子發票寄到你填寫的 Email，可開公司統編</li>
       </ul><a href="terms.html#refund">完整退費規則 →</a></div>
@@ -2119,7 +2119,7 @@ function course() {
     ta.value = ''; toast('已開啟 Email，按「傳送」即可送出提問'); return;
     const list = $('.qa-list', main);
     const item = document.createElement('div'); item.className = 'qa-item rv-up in';
-    item.innerHTML = `<div class="qa-item-head"><div class="qa-avatar">學</div><div class="qa-meta"><b>學員</b><span>剛剛</span></div></div><p class="qa-question">${escH(txt)}</p><div class="qa-answer"><div class="qa-answer-head"><span class="qa-teacher-badge">講師</span><b>${c.teacher}</b></div><p>謝謝你的提問！我會在 24 小時內回覆，請稍候。</p></div><div class="qa-actions"><button class="qa-like"><span class="qa-like-icon">👍</span> <span class="qa-like-num">0</span></button><span class="qa-reply-count">0 則回覆</span></div>`;
+    item.innerHTML = `<div class="qa-item-head"><div class="qa-avatar">學</div><div class="qa-meta"><b>學員</b><span>剛剛</span></div></div><p class="qa-question">${escH(txt)}</p><div class="qa-answer"><div class="qa-answer-head"><span class="qa-teacher-badge">講師</span><b>${c.teacher}</b></div><p>謝謝你的提問！我會在 2 個工作天內回覆，請稍候。</p></div><div class="qa-actions"><button class="qa-like"><span class="qa-like-icon">👍</span> <span class="qa-like-num">0</span></button><span class="qa-reply-count">0 則回覆</span></div>`;
     list.prepend(item); ta.value = ''; toast('問題已送出，講師將盡快回覆');
     reveal(list);
   };
@@ -2592,7 +2592,7 @@ function enterprisePage() {
     <div class="wrap">
       <div class="ent-cta-box rv-up">
         <h2>立即開始企業培訓之旅</h2>
-        <p>留下聯絡方式，專屬顧問將在 24 小時內與您聯繫</p>
+        <p>留下聯絡方式，專屬顧問將在 2 個工作天內與您聯繫</p>
         <div class="ent-cta-form">
           <input type="text" placeholder="公司名稱" aria-label="公司名稱">
           <input type="email" placeholder="Email" aria-label="Email">
@@ -2650,7 +2650,7 @@ function openDemoModal() {
   ov.innerHTML = `<div class="demo-modal">
     <button class="demo-modal-close" aria-label="關閉">&times;</button>
     <h2>預約專屬 Demo</h2>
-    <p>填寫以下資訊，我們的企業顧問會在 1 個工作天內與您聯繫，安排專屬產品展示。</p>
+    <p>填寫以下資訊，我們的企業顧問會在 2 個工作天內與您聯繫，安排專屬產品展示。</p>
     <form class="demo-form" onsubmit="event.preventDefault();toast('已收到您的預約申請，顧問將盡快聯繫！','success');const o=this.closest('.demo-modal-ov');o.hidden=true;if(o._restore)o._restore()">
       <input type="text" required placeholder="公司名稱" aria-label="公司名稱">
       <input type="text" required placeholder="聯絡人姓名" aria-label="聯絡人姓名">
@@ -4181,7 +4181,7 @@ function faqPage() {
   <section class="faqp-hero"><div class="wrap">
     <div class="crumb rv-up"><a href="index.html">首頁</a> › 常見問題</div>
     <h1 class="faqp-title rv-up">常見問題</h1>
-    <p class="faqp-sub rv-up">找不到答案？歡迎來信 hi@okaiclass.com，我們會在 24 小時內回覆</p>
+    <p class="faqp-sub rv-up">找不到答案？歡迎來信 hi@okaiclass.com，我們會在 2 個工作天內回覆</p>
     <div class="faqp-search rv-up"><input placeholder="搜尋問題…" id="faq-search" aria-label="搜尋常見問題"></div>
   </div></section>
 
@@ -4916,7 +4916,7 @@ function termsPage() {
       <ul>
         <li>課程價格以購買當下頁面顯示為準，所有價格均為新台幣含稅價。</li>
         <li>所有課程皆為單次購買，非訂閱制，不會自動續扣。</li>
-        <li>送出報名後，本平台於 1 個工作天內以 Email 提供付款資訊；付款確認後 1 個工作天內開通課程，開通後無期限觀看。</li>
+        <li>送出報名後，本平台於 2 個工作天內以 Email 提供付款資訊；付款確認後 2 個工作天內開通課程，開通後無期限觀看。</li>
         <li>付款失敗時，請回覆付款信或來信 hi@okaiclass.com，本平台將重新提供付款方式。</li>
         <li>本平台提供的優惠折扣碼有使用期限與條件限制，不得與其他優惠併用，除非另有說明。</li>
       </ul>
@@ -5079,7 +5079,7 @@ function checkoutPage() {
           <h2><span class="ck-step">1</span>聯絡資料</h2>
           <div class="ck-field"><label>姓名 <span style="color:var(--pink)">*</span></label><input type="text" id="ckName" placeholder="王大明" autocomplete="name"></div>
           <div class="ck-field"><label>手機</label><input type="tel" id="ckPhone" placeholder="0912-345-678" autocomplete="tel"></div>
-          <p class="ck-hint">送出報名後，我們會在 1 個工作天內用 Email 寄付款方式給你；付款確認後即開通課程。</p>
+          <p class="ck-hint">送出報名後，我們會在 2 個工作天內用 Email 寄付款方式給你；付款確認後即開通課程。</p>
         </section>
 
         <section class="ck-section">
@@ -5118,8 +5118,8 @@ function checkoutPage() {
             <h4>付款與開通說明</h4>
             <dl>
               <dt>商品型態</dt><dd>單次購買，非訂閱，不會自動續扣</dd>
-              <dt>付款方式</dt><dd>送出報名後，1 個工作天內以 Email 寄付款資訊給你</dd>
-              <dt>開通時間</dt><dd>付款確認後 1 個工作天內開通，開通當天起算，無期限觀看</dd>
+              <dt>付款方式</dt><dd>送出報名後，2 個工作天內以 Email 寄付款資訊給你</dd>
+              <dt>開通時間</dt><dd>付款確認後 2 個工作天內開通，開通當天起算，無期限觀看</dd>
               <dt>退費規則</dt><dd>開通後 7 天內且觀看進度低於 20%，來信申請即全額退費，以原付款方式退回</dd>
               <dt>發票</dt><dd>電子發票寄到你填寫的 Email</dd>
               <dt>付款失敗</dt><dd>回覆付款信或來信 hi@okaiclass.com，我們會重新提供付款方式</dd>
@@ -5230,7 +5230,7 @@ function checkoutPage() {
     const href = 'mailto:hi@okaiclass.com?subject=' + encodeURIComponent('【OKAI課程網】課程報名 - ' + name) + '&body=' + encodeURIComponent(lines.join('\n'));
     window.trackEvent('generate_lead', { value: finalTotal, items: items.length });
     location.href = href;
-    main.querySelector('.ck-layout').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 16px"><div style="font-size:48px">📧</div><h2 style="margin:12px 0">請在 Email 中按「傳送」完成報名</h2><p style="color:var(--tx2);line-height:1.8">我們已經幫你把報名資料填好了。<br>如果 Email 沒有自動開啟，請把報名的課程名稱、姓名與聯絡方式寄到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>。<br>我們會在 1 個工作天內寄付款方式給你。</p><a class="btn btn-pri" href="category.html" style="margin-top:20px">繼續看課程</a></div>`;
+    main.querySelector('.ck-layout').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 16px"><div style="font-size:48px">📧</div><h2 style="margin:12px 0">請在 Email 中按「傳送」完成報名</h2><p style="color:var(--tx2);line-height:1.8">我們已經幫你把報名資料填好了。<br>如果 Email 沒有自動開啟，請把報名的課程名稱、姓名與聯絡方式寄到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>。<br>我們會在 2 個工作天內寄付款方式給你。</p><a class="btn btn-pri" href="category.html" style="margin-top:20px">繼續看課程</a></div>`;
   };
   reveal(main);
 }
@@ -6907,7 +6907,7 @@ function contactPage() {
         <div class="ctc-ch-icon">📧</div>
         <h3>Email 客服</h3>
         <p><a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a></p>
-        <span>1 個工作天內回覆</span>
+        <span>2 個工作天內回覆</span>
       </div>
       </div>
     </div>
