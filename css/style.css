@@ -4889,3 +4889,16 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .cw-panel{left:auto;right:0}
 .btt{bottom:92px}
 @media (max-width:768px){.chat-widget{right:12px;bottom:12px}.btt{bottom:80px}}
+
+/* 上線修正：假急迫感、假折扣、會員方案先隱藏；客服預設收合 */
+.c-price-chart,.c-pro-tag,.c-live-view,.c-recent-buy,.ck-saved,.ck-discount-row,.ck-installment,.study-timer,
+.price .off,.qp-pct,.sticky-buy-origin,.sale-save,del{display:none!important}
+.cw-panel[hidden]{display:none!important}
+@media (max-width:768px){.cw-panel{position:fixed!important;left:12px!important;right:12px!important;width:auto!important;bottom:80px!important}
+ .search-btn kbd,.hdr kbd{display:none!important}}
+
+.ck-wrap{padding-left:32px!important;padding-right:32px!important}
+@media (max-width:768px){.ck-wrap{padding-left:18px!important;padding-right:18px!important}.search-btn kbd{display:none!important}}
+.nl-sec,.blog-newsletter{display:none!important}
+.ctc-channels{display:flex!important;justify-content:center}.ctc-channels .ctc-ch{max-width:420px;width:100%}
+.sec:has(.showcase-overlay){display:none!important}

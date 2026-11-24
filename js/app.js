@@ -133,7 +133,7 @@ function seo(opts = {}) {
   setMeta('name', 'twitter:title', dTitle);
   setMeta('name', 'twitter:description', dDesc);
   setMeta('name', 'twitter:image', dImg);
-  setMeta('name', 'twitter:site', '@aiclass_tw');
+  
   setMeta('name', 'description', dDesc);
   let hreflang = $('link[hreflang]');
   if (!hreflang) { hreflang = document.createElement('link'); hreflang.rel = 'alternate'; hreflang.hreflang = 'zh-TW'; document.head.append(hreflang); }
@@ -328,14 +328,14 @@ function shell() {
   const hdr = document.createElement('header');
   hdr.className = 'hdr';
   hdr.innerHTML = `<div class="wrap">
-    <a class="logo" href="index.html" aria-label="OKAI課程網 首頁"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#lg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">OKAI課程網</text></svg></a>
+    <a class="logo" href="index.html" aria-label="OKAI課程網 首頁"><svg viewBox="0 0 184 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OKAI課程網"><defs><linearGradient id="lg" x1="52" y1="4" x2="100" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset=".55" stop-color="#C45CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><text x="0" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-1.5" fill="var(--tx)">OK</text><g transform="translate(47 0) skewX(-10)"><text x="6" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-0.5" fill="url(#lg)">AI</text></g><path d="M93 2.5 L95 8.2 L100.7 10.2 L95 12.2 L93 17.9 L91 12.2 L85.3 10.2 L91 8.2 Z" fill="url(#lg)"/><circle cx="101.5" cy="3.5" r="1.6" fill="#FF5C8A"/><text x="106" y="30" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" font-size="15" font-weight="700" letter-spacing="1" fill="var(--tx2, #6e6e73)">課程網</text></svg></a>
     <div class="mega-wrap">
       <button class="mega-btn" aria-expanded="false">☰ 所有分類</button>
       <div class="mega-drop" hidden>
         <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
       </div>
     </div>
-    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="index.html#bootcamps">訓練營</a><a href="bundle.html">組合包</a><a href="success.html">成功故事</a><a href="upcoming.html">即將開課</a><a href="blog.html">學習專欄</a><a href="community.html">社群</a><a href="live.html">直播</a><a href="video.html">影片</a><a href="quiz.html">測驗</a><a href="leaderboard.html">排行榜</a><a href="sale.html" style="color:var(--pink)">🔥 特賣</a><a href="event.html" style="color:var(--pink)">🎉 活動</a><a href="skillmap.html">技能地圖</a><a href="enterprise.html">企業方案</a></nav>
+    <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#new">最新上架</a><a href="index.html#paths">學習路徑</a><a href="bundle.html">組合包</a><a href="blog.html">學習專欄</a><a href="quiz.html">測驗</a><a href="skillmap.html">技能地圖</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
     <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
@@ -374,14 +374,13 @@ function shell() {
   }
   const ft = document.createElement('footer');
   ft.innerHTML = `<div class="wrap"><div class="cols">
-    <div class="ft-brand"><svg viewBox="0 0 168 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;width:auto;margin-bottom:14px"><defs><linearGradient id="flg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="11" fill="url(#flg)"/><path d="M11 29 L20 10 L29 29" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="23" r="2.6" fill="#fff"/><text x="48" y="27" font-family="'Noto Sans TC',system-ui,sans-serif" font-size="20" font-weight="800" fill="var(--tx)" letter-spacing="-0.3">OKAI課程網</text></svg><p>學 AI，學完就能用。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
-      <div class="ft-social"><a href="#" aria-label="Facebook">📘</a><a href="#" aria-label="Instagram">📷</a><a href="#" aria-label="YouTube">🎬</a><a href="#" aria-label="LINE">💬</a></div></div>
-    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="training.html">訓練營</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="video.html">影片專區</a></li><li><a href="community.html">學習社群</a></li><li><a href="gallery.html">學員作品牆</a></li><li><a href="live.html">直播教室</a></li><li><a href="sale.html">限時特賣</a></li><li><a href="event.html">限時活動</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
+    <div class="ft-brand"><svg style="height:30px;width:auto;margin-bottom:14px" viewBox="0 0 184 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OKAI課程網"><defs><linearGradient id="flg" x1="52" y1="4" x2="100" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset=".55" stop-color="#C45CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><text x="0" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-1.5" fill="var(--tx)">OK</text><g transform="translate(47 0) skewX(-10)"><text x="6" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-0.5" fill="url(#flg)">AI</text></g><path d="M93 2.5 L95 8.2 L100.7 10.2 L95 12.2 L93 17.9 L91 12.2 L85.3 10.2 L91 8.2 Z" fill="url(#flg)"/><circle cx="101.5" cy="3.5" r="1.6" fill="#FF5C8A"/><text x="106" y="30" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" font-size="15" font-weight="700" letter-spacing="1" fill="var(--tx2, #6e6e73)">課程網</text></svg><p>學 AI，學完就能用。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
+      </div>
+    <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
     <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
-    <div class="ft-col"><h4 class="ft-col-hd">下載 App<i class="ft-arrow">›</i></h4><ul><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">📱 App Store（iOS）</a></li><li><a href="#" onclick="event.preventDefault();toast('App 開發中，敬請期待')">🤖 Google Play（Android）</a></li></ul>
-      <div class="ft-lang"><select onchange="toast('語言切換功能開發中')" aria-label="語言選擇"><option>🌐 繁體中文</option><option>English</option><option>日本語</option></select></div></div>
+    </div>
   </div>
-  <div class="ft-pay"><span>支援付款方式</span><span class="ft-pay-icon">💳 VISA</span><span class="ft-pay-icon">💳 Mastercard</span><span class="ft-pay-icon">💳 JCB</span><span class="ft-pay-icon">📱 LINE Pay</span><span class="ft-pay-icon">📱 街口支付</span></div>
+  
   <div class="ft-bottom">
     <p>© ${new Date().getFullYear()} OKAI課程網. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
   </div></div>`;
@@ -916,7 +915,7 @@ function home() {
     main.insertAdjacentHTML('beforeend', `<div class="hero-stats rv-up"><div class="wrap"><div class="hs-grid">
       <div class="hs-item"><b data-count="${C.length}">${C.length}</b><span>門課程</span></div>
       
-      <div class="hs-item"><b data-count="${teacherCount}">${teacherCount}</b><span>位講師</span></div>
+      
       <div class="hs-item"><b data-count="${totalHrs}">${totalHrs.toLocaleString()}</b><span>小時內容</span></div>
     </div></div></div>`);
   }
@@ -1044,7 +1043,7 @@ function home() {
     <div class="more"><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
     <div class="rail rank">${sortBy('students').slice(0, 10).map((c, i) => card(c, i, true)).join('')}</div></div></section>`);
 
-  const mqWords = window.CATS.slice(1).map(c => c.name.split('/')[0]).concat(['創作','職人','學習','作品集']);
+  const mqWords = window.CATS.slice(1).map(c => c.name.split('/')[0]).concat(['ChatGPT','AI Agent','學習','作品集']);
   main.insertAdjacentHTML('beforeend', `<div class="marquee"><div class="track">${Array(2).fill(mqWords.map(w => `<span>${w}</span>`).join('')).join('')}</div></div>`);
 
   // 本月精選
@@ -1137,11 +1136,11 @@ function home() {
   // 講師
   const INS = window.INSTRUCTORS || [];
   if (INS.length) {
-    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div><a class="more" href="instructor.html">查看全部 →</a></div>
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>講師團隊</h2><div class="sub">專注 AI 實務教學</div></div><a class="more" href="instructor.html">查看全部 →</a></div>
       <div class="ins-grid">${INS.map((t, i) => `<a href="instructor.html?name=${encodeURIComponent(t.name)}" class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms;text-decoration:none;color:inherit"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span><span>${(t.students / 1000).toFixed(1)}k 學員</span></div></a>`).join('')}</div></div></section>`);
   } else {
     const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
-    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>職人講師陣容</h2><div class="sub">跟著最懂的人學</div></div></div>
+    main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>講師團隊</h2><div class="sub">專注 AI 實務教學</div></div></div>
       <div class="teachers">${teachers.map((c, i) => `<a class="tc rv-up" style="transition-delay:${(i % 6) * 60}ms" href="course.html?id=${c.id}"><img src="${img(c)}" alt="${c.teacher}" loading="lazy" decoding="async"><div class="n"><b>${c.teacher}</b><span>${c.role}</span></div></a>`).join('')}</div></div></section>`);
   }
 
@@ -2340,10 +2339,10 @@ function cartPage() {
     const recommended = C.filter(c => !cart.has(c.id) && cartCats.has(c.cat)).slice(0, 4).concat(C.filter(c => !cart.has(c.id) && !cartCats.has(c.cat))).slice(0, 4);
 
     if (!items.length) {
-      main.innerHTML = `<div class="wrap" style="padding:80px 0"><div class="cart-empty">
+      main.innerHTML = `<div class="wrap" style="padding-top:80px;padding-bottom:80px"><div class="cart-empty">
         <div class="empty-illus"><svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="50" width="100" height="80" rx="12" stroke="var(--tx3)" stroke-width="2" fill="var(--bg2)"/><path d="M30 70 L80 45 L130 70" stroke="var(--tx3)" stroke-width="2" fill="none"/><circle cx="80" cy="90" r="16" stroke="var(--pri)" stroke-width="2" stroke-dasharray="4 3" fill="none"/><path d="M74 90h12M80 84v12" stroke="var(--pri)" stroke-width="2" stroke-linecap="round"/></svg></div>
         <h2>購物車是空的</h2>
-        <p>探索超過 ${C.length} 堂職人課程，找到適合你的學習方向</p>
+        <p>探索 ${C.length} 堂 AI 課程，找到適合你的學習方向</p>
         <a class="btn btn-pri" href="index.html">探索課程 →</a>
       </div></div>
       ${recommended.length ? `<div class="wrap"><h2 style="font-size:22px;font-weight:900;margin-bottom:20px">為你推薦</h2><div class="cart-recommend">${recommended.map((c, i) => card(c, i)).join('')}</div></div>` : ''}`;
@@ -2352,7 +2351,7 @@ function cartPage() {
       return;
     }
 
-    main.innerHTML = `<div class="wrap" style="padding:40px 0">
+    main.innerHTML = `<div class="wrap" style="padding-top:40px;padding-bottom:40px">
       <div class="crumb" style="margin-bottom:16px"><a href="index.html">首頁</a> › 購物車</div>
       <h1 style="font-size:28px;font-weight:900;margin-bottom:28px">購物車 <span style="color:var(--tx3);font-size:18px">(${items.length})</span></h1>
       <div class="cart-layout">
@@ -3393,7 +3392,7 @@ function instructorPage() {
   main.innerHTML = `
   <section class="ins-hero"><div class="wrap">
     <h1 class="ins-title rv-up">所有講師</h1>
-    <p class="ins-sub rv-up">業界頂尖職人親授，${teachers.length} 位講師帶你把熱情學成專業</p>
+    <p class="ins-sub rv-up">專注 AI 實務教學的講師團隊</p>
     <div class="ins-search rv-up"><input type="text" id="ins-q" placeholder="搜尋講師名稱或專業..." autocomplete="off" aria-label="搜尋講師"></div>
     <div class="ins-filters rv-up">
       <button class="chip on" data-role="all">全部</button>
@@ -5087,38 +5086,22 @@ function checkoutPage() {
       <div class="ck-step-line done"></div>
       <div class="ck-step-item active"><span class="ck-step-num">2</span><span>填寫資料</span></div>
       <div class="ck-step-line"></div>
-      <div class="ck-step-item"><span class="ck-step-num">3</span><span>付款</span></div>
+      <div class="ck-step-item"><span class="ck-step-num">3</span><span>送出報名</span></div>
       <div class="ck-step-line"></div>
       <div class="ck-step-item"><span class="ck-step-num">4</span><span>完成</span></div>
     </div>
-    <h1 class="ck-title">結帳</h1>
+    <h1 class="ck-title">報名課程</h1>
     <div class="ck-layout">
       <div class="ck-left">
         <section class="ck-section">
-          <h2><span class="ck-step">1</span>付款方式</h2>
-          <div class="ck-pay-methods">
-            <label class="ck-pay-option active"><input type="radio" name="pay" value="card" checked><span class="ck-pay-icon">💳</span><span>信用卡 / 金融卡</span></label>
-            <label class="ck-pay-option"><input type="radio" name="pay" value="line"><span class="ck-pay-icon">🟢</span><span>LINE Pay</span></label>
-            <label class="ck-pay-option"><input type="radio" name="pay" value="cvs"><span class="ck-pay-icon">🏪</span><span>超商代碼繳費</span></label>
-            <label class="ck-pay-option"><input type="radio" name="pay" value="atm"><span class="ck-pay-icon">🏧</span><span>ATM 轉帳</span></label>
-          </div>
-          <div class="ck-card-form" id="cardForm">
-            <div class="ck-field"><label>卡號 <span class="ck-card-type" id="ckCardType"></span></label><input type="text" id="ckCardNum" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number"></div>
-            <div class="ck-field-row">
-              <div class="ck-field"><label>有效期限</label><input type="text" id="ckExpiry" inputmode="numeric" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp"></div>
-              <div class="ck-field"><label>安全碼</label><input type="text" id="ckCvv" inputmode="numeric" placeholder="CVV" maxlength="4" autocomplete="cc-csc"></div>
-            </div>
-            <div class="ck-field"><label>持卡人姓名</label><input type="text" placeholder="王大明" autocomplete="cc-name"></div>
-          </div>
+          <h2><span class="ck-step">1</span>聯絡資料</h2>
+          <div class="ck-field"><label>姓名 <span style="color:var(--pink)">*</span></label><input type="text" id="ckName" placeholder="王大明" autocomplete="name"></div>
+          <div class="ck-field"><label>手機</label><input type="tel" id="ckPhone" placeholder="0912-345-678" autocomplete="tel"></div>
+          <p class="ck-hint">送出報名後，我們會在 1 個工作天內用 Email 寄付款方式給你；付款確認後即開通課程。</p>
         </section>
 
         <section class="ck-section">
-          <h2><span class="ck-step">2</span>優惠碼</h2>
-          <div class="ck-coupon-row"><input id="ckCoupon" placeholder="輸入優惠碼" aria-label="優惠碼"><button class="btn btn-ghost" id="ckCouponBtn">套用</button></div>
-        </section>
-
-        <section class="ck-section">
-          <h2><span class="ck-step">3</span>發票資訊</h2>
+          <h2><span class="ck-step">2</span>發票資訊</h2>
           <div class="ck-pay-methods">
             <label class="ck-pay-option active"><input type="radio" name="inv" value="donate" checked><span>捐贈發票</span></label>
             <label class="ck-pay-option"><input type="radio" name="inv" value="personal"><span>個人電子發票</span></label>
@@ -5127,9 +5110,9 @@ function checkoutPage() {
         </section>
 
         <section class="ck-section">
-          <h2><span class="ck-step">4</span>Email 確認</h2>
-          <div class="ck-field"><label>Email</label><input type="email" placeholder="your@email.com" value="" autocomplete="email"></div>
-          <p class="ck-hint">訂單確認信與發票將寄送至此 Email</p>
+          <h2><span class="ck-step">3</span>Email</h2>
+          <div class="ck-field"><label>Email <span style="color:var(--pink)">*</span></label><input type="email" id="ckEmail" placeholder="your@email.com" value="" autocomplete="email"></div>
+          <p class="ck-hint">付款資訊與發票會寄到這個 Email</p>
         </section>
       </div>
 
@@ -5147,8 +5130,8 @@ function checkoutPage() {
           <div class="ck-row ck-discount-row" id="ckDiscountRow" style="color:var(--tx3)"><span>優惠碼折扣</span><span id="ckDiscountAmt">—</span></div>
           <div class="ck-divider"></div>
           <div class="ck-row ck-total"><span>應付金額</span><span id="ckTotalAmt">${fmt(subtotal)}</span></div>
-          <button class="btn btn-pri ck-submit" id="ckSubmit">確認付款 ${fmt(subtotal)}</button>
-          <ul class="ck-perks"><li>🔒 SSL 加密安全付款</li><li>✓ 7 天無條件退費保證</li><li>✓ 付款後立即開通課程</li><li>🎓 含完課結業證書</li></ul>
+          <button class="btn btn-pri ck-submit" id="ckSubmit">送出報名 ${fmt(subtotal)}</button>
+          <ul class="ck-perks"><li>📧 送出後會開啟你的 Email，寄出即完成報名</li><li>✓ 付款確認後開通課程</li><li>✓ 7 天退費保證（觀看進度低於 20%）</li><li>🎓 含完課證書</li></ul>
           ${subtotal >= 3000 ? `<div class="ck-installment"><span>🏦</span> 可分 3 期 0 利率，每期 ${fmt(Math.ceil(subtotal / 3))}</div>` : ''}
           <div class="ck-trust"><div class="ck-trust-item"><span class="ck-trust-icon">🔒</span><span>SSL 256-bit<br>加密傳輸</span></div><div class="ck-trust-item"><span class="ck-trust-icon">✅</span><span>7 天退費<br>保證</span></div><div class="ck-trust-item"><span class="ck-trust-icon">🛡️</span><span>隱私保護<br>不外洩</span></div><div class="ck-trust-item"><span class="ck-trust-icon">💳</span><span>安全金流<br>認證</span></div></div>
         </div>
@@ -5230,15 +5213,18 @@ function checkoutPage() {
 
   const submitBtn = $('#ckSubmit', main);
   submitBtn.onclick = () => {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="ck-spinner"></span> 處理中…';
-    const owned = new Set(ls('aic-owned', []));
-    items.forEach(c => owned.add(c.id));
-    ss('aic-owned', [...owned]);
-    const orderId = 'AIC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
-    ss('aic-last-order', { id: orderId, items: items.map(c => c.id), total: finalTotal, coupon: appliedCoupon?.code || null, time: Date.now() });
-    cart.clear(); saveCart(); updateCartBadge();
-    setTimeout(() => { location.href = 'order-complete.html'; }, 1200);
+    const name = ($('#ckName', main)?.value || '').trim();
+    const email = ($('#ckEmail', main)?.value || '').trim();
+    const phone = ($('#ckPhone', main)?.value || '').trim();
+    if (!name) { toast('請填寫姓名', 'error'); $('#ckName', main)?.focus(); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { toast('請填寫正確的 Email', 'error'); $('#ckEmail', main)?.focus(); return; }
+    const inv = ($('[name="inv"]:checked', main) || {}).value || '';
+    const invTxt = { donate: '捐贈發票', personal: '個人電子發票', company: '公司戶發票' }[inv] || inv;
+    const lines = [`姓名：${name}`, `Email：${email}`, `手機：${phone || '（未填）'}`, `發票：${invTxt}`, '', '報名課程：', ...items.map(c => `・${c.title}（${fmt(c.price)}）`), '', `合計：${fmt(finalTotal)}`];
+    const href = 'mailto:hi@okaiclass.com?subject=' + encodeURIComponent('【OKAI課程網】課程報名 - ' + name) + '&body=' + encodeURIComponent(lines.join('\n'));
+    window.trackEvent('generate_lead', { value: finalTotal, items: items.length });
+    location.href = href;
+    main.querySelector('.ck-layout').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 16px"><div style="font-size:48px">📧</div><h2 style="margin:12px 0">請在 Email 中按「傳送」完成報名</h2><p style="color:var(--tx2);line-height:1.8">我們已經幫你把報名資料填好了。<br>如果 Email 沒有自動開啟，請把報名的課程名稱、姓名與聯絡方式寄到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>。<br>我們會在 1 個工作天內寄付款方式給你。</p><a class="btn btn-pri" href="category.html" style="margin-top:20px">繼續看課程</a></div>`;
   };
   reveal(main);
 }
@@ -6685,7 +6671,7 @@ function bundlePage() {
   seo({ title: '課程組合包', desc: '精選課程組合包，多堂課程一起購買享超值折扣，省下更多學習經費。', ogType: 'website' });
   const bundles = window.BUNDLES || [];
   const main = $('#main');
-  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+  main.innerHTML = `<div class="wrap" style="padding-top:80px;padding-bottom:60px">
     <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>課程組合包</span></nav>
     <div class="bdl-hero rv-up">
       <div class="bdl-hero-content">
@@ -6788,7 +6774,7 @@ function successPage() {
   const stories = window.SUCCESS_STORIES || [];
   const main = $('#main');
   const totalSalaryUp = stories.filter(s => s.salary.includes('→')).length;
-  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+  main.innerHTML = `<div class="wrap" style="padding-top:80px;padding-bottom:60px">
     <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>學員成功故事</span></nav>
     <div class="scs-hero rv-up">
       <span class="scs-eyebrow">Success Stories</span>
@@ -6851,7 +6837,7 @@ function upcomingPage() {
   const catMap = {};
   C.forEach(c => { if (!catMap[c.cat]) catMap[c.cat] = CATS.find(ct => ct.id === c.cat); });
   const totalInterest = upcoming.reduce((s, u) => s + u.interest, 0);
-  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+  main.innerHTML = `<div class="wrap" style="padding-top:80px;padding-bottom:60px">
     <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>即將開課</span></nav>
     <div class="upc-hero rv-up">
       <span class="upc-eyebrow">Coming Soon</span>
@@ -6913,7 +6899,7 @@ function contactPage() {
     { q: '如何取得完課證書？', a: '完成課程所有章節並通過課後測驗後，系統會自動發放電子證書，可在「我的學習」頁面下載。' },
     { q: '可以用手機觀看嗎？', a: '可以。OKAI課程網 支援所有裝置，包括桌面電腦、平板和手機，也可安裝 PWA 離線使用。' }
   ];
-  main.innerHTML = `<div class="wrap" style="padding:80px 0 60px">
+  main.innerHTML = `<div class="wrap" style="padding-top:80px;padding-bottom:60px">
     <nav class="breadcrumb rv-up"><a href="index.html">首頁</a> <span>›</span> <span>聯絡我們</span></nav>
     <div class="ctc-hero rv-up">
       <span class="ctc-eyebrow">Support Center</span>
@@ -6924,20 +6910,9 @@ function contactPage() {
       <div class="ctc-ch">
         <div class="ctc-ch-icon">📧</div>
         <h3>Email 客服</h3>
-        <p>support@okaiclass.com</p>
-        <span>24 小時內回覆</span>
+        <p><a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a></p>
+        <span>1 個工作天內回覆</span>
       </div>
-      <div class="ctc-ch">
-        <div class="ctc-ch-icon">💬</div>
-        <h3>LINE 客服</h3>
-        <p>@aiclass</p>
-        <span>週一至週五 09:00-18:00</span>
-      </div>
-      <div class="ctc-ch">
-        <div class="ctc-ch-icon">📞</div>
-        <h3>電話客服</h3>
-        <p>(02) 2345-6789</p>
-        <span>週一至週五 09:00-18:00</span>
       </div>
     </div>
     <section class="ctc-faq rv-up">
@@ -6950,7 +6925,7 @@ function contactPage() {
     <section class="ctc-form-sec rv-up">
       <h2>填寫聯絡表單</h2>
       <p class="ctc-form-sub">無法找到答案？直接留下你的問題，客服團隊會盡快回覆</p>
-      <form class="ctc-form" onsubmit="event.preventDefault();toast('感謝您的來信，我們會在 24 小時內回覆！');this.reset();">
+      <form class="ctc-form" onsubmit="event.preventDefault();const f=this,v=[...f.querySelectorAll('input,select,textarea')].map(x=>((x.closest('.ctc-field')||{}).querySelector?.('label')?.textContent||'').replace('*','').trim()+'：'+x.value).join('\n');location.href='mailto:hi@okaiclass.com?subject='+encodeURIComponent('【OKAI課程網】聯絡表單')+'&body='+encodeURIComponent(v);toast('已開啟你的 Email，按下傳送即可寄出');">
         <div class="ctc-row">
           <div class="ctc-field"><label>姓名 <span>*</span></label><input type="text" required placeholder="你的姓名" autocomplete="name"></div>
           <div class="ctc-field"><label>Email <span>*</span></label><input type="email" required placeholder="your@email.com" autocomplete="email"></div>
@@ -6965,34 +6940,14 @@ function contactPage() {
     <section class="ctc-info rv-up" style="margin-top:48px">
       <h2>OKAI課程網 公司資訊</h2>
       <div class="ctc-info-grid">
-        <div><b>公司名稱</b><p>OKAI課程網 股份有限公司</p></div>
-        <div><b>統一編號</b><p>12345678</p></div>
-        <div><b>公司地址</b><p>台北市信義區松仁路 100 號 10 樓</p></div>
+        <div><b>營運公司</b><p>網軍行銷有限公司</p></div>
+        <div><b>Email</b><p><a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a></p></div>
+        
         <div><b>營業時間</b><p>週一至週五 09:00 - 18:00</p></div>
       </div>
     </section>
-    <section class="ctc-map rv-up" style="margin-top:40px">
-      <h2>我們的位置</h2>
-      <div class="ctc-map-box">
-        <div class="ctc-map-placeholder">
-          <div class="ctc-map-pin">📍</div>
-          <p>台北市信義區松仁路 100 號 10 樓</p>
-          <span>OKAI課程網 總部</span>
-          <a class="btn btn-ghost" href="https://maps.google.com/?q=台北市信義區松仁路100號" target="_blank" rel="noopener noreferrer" style="margin-top:12px;font-size:13px">在 Google Maps 開啟 →</a>
-        </div>
-      </div>
-    </section>
-    <section class="ctc-social rv-up" style="margin-top:40px;text-align:center">
-      <h2>追蹤我們</h2>
-      <p style="color:var(--tx2);margin-bottom:20px">在社群媒體上關注 OKAI課程網 最新消息</p>
-      <div class="ctc-social-links">
-        <a href="#" class="ctc-social-btn" aria-label="Facebook">📘 Facebook</a>
-        <a href="#" class="ctc-social-btn" aria-label="Instagram">📸 Instagram</a>
-        <a href="#" class="ctc-social-btn" aria-label="YouTube">🎬 YouTube</a>
-        <a href="#" class="ctc-social-btn" aria-label="LINE">💬 LINE</a>
-        <a href="#" class="ctc-social-btn" aria-label="Twitter">🐦 X (Twitter)</a>
-      </div>
-    </section>
+    
+    
   </div>`;
   const faqItems = main.querySelectorAll('.qa-item button');
   faqItems.forEach(btn => btn.addEventListener('click', () => {
@@ -8069,12 +8024,12 @@ function openRecommendQuiz() {
     course: `我們有 ${C.length} 堂 AI 課程，涵蓋 AI 開發、AI 繪圖、AI 影片、AI 行銷等主題。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！`,
     refund: '購買後 7 天內，觀看進度低於 20%，可申請全額退費。到<a href="contact.html">聯繫我們</a>提交申請，3 個工作天內處理。',
     tech: '常見問題：<br>• 影片無法播放 → 清除快取重試<br>• 進度未儲存 → 確認已登入<br>• 下載問題 → 用 Chrome 瀏覽器<br>如仍有問題，到<a href="contact.html">聯繫我們</a>。',
-    other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 support@okaiclass.com'
+    other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 hi@okaiclass.com'
   };
   function cwAddMsg(text, bot) { const d = document.createElement('div'); d.className = 'cw-msg ' + (bot ? 'cw-bot' : 'cw-user'); d.innerHTML = bot ? `<div class="cw-av">🤖</div><div class="cw-bub">${text}</div>` : `<div class="cw-bub">${escH(text)}</div>`; const q = cwBody.querySelector('.cw-quick'); if (q) q.remove(); cwBody.append(d); cwBody.scrollTop = cwBody.scrollHeight; }
   function cwBot(text) { const t = document.createElement('div'); t.className = 'cw-msg cw-bot cw-typing'; t.innerHTML = '<div class="cw-av">🤖</div><div class="cw-bub"><span class="cw-dots"><i></i><i></i><i></i></span></div>'; cwBody.append(t); cwBody.scrollTop = cwBody.scrollHeight; setTimeout(() => { t.remove(); cwAddMsg(text, true); }, 800 + Math.random() * 500); }
   cw.querySelectorAll('[data-cq]').forEach(b => b.onclick = () => { cwAddMsg(b.textContent, false); cwBot(cwReplies[b.dataset.cq]); });
-  function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！這是示範網站，客服功能開發中。到<a href="faq.html">常見問題</a>或<a href="contact.html">聯繫我們</a>取得幫助 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="coupon.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
+  function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！目前線上客服是自動回覆，真人客服請寄信到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>，或看<a href="faq.html">常見問題</a> 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="coupon.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
   cw.querySelector('.cw-send').onclick = cwSend;
   cwInput.addEventListener('keydown', e => { if (e.key === 'Enter') cwSend(); });
   setTimeout(() => { if (cwPanel.hidden) { cwBadge.hidden = false; cwBadge.textContent = '1'; } }, 12000);
