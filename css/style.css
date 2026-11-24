@@ -1,6 +1,6 @@
 :root{--bg:#ffffff; --bg2:#f5f5f7; --card:#ffffff; --line:#e5e5ea;
-  --tx:#1d1d1f; --tx2:#6e6e73; --tx3:#757575;
-  --pri:#7c5cff; --pink:#ff5c8a; --grad:linear-gradient(135deg,#7c5cff,#ff5c8a);
+  --tx:#1d1d1f; --tx2:#595960; --tx3:#626268;
+  --pri:#6b4cf0; --pink:#e23a72; --grad:linear-gradient(135deg,#7c5cff,#ff5c8a);
   --pri-4:rgba(124,92,255,.04); --pri-5:rgba(124,92,255,.05); --pri-6:rgba(124,92,255,.06); --pri-8:rgba(124,92,255,.08); --pri-10:rgba(124,92,255,.1); --pri-12:rgba(124,92,255,.12); --pri-15:rgba(124,92,255,.15); --pri-18:rgba(124,92,255,.18); --pri-20:rgba(124,92,255,.2); --pri-25:rgba(124,92,255,.25); --pri-30:rgba(124,92,255,.3); --pri-35:rgba(124,92,255,.35); --pri-40:rgba(124,92,255,.4); --pri-50:rgba(124,92,255,.5);
   --pink-4:rgba(255,92,138,.04); --pink-6:rgba(255,92,138,.06); --pink-8:rgba(255,92,138,.08); --pink-10:rgba(255,92,138,.1); --pink-12:rgba(255,92,138,.12); --pink-15:rgba(255,92,138,.15); --pink-20:rgba(255,92,138,.2); --pink-25:rgba(255,92,138,.25);
   --r:14px; --ease:cubic-bezier(.22,.8,.24,1);
@@ -1504,7 +1504,7 @@ a.notif-item:hover{background:rgba(0,0,0,.03)}
 .plr-ls-dur{font-size:12px;color:var(--tx3);flex-shrink:0}
 /* 深色模式 */
 [data-theme="dark"]{--bg:#0b0b10;--bg2:#14141e;--bg3:#1a1a28;--card:#181824;--line:#2a2a3a;
-  --tx:#e8e8ec;--tx2:#a0a0b0;--tx3:#8a8a9a;
+  --tx:#e8e8ec;--tx2:#b4b4c2;--tx3:#a3a3b3;
   --pri:#9580ff;--pink:#ff6f99;
   --shadow-sm:0 2px 8px rgba(0,0,0,.2);
   --shadow-md:0 8px 24px -8px rgba(0,0,0,.35);
@@ -4960,3 +4960,28 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 @media(max-width:1270px) and (min-width:900px){.nav a[href="bundle.html"]{display:none}}
 @media(max-width:1200px) and (min-width:900px){.nav a[href="enterprise.html"]{display:none}.search{max-width:200px}}
 @media(max-width:1160px) and (min-width:900px){.nav a[href="index.html#paths"]{display:none}}
+/* 手機版頁首不溢出、點擊區加大 */
+.font-size-btn{display:none!important}
+@media(max-width:600px){
+  .hdr a.btn.btn-pri[href="login.html"],header a.btn.btn-pri[href="login.html"]{display:none!important}
+  .topbar-prev,.topbar-next,.topbar .x{min-width:36px;min-height:36px}
+  .theme-toggle{min-width:40px;min-height:40px}
+  footer a,.ft-col a{display:inline-block;padding:8px 0;min-height:36px}
+  .mnav a,.mobile-nav a{min-height:44px}
+}
+.ins-follow-row,.insd-follow-row{display:none!important}
+.login-socials,.login-divider{display:none!important}
+/* 首頁輪播：非第一張用 h2（SEO 只留一個 H1），外觀與 h1 相同 */
+.slide h2.h1{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease),transform .9s var(--ease);font-size:clamp(34px,5.4vw,72px);line-height:1.12;font-weight:900;letter-spacing:-.02em;white-space:pre-line;margin-bottom:18px;color:#fff!important}
+.slide.on h2.h1{opacity:1;transform:none;transition-delay:.5s}
+@media(max-width:760px){.slide h2.h1{white-space:normal}}
+@media(prefers-reduced-motion:reduce){.slide h2.h1{opacity:1!important;transform:none!important}}
+@media(max-width:600px){.hdr .search-btn{width:40px;min-width:40px;padding:0;font-size:0;justify-content:center;flex:none}.hdr .search-btn::before{content:"🔍";font-size:18px}.hdr .search-btn kbd{display:none}}
+.cart-coupon,.cart-coupon-input,.ck-coupon{display:none!important}
+/* 對比與手機版修正 */
+.badge.HOT{background:#d42a63}
+.badge.NEW{background:#5f3fe6}
+@media(max-width:600px){.bdl-card{padding:20px;min-width:0}.bdl-grid{grid-template-columns:minmax(0,1fr)}.crumb a{display:inline-block;padding:8px 2px}.login-options a,.login-footer a{display:inline-block;padding:8px 4px}}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.card-lvl.lvl-mid{color:#b23e00}
+.pwa-install{display:none!important}

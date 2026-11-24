@@ -119,7 +119,9 @@ function showConfetti() {
 function seo(opts = {}) {
   const base = 'https://okaiclass.com/';
   const dTitle = opts.title || document.title;
-  const dDesc = opts.desc || '';
+  let dDesc = opts.desc || '';
+  if (dDesc.length < 50) dDesc = (dDesc ? dDesc.replace(/[。．.]?$/, '。') : '') + 'OKAI課程網 只教 AI 的中文實戰課程，每門課可先免費試看，學完就能用在工作上。';
+  if (dDesc.length > 155) dDesc = dDesc.slice(0, 152) + '…';
   const dUrl = opts.url || base;
   const dImg = opts.img || base + 'assets/img/og-cover.jpg';
   function setMeta(attr, val, content) { let el = $(`meta[${attr}="${val}"]`); if (!el) { el = document.createElement('meta'); el.setAttribute(attr, val); document.head.append(el); } el.content = content; }
@@ -348,7 +350,7 @@ function shell() {
     </div>
     <button class="theme-toggle" aria-label="切換深色模式" data-theme-toggle></button>
     <a class="btn btn-ghost cart-btn" href="cart.html" title="購物車">🛒<span class="cart-badge" style="display:${cart.size?'flex':'none'}">${cart.size||''}</span></a>
-    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">${ls('aic-pro')?'<span class="hdr-pro-badge">PRO</span>':''}<span class="hdr-level-badge" title="${getXPLevel().name}">Lv.${getXPLevel().lv}</span>👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><div class="um-xp-row"><span class="hdr-level-badge lg">${getXPLevel().name}</span><span>${xpData.total.toLocaleString()} XP</span></div><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="report.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
+    ${aicUser ? `<div class="user-menu-wrap"><button class="btn btn-ghost user-menu-btn">${ls('aic-pro')?'<span class="hdr-pro-badge">PRO</span>':''}<span class="hdr-level-badge" title="${getXPLevel().name}">Lv.${getXPLevel().lv}</span>👤 ${aicUser.name}</button><div class="user-menu-drop" hidden><div class="um-xp-row"><span class="hdr-level-badge lg">${getXPLevel().name}</span><span>${xpData.total.toLocaleString()} XP</span></div><a href="my.html">我的學習</a><a href="notebook.html">學習筆記</a><a href="my.html">學習報告</a><a href="order-history.html">訂單紀錄</a><a href="certificate.html">我的證書</a><a href="achievement.html">成就</a><a href="settings.html">帳號設定</a><button id="aic-logout">登出</button></div></div>` : `<a class="btn btn-ghost" href="login.html">登入</a><a class="btn btn-pri" href="login.html">免費註冊</a>`}
   </div>`;
   top.parentNode ? top.after(hdr) : document.body.prepend(hdr);
 
@@ -388,7 +390,7 @@ function shell() {
   if (innerWidth <= 760) $$('.ft-col-hd', ft).forEach(h => { h.onclick = () => h.parentNode.classList.toggle('ft-open'); });
 
   const mn = document.createElement('nav'); mn.className = 'mnav';
-  mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"${page === 'home' ? ' aria-current="page"' : ''}><i>⌂</i>首頁</a><a href="#" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"${page === 'category' ? ' aria-current="page"' : ''}><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"${page === 'wishlist' ? ' aria-current="page"' : ''}><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"${page === 'my' ? ' aria-current="page"' : ''}><i>☺</i>我的</a>`;
+  mn.innerHTML = `<a href="index.html" class="${page === 'home' ? 'on' : ''}"${page === 'home' ? ' aria-current="page"' : ''}><i>⌂</i>首頁</a><a href="search.html" data-search><i>⌕</i>搜尋</a><a href="category.html" class="${page === 'category' ? 'on' : ''}"${page === 'category' ? ' aria-current="page"' : ''}><i>☰</i>分類</a><a href="wishlist.html" class="${page === 'wishlist' ? 'on' : ''}"${page === 'wishlist' ? ' aria-current="page"' : ''}><i>♡</i>收藏</a><a href="my.html" class="${page === 'my' ? 'on' : ''}"${page === 'my' ? ' aria-current="page"' : ''}><i>☺</i>我的</a>`;
   document.body.append(mn);
 
   if (page === 'home' && !sessionStorage.getItem('aic-splash')) {
@@ -872,7 +874,7 @@ function home() {
     ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
       <img class="poster" src="${img(c)}" alt="${c.title}" width="1920" height="1080"${i ? ' loading="lazy"' : ' fetchpriority="high"'}>
       <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
-      <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span><h1>${h}</h1><p>${p}</p>
+      <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span>${i ? `<h2 class="h1">${h}</h2>` : `<h1>${h}</h1>`}<p>${p}</p>
       <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">${owned.has(c.id) ? '繼續學習 →' : cart.has(c.id) ? '前往結帳 →' : '立即了解 →'}</a> <a class="btn btn-ghost" href="${owned.has(c.id) ? `player.html?id=${c.id}` : `course.html?id=${c.id}#preview`}" style="margin-left:8px">${owned.has(c.id) ? '🎬 進入播放器' : '▶ 試看'}</a></div></div></div></div>`; }).join('')}
     <div class="hero-ctrl"><div class="wrap">${slides.map((c, i) => `<button class="dot ${i ? '' : 'on'}"><div class="bar"><i></i></div><span>${c.title}</span></button>`).join('')}
       <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
@@ -986,7 +988,7 @@ function home() {
         { icon: '▶️', title: '免費試看', desc: '每堂課第 1 章前 2 個單元免費看，先確認適合自己再報名。' },
         { icon: '🔄', title: '免費終身更新', desc: '一次購買永久觀看，課程持續更新不加價，永遠學到最新內容。' },
         { icon: '🏆', title: '結業證書', desc: '完成課程後獲得 OKAI課程網 認證證書，為你的履歷和作品集加分。' },
-        { icon: '🛡️', title: '七天退費保證', desc: '購買後七天內不滿意全額退費，讓你安心學習零風險。' }
+        { icon: '🛡️', title: '7 天退費保障', desc: '課程開通後 7 天內、觀看進度低於 20%，可申請全額退費。' }
       ].map((u, i) => `<div class="usp-card rv-up" style="transition-delay:${(i % 3) * 80}ms">
         <div class="usp-icon">${u.icon}</div>
         <h3>${u.title}</h3>
@@ -1049,7 +1051,7 @@ function home() {
   // 本月精選
   if (window.EDITORS_PICKS) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="picks"><div class="wrap"><div class="sec-head rv-up"><div><h2>本月精選</h2><div class="sub">編輯嚴選，不容錯過的好課</div></div></div>
-      <div class="picks-grid">${window.EDITORS_PICKS.map(ep => { const c = byId[ep.id]; if (!c) return ''; return `<a class="pick-card rv-up" href="course.html?id=${c.id}" style="--pimg:url(assets/img/v${c.v}.jpg)">
+      <div class="picks-grid">${window.EDITORS_PICKS.map(ep => { const c = byId[ep.id]; if (!c) return ''; return `<a class="pick-card rv-up" href="course.html?id=${c.id}" style="--pimg:url(/assets/img/v${c.v}.jpg)">
         <div class="pick-overlay"></div>
         <div class="pick-body"><span class="pick-badge">編輯精選</span><h3>${c.title}</h3><p class="pick-quote">「${ep.quote}」</p>
         <div class="pick-meta"><span>${c.hours} 小時</span><span>${fmt(c.price)}</span></div></div></a>`; }).join('')}</div></div></section>`);
@@ -1171,7 +1173,7 @@ function home() {
       const cnt = C.filter(c => c.cat === cat.id).length;
       const sample = C.find(c => c.cat === cat.id);
       const bgUrl = sample ? img(sample) : '';
-      return `<a class="cat-card" href="index.html#cat-${cat.id}" style="--cimg:url(${bgUrl})">
+      return `<a class="cat-card" href="index.html#cat-${cat.id}" style="--cimg:url(${bgUrl ? "/" + bgUrl : "none"})">
         <span class="cat-count">${cnt} 堂課程</span><span class="cat-name">${cat.name}</span></a>`;
     }).join('')}</div></div></section>`);
 
@@ -1185,7 +1187,7 @@ function home() {
         <div class="bundle-courses">${courses.map(c => `<span class="bundle-course-chip">${c.title.split('：')[0]}</span>`).join('')}</div>
         <div class="bundle-price-row"><span class="bundle-price">${fmt(b.price)}</span><span class="bundle-origin">${fmt(b.original)}</span></div>
         <div class="bundle-save">省下 ${fmt(b.save)}</div>
-        <button class="btn btn-pri" style="width:100%;margin-top:16px" onclick="toast('已將組合包加入購物車')">加入購物車</button>
+        <a class="btn btn-pri" style="width:100%;margin-top:16px" href="mailto:hi@okaiclass.com?subject=${encodeURIComponent('【組合包報名】' + b.name)}&body=${encodeURIComponent('組合包：' + b.name + '\n金額：' + fmt(b.price) + '\n姓名：\n手機：\n發票（個人／公司統編）：')}">報名組合包</a>
       </div>`; }).join('')}</div></div></section>`);
   }
 
@@ -1202,7 +1204,7 @@ function home() {
   // 學員作品牆
   const showcaseCourses = C.filter(c => ['drawing','video','design','game'].includes(c.cat)).slice(0, 8);
   main.insertAdjacentHTML('beforeend', `<section class="sec showcase-section"><div class="wrap">
-    <div class="sec-head rv-up"><div><h2>學員作品精選</h2><div class="sub">看看學員們學完課程後的成果</div></div><a href="gallery.html" class="more">查看全部 →</a></div>
+    <div class="sec-head rv-up"><div><h2>學員作品精選</h2><div class="sub">看看學員們學完課程後的成果</div></div><a href="index.html" class="more">查看全部 →</a></div>
     <div class="showcase-grid">${showcaseCourses.map((sc, i) => `<div class="showcase-item rv-up" style="transition-delay:${(i % 4) * 60}ms">
       <img src="${img(sc)}" alt="${sc.title}" loading="lazy" decoding="async">
       <div class="showcase-overlay"><span class="showcase-course">${sc.title}</span><span class="showcase-author">${sc.teacher} 的學員</span></div>
@@ -1336,8 +1338,8 @@ function home() {
     autoTm();
   }
 
-  // OKAI課程網 Pro 訂閱方案
-  main.insertAdjacentHTML('beforeend', `<section class="sec pro-sec" id="pro"><div class="wrap">
+  // OKAI課程網 Pro 訂閱方案（尚未提供，暫不顯示）
+  if (false) main.insertAdjacentHTML('beforeend', `<section class="sec pro-sec" id="pro"><div class="wrap">
     <div class="pro-header rv-up"><span class="pro-crown">👑</span><h2>OKAI課程網 <span class="pro-gradient">Pro</span></h2><p>解鎖全站課程，無限學習</p></div>
     <div class="pro-plans rv-up">
       <div class="pro-plan"><div class="pro-plan-name">月付方案</div><div class="pro-plan-price"><span class="pro-currency">NT$</span><span class="pro-amount">599</span><span class="pro-period">/月</span></div><p class="pro-plan-note">隨時取消，無綁約</p><button class="btn btn-ghost pro-plan-btn" onclick="toast('訂閱功能即將開放，需要協助請來信 hi@okaiclass.com','info')">選擇月付</button></div>
@@ -1778,7 +1780,7 @@ function course() {
       </div>
       <div class="ur-user-list"></div>
     </section>
-    ${(() => { const B = window.BUNDLES || []; const related = B.filter(b => b.courses.includes(c.id)); if (!related.length) return ''; return `<section class="c-sec c-related-bundle rv-up" id="bundle"><h2>🎁 這堂課的超值組合</h2><div class="c-bundle-list">${related.map(b => { const bCourses = b.courses.map(id => byId[id]).filter(Boolean); return `<div class="c-bundle-card"><div class="c-bundle-tag">${b.tag || '組合包'}</div><h3>${b.name}</h3><p>${b.desc}</p><div class="c-bundle-courses">${bCourses.map(bc => `<span class="c-bundle-chip ${bc.id === c.id ? 'current' : ''}">${bc.title.split('：')[0]}</span>`).join('')}</div><div class="c-bundle-price"><span class="c-bundle-now">${fmt(b.price)}</span><del>${fmt(b.original)}</del><span class="c-bundle-save">省 ${fmt(b.save)}</span></div><button class="btn btn-pri" style="width:100%;margin-top:12px" onclick="toast('已將組合包加入購物車 🛒')">整組加入購物車</button></div>`; }).join('')}</div></section>`; })()}
+    ${(() => { const B = window.BUNDLES || []; const related = B.filter(b => b.courses.includes(c.id)); if (!related.length) return ''; return `<section class="c-sec c-related-bundle rv-up" id="bundle"><h2>🎁 這堂課的超值組合</h2><div class="c-bundle-list">${related.map(b => { const bCourses = b.courses.map(id => byId[id]).filter(Boolean); return `<div class="c-bundle-card"><div class="c-bundle-tag">${b.tag || '組合包'}</div><h3>${b.name}</h3><p>${b.desc}</p><div class="c-bundle-courses">${bCourses.map(bc => `<span class="c-bundle-chip ${bc.id === c.id ? 'current' : ''}">${bc.title.split('：')[0]}</span>`).join('')}</div><div class="c-bundle-price"><span class="c-bundle-now">${fmt(b.price)}</span><del>${fmt(b.original)}</del><span class="c-bundle-save">省 ${fmt(b.save)}</span></div><button class="btn btn-pri" style="width:100%;margin-top:12px" onclick="location.href='bundle.html'">整組加入購物車</button></div>`; }).join('')}</div></section>`; })()}
     ${notesWidget(c.id)}
     <section class="c-sec" id="qa"><h2 class="rv-up">💬 課程提問</h2>
       <div class="qa-post rv-up">
@@ -1786,7 +1788,7 @@ function course() {
         <div class="qa-post-foot"><span class="qa-hint">提問前請先搜尋是否已有相似問題</span><button class="btn btn-pri btn-sm qa-submit">送出問題</button></div>
       </div>
       <div class="qa-list"><p class="qa-empty rv-up">目前還沒有公開提問。送出的問題會寄到 hi@okaiclass.com，由講師團隊回覆到你的 Email。</p></div>
-      ${(() => { const cp = (window.COMMUNITY_POSTS || []).filter(p => p.course === c.id); if (!cp.length) return ''; return `<div class="qa-community rv-up"><h3>🌐 社群討論</h3><p class="qa-community-sub">來自學習社群的相關討論</p>${cp.map(p => `<a class="qa-cp-card" href="community.html"><div class="qa-cp-head"><span class="qa-cp-avatar">${p.avatar}</span><b>${p.author}</b><span class="qa-cp-time">${p.time}</span></div><h4>${p.title}</h4><p>${p.content.length > 80 ? p.content.slice(0,80) + '…' : p.content}</p><div class="qa-cp-meta"><span>❤ ${p.likes}</span><span>💬 ${p.replies} 回覆</span>${(p.tags||[]).map(t => `<span class="qa-cp-tag">${t}</span>`).join('')}</div></a>`).join('')}<a href="community.html" class="btn btn-ghost" style="width:100%;margin-top:12px">前往社群看更多 →</a></div>`; })()}
+      ${(() => { const cp = (window.COMMUNITY_POSTS || []).filter(p => p.course === c.id); if (!cp.length) return ''; return `<div class="qa-community rv-up"><h3>🌐 社群討論</h3><p class="qa-community-sub">來自學習社群的相關討論</p>${cp.map(p => `<a class="qa-cp-card" href="blog.html"><div class="qa-cp-head"><span class="qa-cp-avatar">${p.avatar}</span><b>${p.author}</b><span class="qa-cp-time">${p.time}</span></div><h4>${p.title}</h4><p>${p.content.length > 80 ? p.content.slice(0,80) + '…' : p.content}</p><div class="qa-cp-meta"><span>❤ ${p.likes}</span><span>💬 ${p.replies} 回覆</span>${(p.tags||[]).map(t => `<span class="qa-cp-tag">${t}</span>`).join('')}</div></a>`).join('')}<a href="blog.html" class="btn btn-ghost" style="width:100%;margin-top:12px">前往社群看更多 →</a></div>`; })()}
     </section>
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}<div class="faq-more rv-up"><p>找不到你要的答案？</p><a href="faq.html" class="btn btn-ghost">前往幫助中心</a> <button class="btn btn-ghost" onclick="document.querySelector('.cw-fab')&&document.querySelector('.cw-fab').click()">💬 聯繫客服</button></div></section>
     <section class="c-sec c-changelog rv-up" id="changelog"><h2>📋 課程更新日誌</h2>
@@ -1854,7 +1856,7 @@ function course() {
         <div class="rel-art-body"><span class="rel-art-cat">${(window.CATS.find(x => x.id === p.cat) || {}).name || ''}</span><h3>${p.title}</h3><span class="rel-art-meta">${p.readTime || '5 分鐘'} 閱讀</span></div>
       </a>`).join('')}</div></div></section>`;
   })()}
-  ${(() => { const G = window.GALLERY || []; const works = G.filter(g => g.course === c.id); if (!works.length) return ''; return `<section class="c-sec c-gallery rv-up" id="student-works"><h2>🎨 學員作品展示</h2><div class="c-gallery-grid">${works.map(w => `<div class="c-gallery-item"><div class="c-gallery-thumb"><img src="assets/img/v${w.v}.jpg" alt="${w.title}" loading="lazy" decoding="async"></div><div class="c-gallery-info"><h4>${w.title}</h4><p>${w.desc}</p><div class="c-gallery-meta"><span>${w.author}</span><span>❤ ${w.likes}</span></div></div></div>`).join('')}</div><a href="gallery.html" class="btn btn-ghost" style="width:100%;margin-top:16px">查看更多學員作品 →</a></section>`; })()}
+  ${(() => { const G = window.GALLERY || []; const works = G.filter(g => g.course === c.id); if (!works.length) return ''; return `<section class="c-sec c-gallery rv-up" id="student-works"><h2>🎨 學員作品展示</h2><div class="c-gallery-grid">${works.map(w => `<div class="c-gallery-item"><div class="c-gallery-thumb"><img src="assets/img/v${w.v}.jpg" alt="${w.title}" loading="lazy" decoding="async"></div><div class="c-gallery-info"><h4>${w.title}</h4><p>${w.desc}</p><div class="c-gallery-meta"><span>${w.author}</span><span>❤ ${w.likes}</span></div></div></div>`).join('')}</div><a href="index.html" class="btn btn-ghost" style="width:100%;margin-top:16px">查看更多學員作品 →</a></section>`; })()}
   ${(()=>{const next=C.filter(x=>x.id!==c.id&&x.cat===c.cat&&x.hours>c.hours).sort((a,b)=>a.hours-b.hours).slice(0,3);if(!next.length)return '';return `<div class="c-next-step rv-up"><h3>📈 學完這門，接下來學</h3><div class="c-next-grid">${next.map(n=>`<a class="c-next-card" href="course.html?id=${n.id}"><img src="${img(n)}" alt="${n.title}" loading="lazy" decoding="async"><div class="c-next-info"><b>${n.title}</b><span>${n.hours}h ・ ${fmt(n.price)}</span></div><span class="c-next-arrow">→</span></a>`).join('')}</div></div>`;})()}
   ${smartRecommend(c)}
   ${(()=>{const rv=ls('aic-recent-view',[]).filter(x=>x!==c.id).slice(0,4).map(x=>byId[x]).filter(Boolean);if(!rv.length)return '';return `<section class="c-sec rv-up"><h2>🕐 最近瀏覽</h2><div class="recent-viewed">${rv.map(r=>`<a class="rv-item" href="course.html?id=${r.id}"><img src="${img(r)}" alt="${r.title}" loading="lazy" decoding="async"><div><div class="rv-title">${r.title}</div><div class="rv-teacher">${r.teacher}</div></div></a>`).join('')}</div></section>`;})()}
@@ -2391,9 +2393,9 @@ function loginPage() {
         <div class="login-divider"><span>或使用 Email</span></div>
         <div class="login-field"><label>Email</label><input type="email" placeholder="your@email.com" autocomplete="email"></div>
         <div class="login-field"><label>密碼</label><input type="password" placeholder="輸入密碼" autocomplete="current-password"></div>
-        <div class="login-options"><label><input type="checkbox"> 記住我</label><a href="#">忘記密碼？</a></div>
+        <div class="login-options"><label><input type="checkbox"> 記住我</label><a href="mailto:hi@okaiclass.com?subject=%E5%BF%98%E8%A8%98%E5%AF%86%E7%A2%BC">忘記密碼？</a></div>
         <button class="btn btn-pri login-submit" id="login-go">登入</button>
-        <div class="login-footer">還沒有帳號？<a href="#" id="login-toggle">Email 註冊</a></div>
+        <div class="login-footer">還沒有帳號？<a href="#register" id="login-toggle">Email 註冊</a></div>
       </div>
     </div>
   </div>`;
@@ -2418,7 +2420,7 @@ function loginPage() {
     p.textContent = isLogin ? '免費註冊，開始你的學習之旅' : '登入你的 OKAI課程網 帳號，繼續學習之旅';
     submit.textContent = isLogin ? '免費註冊' : '登入';
     const pw = $('input[type="password"]', main); if (pw) pw.autocomplete = isLogin ? 'new-password' : 'current-password';
-    footer.innerHTML = isLogin ? '已有帳號？<a href="#" id="login-toggle">返回登入</a>' : '還沒有帳號？<a href="#" id="login-toggle">Email 註冊</a>';
+    footer.innerHTML = isLogin ? '已有帳號？<a href="#login" id="login-toggle">返回登入</a>' : '還沒有帳號？<a href="#register" id="login-toggle">Email 註冊</a>';
     const newToggle = $('#login-toggle', main);
     if (newToggle) newToggle.onclick = toggleLink.onclick;
   };
@@ -2431,36 +2433,31 @@ function enterprisePage() {
   const main = $('main');
   seo({ title: '企業方案｜OKAI課程網', desc: 'OKAI課程網 企業培訓方案，客製化課程與團隊管理', url: 'https://okaiclass.com/enterprise.html' });
   const features = [
-    { icon: '🎯', title: '客製化課程', desc: '根據企業需求量身打造培訓內容，涵蓋 AI、設計、行銷、管理等領域。' },
-    { icon: '📊', title: '學習數據追蹤', desc: '即時掌握每位員工的學習進度、完成率、測驗成績，讓培訓效果可視化。' },
-    { icon: '🏢', title: '專屬企業帳號', desc: '統一管理企業帳號，批量新增員工、設定權限、分配課程。' },
-    { icon: '📹', title: '企業影片託管', desc: '上傳公司內部培訓影片，建立專屬影音知識庫，永久保存。' },
-    { icon: '🏆', title: '證書與認證', desc: '員工完成課程後自動頒發證書，支援客製化企業 LOGO 與樣式。' },
-    { icon: '💬', title: '專屬客服支援', desc: '一對一專屬客服經理，協助規劃培訓方案，隨時解決問題。' }
+    { icon: '🎯', title: '依產業客製內容', desc: '依你的產業與職務設計 AI 課程內容，案例都用你們實際會遇到的工作情境。' },
+    { icon: '🧑‍🏫', title: '線上或到府授課', desc: '可安排線上直播或到公司上課，也能搭配 OKAI課程網 的線上課程複習。' },
+    { icon: '🛠️', title: '實作為主', desc: '每堂課都有動手練習，課後就能把 AI 用在自己的工作上。' },
+    { icon: '🔐', title: 'AI 使用規範', desc: '協助整理公司內部的 AI 使用原則：哪些資料能用、哪些不能用。' },
+    { icon: '🏆', title: '結業證書', desc: '完成課程的學員可取得 OKAI課程網 結業證書。' },
+    { icon: '📈', title: '課後成效檢視', desc: '課後整理學員作業與回饋，提供下一階段的建議。' }
   ];
   const steps = [
     { num: '01', title: '需求諮詢', desc: '與專屬顧問深入討論企業培訓目標與需求' },
     { num: '02', title: '方案規劃', desc: '量身打造最適合的課程組合與學習路徑' },
-    { num: '03', title: '帳號開通', desc: '快速建立企業專屬培訓平台，批量匯入員工' },
-    { num: '04', title: '持續優化', desc: '定期檢視學習數據，調整培訓策略以達最佳效果' }
+    { num: '03', title: '授課與實作', desc: '線上或到府上課，學員完成實作練習' },
+    { num: '04', title: '成效檢視', desc: '整理學員作業與回饋，規劃下一階段' }
   ];
   const plans = [
     { name: '入門方案', price: '免費', unit: '', desc: '適合小型團隊體驗', features: ['最多 5 位員工', '精選 10 堂課程', '基礎學習報表', '社群支援'], cta: '免費開始', ghost: true },
     { name: '專業方案', price: 'NT$2,980', unit: '/月', desc: '適合中小型企業', features: ['最多 50 位員工', '全站所有課程', '進階數據分析', '企業影片上傳 50GB', '專屬客服', '客製化證書'], cta: '立即訂閱', ghost: false },
     { name: '旗艦方案', price: '聯繫我們', unit: '', desc: '適合大型企業', features: ['無限員工帳號', '全站課程 + 客製課程', '完整 API 串接', '無限影片儲存空間', '專屬客服經理', '到府教育訓練', 'SSO 企業登入'], cta: '預約諮詢', ghost: true }
   ];
-  const testimonials = [
-    { company: '科技新創 A 公司', role: '人資總監', text: '導入 OKAI課程網 企業培訓後，員工技能提升速度快了 3 倍，離職率也下降了 20%。', name: '陳經理' },
-    { company: '知名設計公司', role: '執行長', text: '客製化的課程內容完全貼合我們的需求，團隊設計能力有了質的飛躍。', name: '林總監' },
-    { company: '金融集團', role: '教育訓練處長', text: '學習數據分析讓我們能精準掌握每位同仁的成長軌跡，培訓 ROI 提升了 150%。', name: '王處長' }
-  ];
+  const testimonials = [];
   const faqs = [
-    ['企業方案最少需要幾位員工？', '入門方案最少 1 位即可開始，專業方案建議 10 位以上以獲得最佳效益。'],
-    ['可以先試用再決定嗎？', '當然！我們提供 14 天免費試用專業方案的所有功能，不需要綁定信用卡。'],
-    ['企業影片上傳有格式限制嗎？', '支援 MP4、MOV、AVI 等主流格式，單檔最大 5GB，我們會自動轉檔優化。'],
-    ['可以和公司現有的 HR 系統整合嗎？', '旗艦方案提供完整 API，支援 SSO、SCIM 等企業級整合方式。'],
-    ['培訓數據可以匯出嗎？', '所有方案都支援 CSV/Excel 匯出，旗艦方案另提供 API 即時存取。'],
-    ['合約期間可以調整方案嗎？', '可以隨時升級方案，差額按比例計算。降級則在下個計費週期生效。']
+    ['最少幾個人可以安排內訓？', '人數不限，小團隊也可以洽詢，我們會依人數建議線上或到府的上課方式。'],
+    ['課程內容可以客製嗎？', '可以。我們會先了解你們的產業、職務與想解決的問題，再規劃課程內容與實作題目。'],
+    ['費用怎麼計算？', '依人數、時數、上課方式與客製程度報價，來信後 2 個工作天內提供建議與報價。'],
+    ['可以開發票嗎？', '可以，開立公司統編發票。'],
+    ['員工可以搭配線上課程複習嗎？', '可以，內訓可以搭配 OKAI課程網 的線上課程，詳細方式會在報價時一起說明。']
   ];
 
   main.innerHTML = `
@@ -2479,7 +2476,7 @@ function enterprisePage() {
         <div><b>100%</b><span>AI 專門課程</span></div>
         <div><b>中文</b><span>在地實作案例</span></div>
         <div><b>客製</b><span>依產業規劃內訓</span></div>
-        <div><b>報表</b><span>學習進度可追蹤</span></div>
+        <div><b>實作</b><span>課後檢視學員成果</span></div>
       </div>
     </div>
   </section>
@@ -2494,25 +2491,6 @@ function enterprisePage() {
           <h3>${f.title}</h3>
           <p>${f.desc}</p>
         </div>`).join('')}
-      </div>
-    </div>
-  </section>
-
-  <section class="ent-partners">
-    <div class="wrap">
-      <h2 class="ent-sec-title rv-up">信賴 OKAI課程網 的企業</h2>
-      <div class="ent-partner-logos rv-up">${['台積電 TSMC','聯發科 MediaTek','宏碁 Acer','華碩 ASUS','LINE Taiwan','趨勢科技','國泰金控','富邦金控'].map(p => `<span class="ent-partner-logo">${p}</span>`).join('')}</div>
-      <p class="ent-sec-sub rv-up" style="margin-top:12px;font-size:14px">以及超過 500 家企業選擇 OKAI課程網 作為培訓夥伴</p>
-    </div>
-  </section>
-
-  <section class="ent-stats-anim" id="ent-stats-anim">
-    <div class="wrap">
-      <div class="stats rv-up" id="ent-anim-nums">
-        <div class="stat"><b data-count="500" data-suffix="+">0</b><span>企業客戶</span></div>
-        <div class="stat"><b data-count="60000" data-suffix="+">0</b><span>企業學員</span></div>
-        <div class="stat"><b data-count="98" data-suffix="%">0</b><span>續約率</span></div>
-        <div class="stat"><b data-count="150" data-suffix="%">0</b><span>平均 ROI 提升</span></div>
       </div>
     </div>
   </section>
@@ -2532,47 +2510,12 @@ function enterprisePage() {
   </section>
 
   <section class="ent-pricing" id="pricing">
-    <div class="wrap">
-      <h2 class="ent-sec-title rv-up">選擇最適合的方案</h2>
-      <p class="ent-sec-sub rv-up">所有方案皆含 14 天免費試用</p>
-      <div class="ent-plan-grid">
-        ${plans.map((p, i) => `<div class="ent-plan rv-up ${i === 1 ? 'ent-plan-pop' : ''}" style="transition-delay:${i * 100}ms">
-          ${i === 1 ? '<div class="ent-plan-badge">最受歡迎</div>' : ''}
-          <h3>${p.name}</h3>
-          <div class="ent-plan-price"><span class="ent-plan-amount">${p.price}</span>${p.unit ? `<span class="ent-plan-unit">${p.unit}</span>` : ''}</div>
-          <p class="ent-plan-desc">${p.desc}</p>
-          <ul>${p.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul>
-          <button class="btn ${p.ghost ? 'btn-ghost' : 'btn-pri'}" style="width:100%;height:48px" onclick="${i === 2 ? 'openDemoModal()' : "toast('方案功能即將開放，需要協助請來信 hi@okaiclass.com','info')"}">${p.cta}</button>
-        </div>`).join('')}
-      </div>
-      <div class="ent-compare rv-up" style="margin-top:48px">
-        <h3 style="text-align:center;margin-bottom:24px;font-size:18px">方案功能比較</h3>
-        <div style="overflow-x:auto">
-        <table class="ent-compare-tbl">
-          <thead><tr><th>功能</th><th>入門方案</th><th class="ent-pop-col">專業方案</th><th>旗艦方案</th></tr></thead>
-          <tbody>
-            ${(() => {
-              const ck = v => v === '✓' ? '<span style="color:#34c759;font-weight:700">✓</span>' : v === '✗' ? '<span style="color:var(--tx3)">✗</span>' : v;
-              return [
-              ['員工帳號', '5 人', '50 人', '無限'],
-              ['課程存取', '精選 10 堂', '全站 200+', '全站 + 客製'],
-              ['學習報表', '✓', '✓', '✓'],
-              ['進階數據分析', '✗', '✓', '✓'],
-              ['企業影片上傳', '✗', '50GB', '無限'],
-              ['客製化證書', '✗', '✓', '✓'],
-              ['專屬客服', '社群支援', '✓', '專屬經理'],
-              ['API 串接', '✗', '✗', '✓'],
-              ['SSO 企業登入', '✗', '✗', '✓'],
-              ['到府教育訓練', '✗', '✗', '✓'],
-            ].map(r => `<tr><td>${r[0]}</td><td>${ck(r[1])}</td><td class="ent-pop-col">${ck(r[2])}</td><td>${ck(r[3])}</td></tr>`).join('');
-            })()}
-          </tbody>
-        </table>
-        </div>
-      </div>
+    <div class="wrap" style="text-align:center">
+      <h2 class="ent-sec-title rv-up">內訓費用依需求報價</h2>
+      <p class="ent-sec-sub rv-up">告訴我們產業、人數、想解決的問題與希望的上課方式（線上或到府），我們會在 2 個工作天內回覆規劃建議與報價。</p>
+      <a class="btn btn-pri rv-up" style="height:52px;padding:0 32px;margin-top:12px" href="mailto:hi@okaiclass.com?subject=${encodeURIComponent('【企業內訓洽詢】')}&body=${encodeURIComponent('公司名稱：\n產業：\n參訓人數：\n想解決的問題：\n希望上課方式（線上／到府）：\n聯絡人與電話：')}">寄信洽詢企業內訓</a>
     </div>
   </section>
-
   <section class="ent-testimonials">
     <div class="wrap">
       <h2 class="ent-sec-title rv-up">客戶怎麼說</h2>
@@ -3293,7 +3236,6 @@ function instructorPage() {
           <div class="insd-stats">
             <div class="insd-stat"><b>${t.courses.length}</b><span>門課程</span></div>
             
-            <div class="insd-stat"><b>⭐ ${t.avgRating}</b><span>平均評分</span></div>
             <div class="insd-stat"><b>${totalHrs}</b><span>小時內容</span></div>
           </div>
           <div class="insd-follow-row">
@@ -3368,8 +3310,7 @@ function instructorPage() {
         <p class="ins-role">${t.role}</p>
         <div class="ins-stats">
           <div><b>${t.courses.length}</b><span>門課程</span></div>
-          <div><b>${(t.students / 1000).toFixed(1)}K</b><span>學生</span></div>
-          <div><b>⭐ ${t.avgRating}</b><span>評分</span></div>
+          <div><b>${t.courses.reduce((s, x) => s + x.hours, 0)}</b><span>小時內容</span></div>
         </div>
         <div class="ins-courses">${t.courses.slice(0, 2).map(c => `<span class="ins-course-link">${c.title}</span>`).join('')}</div>
         <div class="ins-follow-row"><button class="ins-follow-btn ${follows.has(t.name) ? 'following' : ''}" data-ifollow="${t.name}">${follows.has(t.name) ? '✓ 已追蹤' : '＋ 追蹤'}</button><span class="ins-fc">${(() => { const ins = (window.INSTRUCTORS || []).find(x => x.name === t.name); return ((ins ? ins.followers : 800) + (follows.has(t.name) ? 1 : 0)).toLocaleString(); })()} 追蹤</span></div>
@@ -3511,7 +3452,7 @@ function categoryPage() {
       <div class="cat-grid">${cats.map(c => {
         const count = C.filter(x => x.cat === c.id).length;
         const sample = C.find(x => x.cat === c.id);
-        return `<a class="cat-card rv-up" href="category.html?cat=${c.id}" style="--cimg:url(assets/img/v${sample ? sample.v : '785'}.jpg)">
+        return `<a class="cat-card rv-up" href="category.html?cat=${c.id}" style="--cimg:url(/assets/img/v${sample ? sample.v : '785'}.jpg)">
           <span class="cat-count">${count} 堂課程</span><span class="cat-name">${c.name}</span>
         </a>`;
       }).join('')}</div>
@@ -3655,19 +3596,19 @@ function myPage() {
   <div class="wrap my-quick rv-up">
     <a class="my-qlink" href="order-history.html"><span class="my-ql-icon">🧾</span><span>訂單紀錄</span></a>
     <a class="my-qlink" href="wishlist.html"><span class="my-ql-icon">♡</span><span>我的收藏</span></a>
-    <a class="my-qlink" href="coupon.html"><span class="my-ql-icon">🎟️</span><span>優惠券</span></a>
+    <a class="my-qlink" href="category.html"><span class="my-ql-icon">🎟️</span><span>優惠券</span></a>
     <a class="my-qlink" href="certificate.html"><span class="my-ql-icon">🏆</span><span>結業證書</span></a>
     <a class="my-qlink" href="quiz.html"><span class="my-ql-icon">🎯</span><span>技能測驗</span></a>
-    <a class="my-qlink" href="invite.html"><span class="my-ql-icon">🎁</span><span>邀請好友</span></a>
+    <a class="my-qlink" href="index.html"><span class="my-ql-icon">🎁</span><span>邀請好友</span></a>
     <a class="my-qlink" href="achievement.html"><span class="my-ql-icon">🏅</span><span>學習成就</span></a>
     <a class="my-qlink" href="notebook.html"><span class="my-ql-icon">📝</span><span>學習筆記</span></a>
-    <a class="my-qlink" href="report.html"><span class="my-ql-icon">📈</span><span>學習報告</span></a>
-    <a class="my-qlink" href="leaderboard.html"><span class="my-ql-icon">📊</span><span>排行榜</span></a>
+    <a class="my-qlink" href="my.html"><span class="my-ql-icon">📈</span><span>學習報告</span></a>
+    <a class="my-qlink" href="index.html"><span class="my-ql-icon">📊</span><span>排行榜</span></a>
   </div>
 
   ${inProgress.length ? `<!-- 繼續學習 -->
   <div class="wrap my-resume rv-up">
-    <div class="my-resume-head"><h2>繼續學習</h2><a href="#" class="my-resume-all" data-goto-courses>查看全部 →</a></div>
+    <div class="my-resume-head"><h2>繼續學習</h2><a href="#courses" class="my-resume-all" data-goto-courses>查看全部 →</a></div>
     <div class="my-resume-list">${inProgress.slice(0, 3).map(c => `<a class="my-resume-card" href="player.html?id=${c.id}">
       <div class="my-rc-thumb"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"><div class="my-rc-play">▶</div></div>
       <div class="my-rc-body">
@@ -3696,7 +3637,7 @@ function myPage() {
         <button class="myp-nav-btn" data-sec="coupons">🎟️ 優惠券</button>
         <button class="myp-nav-btn" data-sec="following">👤 追蹤講師</button>
         <a href="notebook.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">📝 學習筆記</a>
-        <a href="report.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">📈 學習報告</a>
+        <a href="my.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">📈 學習報告</a>
         <a href="settings.html" class="myp-nav-btn" style="text-align:left;text-decoration:none;color:inherit">⚙️ 帳號設定</a>
         <button class="myp-nav-btn" data-sec="weekly">📰 本週週報</button>
         <button class="myp-nav-btn" data-sec="achievements">🏅 成就徽章</button>
@@ -3882,7 +3823,7 @@ function myPage() {
               <p class="teacher">${c.teacher}</p>
               <div class="myp-card-foot">
                 <span class="myp-card-price"><b>NT$${c.price.toLocaleString()}</b></span>
-                <button class="btn btn-pri btn-sm" onclick="toast('已加入購物車')">加入購物車</button>
+                <button class="btn btn-pri btn-sm" onclick="cart.add('${c.id}');saveCart();updateCartBadge();toast('已加入購物車 🛒')">加入購物車</button>
               </div>
             </div>
           </div>`).join('')}
@@ -3907,7 +3848,7 @@ function myPage() {
 
       <!-- 優惠券 -->
       <section class="myp-sec" id="myp-sec-coupons" hidden>
-        <h2 class="myp-sec-title rv-up">優惠券 <a href="coupon.html" style="font-size:.85rem;font-weight:500;color:var(--pri);margin-left:8px">查看全部 →</a></h2>
+        <h2 class="myp-sec-title rv-up">優惠券 <a href="category.html" style="font-size:.85rem;font-weight:500;color:var(--pri);margin-left:8px">查看全部 →</a></h2>
         <div class="myp-coupons rv-up">
           ${coupons.map(cp => `<div class="myp-coupon ${cp.used ? 'used' : ''}">
             <div class="myp-coupon-left"><span class="myp-coupon-code">${cp.code}</span><span class="myp-coupon-desc">${cp.desc}</span></div>
@@ -4399,12 +4340,7 @@ function playerPage() {
     }).join('');
   }
 
-  const QA_DATA = [
-    { user: '王**', time: '2 天前', q: '請問第三章的素材連結在哪裡下載？', a: '素材已更新在第三章第一課的附件區，請重新整理後下載。', likes: 12 },
-    { user: '李**', time: '5 天前', q: '老師推薦的外掛是付費的嗎？有免費替代方案嗎？', a: '課程中介紹的主要外掛都有免費版本可以使用，付費版只是多了一些進階功能，初學者用免費版就夠了。', likes: 28 },
-    { user: '張**', time: '1 週前', q: '作品集需要放幾個作品比較適合？', a: '建議精選 5-8 個代表作品即可，質量比數量重要。每個作品都要附上設計思路和成果說明。', likes: 35 },
-    { user: '陳**', time: '2 週前', q: '完成課程後可以接到什麼價位的案子？', a: '依照市場行情，初階約 5,000-15,000/案，累積作品後可以逐步提升到 30,000 以上。重點是先累積作品和口碑。', likes: 19 },
-  ];
+  const QA_DATA = [];
 
   const main = $('main');
   main.innerHTML = `
@@ -4524,15 +4460,15 @@ function playerPage() {
             </div>`).join('')}
             <div class="plr-qa-input">
               <textarea placeholder="輸入你的問題…" rows="3" aria-label="提問內容"></textarea>
-              <button class="btn btn-pri" onclick="toast('提問功能即將開放，需要協助請來信 hi@okaiclass.com','info')">送出提問</button>
+              <button class="btn btn-pri" onclick="(()=>{const t=this.parentNode.querySelector('textarea').value.trim(); if(!t){toast('請先輸入問題');return;} location.href='mailto:hi@okaiclass.com?subject='+encodeURIComponent('【課程提問】${c.title}')+'&body='+encodeURIComponent(t);})()">送出提問（寄 Email）</button>
             </div>
           </div>
         </div>
         <div class="plr-sb-panel" id="plr-panel-downloads" hidden>
           <div class="plr-dl-list">
-            <div class="plr-dl-item"><span class="plr-dl-icon">📁</span><div class="plr-dl-info"><b>課程專案原始檔</b><span>包含完整專案檔案與素材</span></div><button class="btn btn-ghost" onclick="toast('下載功能即將開放，需要協助請來信 hi@okaiclass.com','info')">下載</button></div>
-            <div class="plr-dl-item"><span class="plr-dl-icon">📄</span><div class="plr-dl-info"><b>課程講義 PDF</b><span>講師整理的重點筆記</span></div><button class="btn btn-ghost" onclick="toast('下載功能即將開放，需要協助請來信 hi@okaiclass.com','info')">下載</button></div>
-            <div class="plr-dl-item"><span class="plr-dl-icon">🖼️</span><div class="plr-dl-info"><b>參考素材包</b><span>練習用圖片與素材</span></div><button class="btn btn-ghost" onclick="toast('下載功能即將開放，需要協助請來信 hi@okaiclass.com','info')">下載</button></div>
+            <div class="plr-dl-item"><span class="plr-dl-icon">📁</span><div class="plr-dl-info"><b>課程專案原始檔</b><span>包含完整專案檔案與素材</span></div><button class="btn btn-ghost" onclick="toast('講義與素材會在課程開通後寄到你的 Email','info')">下載</button></div>
+            <div class="plr-dl-item"><span class="plr-dl-icon">📄</span><div class="plr-dl-info"><b>課程講義 PDF</b><span>講師整理的重點筆記</span></div><button class="btn btn-ghost" onclick="toast('講義與素材會在課程開通後寄到你的 Email','info')">下載</button></div>
+            <div class="plr-dl-item"><span class="plr-dl-icon">🖼️</span><div class="plr-dl-info"><b>參考素材包</b><span>練習用圖片與素材</span></div><button class="btn btn-ghost" onclick="toast('講義與素材會在課程開通後寄到你的 Email','info')">下載</button></div>
           </div>
         </div>
       </aside>
@@ -5457,7 +5393,7 @@ function certificatePage() {
           <h3>${c.title}</h3>
           <p class="teacher">${c.teacher} · ${c.hours} 小時</p>
           <div class="cert-actions">
-            <button class="btn btn-pri btn-sm" onclick="toast('PDF 下載功能即將開放，需要協助請來信 hi@okaiclass.com','info')">📄 下載 PDF</button>
+            <button class="btn btn-pri btn-sm" onclick="window.print()">📄 列印／存成 PDF</button>
             <button class="btn btn-ghost btn-sm cert-share-btn">🔗 分享證書</button>
           </div>
         </div>
@@ -8023,7 +7959,7 @@ function openRecommendQuiz() {
   function cwAddMsg(text, bot) { const d = document.createElement('div'); d.className = 'cw-msg ' + (bot ? 'cw-bot' : 'cw-user'); d.innerHTML = bot ? `<div class="cw-av">🤖</div><div class="cw-bub">${text}</div>` : `<div class="cw-bub">${escH(text)}</div>`; const q = cwBody.querySelector('.cw-quick'); if (q) q.remove(); cwBody.append(d); cwBody.scrollTop = cwBody.scrollHeight; }
   function cwBot(text) { const t = document.createElement('div'); t.className = 'cw-msg cw-bot cw-typing'; t.innerHTML = '<div class="cw-av">🤖</div><div class="cw-bub"><span class="cw-dots"><i></i><i></i><i></i></span></div>'; cwBody.append(t); cwBody.scrollTop = cwBody.scrollHeight; setTimeout(() => { t.remove(); cwAddMsg(text, true); }, 800 + Math.random() * 500); }
   cw.querySelectorAll('[data-cq]').forEach(b => b.onclick = () => { cwAddMsg(b.textContent, false); cwBot(cwReplies[b.dataset.cq]); });
-  function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！目前線上客服是自動回覆，真人客服請寄信到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>，或看<a href="faq.html">常見問題</a> 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="coupon.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
+  function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！目前線上客服是自動回覆，真人客服請寄信到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>，或看<a href="faq.html">常見問題</a> 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="category.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
   cw.querySelector('.cw-send').onclick = cwSend;
   cwInput.addEventListener('keydown', e => { if (e.key === 'Enter') cwSend(); });
 }
@@ -8120,7 +8056,7 @@ function openRecommendQuiz() {
     const submenus = {
       0: [{ icon: '🔥', text: '熱門課程', href: 'category.html?sort=popular' }, { icon: '🆕', text: '最新上架', href: 'upcoming.html' }],
       2: [{ icon: '🤖', text: 'AI 開發', href: 'category.html?cat=ai' }, { icon: '🎨', text: 'AI 繪圖', href: 'category.html?cat=drawing' }, { icon: '🎬', text: 'AI 影片', href: 'category.html?cat=video' }],
-      4: [{ icon: '📊', text: '學習報告', href: 'report.html' }, { icon: '⚙️', text: '帳號設定', href: 'settings.html' }]
+      4: [{ icon: '🧾', text: '訂單紀錄', href: 'order-history.html' }, { icon: '⚙️', text: '帳號設定', href: 'settings.html' }]
     };
     Object.entries(submenus).forEach(([idx, items]) => {
       const link = navLinks[+idx];
@@ -8187,7 +8123,7 @@ function openRecommendQuiz() {
   addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
-    if (sessionStorage.getItem('aic-pwa-dismiss')) return;
+    return; // 不顯示安裝 App 提示
     setTimeout(() => {
       const banner = document.createElement('div');
       banner.className = 'pwa-install';
@@ -8423,3 +8359,6 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
   new PerformanceObserver(list => { list.getEntries().forEach(e => console.log(`[perf] ${e.name}: ${Math.round(e.startTime)}ms`)); }).observe({ type: 'paint', buffered: true });
   addEventListener('load', () => { const nav = performance.getEntriesByType('navigation')[0]; if (nav) console.log(`[perf] DOM ready: ${Math.round(nav.domContentLoadedEventEnd)}ms, load: ${Math.round(nav.loadEventEnd)}ms`); });
 }
+
+/* 每頁至少一個 H1（SEO／無障礙），沒有的頁面補上隱藏標題 */
+window.addEventListener('load', () => { setTimeout(() => { if (!document.querySelector('h1')) { const h = document.createElement('h1'); h.className = 'sr-only'; h.textContent = document.title.split('｜')[0]; (document.querySelector('main') || document.body).prepend(h); } }, 800); });
