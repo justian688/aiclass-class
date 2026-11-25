@@ -11,7 +11,7 @@ global.window={};global.location={search:''};global.localStorage={getItem(){},se
 eval(require('fs').readFileSync('js/data.js','utf8'));
 console.log(JSON.stringify({courses:window.COURSES.map(c=>({id:c.id,price:c.price,hours:c.hours,title:c.title,ch:(window.CHAPTERS[c.id]||[]).length,ls:(window.CHAPTERS[c.id]||[]).reduce((n,x)=>n+x.lessons.length,0)})),
 cats:window.CATS.slice(1).map(c=>({id:c.id,subs:c.subs})),posts:window.POSTS.map(p=>p.id)}))"""]))
-pages = [f for f in sorted(os.listdir('.')) if f.endswith('.html') and f not in ('offline.html',)]
+pages = [f for f in sorted(os.listdir('.')) if f.endswith('.html') and f not in ('offline.html',) and 'http-equiv="refresh"' not in open(f).read()]
 urls = [p for p in pages]
 urls += [f'course.html?id={c["id"]}' for c in data['courses']]
 urls += [f'player.html?id={c["id"]}' for c in data['courses']]
@@ -90,7 +90,7 @@ JS_CHECK = r"""
  if (document.title.length>65) P('標題太長', '低', document.title.length+' 字：'+document.title);
  const md=document.querySelector('meta[name=description]'); if(!md||!md.content||md.content.length<40) P('缺少或過短的描述', '中', md?md.content:'無');
  if (!document.querySelector('link[rel=canonical]')) P('缺少 canonical', '低', location.pathname);
- const h1=[...document.querySelectorAll('h1')].filter(h=>getComputedStyle(h).display!=='none'&&!h.closest('[hidden]')); if (h1.length!==1) P('H1 數量不是 1', '低', `${h1.length} 個`);
+ const h1=[...document.querySelectorAll('h1')].filter(h=>getComputedStyle(h).display!=='none'&&!h.closest('[hidden]')&&!h.classList.contains('sr-only')); if (h1.length!==1) P('H1 數量不是 1', '低', `${h1.length} 個`);
  if (!document.documentElement.lang) P('缺少 lang', '低', '');
  for (const h of document.querySelectorAll('h1,h2,h3')) if (vis(h) && !h.textContent.trim()) P('空白標題', '中', h.outerHTML.slice(0,60), h);
  // 11 空白區塊

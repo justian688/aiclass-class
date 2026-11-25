@@ -5078,3 +5078,8 @@ footer p a{color:inherit;text-decoration:underline}
 .refund-link{display:inline-block;padding:8px 0}
 @media (max-width:768px){input[type=checkbox],input[type=radio]{width:24px;height:24px}}
 @media (max-width:768px){.crumb a,.bc a,.breadcrumb a,nav[aria-label*="麵包屑"] a{display:inline-block;padding:6px 2px;min-height:32px}}
+/* 各頁可見主標題 */
+.page-h1{font-size:28px;font-weight:900;margin:0 0 20px}
+.srch-top .page-h1{margin-bottom:14px}
+h1.plr-course-name{margin:0;font-weight:600;line-height:1.4}
+@media (max-width:768px){.page-h1{font-size:22px}}

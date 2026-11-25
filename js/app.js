@@ -2337,7 +2337,7 @@ function cartPage() {
     const recommended = C.filter(c => !cart.has(c.id) && cartCats.has(c.cat)).slice(0, 4).concat(C.filter(c => !cart.has(c.id) && !cartCats.has(c.cat))).slice(0, 4);
 
     if (!items.length) {
-      main.innerHTML = `<div class="wrap" style="padding-top:80px;padding-bottom:80px"><div class="cart-empty">
+      main.innerHTML = `<div class="wrap" style="padding-top:80px;padding-bottom:80px"><h1 class="page-h1">購物車</h1><div class="cart-empty">
         <div class="empty-illus"><svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="50" width="100" height="80" rx="12" stroke="var(--tx3)" stroke-width="2" fill="var(--bg2)"/><path d="M30 70 L80 45 L130 70" stroke="var(--tx3)" stroke-width="2" fill="none"/><circle cx="80" cy="90" r="16" stroke="var(--pri)" stroke-width="2" stroke-dasharray="4 3" fill="none"/><path d="M74 90h12M80 84v12" stroke="var(--pri)" stroke-width="2" stroke-linecap="round"/></svg></div>
         <h2>購物車是空的</h2>
         <p>探索 ${C.length} 堂 AI 課程，找到適合你的學習方向</p>
@@ -3508,7 +3508,7 @@ function wishlistPage() {
     else if (wishSort === 'price-high') items.sort((a,b) => b.price - a.price);
     else if (wishSort === 'rating') items.sort((a,b) => b.rating - a.rating);
     if (!items.length) {
-      main.innerHTML = `<section class="sec"><div class="wrap">
+      main.innerHTML = `<section class="sec"><div class="wrap"><h1 class="page-h1">我的收藏</h1>
         <div class="cart-empty"><div class="empty-illus"><svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M80 130 L35 85 A28 28 0 0 1 80 50 A28 28 0 0 1 125 85 Z" stroke="var(--pink)" stroke-width="2" fill="none" stroke-dasharray="5 4"/><circle cx="80" cy="82" r="8" fill="var(--pink)" opacity=".15"/><path d="M76 82h8M80 78v8" stroke="var(--pink)" stroke-width="1.5" stroke-linecap="round"/></svg></div><h2>收藏清單是空的</h2><p>瀏覽課程時點擊愛心，把感興趣的課程加入收藏</p><a class="btn btn-pri" href="index.html">探索課程</a></div>
       </div></section>`;
       return;
@@ -4285,7 +4285,7 @@ function playerPage() {
   <div class="plr-wrap">
     <header class="plr-hdr">
       <a href="index.html" class="plr-logo">OKAI課程網</a>
-      <span class="plr-course-name">${c.title}</span>
+      <h1 class="plr-course-name">${c.title}</h1>
       <div class="plr-hdr-right">
         <span class="plr-prog-txt">${pctDone()}% 完成</span>
         <a href="course.html?id=${c.id}" class="plr-back">← 課程詳情</a>
@@ -5151,7 +5151,7 @@ function orderCompletePage() {
   seo({ title: '訂單完成｜OKAI課程網', desc: '恭喜！你的訂單已完成，課程已開通', url: 'https://okaiclass.com/order-complete.html' });
   const main = $('main');
   const order = ls('aic-last-order', null);
-  if (!order) { location.href = 'index.html'; return; }
+  if (!order) { location.replace('index.html'); return; }
 
   const items = order.items.map(id => byId[id]).filter(Boolean);
   window.trackEvent('purchase', { transaction_id: order.id, value: order.total, items: items.map(c => ({ item_id: c.id, item_name: c.title, price: c.price })) });
@@ -5752,6 +5752,7 @@ function searchPage() {
   <div class="wrap srch-wrap">
     <div class="crumb rv-up"><a href="index.html">首頁</a> › 搜尋${initQ ? `「${escH(initQ)}」` : ''}</div>
     <div class="srch-top rv-up">
+      <h1 class="page-h1">搜尋課程</h1>
       <div class="srch-input-wrap">
         <span class="srch-icon">⌕</span>
         <input class="srch-input" type="text" value="${escH(initQ)}" placeholder="搜尋課程、講師、關鍵字…" autofocus aria-label="搜尋課程">
