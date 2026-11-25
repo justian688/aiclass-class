@@ -29,7 +29,8 @@ const ss = (key, val) => { try { localStorage.setItem(key, typeof val === 'strin
 const rs = (key) => { try { localStorage.removeItem(key); } catch {} };
 const wish = new Set(ls('aic-wish', []));
 const cart = new Set(ls('aic-cart', []));
-const aicUser = ls('aic-user', null);
+const cleanTxt = (v, n = 60) => String(v == null ? '' : v).replace(/[<>"'`&\\]/g, '').trim().slice(0, n);
+const aicUser = (() => { const u = ls('aic-user', null); if (!u || typeof u !== 'object') return null; return { ...u, name: cleanTxt(u.name, 40), email: cleanTxt(u.email, 80) }; })();
 const owned = new Set(ls('aic-owned', []));
 /* 已擁有的課程不能重複加入購物車 */
 { let _ch = false; for (const id of [...cart]) if (owned.has(id)) { cart.delete(id); _ch = true; } if (_ch) ss('aic-cart', [...cart]); }
@@ -2441,7 +2442,7 @@ function loginPage() {
     if (!email || !email.includes('@')) { toast('請輸入有效的 Email'); return; }
     if (!pass) { toast('請輸入密碼'); return; }
     const name = email.split('@')[0].replace(/[^a-zA-Z一-鿿]/g, '') || '學員';
-    ss('aic-user', { name, email });
+    ss('aic-user', { name: cleanTxt(name, 40), email: cleanTxt(email, 80) });
     toast(`歡迎回來，${name}！`);
     const nx = new URLSearchParams(location.search).get('next') || '';
     setTimeout(() => location.href = /^[a-z0-9-]+\.html(\?[\w=&%-]*)?$/i.test(nx) ? nx : 'index.html', 800);
@@ -4295,7 +4296,7 @@ function playerPage() {
     <div class="plr-body">
       <div class="plr-main">
         ${isOwned ? '' : `<div class="plr-trial"><span>▶ 試看模式：第 1 章前 2 個單元免費觀看</span><button class="btn btn-pri btn-sm" data-trial-enroll>報名完整課程 ${fmt(c.price)}</button></div>`}
-        <div class="plr-video-wrap">
+        <div class="plr-video-wrap"><div class="plr-stage">
           <video id="plr-vid" src="${lessonSrc(0, 0)}" poster="${img(c)}" preload="metadata" playsinline></video>
           <div class="plr-controls">
             <div class="plr-progress-bar" id="plr-pbar" role="slider" aria-label="播放進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="plr-progress-fill" id="plr-pfill"></div><div class="plr-progress-handle" id="plr-phandle"></div></div>
@@ -4327,6 +4328,7 @@ function playerPage() {
             </div>
           </div>
           <div class="plr-subtitle-bar" id="plr-subtitle" aria-live="polite"></div>
+          </div>
           <div class="plr-lesson-bar" id="plr-lesson-bar">
             <span class="plr-lb-chapter">第 1 章</span>
             <span class="plr-lb-sep">›</span>
@@ -4334,11 +4336,23 @@ function playerPage() {
           </div>
           <div class="plr-nav-row">
             <button class="plr-nav-btn" id="plr-restart" aria-label="從頭播放">↺ 從頭播放</button>
-            <button class="plr-nav-btn" id="plr-report" aria-label="回報問題">⚠ 回報影片或內容問題</button>
+            <button class="plr-nav-btn" id="plr-report" aria-label="回報問題">⚠ 回報<span class="plr-rp-long">影片或內容</span>問題</button>
             <button class="plr-nav-btn" id="plr-nav-prev" aria-label="上一課">← 上一課</button>
             <button class="plr-nav-btn plr-nav-next" id="plr-nav-next" aria-label="下一課">下一課 →</button>
           </div>
         </div>
+        <section class="plr-below" id="plr-below">
+          <div class="plr-cm-tabs" role="tablist">
+            <button class="plr-cm-tab on" data-cm="lesson" role="tab">本單元留言</button>
+            <button class="plr-cm-tab" data-cm="all" role="tab">全部留言</button>
+          </div>
+          <form class="plr-cm-form" id="plr-cm-form" autocomplete="off">
+            <div class="plr-cm-row"><input id="plr-cm-name" maxlength="20" placeholder="你的暱稱（可留空）" aria-label="暱稱"><input name="website" tabindex="-1" class="plr-cm-hp" aria-hidden="true" autocomplete="off"></div>
+            <textarea id="plr-cm-text" maxlength="1000" rows="3" placeholder="對這個單元有問題或心得？留言給講師和同學（2～1000 字）" aria-label="留言內容"></textarea>
+            <div class="plr-cm-foot"><span class="plr-cm-hint">留言會公開顯示，請勿留下電話、地址等個人資料</span><span class="plr-cm-count" id="plr-cm-count">0 / 1000</span><button class="btn btn-pri btn-sm" type="submit" id="plr-cm-send">送出留言</button></div>
+          </form>
+          <div class="plr-cm-list" id="plr-cm-list" aria-live="polite"><p class="plr-cm-empty">載入留言中…</p></div>
+        </section>
       <div class="plr-shortcuts-overlay" id="plr-shortcuts" hidden role="dialog" aria-modal="true" aria-label="鍵盤快捷鍵">
         <div class="plr-shortcuts-panel">
           <div class="plr-shortcuts-head"><h3>⌨ 鍵盤快捷鍵</h3><button class="plr-shortcuts-close" aria-label="關閉">✕</button></div>
@@ -4526,6 +4540,7 @@ function playerPage() {
     vid_el.pause();
     document.querySelectorAll('.plr-err').forEach(e => e.remove());
     ss('aic-last-' + c.id, [ci, li]);
+    setTimeout(() => { try { cmRender(); } catch (e) {} }, 0);
     if (ci !== curCh) closedCur = -1;
     curCh = ci; curLs = li;
     posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
@@ -4570,6 +4585,58 @@ function playerPage() {
     $$('.plr-ls').forEach(b => b.onclick = () => goLesson(+b.dataset.ch, +b.dataset.ls));
   }
   bindSidebar();
+  /* ---------- 單元留言（存在主機 /api/comments.php，所有學員都看得到） ---------- */
+  const CM_API = 'api/comments.php';
+  let cmAll = [], cmMode = 'lesson', cmLoaded = false;
+  const cmList = $('#plr-cm-list'), cmForm = $('#plr-cm-form'), cmText = $('#plr-cm-text'), cmName = $('#plr-cm-name');
+  if (cmName && aicUser) cmName.value = aicUser.name || '';
+  const cmAgo = t => { const m = Math.floor((Date.now() / 1000 - t) / 60); if (m < 1) return '剛剛'; if (m < 60) return m + ' 分鐘前'; const h = Math.floor(m / 60); if (h < 24) return h + ' 小時前'; const d = Math.floor(h / 24); return d < 30 ? d + ' 天前' : new Date(t * 1000).toLocaleDateString('zh-TW'); };
+  function cmRender() {
+    if (!cmList) return;
+    const key = `${curCh + 1}-${curLs + 1}`;
+    const items = cmMode === 'lesson' ? cmAll.filter(x => x.lesson === key) : cmAll;
+    $$('.plr-cm-tab').forEach(b => b.classList.toggle('on', b.dataset.cm === cmMode));
+    const tabL = $('.plr-cm-tab[data-cm="lesson"]'), tabA = $('.plr-cm-tab[data-cm="all"]');
+    if (tabL) tabL.textContent = `本單元留言（${cmAll.filter(x => x.lesson === key).length}）`;
+    if (tabA) tabA.textContent = `全部留言（${cmAll.length}）`;
+    cmList.innerHTML = '';
+    if (!cmLoaded) { cmList.innerHTML = '<p class="plr-cm-empty">載入留言中…</p>'; return; }
+    if (!items.length) { cmList.innerHTML = `<p class="plr-cm-empty">${cmMode === 'lesson' ? '這個單元還沒有留言，來當第一個發問的人吧！' : '這門課還沒有留言。'}</p>`; return; }
+    items.forEach(x => {
+      const el = document.createElement('div'); el.className = 'plr-cm-item';
+      const av = document.createElement('div'); av.className = 'plr-cm-av'; av.textContent = (x.name || '學')[0];
+      const body = document.createElement('div'); body.className = 'plr-cm-body';
+      const head = document.createElement('div'); head.className = 'plr-cm-head';
+      const nm = document.createElement('b'); nm.textContent = x.name || '學員';
+      const meta = document.createElement('span'); meta.textContent = `${cmMode === 'all' ? '單元 ' + x.lesson + '・' : ''}${cmAgo(x.t)}`;
+      head.append(nm, meta);
+      const tx = document.createElement('p'); tx.textContent = x.text;
+      body.append(head, tx); el.append(av, body); cmList.append(el);
+    });
+  }
+  function cmLoad() {
+    fetch(CM_API + '?course=' + encodeURIComponent(c.id), { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(j => { cmAll = (j && j.items) || []; cmLoaded = true; cmRender(); })
+      .catch(() => { cmLoaded = true; cmAll = []; if (cmList) cmList.innerHTML = '<p class="plr-cm-empty">留言暫時載入不了，請稍後重新整理。</p>'; });
+  }
+  $$('.plr-cm-tab').forEach(b => b.onclick = () => { cmMode = b.dataset.cm; cmRender(); });
+  if (cmText) cmText.oninput = () => { const n = cmText.value.length; const ct = $('#plr-cm-count'); if (ct) ct.textContent = n + ' / 1000'; };
+  if (cmForm) cmForm.onsubmit = e => {
+    e.preventDefault();
+    const text = cmText.value.trim();
+    if (text.length < 2) { toast('留言至少 2 個字', 'error'); cmText.focus(); return; }
+    const btn = $('#plr-cm-send'); btn.disabled = true; btn.textContent = '送出中…';
+    fetch(CM_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ course: c.id, lesson: `${curCh + 1}-${curLs + 1}`, name: cmName.value.trim(), text, website: cmForm.website.value }) })
+      .then(r => r.json().then(j => ({ ok: r.ok && j.ok, j })))
+      .then(({ ok, j }) => {
+        if (!ok) { toast((j && j.error) || '留言失敗，請稍後再試', 'error'); return; }
+        if (j.item) cmAll.unshift(j.item);
+        cmText.value = ''; cmText.oninput(); cmMode = 'lesson'; cmRender(); toast('留言已送出', 'success');
+      })
+      .catch(() => toast('留言失敗，請檢查網路後再試', 'error'))
+      .finally(() => { btn.disabled = false; btn.textContent = '送出留言'; });
+  };
+  cmLoad();
   /* 回到上次看到的單元（網址可用 ?ch=&ls= 指定） */
   setTimeout(() => {
     const q = new URLSearchParams(location.search);
