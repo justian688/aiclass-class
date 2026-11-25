@@ -68,7 +68,6 @@ def cover(c, W=960, H=540):
     d.text((60, 140 + fs + 46), t1, font=F(34), fill=(255, 255, 255, 235))
     d.rounded_rectangle((56, 56, 56 + 150, 56 + 40), 20, fill=(255, 255, 255, 235))
     d.text((56 + 75, 76), 'OKAI課程網', font=F(19), fill=c2, anchor='mm')
-    d.text((60, H - 70), f"{c['hours']} 小時・{len(c['ch'])} 章", font=F(24, False), fill=(255, 255, 255, 210))
     return im.convert('RGB')
 
 def lesson_frame(c, ci, li, W=1280, H=720):
@@ -112,6 +111,7 @@ def main(ids):
              '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '28', '-pix_fmt', 'yuv420p', '-an', '-movflags', '+faststart', f"assets/video/v{c['id']}.mp4"])
         os.remove(src)
         os.makedirs(f"assets/video/{c['id']}", exist_ok=True)
+    if os.environ.get('COVER_ONLY'): os.rmdir(tmp); print('封面', len(todo)); return
     jobs = [(c, ci, li, tmp) for c in todo for ci, (_, ls) in enumerate(c['ch']) for li in range(len(ls))]
     with ThreadPoolExecutor(6) as ex:
         list(ex.map(make_lesson, jobs))
