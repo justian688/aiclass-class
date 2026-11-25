@@ -5003,3 +5003,12 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .test-bar a{color:#93c5fd;text-decoration:underline}
 footer p a{color:inherit;text-decoration:underline}
 [hidden]{display:none!important}
+/* UX 修正 2026-11-25：手機客服泡泡不蓋住底部導覽；分類卡文字改白色 */
+@media (max-width:768px){.chat-widget{bottom:calc(74px + env(safe-area-inset-bottom))!important}.btt{bottom:calc(138px + env(safe-area-inset-bottom))!important}}
+.cat-card{color:#fff}.cat-card .cat-count{color:rgba(255,255,255,.8)}.cat-card::before{opacity:.75}
+/* 企業方案 Hero：深色背景配白字 */
+.ent-hero,.ent-hero .ent-title{color:#fff}
+.ent-hero p,.ent-hero .crumb,.ent-hero .crumb a{color:rgba(255,255,255,.78)}
+.ent-hero .btn-ghost{color:#fff;border-color:rgba(255,255,255,.5);background:transparent}
+.ent-hero .btn-ghost:hover{background:rgba(255,255,255,.12)}
+.ent-hero-stats span{color:rgba(255,255,255,.7)}

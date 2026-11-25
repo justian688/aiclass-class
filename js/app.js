@@ -263,10 +263,9 @@ function smartRecommend(current) {
     return { ...c, _score: s };
   }).sort((a, b) => b._score - a._score).slice(0, 6);
   if (!scored.length) return '';
-  return `<section class="sec sr-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>學了這門的人也學了</h2><div class="sub">根據學員購買行為推薦</div></div></div>
+  return `<section class="sec sr-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>你可能也會喜歡</h2><div class="sub">依課程主題推薦</div></div></div>
     <div class="rail">${scored.map((c, i) => {
-      const buyPct = 40 + Math.floor(Math.random() * 35);
-      return `<div class="sr-card-wrap">${card(c, i)}<div class="sr-also-bought">${buyPct}% 的學員也購買</div></div>`;
+      return `<div class="sr-card-wrap">${card(c, i)}</div>`;
     }).join('')}</div></div></section>`;
 }
 
@@ -570,8 +569,8 @@ function shell() {
     }
   }
 
-  // 社交證明通知
-  if (page === 'home' || page === 'course' || page === 'category') {
+  // 社交證明通知（假資料，移除）
+  if (false) {
     const names = ['小明','Emily','阿豪','小美','Jason','品涵','子軒','宜芳','Kevin','雅婷','志偉','思妤','Ryan','佳慧','冠宇','詩涵','Andy','怡君','柏翰','心怡'];
     const cities = ['台北','台中','高雄','新竹','台南','桃園','嘉義','花蓮'];
     const sp = document.createElement('div'); sp.className = 'social-proof';
@@ -886,8 +885,8 @@ function home() {
       <div class="hero-arrows"><button class="circle" data-hp aria-label="上一張">←</button><button class="circle" data-hpause aria-label="暫停">❚❚</button><button class="circle" data-hn aria-label="下一張">→</button></div></div></div>
   </section>`);
 
-  // Hero 打字動畫
-  {
+  // Hero 打字動畫（移除：小字擠在主標題下方，干擾閱讀）
+  if (false) {
     const typePhrases = ['ChatGPT', 'AI 繪圖', 'AI 影片', 'AI Agent', 'AI 寫程式', 'AI 行銷', 'AI 自動化', 'AI 修圖', 'AI 作曲', 'AI 自媒體'];
     main.insertAdjacentHTML('beforeend', `<div class="hero-typed-bar"><div class="wrap"><span class="hero-typed-pre">在 OKAI課程網 學</span><span class="hero-typed-word" id="heroTyped"></span><span class="hero-typed-cursor">|</span><span class="hero-typed-suf">，開啟你的職涯新篇章</span></div></div>`);
     const el = $('#heroTyped');
@@ -957,7 +956,7 @@ function home() {
   // 分類
   main.insertAdjacentHTML('beforeend', `<div class="wrap" id="cat-all"><div class="chips">${window.CATS.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-cat="${c.id}">${c.name}</button>`).join('')}</div></div>`);
   // 排序按鈕
-  main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="sort-bar"><button class="sort-btn on" data-sort="default">推薦</button><button class="sort-btn" data-sort="new">最新上架</button><button class="sort-btn" data-sort="students">最多學員</button><button class="sort-btn" data-sort="price">價格低到高</button></div></div>`);
+  main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="sort-bar"><button class="sort-btn on" data-sort="default">推薦</button><button class="sort-btn" data-sort="new">最新上架</button><button class="sort-btn" data-sort="price">價格低到高</button></div></div>`);
   // 個人化排序：優先顯示最近瀏覽過的分類課程
   const personalizedC = (() => {
     const rv = ls('aic-recent-view', []);
@@ -1053,17 +1052,17 @@ function home() {
 
   const sortBy = (k) => [...C].sort((a, b) => b[k] - a[k]);
   // TOP 10 + 時段切換
-  main.insertAdjacentHTML('beforeend', `<section class="sec" id="top10"><div class="wrap">
+  if (false) main.insertAdjacentHTML('beforeend', `<section class="sec" id="top10"><div class="wrap">
     <div class="sec-head rv-up"><div><h2>TOP 10 排行</h2><div class="sub">學員最多人選的課程</div></div>
     <div class="time-tabs"><button class="time-tab on" data-period="realtime">即時排行</button><button class="time-tab" data-period="weekly">本週排行</button><button class="time-tab" data-period="monthly">本月排行</button></div>
     <div class="more"><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
     <div class="rail rank">${sortBy('students').slice(0, 10).map((c, i) => card(c, i, true)).join('')}</div></div></section>`);
 
   const mqWords = window.CATS.slice(1).map(c => c.name.split('/')[0]).concat(['ChatGPT','AI Agent','學習','作品集']);
-  main.insertAdjacentHTML('beforeend', `<div class="marquee"><div class="track">${Array(2).fill(mqWords.map(w => `<span>${w}</span>`).join('')).join('')}</div></div>`);
+  if (false) main.insertAdjacentHTML('beforeend', `<div class="marquee"><div class="track">${Array(2).fill(mqWords.map(w => `<span>${w}</span>`).join('')).join('')}</div></div>`);
 
   // 本月精選
-  if (window.EDITORS_PICKS) {
+  if (false && window.EDITORS_PICKS) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="picks"><div class="wrap"><div class="sec-head rv-up"><div><h2>本月精選</h2><div class="sub">編輯嚴選，不容錯過的好課</div></div></div>
       <div class="picks-grid">${window.EDITORS_PICKS.map(ep => { const c = byId[ep.id]; if (!c) return ''; return `<a class="pick-card rv-up" href="course.html?id=${c.id}" style="--pimg:url(/assets/img/v${c.v}.jpg)">
         <div class="pick-overlay"></div>
@@ -1076,7 +1075,7 @@ function home() {
   // 學習路徑
   if (window.PATHS) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="paths"><div class="wrap"><div class="sec-head rv-up"><div><h2>學習路徑</h2><div class="sub">系統化學習，目標導向的職涯規劃</div></div></div>
-      <div class="paths-rail">${window.PATHS.map(p => `<a href="path.html?id=${p.id}" class="path-card rv-up" style="text-decoration:none;color:inherit"><div class="pc-name">${p.name}</div><p class="pc-desc">${p.desc}</p><div class="pc-info"><span class="pc-chip">📚 ${p.courses.length} 堂課程</span><span class="pc-chip">⏱ ${p.duration}</span><span class="pc-chip">📊 ${p.level}</span></div><div class="pc-salary">💰 預估年薪 ${p.salary}</div><div class="pc-progress"><i></i></div><div class="pc-pct">學習進度 0%</div><span class="pc-start">開始學習 →</span></a>`).join('')}</div></div></section>`);
+      <div class="paths-rail">${window.PATHS.map(p => `<a href="path.html?id=${p.id}" class="path-card rv-up" style="text-decoration:none;color:inherit"><div class="pc-name">${p.name}</div><p class="pc-desc">${p.desc}</p><div class="pc-info"><span class="pc-chip">📚 ${p.courses.length} 堂課程</span><span class="pc-chip">⏱ ${p.duration}</span><span class="pc-chip">📊 ${p.level}</span></div><span class="pc-start">開始學習 →</span></a>`).join('')}</div></div></section>`);
   }
 
   // 捲動敘事
@@ -1084,15 +1083,15 @@ function home() {
   const steps = [['01 / 實作導向', '學真正用得到的\nAI 技能', '每堂課都從實際案例出發，一步步跟著做，學完就能用在工作與生活上。'],
                  ['02 / 專案實作', '每堂課都是\n一個完整作品', '附上講師原始專案檔與素材，從零開始跟著做，上完課就有能放進作品集的成果。'],
                  ['03 / 無限期觀看', '一次購買\n隨時隨地重溫', '電腦、手機、平板都能看，支援倍速與字幕，課程更新內容免費開放。']];
-  main.insertAdjacentHTML('beforeend', `<section class="story"><div class="pin">
+  if (false) main.insertAdjacentHTML('beforeend', `<section class="story"><div class="pin">
     <div class="steps">${steps.map((s, i) => `<div class="step ${i ? '' : 'on'}"><div class="k">${s[0]}</div><h2>${s[1].replace('\n', '<br>')}</h2><p>${s[2]}</p></div>`).join('')}<div class="pager">${steps.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div></div>
     <div class="media">${storyV.map((c, i) => `<video class="${i ? '' : 'on'}" src="${vid(c)}" muted loop playsinline preload="metadata" poster="${img(c)}" aria-hidden="true"></video>`).join('')}</div>
   </div></section>`);
 
   // 平台數據區塊：等有真實數字再放回
 
-  // 每日學習挑戰
-  if (window.MISSIONS) {
+  // 每日學習挑戰（移除：假的即時動態、與訪客無關）
+  if (false && window.MISSIONS) {
     const surnames = ['陳','林','黃','張','王','李','吳','周','趙','許','蔡','鄭','劉','曾','謝'];
     const actions = window.MISSIONS.map(m => ({ type: m.type, reward: m.reward, unit: m.unit }));
     const feedItems = Array.from({ length: 20 }, () => {
@@ -1137,7 +1136,7 @@ function home() {
     });
   }
 
-  main.insertAdjacentHTML('beforeend', railSec('best', '評價最高', '五星好評不斷', sortBy('rating').slice(0, 10)));
+  if (false) main.insertAdjacentHTML('beforeend', railSec('best', '評價最高', '五星好評不斷', sortBy('rating').slice(0, 10)));
 
   // 影音學習
   if (window.VIDEO_CONTENT && window.VIDEO_CONTENT.length) {
@@ -1153,7 +1152,7 @@ function home() {
   const INS = window.INSTRUCTORS || [];
   if (INS.length) {
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>講師團隊</h2><div class="sub">專注 AI 實務教學</div></div><a class="more" href="instructor.html">查看全部 →</a></div>
-      <div class="ins-grid">${INS.map((t, i) => `<a href="instructor.html?name=${encodeURIComponent(t.name)}" class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms;text-decoration:none;color:inherit"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span><span>${(t.students / 1000).toFixed(1)}k 學員</span></div></a>`).join('')}</div></div></section>`);
+      <div class="ins-grid">${INS.map((t, i) => `<a href="instructor.html?name=${encodeURIComponent(t.name)}" class="ins-card rv-up" style="transition-delay:${(i % 4) * 60}ms;text-decoration:none;color:inherit"><div class="ins-avatar">${t.avatar}</div><h3>${t.name}</h3><span class="ins-role">${t.role}</span><p class="ins-bio">${t.bio}</p><div class="ins-stats"><span>${t.courses} 堂課</span>${t.students ? `<span>${t.students.toLocaleString()} 位學員</span>` : ""}</div></a>`).join('')}</div></div></section>`);
   } else {
     const teachers = [...new Map(C.map(c => [c.teacher, c])).values()].slice(0, 12);
     main.insertAdjacentHTML('beforeend', `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>講師團隊</h2><div class="sub">專注 AI 實務教學</div></div></div>
@@ -1206,7 +1205,7 @@ function home() {
   }
 
   // 學員成功故事
-  if (window.SUCCESS_STORIES) {
+  if (window.SUCCESS_STORIES && window.SUCCESS_STORIES.length) {
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="stories"><div class="wrap"><div class="sec-head rv-up"><div><h2>學員成功故事</h2><div class="sub">他們在 OKAI課程網 找到了新的可能</div></div></div>
       <div class="story-grid">${window.SUCCESS_STORIES.map(s => `<div class="story-card rv-up">
         <div class="story-hdr"><div class="story-avatar">${s.avatar}</div><div class="story-meta"><h3>${s.name}</h3><span>${s.role}</span></div></div>
@@ -1265,7 +1264,7 @@ function home() {
   const points = ownedCount * 120 + streakDays * 30;
   const pointsPct = Math.min(100, Math.round(points / 2000 * 100));
   const ring = (pct, color) => `<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="40" cy="40" r="35" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="220" stroke-dashoffset="${Math.round(220 * (1 - pct / 100))}" stroke-linecap="round"/></svg>`;
-  main.insertAdjacentHTML('beforeend', `<section class="sec" id="journey"><div class="wrap"><div class="sec-head rv-up"><div><h2>你的學習旅程</h2><div class="sub">持續學習，成為更好的自己</div></div></div>
+  if (ownedCount) main.insertAdjacentHTML('beforeend', `<section class="sec" id="journey"><div class="wrap"><div class="sec-head rv-up"><div><h2>你的學習旅程</h2><div class="sub">持續學習，成為更好的自己</div></div></div>
     <div class="lj-grid rv-up">
       <div class="lj-card"><div class="lj-ring">${ring(streakPct, 'var(--pri)')}<span class="lj-icon">🔥</span></div><b>${streakDays} 天</b><span>連續學習</span></div>
       <div class="lj-card"><div class="lj-ring">${ring(hoursPct, '#ff5c8a')}<span class="lj-icon">⏱</span></div><b>${totalHours} 小時</b><span>累計課程時數</span></div>
@@ -1282,8 +1281,8 @@ function home() {
     </div>
   </div></section>`);
 
-  // 人氣講師
-  if (window.INSTRUCTORS) {
+  // 人氣講師（與上方「講師團隊」重複，移除）
+  if (false && window.INSTRUCTORS) {
     const topInstr = window.INSTRUCTORS.slice().sort((a, b) => b.students - a.students).slice(0, 6);
     main.insertAdjacentHTML('beforeend', `<section class="sec" id="top-instructors"><div class="wrap"><div class="sec-head rv-up"><div><h2>人氣講師</h2><div class="sub">業界頂尖職人，帶你從零到專業</div></div><a href="instructor.html" class="more">查看全部 →</a></div>
       <div class="instr-grid">${topInstr.map(t => {
@@ -1330,7 +1329,7 @@ function home() {
 
   // 為什麼選擇 OKAI課程網
   const whyData = window.WHY_AICLASS || [];
-  if (whyData.length) {
+  if (false && whyData.length) {
     main.insertAdjacentHTML('beforeend', `<section class="sec why-sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>為什麼選擇 OKAI課程網？</h2><div class="sub">從零開始、用得上的 AI 實戰課程</div></div></div>
       <div class="why-grid">${whyData.map(w => `<div class="why-card rv-up"><span class="why-icon">${w.icon}</span><h3>${w.title}</h3><p>${w.desc}</p></div>`).join('')}</div>
     </div></section>`);
@@ -1844,14 +1843,13 @@ function course() {
         <div class="c-stat-item"><div class="c-stat-num">${chapters.length}</div><div class="c-stat-label">個章節</div></div>
         <div class="c-stat-item"><div class="c-stat-num">${totalLessonCount}</div><div class="c-stat-label">堂課</div></div>
         
-        <div class="c-stat-item"><div class="c-stat-num">${75 + (c.id.charCodeAt(2) % 20)}%</div><div class="c-stat-label">完成率</div></div>
       </div>
     </div>
     <div class="c-guarantee rv-up">
-      <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">購買後 7 天內，覺得不適合可全額退費，零風險。</div></div>
+      <div class="c-guarantee-item"><div class="c-guarantee-icon">🛡️</div><div class="c-guarantee-title">7 天退費保證</div><div class="c-guarantee-desc">開通後 7 天內、觀看進度低於 20%，可申請全額退費。</div></div>
       <div class="c-guarantee-item"><div class="c-guarantee-icon">♾️</div><div class="c-guarantee-title">無限期觀看</div><div class="c-guarantee-desc">一次購買，終身觀看，隨時隨地複習。</div></div>
       <div class="c-guarantee-item"><div class="c-guarantee-icon">🔄</div><div class="c-guarantee-title">免費課程更新</div><div class="c-guarantee-desc">課程內容持續更新，舊學員自動享有新內容。</div></div>
-      <div class="c-guarantee-item"><div class="c-guarantee-icon">💬</div><div class="c-guarantee-title">講師親自回覆</div><div class="c-guarantee-desc">學習遇到問題可直接提問，講師親自回覆。</div></div>
+      <div class="c-guarantee-item"><div class="c-guarantee-icon">💬</div><div class="c-guarantee-title">課程問答</div><div class="c-guarantee-desc">在播放器的「Q&amp;A」提問，2 個工作天內回覆。</div></div>
     </div>
     ${(() => {
       const achieveMap = {
@@ -2101,7 +2099,7 @@ function course() {
   if (!isOwned) {
     const sbar = document.createElement('div'); sbar.className = 'sticky-buy';
     const disc = pct(c);
-    sbar.innerHTML = `<div class="wrap"><div class="sticky-buy-info"><img class="sticky-buy-thumb" src="${img(c)}" alt="${c.title}"><span class="sticky-buy-title">${c.title}</span></div><span class="sticky-buy-origin">${fmt(c.origin)}</span><span class="sticky-buy-price">${fmt(c.price)}</span><span class="sb-disc">-${disc}%</span><button class="btn btn-ghost sticky-cart-btn"><span class="sb-cart-txt">加入購物車</span><span class="sb-cart-ok" hidden>✓ 已加入</span></button><button class="btn btn-pri sticky-buy-btn"><span class="sb-buy-full">立即購買</span><span class="sb-buy-short">購買</span></button></div>`;
+    sbar.innerHTML = `<div class="wrap"><div class="sticky-buy-info"><img class="sticky-buy-thumb" src="${img(c)}" alt="${c.title}"><span class="sticky-buy-title">${c.title}</span></div>${c.origin > c.price ? `<span class="sticky-buy-origin">${fmt(c.origin)}</span>` : ''}<span class="sticky-buy-price">${fmt(c.price)}</span>${disc > 0 ? `<span class="sb-disc">-${disc}%</span>` : ''}<button class="btn btn-ghost sticky-cart-btn"><span class="sb-cart-txt">加入購物車</span><span class="sb-cart-ok" hidden>✓ 已加入</span></button><button class="btn btn-pri sticky-buy-btn"><span class="sb-buy-full">立即購買</span><span class="sb-buy-short">購買</span></button></div>`;
     document.body.append(sbar);
     const buyAside = $('.buy');
     addEventListener('scroll', rafThrottle(() => { sbar.classList.toggle('show', buyAside.getBoundingClientRect().bottom < 0); }), { passive: true });
@@ -2116,8 +2114,8 @@ function course() {
     };
   }
 
-  // Social proof popups
-  if (!isOwned) {
+  // Social proof popups（假資料，移除）
+  if (false) {
     const names = ['台北的學員','新竹的學員','台中的學員','高雄的學員','台南的學員','桃園的學員'];
     const actions = ['剛剛購買了這堂課','把這堂課加入了購物車','正在觀看這堂課'];
     let spTimer;
@@ -3553,41 +3551,32 @@ function wishlistPage() {
 function myPage() {
   seo({ title: '我的學習｜OKAI課程網', desc: '管理你的課程進度、學習紀錄與成績', url: 'https://okaiclass.com/my.html' });
   const main = $('main');
-  const enrolled = C.slice(0, 7).map((c, i) => ({ ...c, progress: [78, 45, 100, 12, 62, 33, 91][i], lastWatch: ['2 小時前', '昨天', '3 天前', '5 分鐘前', '1 天前', '4 小時前', '剛剛'][i] }));
-  const totalHours = enrolled.reduce((s, c) => s + c.hours, 0);
+  // 全部使用這台裝置上的真實資料（已開通課程、觀看進度、訂單、收藏）
+  const agoTxt = ts => { if (!ts) return '尚未開始'; const m = Math.floor((Date.now() - ts) / 60000); if (m < 1) return '剛剛'; if (m < 60) return m + ' 分鐘前'; const h = Math.floor(m / 60); if (h < 24) return h + ' 小時前'; const d = Math.floor(h / 24); return d === 1 ? '昨天' : d + ' 天前'; };
+  const enrolled = [...owned].map(id => byId[id]).filter(Boolean).map(c => {
+    const total = (window.CHAPTERS?.[c.id] || []).reduce((n, ch) => n + ch.lessons.length, 0) || 1;
+    const pr = progress[c.id] || {};
+    const doneN = Array.isArray(pr.done) ? pr.done.length : 0;
+    return { ...c, progress: Math.min(100, Math.round(doneN / total * 100)), lastAt: pr.lastAt || 0, lastWatch: agoTxt(pr.lastAt) };
+  }).sort((a, b) => b.lastAt - a.lastAt);
+  const totalHours = Math.round(enrolled.reduce((s, c) => s + c.hours * c.progress / 100, 0));
   const completed = enrolled.filter(c => c.progress === 100).length;
-  const inProgress = enrolled.filter(c => c.progress > 0 && c.progress < 100).sort((a, b) => b.progress - a.progress);
-  const wishlist = C.slice(8, 12);
-  const orders = [
-    { id: 'ORD-20261028-001', date: '2026/10/28', items: [C[0]], total: 4980, status: '已完成' },
-    { id: 'ORD-20261015-002', date: '2026/10/15', items: [C[1], C[4]], total: 9860, status: '已完成' },
-    { id: 'ORD-20260920-003', date: '2026/09/20', items: [C[2]], total: 4580, status: '已完成' },
-  ];
-  const coupons = [
+  const inProgress = enrolled.filter(c => c.progress < 100).sort((a, b) => b.lastAt - a.lastAt);
+  const wishlist = [...wish].map(id => byId[id]).filter(Boolean);
+  const orders = ls('aic-orders', []).map(o => ({ ...o, items: (o.items || []).map(id => byId[id]).filter(Boolean), status: o.status === 'pending' ? '等待付款' : o.status === 'paid' ? '已完成' : (o.status || '處理中') }));
+  const coupons = [];
+  const activity = enrolled.filter(c => c.lastAt).slice(0, 8).map(c => ({ icon: c.progress === 100 ? '✓' : '▶', text: (c.progress === 100 ? '完成「' : '觀看「') + c.title.slice(0, 14) + '…」', time: c.lastWatch, color: c.progress === 100 ? '#34c759' : 'var(--pri)' }));
 
-  ];
-  const activity = [
-    { icon: '▶', text: '繼續觀看「' + enrolled[0].title.slice(0,12) + '…」第 7 章', time: '2 小時前', color: 'var(--pri)' },
-    { icon: '✓', text: '完成「' + enrolled[2].title.slice(0,12) + '…」全部課程', time: '3 天前', color: '#34c759' },
-    { icon: '📝', text: '為「' + enrolled[1].title.slice(0,12) + '…」新增了學習筆記', time: '4 天前', color: '#ff9500' },
-    { icon: '⭐', text: '給予「' + enrolled[2].title.slice(0,12) + '…」五星好評', time: '4 天前', color: '#ffc107' },
-    { icon: '🎓', text: '獲得結業證書：' + enrolled[2].title.slice(0,10), time: '4 天前', color: 'var(--pink)' },
-    { icon: '🛒', text: '購買了「' + enrolled[5].title.slice(0,12) + '…」', time: '5 天前', color: 'var(--pri)' },
-    { icon: '🏆', text: '解鎖成就徽章「連續 7 天學習」', time: '1 週前', color: '#ff5c8a' },
-    { icon: '♡', text: '收藏了「' + C[C.length - 1].title.slice(0,12) + '…」', time: '1 週前', color: '#ff5c8a' },
-  ];
-
-  // Learning calendar (last 30 days)
+  // 學習日曆（近 35 天，依真實觀看紀錄）
   const today = new Date();
+  const watchDays = new Set(enrolled.filter(c => c.lastAt).map(c => new Date(c.lastAt).toDateString()));
   const calDays = Array.from({ length: 35 }, (_, i) => {
     const d = new Date(today); d.setDate(d.getDate() - 34 + i);
-    const active = [1,2,3,5,6,8,10,11,12,14,15,17,19,20,21,22,24,26,27,28,30,31,33,34].includes(i);
-    const mins = active ? [15,30,45,60,90,120][Math.floor(Math.random() * 6)] : 0;
-    return { date: d, mins, dow: d.getDay() };
+    return { date: d, mins: watchDays.has(d.toDateString()) ? 30 : 0, dow: d.getDay() };
   });
-  const memberSince = '2026 年 3 月';
+  const memberSince = (() => { let j = ls('aic-joined', ''); if (!j) { const d = new Date(); j = `${d.getFullYear()} 年 ${d.getMonth() + 1} 月`; ss('aic-joined', j); } return j; })();
   const streakDays = streakData.count;
-  const totalPts = xpData.total || (streakDays * 30 + enrolled.length * 120);
+  const totalPts = xpData.total || 0;
   const myLvl = getXPLevel();
   const myXpProg = getXPProgress();
   const level = myLvl.lv;
@@ -3710,95 +3699,14 @@ function myPage() {
         </div>
       </section>
 
-      <!-- 學習儀表板 -->
+      <!-- 學習儀表板（真實資料） -->
       <section class="myp-sec" id="myp-sec-dashboard" hidden>
         <h2 class="myp-sec-title rv-up">📊 學習儀表板</h2>
-        <div class="dash-fire-banner rv-up">
-          <div class="dash-fire-icon">🔥</div>
-          <div class="dash-fire-info"><b>連續學習 ${streakDays} 天！</b><p>保持每天學習，解鎖更多獎勵 — 下一個里程碑：${streakDays < 7 ? '7' : streakDays < 14 ? '14' : streakDays < 30 ? '30' : '60'} 天</p></div>
-          <div class="dash-fire-progress"><div class="dash-fire-fill" style="width:${Math.min(100, streakDays / (streakDays < 7 ? 7 : streakDays < 14 ? 14 : streakDays < 30 ? 30 : 60) * 100)}%"></div></div>
+        ${enrolled.length ? `<div class="dash-grid rv-up">
+          <div class="dash-card"><div class="dash-card-head">已看完的課程時數</div><div class="dash-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--pri)" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="${327 - 327 * Math.min(1, totalHours / Math.max(1, enrolled.reduce((s, c) => s + c.hours, 0)))}" transform="rotate(-90 60 60)" stroke-linecap="round"/></svg><div class="dash-ring-text"><b>${totalHours}</b><span>/ ${enrolled.reduce((s, c) => s + c.hours, 0)} 小時</span></div></div></div>
+          <div class="dash-card"><div class="dash-card-head">完成率</div><div class="dash-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="#34c759" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="${327 - 327 * completed / enrolled.length}" transform="rotate(-90 60 60)" stroke-linecap="round"/></svg><div class="dash-ring-text"><b>${Math.round(completed / enrolled.length * 100)}%</b><span>${completed}/${enrolled.length} 堂</span></div></div></div>
         </div>
-        <div class="dash-grid rv-up">
-          <div class="dash-card">
-            <div class="dash-card-head">累計學習時間</div>
-            <div class="dash-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--pri)" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="${327 - 327 * Math.min(1, totalHours / 100)}" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
-            <div class="dash-ring-text"><b>${totalHours}</b><span>/ 100 小時</span></div></div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-head">完成率</div>
-            <div class="dash-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="#34c759" stroke-width="8" stroke-dasharray="327" stroke-dashoffset="${327 - 327 * (completed / Math.max(1, enrolled.length))}" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
-            <div class="dash-ring-text"><b>${Math.round(completed / Math.max(1, enrolled.length) * 100)}%</b><span>${completed}/${enrolled.length} 堂</span></div></div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-head">學習強度</div>
-            <div class="dash-bars">${['一','二','三','四','五','六','日'].map((d, i) => {
-              const h = [1.5, 2, 0.5, 1, 2.5, 3, 1.5][i];
-              return `<div class="dash-bar"><div class="dash-bar-fill" style="height:${h / 3 * 100}%"></div><span>${d}</span></div>`;
-            }).join('')}</div>
-            <div class="dash-bar-label">本週平均 1.7 小時/天</div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-head">技能分佈</div>
-            <div class="dash-skills">${[
-              {name:'AI 開發',pct:80},{name:'AI 繪圖',pct:65},{name:'AI 影片',pct:45},{name:'AI 行銷',pct:30},{name:'AI 自動化',pct:20}
-            ].map(s => `<div class="dash-skill"><span>${s.name}</span><div class="dash-skill-bar"><div class="dash-skill-fill" style="width:${s.pct}%"></div></div><span>${s.pct}%</span></div>`).join('')}</div>
-          </div>
-        </div>
-        <div class="dash-streak rv-up">
-          <div class="dash-streak-chart">${Array.from({length:30}, (_, i) => {
-            const h = Math.random() < 0.7 ? (Math.random() * 3 + 0.5).toFixed(1) : 0;
-            return `<div class="dash-streak-day" style="--h:${h / 4 * 100}%" title="第 ${i+1} 天：${h} 小時"></div>`;
-          }).join('')}</div>
-          <div class="dash-streak-label">過去 30 天學習趨勢</div>
-        </div>
-        <div class="dash-analytics rv-up">
-          <div class="dash-chart-card">
-            <h4>📈 最近 7 天學習時間</h4>
-            <svg class="dash-line-chart" viewBox="0 0 300 120" aria-label="最近 7 天學習時間折線圖">
-              ${(() => {
-                const days = ['一','二','三','四','五','六','日'];
-                const hrs = [1.5, 2.0, 0.5, 1.0, 2.5, 3.0, 1.5];
-                const mx = Math.max(...hrs);
-                const pts = hrs.map((h, i) => `${20 + i * 43},${100 - h / mx * 80}`);
-                return `<defs><linearGradient id="lcGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--pri)" stop-opacity=".3"/><stop offset="1" stop-color="var(--pri)" stop-opacity="0"/></linearGradient></defs>
-                <polygon fill="url(#lcGrad)" points="20,100 ${pts.join(' ')} 278,100"/>
-                <polyline fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${pts.join(' ')}"/>
-                ${pts.map((p, i) => `<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="4" fill="var(--pri)"/><text x="${p.split(',')[0]}" y="115" text-anchor="middle" fill="var(--tx3)" font-size="10">${days[i]}</text><text x="${p.split(',')[0]}" y="${+p.split(',')[1] - 8}" text-anchor="middle" fill="var(--tx)" font-size="9" font-weight="600">${hrs[i]}h</text>`).join('')}`;
-              })()}
-            </svg>
-            <div class="dash-chart-summary"><span>本週 <b>${[1.5,2,0.5,1,2.5,3,1.5].reduce((a,b)=>a+b,0).toFixed(1)}</b> 小時</span><span>日均 <b>${([1.5,2,0.5,1,2.5,3,1.5].reduce((a,b)=>a+b,0)/7).toFixed(1)}</b> 小時</span></div>
-          </div>
-          <div class="dash-chart-card">
-            <h4>📊 學習分類分佈</h4>
-            <div class="dash-pie-wrap">
-              <svg class="dash-pie" viewBox="0 0 120 120" aria-label="學習分類圓餅圖">
-                ${(() => {
-                  const segs = [{name:'AI 開發',pct:35,color:'#7c5cff'},{name:'AI 繪圖',pct:25,color:'#ff5c8a'},{name:'AI 影片',pct:20,color:'#34c759'},{name:'AI 行銷',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}];
-                  const r = 45, cx = 60, cy = 60;
-                  let acc = 0;
-                  return segs.map(s => {
-                    const start = acc; acc += s.pct;
-                    const a1 = (start / 100) * 2 * Math.PI - Math.PI / 2;
-                    const a2 = (acc / 100) * 2 * Math.PI - Math.PI / 2;
-                    const lg = s.pct > 50 ? 1 : 0;
-                    const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
-                    const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
-                    return `<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${lg} 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${s.color}" opacity=".85"/>`;
-                  }).join('');
-                })()}
-              </svg>
-              <div class="dash-pie-legend">
-                ${[{name:'AI 開發',pct:35,color:'#7c5cff'},{name:'AI 繪圖',pct:25,color:'#ff5c8a'},{name:'AI 影片',pct:20,color:'#34c759'},{name:'AI 行銷',pct:12,color:'#ff9500'},{name:'其他',pct:8,color:'#5ac8fa'}].map(s => `<div class="dash-pie-item"><span class="dash-pie-dot" style="background:${s.color}"></span>${s.name} ${s.pct}%</div>`).join('')}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="dash-milestones rv-up">
-          <h4>🏅 學習里程碑</h4>
-          <div class="dash-ml-timeline">
-            ${[{icon:'🎉',title:'加入 OKAI課程網',date:'2026/03/15',done:true},{icon:'🛒',title:'購買第一堂課',date:'2026/03/16',done:true},{icon:'▶',title:'完成第一堂課時',date:'2026/03/18',done:true},{icon:'🔥',title:'連續學習 7 天',date:'2026/03/24',done:true},{icon:'📚',title:'購買第 5 堂課',date:'2026/05/10',done:true},{icon:'🏆',title:'完成第一門課程',date:'2026/06/02',done:true},{icon:'💎',title:'累積 1,000 XP',date:'2026/07/15',done:true},{icon:'🌟',title:'連續學習 30 天',date:'進行中…',done:false}].map(m => `<div class="dash-ml-item ${m.done ? 'done' : 'pending'}"><div class="dash-ml-icon">${m.icon}</div><div class="dash-ml-body"><b>${m.title}</b><span>${m.date}</span></div></div>`).join('')}
-          </div>
-        </div>
+        <div class="dash-skills rv-up" style="margin-top:20px">${enrolled.map(c => `<div class="dash-skill"><span>${c.title.slice(0, 16)}</span><div class="dash-skill-bar"><div class="dash-skill-fill" style="width:${c.progress}%"></div></div><span>${c.progress}%</span></div>`).join('')}</div>` : `<div class="empty-state rv-up" style="text-align:center;padding:40px 0"><p style="color:var(--tx2)">開通課程並開始上課後，這裡會顯示你的學習進度。</p><a class="btn btn-pri" href="category.html">挑一門課免費試看 →</a></div>`}
       </section>
 
       <!-- 學習紀錄 -->
@@ -3920,7 +3828,7 @@ function myPage() {
           <div class="wk-highlights">
             <h4>🌟 本週亮點</h4>
             <ul>
-              <li>完成 <b>${Math.max(3, Math.round(calDays.slice(-7).reduce((s, d) => s + d.mins, 0) / 15))}</b> 堂課時</li>
+              
               ${streakDays >= 3 ? `<li>🔥 已連續學習 <b>${streakDays} 天</b>，超棒！</li>` : '<li>💪 試著每天學一點，養成習慣吧</li>'}
               <li>花最多時間在「<b>${enrolled[0]?.title.slice(0, 15) || '課程'}…</b>」</li>
               ${completed > 0 ? `<li>🎓 已完成 <b>${completed}</b> 堂完整課程</li>` : ''}
@@ -3941,13 +3849,13 @@ function myPage() {
         </div>
         <div class="gm-streak rv-up">
           <div class="gm-streak-fire">🔥</div>
-          <div><b>連續學習 7 天</b><p>保持每天學習，解鎖更多成就！</p></div>
+          <div><b>連續學習 ${streakDays} 天</b><p>保持每天學習，解鎖更多成就！</p></div>
         </div>
         <div class="gm-badges rv-up">
           ${[
-            {icon:'🎯',name:'首次購課',desc:'購買第一堂課程',earned:true},
-            {icon:'📚',name:'收藏達人',desc:'收藏超過 5 堂課程',earned:true},
-            {icon:'🔥',name:'連續 7 天',desc:'連續學習 7 天不中斷',earned:true},
+            {icon:'🎯',name:'首次購課',desc:'購買第一堂課程',earned:enrolled.length>0},
+            {icon:'📚',name:'收藏達人',desc:'收藏超過 5 堂課程',earned:wish.size>=5},
+            {icon:'🔥',name:'連續 7 天',desc:'連續學習 7 天不中斷',earned:streakDays>=7},
             {icon:'🎓',name:'完課一門',desc:'完成一門完整課程',earned:completed>0},
             {icon:'💬',name:'社群新手',desc:'在社群發表第一篇文章',earned:false},
             {icon:'🏆',name:'測驗滿分',desc:'任一測驗取得滿分',earned:false},
@@ -3955,18 +3863,8 @@ function myPage() {
             {icon:'📝',name:'筆記達人',desc:'累計寫超過 10 則筆記',earned:false},
             {icon:'👥',name:'邀請好友',desc:'成功邀請一位好友加入',earned:false},
             {icon:'🛒',name:'購物專家',desc:'購買超過 10 堂課程',earned:enrolled.length>=10},
-            {icon:'⭐',name:'全五星評價',desc:'為所有已購課程給予五星',earned:false},
-            {icon:'🎪',name:'活動參與者',desc:'參加一次限時活動',earned:true}
+            {icon:'⭐',name:'全五星評價',desc:'為所有已購課程給予五星',earned:false}
           ].map(b => `<div class="gm-badge${b.earned?' earned':''}"><div class="gm-badge-icon">${b.icon}</div><h4>${b.name}</h4><p>${b.desc}</p></div>`).join('')}
-        </div>
-        <div class="gm-leaderboard rv-up">
-          <h3>📊 本週排行榜</h3>
-          <div class="gm-lb-list">${[
-            {name:'王**',xp:2400,lv:8},{name:'陳**',xp:2180,lv:7},{name:'林**',xp:1960,lv:7},
-            {name:'你',xp:totalHours*60,lv:Math.min(12,Math.floor(totalHours/5)+1),me:true},
-            {name:'張**',xp:1200,lv:5},{name:'黃**',xp:980,lv:4},{name:'李**',xp:860,lv:4},
-            {name:'吳**',xp:720,lv:3},{name:'劉**',xp:580,lv:3},{name:'蔡**',xp:440,lv:2}
-          ].sort((a,b)=>b.xp-a.xp).map((u,i) => `<div class="gm-lb-row${u.me?' me':''}"><span class="gm-lb-rank">${i+1}</span><span class="gm-lb-name">${u.name}</span><span class="gm-lb-lv">Lv.${u.lv}</span><span class="gm-lb-xp">${u.xp.toLocaleString()} XP</span></div>`).join('')}</div>
         </div>
       </section>
 
@@ -7418,6 +7316,13 @@ function reportPage() {
   reveal(main);
 }
 
+
+/* ---------- 活動頁：目前沒有進行中的優惠 ---------- */
+function noPromo() {
+  const main = $('main'); if (!main) return;
+  seo({ title: '優惠活動｜OKAI課程網', desc: '目前沒有進行中的優惠活動，所有課程以課程頁標示價格為準。', url: 'https://okaiclass.com/' + page + '.html' });
+  main.innerHTML = `<div class="wrap" style="padding:80px 0 40px;text-align:center"><div style="font-size:48px">🗓️</div><h1 style="font-size:28px;margin:12px 0">目前沒有進行中的優惠活動</h1><p style="color:var(--tx2);margin-bottom:24px">所有課程以課程頁標示的價格為準。有新活動時會在網站最上方公告。</p><a class="btn btn-pri" href="category.html">看所有課程 →</a></div>` + railSec('promo-all', '全部課程', '每門課都可以免費試看', C.slice(0, 10));
+}
 /* ---------- 限時特賣 ---------- */
 function salePage() {
   const main = $('main');
@@ -7624,7 +7529,7 @@ document.addEventListener('keydown', e => {
 if (page !== 'training' && page !== 'player') shell();
 if (page === 'home') home();
 else if (page === 'course') course();
-else if (page === 'event') eventPage();
+else if (page === 'event') noPromo();
 else if (page === 'cart') cartPage();
 else if (page === 'login') loginPage();
 else if (page === 'enterprise') enterprisePage();
@@ -7663,7 +7568,7 @@ else if (page === 'settings') settingsPage();
 else if (page === 'gallery') galleryPage();
 else if (page === 'notebook') notebookPage();
 else if (page === 'report') reportPage();
-else if (page === 'sale') salePage();
+else if (page === 'sale') noPromo();
 else if (page === 'skillmap') skillmapPage();
 else notFoundPage();
 reveal();
@@ -7745,7 +7650,7 @@ window.addCompare = id => {
 updCmpUI();
 
 // ── 電子報訂閱彈窗（首頁捲動 60% 後觸發一次） ──
-if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
+if (false) { // 電子報彈窗：沒有真的寄送名單前不顯示
   let triggered = false;
   addEventListener('scroll', function nlCheck() {
     if (triggered) return;
@@ -7780,7 +7685,7 @@ if (page === 'home' && !sessionStorage.getItem('aic-nl-shown')) {
 }
 
 // ── 離站挽留（桌面：滑鼠移出視窗；每 session 最多一次）──
-if (!sessionStorage.getItem('aic-exit-shown') && !('ontouchstart' in window)) {
+if (false) { // 離站挽留：「全站 5 折」不是真的優惠，移除
   let exitFired = false;
   document.addEventListener('mouseout', e => {
     if (exitFired || e.relatedTarget || e.toElement) return;
@@ -7811,7 +7716,7 @@ $$('.chip, .qa button, .video-tab, .sort-btn, .time-tab').forEach(el => { if (!e
 // （平滑頁面導航已由下方「頁面轉場動畫」統一處理）
 
 // ── 社群通知（Social Proof）──（課程頁有專屬版本，不在這裡重複）
-if (page === 'home' || page === 'category') {
+if (false) {
   const spNames = ['小明','Emily','阿豪','小美','志偉','雅婷','大華','佳穎','宗翰','文惠','淑華','建宏'];
   const spCities = ['台北','台中','高雄','新竹','台南','桃園','花蓮'];
   let spCount = 0, spMax = page === 'home' ? 3 : 2;
@@ -8328,7 +8233,7 @@ function openRecommendQuiz() {
 
 // ── 課程頁「最近購買」社會證明通知 ──
 {
-  if (page === 'course') {
+  if (false) {
     const names = ['王○○','陳○○','林○○','張○○','黃○○','李○○','劉○○','吳○○','蔡○○','楊○○','許○○','鄭○○','謝○○','郭○○','曾○○','廖○○','賴○○','徐○○','周○○','葉○○'];
     const cities = ['台北','新北','台中','高雄','桃園','台南','新竹','彰化','屏東','嘉義','基隆','宜蘭','花蓮','苗栗'];
     const times = ['2 分鐘前','5 分鐘前','8 分鐘前','12 分鐘前','15 分鐘前','23 分鐘前','30 分鐘前','1 小時前'];
