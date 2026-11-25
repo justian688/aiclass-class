@@ -285,7 +285,7 @@ function quickPreview(courseId) {
       <div class="qp-stats"><span>${c.hours} 小時</span></div>
       ${c.ai ? `<p class="qp-ai"><span class="ai-tag">✦ AI 摘要</span> ${c.ai}</p>` : ''}
       ${(()=>{ const chs = window.CHAPTERS && window.CHAPTERS[courseId]; return chs ? `<div class="qp-chapters"><h4>📚 課程章節</h4><div class="qp-ch-list">${chs.map(ch=>`<div class="qp-ch"><span class="qp-ch-num">CH${ch.ch}</span><b>${ch.title}</b><span class="qp-ch-dur">${ch.duration} 分鐘・${ch.lessons.length} 堂</span></div>`).join('')}</div></div>` : ''; })()}
-      <div class="qp-price"><span class="qp-now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del><span class="qp-pct">${pct(c)}% OFF</span></div>
+      <div class="qp-price"><span class="qp-now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del><span class="qp-pct">${pct(c)}% OFF</span>` : ''}</div>
       <div class="qp-actions">
         <a class="btn btn-pri" href="course.html?id=${c.id}">查看完整課程</a>
         <button class="btn btn-ghost qp-cart">加入購物車</button>
@@ -311,9 +311,23 @@ const deadline = (() => { // 每天午夜重置的限時優惠
 })();
 function shell() {
   // Skip-to-content (inject on every page)
-  const main = $('main');
+  const main = $('main') || $('#main');
   if (main && !main.id) main.id = 'main-content';
-  if (!$('.skip')) { const sk = document.createElement('a'); sk.className = 'skip'; sk.href = '#main-content'; sk.textContent = '跳至主要內容'; document.body.prepend(sk); }
+  if (!$('.skip')) { const sk = document.createElement('a'); sk.className = 'skip'; sk.textContent = '跳至主要內容'; document.body.prepend(sk); }
+  if (main) $$('.skip').forEach(sk => sk.setAttribute('href', '#' + main.id));
+  // 無障礙：輸入欄自動對應標籤（含之後動態產生的表單）
+  const a11yLabels = () => {
+    $$('input:not([type=hidden]),select,textarea').forEach((el, i) => {
+      if (el.getAttribute('aria-label') || el.getAttribute('aria-labelledby') || el.closest('label')) return;
+      if (el.id && document.querySelector(`label[for="${CSS.escape(el.id)}"]`)) return;
+      const box = el.parentElement; const lab = box && [...box.children].find(x => x.tagName === 'LABEL' && !x.htmlFor);
+      if (lab) { if (!el.id) el.id = 'fld-' + i + '-' + Math.random().toString(36).slice(2, 6); lab.htmlFor = el.id; return; }
+      const txt = el.placeholder || el.title || (el.tagName === 'SELECT' ? '排序方式' : el.name) || '輸入欄';
+      el.setAttribute('aria-label', txt);
+    });
+  };
+  let a11yT; new MutationObserver(() => { clearTimeout(a11yT); a11yT = setTimeout(a11yLabels, 200); }).observe(document.body, { childList: true, subtree: true });
+  setTimeout(a11yLabels, 0);
 
   const top = document.createElement('div');
   if (!sessionStorage.getItem('aic-topbar')) {
@@ -735,7 +749,7 @@ function card(c, i, rank) {
       <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-eta">約 ${lv.weeks} 週完成</span></div>
       <div class="teacher">${c.teacher}</div>
       <h3>${c.title}</h3>
-      ${isOwned ? `<div class="card-prog-row"><div class="card-prog-bar"><div class="card-prog-fill" style="width:${pctDone}%"></div></div><span class="card-prog-txt">${pctDone}% 完成</span></div>` : `<div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div>`}
+      ${isOwned ? `<div class="card-prog-row"><div class="card-prog-bar"><div class="card-prog-fill" style="width:${pctDone}%"></div></div><span class="card-prog-txt">${pctDone}% 完成</span></div>` : `<div class="price">${c.origin > c.price ? `<span class="off">${pct(c)}%</span>` : ''}<span class="now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del>` : ''}</div>`}
       
       ${c.ai ? '<div class="ai-summary"><span class="ai-tag">✦ AI 摘要</span>' + c.ai + '</div>' : ''}
     </div>
@@ -1718,7 +1732,7 @@ function course() {
         <li><b>開通時間：</b>付款確認後 2 個工作天內開通，開通當天起算觀看</li>
         <li><b>退費：</b>開通後 7 天內、觀看進度低於 20%，可來信申請全額退費</li>
         <li><b>發票：</b>電子發票寄到你填寫的 Email，可開公司統編</li>
-      </ul><a href="terms.html#refund">完整退費規則 →</a></div>
+      </ul><a class="refund-link" href="terms.html#refund">完整退費規則 →</a></div>
     </aside>
   </div></div></div>
   <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">怎麼學</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a><a href="#plan">學習計畫</a></div></nav>
@@ -2274,7 +2288,7 @@ function eventPage() {
         ${featured.map((c, i) => `<a class="ev-course rv-up" href="course.html?id=${c.id}" style="transition-delay:${(i%4)*80}ms">
           <div class="ev-course-thumb"><img src="${img(c)}" alt="${c.title}" loading="lazy" decoding="async">${c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}</div>
           <div class="ev-course-info"><div class="teacher">${c.teacher}</div><h3>${c.title}</h3>
-          <div class="price"><span class="off">${pct(c)}%</span><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del></div></div>
+          <div class="price">${c.origin > c.price ? `<span class="off">${pct(c)}%</span>` : ''}<span class="now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del>` : ''}</div></div>
         </a>`).join('')}
       </div>
     </div>
@@ -2352,7 +2366,7 @@ function cartPage() {
             <div class="cart-item-price">
               <div class="now">${fmt(c.price)}</div>
               <del>${fmt(c.origin)}</del>
-              <span class="off">${pct(c)}% OFF</span>
+              ${c.origin > c.price ? `<span class="off">${pct(c)}% OFF</span>` : ''}
             </div>
             <button class="cart-item-del" data-del="${c.id}" title="移除" aria-label="移除 ${c.title}">✕</button>
           </div>`).join('')}
@@ -2416,7 +2430,7 @@ function loginPage() {
         <div class="login-field"><label>密碼</label><input type="password" placeholder="輸入密碼" autocomplete="current-password"></div>
         <div class="login-options"><label><input type="checkbox"> 記住我</label><a href="mailto:hi@okaiclass.com?subject=%E5%BF%98%E8%A8%98%E5%AF%86%E7%A2%BC">忘記密碼？</a></div>
         <button class="btn btn-pri login-submit" id="login-go">登入</button>
-        <div class="login-footer">還沒有帳號？<a href="#register" id="login-toggle">Email 註冊</a></div>
+        <div class="login-footer">還沒有帳號？<button type="button" class="link-btn" id="login-toggle">Email 註冊</button></div>
       </div>
     </div>
   </div>`;
@@ -2442,7 +2456,7 @@ function loginPage() {
     p.textContent = isLogin ? '免費註冊，開始你的學習之旅' : '登入你的 OKAI課程網 帳號，繼續學習之旅';
     submit.textContent = isLogin ? '免費註冊' : '登入';
     const pw = $('input[type="password"]', main); if (pw) pw.autocomplete = isLogin ? 'new-password' : 'current-password';
-    footer.innerHTML = isLogin ? '已有帳號？<a href="#login" id="login-toggle">返回登入</a>' : '還沒有帳號？<a href="#register" id="login-toggle">Email 註冊</a>';
+    footer.innerHTML = isLogin ? '已有帳號？<button type="button" class="link-btn" id="login-toggle">返回登入</button>' : '還沒有帳號？<button type="button" class="link-btn" id="login-toggle">Email 註冊</button>';
     const newToggle = $('#login-toggle', main);
     if (newToggle) newToggle.onclick = toggleLink.onclick;
   };
@@ -3039,9 +3053,9 @@ function articlePage() {
     })
     .sort((a, b) => b._score - a._score)
     .slice(0, 3);
-  document.title = post.title + '｜OKAI課程網 學習專欄';
+  document.title = post.title + (post.title.length > 40 ? '｜OKAI課程網' : '｜OKAI課程網 學習專欄');
   seo({
-    title: post.title + '｜OKAI課程網 學習專欄',
+    title: post.title + (post.title.length > 40 ? '｜OKAI課程網' : '｜OKAI課程網 學習專欄'),
     desc: post.excerpt,
     url: `https://okaiclass.com/article.html?id=${post.id}`,
     img: `https://okaiclass.com/assets/img/v${post.v}.jpg`,
@@ -3264,7 +3278,7 @@ function instructorPage() {
         <div class="insd-course-body">
           <h3>${c.title}</h3>
           <div class="insd-course-meta">${c.hours} 小時${window.CHAPTERS && window.CHAPTERS[c.id] ? '・' + window.CHAPTERS[c.id].length + ' 個章節' : ''}</div>
-          <div class="insd-course-price"><b>${fmt(c.price)}</b><del>${fmt(c.origin)}</del><span class="off">-${pct(c)}%</span></div>
+          <div class="insd-course-price"><b>${fmt(c.price)}</b>${c.origin > c.price ? `<del>${fmt(c.origin)}</del><span class="off">-${pct(c)}%</span>` : ''}</div>
         </div>
       </a>`).join('')}</div>
     </div></section>
@@ -3516,7 +3530,7 @@ function wishlistPage() {
           <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
           <p class="teacher">${c.teacher}・${c.role}</p>
           <div class="stars"><b>★</b> ${c.rating}（${c.students.toLocaleString()} 人）</div>
-          <div class="price"><span class="now">${fmt(c.price)}</span><del>${fmt(c.origin)}</del><span class="off">-${pct(c)}%</span></div>
+          <div class="price"><span class="now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del><span class="off">-${pct(c)}%</span>` : ''}</div>
         </div>
         <div class="wish-actions">
           <button class="btn btn-pri" onclick="cart.add('${c.id}');saveCart();updateCartBadge();toast('已加入購物車')">加入購物車</button>
@@ -6375,7 +6389,7 @@ function achievementPage() {
         <div class="ach-icon">${a.icon}</div>
         <div class="ach-card-body">
           <h3>${a.name}</h3>
-          <span class="ach-rarity" style="color:${a.rarityColor}">${a.rarityLabel}</span>
+          <span class="ach-rarity r-${a.rarity || 'common'}">${a.rarityLabel}</span>
           <p>${a.desc}</p>
           <div class="ach-xp-badge">+${a.xp} XP</div>
           <div class="ach-earned-date">✓ 已解鎖</div>
@@ -6391,7 +6405,7 @@ function achievementPage() {
         <div class="ach-icon-wrap"><div class="ach-icon">${a.icon}</div><span class="ach-lock">🔒</span></div>
         <div class="ach-card-body">
           <h3>${a.name}</h3>
-          <span class="ach-rarity" style="color:${a.rarityColor}">${a.rarityLabel}</span>
+          <span class="ach-rarity r-${a.rarity || 'common'}">${a.rarityLabel}</span>
           <p>${a.desc}</p>
           <div class="ach-xp-badge">+${a.xp} XP</div>
           <div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${Math.round(a.prog/a.total*100)}%"></div></div>
@@ -7626,7 +7640,7 @@ function updCmpUI() {
       <div class="cmp-table"><table><thead><tr><th></th>${courses.map(c => `<th><img src="${img(c)}" alt="${c.title}" decoding="async"><br>${c.title}</th>`).join('')}</tr></thead><tbody>
         <tr><td>價格</td>${courses.map((c, i) => `<td${hi(bPrice,i)}>${fmt(c.price)}</td>`).join('')}</tr>
         <tr><td>原價</td>${courses.map(c => `<td><del>${fmt(c.origin)}</del></td>`).join('')}</tr>
-        <tr><td>折扣</td>${courses.map((c, i) => `<td${hi(bDisc,i)}>${pct(c)}% OFF</td>`).join('')}</tr>
+        <tr><td>折扣</td>${courses.map((c, i) => `<td${hi(bDisc,i)}>${c.origin > c.price ? pct(c) + '% OFF' : '原價'}</td>`).join('')}</tr>
         <tr><td>評分</td>${courses.map((c, i) => `<td${hi(bRate,i)}><span class="cmp-stars">${'★'.repeat(Math.round(c.rating))}${'☆'.repeat(5-Math.round(c.rating))}</span> ${c.rating}</td>`).join('')}</tr>
         <tr><td>學員數</td>${courses.map((c, i) => `<td${hi(bStu,i)}>${c.students.toLocaleString()}</td>`).join('')}</tr>
         <tr><td>時數</td>${courses.map((c, i) => `<td${hi(bHrs,i)}>${c.hours} 小時</td>`).join('')}</tr>
