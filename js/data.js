@@ -165,7 +165,6 @@ window.BADGES = [
   { id: 'bg6', name: '連續簽到王', icon: '🔥', desc: '連續 30 天出席', xp: 200, rarity: 'epic' },
   { id: 'bg8', name: '筆記達人', icon: '📝', desc: '累計寫下 100 則筆記', xp: 100, rarity: 'rare' },
   { id: 'bg9', name: '測驗滿分', icon: '💯', desc: '任一測驗取得滿分', xp: 80, rarity: 'rare' },
-  { id: 'bg10', name: '分享推手', icon: '🤝', desc: '邀請 3 位好友加入', xp: 120, rarity: 'rare' },
   { id: 'bg12', name: 'AI 全能王', icon: '👑', desc: '在 3 個以上類別完課', xp: 500, rarity: 'legendary' },
   { id: 'bg13', name: '連續七天', icon: '🗓️', desc: '連續學習 7 天不中斷', xp: 70, rarity: 'common' },
   { id: 'bg17', name: '傳奇學者', icon: '🌟', desc: '累計 10,000 XP', xp: 1000, rarity: 'legendary' }

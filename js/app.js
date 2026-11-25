@@ -196,6 +196,8 @@ function bindNotes(courseId, main) {
 
 /* ---------- 課程進度追蹤 ---------- */
 const progress = ls('aic-progress', {});
+/* 舊版曾存成數字，統一轉成 { done: [], lastAt } 格式 */
+for (const k of Object.keys(progress)) { if (!progress[k] || typeof progress[k] !== 'object' || !Array.isArray(progress[k].done)) progress[k] = { done: [], lastAt: 0 }; }
 function saveProgress() { ss('aic-progress', progress); }
 function getCourseProg(cid) { return progress[cid] || { done: [], lastAt: 0 }; }
 function markLesson(cid, chapIdx, lessonIdx) {
@@ -1569,7 +1571,7 @@ function course() {
   let chapters, totalLessonCount, numChaps;
   const _chData = window.CHAPTERS && window.CHAPTERS[c.id];
   if (_chData) {
-    chapters = _chData.map((ch, ci) => ({ name: ch.title, lessons: ch.lessons.map((name, j) => ({ name, time: `${8 + (j * 7 % 15)}:${String((j * 23) % 60).padStart(2, '0')}`, free: ci === 0 && j < 2 })) }));
+    chapters = _chData.map((ch, ci) => ({ name: ch.title, lessons: ch.lessons.map((name, j) => ({ name, time: (ch.durs && ch.durs[j]) || '', free: ci === 0 && j < 2 })) }));
     totalLessonCount = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
     numChaps = chapters.length;
   } else {
@@ -1741,7 +1743,7 @@ function course() {
     <section class="c-sec" id="curri"><h2 class="rv-up">課程大綱 <span class="c-curri-meta">${chapters.length} 章・${totalLessonCount} 堂・共 ${c.hours} 小時</span></h2>
       <div class="curri-search rv-up"><span class="curri-search-icon">🔍</span><input type="text" id="curri-search-input" placeholder="搜尋章節或課時名稱…" aria-label="搜尋課程大綱"><div class="curri-search-result" id="curri-search-result"></div></div>
       <div class="curri-actions rv-up"><div class="curri-bar"><div class="curri-bar-fill" style="width:0%"></div><span class="curri-bar-txt">0 / ${totalLessonCount} 堂已完成</span></div><button class="btn btn-ghost btn-sm curri-toggle" id="curri-toggle-all">展開全部</button></div>
-      ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const [m]=l.time.split(':').map(Number);return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta"><span class="chap-dur">${chMins} 分鐘</span><button class="chap-done-all" data-chap="${i}" title="標記本章全部完成">☐ 全完成</button><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
+      ${chapters.map((ch, i) => {const chMins = ch.lessons.reduce((s,l)=>{const m=parseInt((l.time||'').split(':')[0])||0;return s+m},0); return `<div class="chap rv-up ${i ? '' : 'open'}"><button><span>第 ${i + 1} 章・${ch.name}</span><span class="chap-meta">${chMins ? `<span class="chap-dur">${chMins} 分鐘</span>` : ''}<button class="chap-done-all" data-chap="${i}" title="標記本章全部完成">☐ 全完成</button><span class="chap-count">${ch.lessons.length} 堂 ${i ? '＋' : '－'}</span></span></button><div class="a"><div><ul>${ch.lessons.map((l, j) => `<li>
         <span><span class="chap-play">${l.free ? '▶' : '🔒'}</span>${i + 1}-${j + 1} ${l.name}${l.free ? '<em class="chap-free">免費試看</em>' : ''}</span>
         <span class="chap-time">${l.time}</span>
       </li>`).join('')}</ul></div></div></div>`}).join('')}</section>
@@ -4284,20 +4286,21 @@ function playerPage() {
   ];
   const randDur = () => { const m = 5 + Math.floor(Math.random() * 21), s = Math.floor(Math.random() * 60); return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
   const chapters = (window.CHAPTERS && window.CHAPTERS[c.id])
-    ? window.CHAPTERS[c.id].map(ch => ({ name: ch.title, lessons: ch.lessons.map(t => ({ t, dur: randDur() })) }))
+    ? window.CHAPTERS[c.id].map(ch => ({ name: ch.title, lessons: ch.lessons.map((t, i) => ({ t, dur: (ch.durs && ch.durs[i]) || '', src: (ch.videos && ch.videos[i]) || '' })) }))
     : fallbackChapters;
 
   let curCh = 0, curLs = 0;
   const totalLessons = chapters.reduce((s, ch) => s + ch.lessons.length, 0);
+  const lessonSrc = (ci, li) => (chapters[ci] && chapters[ci].lessons[li] && chapters[ci].lessons[li].src) || vid(c);
   const isOwned = new Set(ls('aic-owned', [])).has(c.id);
   const canPlay = (ci, li) => isOwned || (ci === 0 && li < 2);
-  const doneSet = new Set(ls('aic-done-' + c.id, []));
+  const doneSet = new Set([...ls('aic-done-' + c.id, []), ...((progress[c.id] && progress[c.id].done) || [])]);
   const _addDone = doneSet.add.bind(doneSet);
   doneSet.add = v => {
     const [ci, li] = v.split('-').map(Number);
     if (!canPlay(ci, li)) return doneSet;
     _addDone(v); ss('aic-done-' + c.id, [...doneSet]);
-    const pg = ls('aic-progress', {}); pg[c.id] = Math.round(doneSet.size / totalLessons * 100); ss('aic-progress', pg);
+    progress[c.id] = { done: [...doneSet], lastAt: Date.now() }; saveProgress();
     if (isOwned && doneSet.size >= totalLessons) {
       const certs = ls('aic-certs', {});
       if (!certs[c.id]) { const d = new Date(); certs[c.id] = { date: `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`, no: 'OKAI-' + c.id.toUpperCase() + '-' + d.getTime().toString(36).slice(-6).toUpperCase() }; ss('aic-certs', certs); setTimeout(() => showCompletionCelebration(c), 600); }
@@ -4316,7 +4319,7 @@ function playerPage() {
   }
 
   function lessonId(ci, li) { return ci + '-' + li; }
-  function progress() { return Math.round(doneSet.size / totalLessons * 100); }
+  function pctDone() { return Math.round(doneSet.size / totalLessons * 100); }
 
   function renderSidebar() {
     return chapters.map((ch, ci) => {
@@ -4349,7 +4352,7 @@ function playerPage() {
       <a href="index.html" class="plr-logo">OKAI課程網</a>
       <span class="plr-course-name">${c.title}</span>
       <div class="plr-hdr-right">
-        <span class="plr-prog-txt">${progress()}% 完成</span>
+        <span class="plr-prog-txt">${pctDone()}% 完成</span>
         <a href="course.html?id=${c.id}" class="plr-back">← 課程詳情</a>
         <button class="plr-sidebar-toggle" aria-label="章節列表">☰</button>
       </div>
@@ -4358,7 +4361,7 @@ function playerPage() {
       <div class="plr-main">
         ${isOwned ? '' : `<div class="plr-trial"><span>▶ 試看模式：第 1 章前 2 個單元免費觀看</span><button class="btn btn-pri btn-sm" data-trial-enroll>報名完整課程 ${fmt(c.price)}</button></div>`}
         <div class="plr-video-wrap">
-          <video id="plr-vid" src="${vid(c)}" poster="${img(c)}" preload="metadata" playsinline></video>
+          <video id="plr-vid" src="${lessonSrc(0, 0)}" poster="${img(c)}" preload="metadata" playsinline></video>
           <div class="plr-controls">
             <div class="plr-progress-bar" id="plr-pbar" role="slider" aria-label="播放進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="plr-progress-fill" id="plr-pfill"></div><div class="plr-progress-handle" id="plr-phandle"></div></div>
             <div class="plr-ctrl-row">
@@ -4430,7 +4433,7 @@ function playerPage() {
         <div class="plr-sb-panel" id="plr-panel-chapters">
           <div class="plr-sb-head">
             <div class="plr-sb-count" id="plr-sb-count">${doneSet.size}/${totalLessons} 課完成</div>
-            <div class="plr-sb-progress"><div class="plr-sb-bar"><div class="plr-sb-fill" style="width:${progress()}%"></div></div><span>${progress()}%</span></div>
+            <div class="plr-sb-progress"><div class="plr-sb-bar"><div class="plr-sb-fill" style="width:${pctDone()}%"></div></div><span>${pctDone()}%</span></div>
           </div>
           <div class="plr-notice"><b>📢 課程公告</b><span>${c.updated || '2026/11'}　課程上線。工具介面若有重大改版，更新內容會公告在這裡。</span></div>
           <div class="plr-sb-list" id="plr-sb-list">${renderSidebar()}</div>
@@ -4576,14 +4579,18 @@ function playerPage() {
     curCh = ci; curLs = li;
     posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
     const saved = +(ls(posKey, 0));
-    vid_el.currentTime = (saved > 5) ? saved : 0;
-    vid_el.play();
+    const want = lessonSrc(ci, li);
+    if (vid_el.getAttribute('src') !== want) {
+      vid_el.src = want;
+      vid_el.addEventListener('loadedmetadata', () => { vid_el.currentTime = (saved > 5 && saved < vid_el.duration - 2) ? saved : 0; }, { once: true });
+    } else vid_el.currentTime = (saved > 5) ? saved : 0;
+    vid_el.play().catch(() => {});
     const sb = $('#plr-sb-list');
     sb.innerHTML = renderSidebar();
     bindSidebar();
     updateLessonBar();
     updateMinimap();
-    const p = progress();
+    const p = pctDone();
     $('.plr-prog-txt').textContent = p + '% 完成';
     $('.plr-sb-fill').style.width = p + '%';
     $('.plr-sb-progress span').textContent = p + '%';
@@ -4611,7 +4618,7 @@ function playerPage() {
   // Auto-next when video ends (with countdown overlay)
   vid_el.onended = () => {
     doneSet.add(lessonId(curCh, curLs));
-    const p = progress();
+    const p = pctDone();
     $('.plr-prog-txt').textContent = p + '% 完成';
     $('.plr-sb-fill').style.width = p + '%';
     $('.plr-sb-progress span').textContent = p + '%';
@@ -5712,7 +5719,7 @@ function orderHistoryPage() {
           <div class="oh-detail-row"><span>訂單金額</span><span class="oh-detail-total">${fmt(o.total)}</span></div>
         </div>
         <div class="oh-card-actions">
-          ${(() => { const mail = (subj, body) => 'mailto:hi@okaiclass.com?subject=' + encodeURIComponent(subj + ' ' + o.id) + '&body=' + encodeURIComponent(body + '\n\n訂單編號：' + o.id + '\n課程：' + o.items.map(x => x.title).join('、')); if (o.status === 'completed') { const days = o.openTs ? Math.floor((Date.now() - o.openTs) / 864e5) : 0; const pg = ls('aic-progress', {}); const maxP = Math.max(0, ...o.items.map(x => pg[x.id] || 0)); const ok = days <= 7 && maxP < 20; return `<a href="player.html?id=${o.items[0].id}" class="btn btn-pri btn-sm">開始上課</a><a class="btn btn-ghost btn-sm" href="${mail('【申請退款】', '我要申請退款，原因：')}">申請退款</a><span class="oh-refund-note">${ok ? '✓ 目前符合退費條件（開通 7 天內、進度低於 20%）' : '目前已超過退費條件（開通 7 天內、進度低於 20%）'}</span>`; } if (o.status === 'pending') return `<a class="btn btn-pri btn-sm" href="${mail('【付款查詢】', '請協助確認付款狀態')}">查詢付款進度</a><a class="btn btn-ghost btn-sm" href="${mail('【取消報名】', '我要取消這筆報名')}">取消報名</a>`; return `<a class="btn btn-pri btn-sm" href="course.html?id=${o.items[0].id}">重新報名</a>`; })()}
+          ${(() => { const mail = (subj, body) => 'mailto:hi@okaiclass.com?subject=' + encodeURIComponent(subj + ' ' + o.id) + '&body=' + encodeURIComponent(body + '\n\n訂單編號：' + o.id + '\n課程：' + o.items.map(x => x.title).join('、')); if (o.status === 'completed') { const days = o.openTs ? Math.floor((Date.now() - o.openTs) / 864e5) : 0; const pg = ls('aic-progress', {}); const maxP = Math.max(0, ...o.items.map(x => { const p = pg[x.id]; const n = p && Array.isArray(p.done) ? p.done.length : 0; return Math.round(n / Math.max(1, getTotalLessons(x)) * 100); })); const ok = days <= 7 && maxP < 20; return `<a href="player.html?id=${o.items[0].id}" class="btn btn-pri btn-sm">開始上課</a><a class="btn btn-ghost btn-sm" href="${mail('【申請退款】', '我要申請退款，原因：')}">申請退款</a><span class="oh-refund-note">${ok ? '✓ 目前符合退費條件（開通 7 天內、進度低於 20%）' : '目前已超過退費條件（開通 7 天內、進度低於 20%）'}</span>`; } if (o.status === 'pending') return `<a class="btn btn-pri btn-sm" href="${mail('【付款查詢】', '請協助確認付款狀態')}">查詢付款進度</a><a class="btn btn-ghost btn-sm" href="${mail('【取消報名】', '我要取消這筆報名')}">取消報名</a>`; return `<a class="btn btn-pri btn-sm" href="course.html?id=${o.items[0].id}">重新報名</a>`; })()}
         </div>
       </div>`;
     }).join('');
@@ -6351,9 +6358,9 @@ function achievementPage() {
   const achievements = badges.map(b => {
     let earned = false, prog = 0, total = 1;
     if (b.id === 'bg1') { earned = !!ls('aic-user'); }
-    else if (b.id === 'bg2') { const pVals = Object.values(progress); earned = pVals.some(p => p > 0); prog = pVals.filter(p => p > 0).length; }
-    else if (b.id === 'bg3') { const hrs = Object.values(progress).reduce((s,v) => s+v, 0) * 0.5; earned = hrs >= 10; prog = Math.min(Math.round(hrs), 10); total = 10; }
-    else if (b.id === 'bg4') { const done = Object.values(progress).filter(v => v >= 100).length; earned = done >= 1; prog = done; }
+    else if (b.id === 'bg2') { const pVals = Object.values(progress).map(p => (p && p.done ? p.done.length : 0)); earned = pVals.some(p => p > 0); prog = earned ? 1 : 0; }
+    else if (b.id === 'bg3') { const hrs = Object.values(progress).reduce((s,v) => s + (v && v.done ? v.done.length : 0), 0) * 0.2; earned = hrs >= 10; prog = Math.min(Math.round(hrs), 10); total = 10; }
+    else if (b.id === 'bg4') { const done = Object.keys(ls('aic-certs', {})).length; earned = done >= 1; prog = done; }
     else if (b.id === 'bg5') { earned = owned.length >= 5; prog = owned.length; total = 5; }
     else if (b.id === 'bg6') { prog = streakData.count; total = 30; earned = streakData.count >= 30; }
     else if (b.id === 'bg7') { prog = 12; total = 50; }
@@ -6361,7 +6368,7 @@ function achievementPage() {
     else if (b.id === 'bg9') { const perfect = Object.values(quizResults).some(r => r.pct === 100); earned = perfect; prog = perfect ? 1 : 0; }
     else if (b.id === 'bg10') { prog = 0; total = 3; }
     else if (b.id === 'bg11') { prog = 2; total = 7; }
-    else if (b.id === 'bg12') { const catsDone = new Set(); owned.forEach(id => { const cc = byId[id]; if (cc) catsDone.add(cc.cat); }); earned = catsDone.size >= 3; prog = catsDone.size; total = 3; }
+    else if (b.id === 'bg12') { const catsDone = new Set(); Object.keys(ls('aic-certs', {})).forEach(id => { const cc = byId[id]; if (cc) catsDone.add(cc.cat); }); earned = catsDone.size >= 3; prog = catsDone.size; total = 3; }
     else if (b.id === 'bg13') { earned = streakData.count >= 7; prog = Math.min(streakData.count, 7); total = 7; }
     else if (b.id === 'bg14') { const lessons = Object.values(progress).reduce((s,v) => s + Math.floor(v / 5), 0); earned = lessons >= 100; prog = Math.min(lessons, 100); total = 100; }
     else if (b.id === 'bg15') { const rv = Object.keys(ls('aic-reviews', {})).length; earned = rv >= 10; prog = Math.min(rv, 10); total = 10; }
