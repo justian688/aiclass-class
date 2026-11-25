@@ -26,6 +26,37 @@ document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.t
 const page = document.body.dataset.page;
 const ls = (key, fallback) => { try { const v = localStorage.getItem(key); if (v == null) return fallback; try { return JSON.parse(v); } catch { return v; } } catch { return fallback; } };
 const ss = (key, val) => { try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {} };
+/* ---------- 跨裝置同步（同步碼，存在主機 /api/sync.php） ---------- */
+const SYNC_SKIP = /^aic-(sync-|admin-key|cart-ts)/;
+function syncSnapshot() { const d = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('aic-') && !SYNC_SKIP.test(k)) d[k] = localStorage.getItem(k); } } catch {} return d; }
+function syncPush(code) {
+  const data = syncSnapshot(), ts = Date.now();
+  return fetch('api/sync.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: code || '', ts, data }), keepalive: true })
+    .then(r => r.json()).then(j => { if (j.ok) { ss('aic-sync-code', j.code); ss('aic-sync-ts', String(ts)); ss('aic-sync-hash', String(JSON.stringify(data).length) + ':' + Object.keys(data).length); } return j; });
+}
+function syncPull(code, force) {
+  return fetch('api/sync.php?code=' + encodeURIComponent(code), { cache: 'no-store' }).then(r => r.json()).then(j => {
+    if (!j.ok) return j;
+    const localTs = +(ls('aic-sync-ts', 0) || 0);
+    if (force || j.ts > localTs) {
+      if (force) { const old = Object.keys(syncSnapshot()); old.forEach(k => { try { localStorage.removeItem(k); } catch {} }); }
+      Object.entries(j.data || {}).forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch {} });
+      ss('aic-sync-code', code); ss('aic-sync-ts', String(j.ts)); j.applied = true;
+    }
+    return j;
+  });
+}
+(() => {
+  const code = ls('aic-sync-code', ''); if (!code || location.protocol === 'file:') return;
+  if (!sessionStorage.getItem('aic-sync-pulled')) {
+    sessionStorage.setItem('aic-sync-pulled', '1');
+    syncPull(code, false).then(j => { if (j && j.applied) location.reload(); }).catch(() => {});
+  }
+  let last = JSON.stringify(syncSnapshot());
+  const tick = () => { const now = JSON.stringify(syncSnapshot()); if (now !== last) { last = now; syncPush(code).catch(() => {}); } };
+  setInterval(tick, 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') tick(); });
+})();
 const rs = (key) => { try { localStorage.removeItem(key); } catch {} };
 const wish = new Set(ls('aic-wish', []));
 const cart = new Set(ls('aic-cart', []));
@@ -1811,34 +1842,17 @@ function course() {
     </div></div>
     ${(() => { const tc = C.filter(x => x.teacher === c.teacher && x.id !== c.id).slice(0, 4); if (!tc.length) return ''; return `<div class="t-other-courses"><h4>${c.teacher} 的其他課程</h4><div class="t-oc-grid">${tc.map(x => `<a href="course.html?id=${x.id}" class="t-oc-card"><img src="${img(x)}" alt="${x.title}" loading="lazy" decoding="async"><div><b>${x.title}</b><span>${fmt(x.price)}</span></div></a>`).join('')}</div></div>`; })()}
     </section>
-    <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span style="color:var(--pri);font-size:18px">★ ${c.rating.toFixed(1)}</span> <span style="font-size:15px;color:var(--tx3);font-weight:400"></span></h2>
-      <div class="review-stats rv-up"><div class="rs-big"><b>${c.rating.toFixed(1)}</b><div class="rs-stars">★★★★★</div><div style="font-size:13px;color:var(--tx3)">${c.students.toLocaleString()} 則評價</div></div>
-      <div class="rs-bars">${distPcts.map((p, i) => `<div class="rs-bar rv-star-filter" data-star="${5-i}" role="button" tabindex="0" title="篩選 ${5-i} 星評價"><span>${5 - i}</span><div class="rs-track"><i style="width:${p}%"></i></div><span>${p}%</span></div>`).join('')}</div></div>
-      <div class="rv-controls rv-up">
-        <div class="rv-sort">
-          <span>排序</span>
-          <button class="rv-sort-btn on" data-sort="helpful">最有幫助</button>
-          <button class="rv-sort-btn" data-sort="newest">最新</button>
-          <button class="rv-sort-btn" data-sort="highest">最高分</button>
-          <button class="rv-sort-btn" data-sort="lowest">最低分</button>
-        </div>
-        <div class="rv-filter-status" id="rv-filter-status" style="display:none">
-          <span id="rv-filter-txt"></span>
-          <button class="rv-filter-clear" id="rv-filter-clear">✕ 清除篩選</button>
-        </div>
-      </div>
-      <div class="review-list" id="review-list">${reviewData.map((r, i) => `<div class="review-item rv-up${i >= 3 ? ' rv-hidden' : ''}" data-rating="${r.rating}" data-date="${r.date}" data-helpful="${12+i*3}">
-        <div class="ri-head"><div class="ri-avatar">${r.initial}</div><div class="ri-meta"><b>${r.name}</b><div class="ri-sub">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="ri-date">${r.date}</span></div></div></div>
-        <p>${r.text}</p>
-        <div class="rv-helpful"><span>這則評價有幫助嗎？</span><button class="rv-vote rv-up-vote ${reviewVotes[c.id+'-'+i]==='up'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="up">👍 有幫助 <span class="rv-vote-n">${12+i*3+(reviewVotes[c.id+'-'+i]==='up'?1:0)}</span></button><button class="rv-vote rv-dn-vote ${reviewVotes[c.id+'-'+i]==='dn'?'voted':''}" data-rv="${c.id+'-'+i}" data-dir="dn">👎</button></div>
-      </div>`).join('')}</div>
-      ${reviewData.length > 3 ? `<button class="btn btn-ghost rv-load-more rv-up" id="rv-load-more">查看更多評價（${reviewData.length - 3}）</button>` : ''}
-      <div class="ur-form rv-up"><h3>撰寫你的評價</h3>
-        <div class="ur-stars"><span data-ur="1">☆</span><span data-ur="2">☆</span><span data-ur="3">☆</span><span data-ur="4">☆</span><span data-ur="5">☆</span></div>
-        <textarea class="ur-text" placeholder="分享你的學習心得…（至少 10 個字）" rows="4" aria-label="課程評價"></textarea>
-        <button class="btn btn-pri ur-submit" disabled>送出評價</button>
-      </div>
-      <div class="ur-user-list"></div>
+    <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span class="crv-avg" id="crv-avg"></span></h2>
+      <p class="crv-note">評價由學員自己填寫，我們不會修改內容。</p>
+      <div class="crv-list" id="crv-list" aria-live="polite"><p class="crv-empty">載入評價中…</p></div>
+      <form class="crv-form" id="crv-form" autocomplete="off">
+        <h3>寫下你的評價</h3>
+        <div class="crv-stars" role="radiogroup" aria-label="評分">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="crv-star" data-star="${n}" role="radio" aria-checked="false" aria-label="${n} 顆星">☆</button>`).join('')}</div>
+        <input id="crv-name" maxlength="20" placeholder="你的暱稱（可留空）" aria-label="暱稱" value="${aicUser ? aicUser.name || '' : ''}">
+        <input name="website" tabindex="-1" class="plr-cm-hp" aria-hidden="true" autocomplete="off">
+        <textarea id="crv-text" maxlength="800" rows="3" placeholder="這門課對你有什麼幫助？哪裡可以更好？（至少 5 個字）" aria-label="評價內容"></textarea>
+        <div class="crv-foot"><span>同一台裝置每門課留一則，重寫會蓋掉舊的</span><button class="btn btn-pri btn-sm" type="submit" id="crv-send">送出評價</button></div>
+      </form>
     </section>
     ${(() => { const B = window.BUNDLES || []; const related = B.filter(b => b.courses.includes(c.id)); if (!related.length) return ''; return `<section class="c-sec c-related-bundle rv-up" id="bundle"><h2>🎁 這堂課的超值組合</h2><div class="c-bundle-list">${related.map(b => { const bCourses = b.courses.map(id => byId[id]).filter(Boolean); return `<div class="c-bundle-card"><div class="c-bundle-tag">${b.tag || '組合包'}</div><h3>${b.name}</h3><p>${b.desc}</p><div class="c-bundle-courses">${bCourses.map(bc => `<span class="c-bundle-chip ${bc.id === c.id ? 'current' : ''}">${bc.title.split('：')[0]}</span>`).join('')}</div><div class="c-bundle-price"><span class="c-bundle-now">${fmt(b.price)}</span><del>${fmt(b.original)}</del><span class="c-bundle-save">省 ${fmt(b.save)}</span></div><button class="btn btn-pri" style="width:100%;margin-top:12px" onclick="location.href='bundle.html'">整組加入購物車</button></div>`; }).join('')}</div></section>`; })()}
     ${notesWidget(c.id)}
@@ -1923,6 +1937,38 @@ function course() {
   ${(()=>{const rv=ls('aic-recent-view',[]).filter(x=>x!==c.id).slice(0,4).map(x=>byId[x]).filter(Boolean);if(!rv.length)return '';return `<section class="c-sec rv-up"><h2>🕐 最近瀏覽</h2><div class="recent-viewed">${rv.map(r=>`<a class="rv-item" href="course.html?id=${r.id}"><img src="${img(r)}" alt="${r.title}" loading="lazy" decoding="async"><div><div class="rv-title">${r.title}</div><div class="rv-teacher">${r.teacher}</div></div></a>`).join('')}</div></section>`;})()}
   ${railSec('more', '其他熱門課程', '', C.filter(x => x.cat !== c.cat).sort((a, b) => b.students - a.students).slice(0, 8))}`;
 
+  /* ---------- 真實課程評價（/api/reviews.php） ---------- */
+  (() => {
+    const list = $('#crv-list'), form = $('#crv-form'); if (!list || !form) return;
+    let stars = 0;
+    const paint = () => $$('.crv-star', form).forEach(b => { const on = +b.dataset.star <= stars; b.textContent = on ? '★' : '☆'; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(+b.dataset.star === stars)); });
+    $$('.crv-star', form).forEach(b => b.onclick = () => { stars = +b.dataset.star; paint(); });
+    const render = j => {
+      const avg = $('#crv-avg'); list.innerHTML = '';
+      if (!j.count) { if (avg) avg.textContent = ''; list.innerHTML = '<p class="crv-empty">還沒有評價。上過課的話，歡迎寫下第一則！</p>'; return; }
+      if (avg) avg.textContent = `★ ${j.avg.toFixed(1)}（${j.count} 則）`;
+      j.items.forEach(x => {
+        const it = document.createElement('div'); it.className = 'crv-item';
+        const h = document.createElement('div'); h.className = 'crv-head';
+        const b = document.createElement('b'); b.textContent = x.name || '學員';
+        const st = document.createElement('span'); st.className = 'crv-st'; st.textContent = '★'.repeat(x.stars) + '☆'.repeat(5 - x.stars);
+        const d = document.createElement('span'); d.className = 'crv-date'; d.textContent = new Date(x.t * 1000).toLocaleDateString('zh-TW');
+        h.append(b, st, d); const p = document.createElement('p'); p.textContent = x.text; it.append(h, p); list.append(it);
+      });
+    };
+    const load = () => fetch('api/reviews.php?course=' + c.id, { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject()).then(render).catch(() => { list.innerHTML = '<p class="crv-empty">評價暫時載入不了，請稍後重新整理。</p>'; });
+    load();
+    form.onsubmit = e => {
+      e.preventDefault();
+      const text = $('#crv-text', form).value.trim();
+      if (!stars) { toast('請先選星星', 'error'); return; }
+      if (text.length < 5) { toast('評價至少寫 5 個字', 'error'); return; }
+      const btn = $('#crv-send', form); btn.disabled = true;
+      fetch('api/reviews.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ course: c.id, stars, name: $('#crv-name', form).value.trim(), text, website: form.website.value }) })
+        .then(r => r.json()).then(j => { if (!j.ok) { toast(j.error || '送出失敗', 'error'); return; } $('#crv-text', form).value = ''; stars = 0; paint(); userReviews[c.id] = [{ rating: stars || 5, text, date: new Date().toISOString().slice(0, 10) }]; saveReviews(); toast('感謝你的評價！', 'success'); load(); })
+        .catch(() => toast('送出失敗，請檢查網路', 'error')).finally(() => { btn.disabled = false; });
+    };
+  })();
   seo({
     title: `${c.title}｜OKAI課程網`,
     desc: c.desc || c.ai || '',
@@ -2441,7 +2487,7 @@ function loginPage() {
         <a href="index.html" class="login-logo"><img src="assets/logo.svg" alt="OKAI課程網" style="height:28px"></a>
         <h1>登入 / 註冊</h1>
         <p>輸入 Email 就能開始，不需要密碼</p>
-        <p class="login-local-note">目前帳號與學習紀錄存在這台裝置的瀏覽器，換裝置或清除瀏覽資料不會保留。購買的課程以報名 Email 為準，換裝置請來信 hi@okaiclass.com 協助開通。</p>
+        <p class="login-local-note">學習紀錄存在這台裝置。想在手機和電腦接著看，登入後到「帳號設定 → 跨裝置同步」產生同步碼就行。</p>
         <div class="login-field"><label>Email</label><input type="email" placeholder="your@email.com" autocomplete="email"></div>
         <div class="login-field"><label>暱稱（選填）</label><input type="text" id="login-name" maxlength="20" placeholder="上課時顯示的名字" autocomplete="nickname"></div>
         <button class="btn btn-pri login-submit" id="login-go">開始學習</button>
@@ -4292,7 +4338,7 @@ function playerPage() {
       <div class="plr-main">
         ${isOwned ? '' : `<div class="plr-trial"><span>▶ 試看模式：第 1 章前 2 個單元免費觀看</span><button class="btn btn-pri btn-sm" data-trial-enroll>報名完整課程 ${fmt(c.price)}</button></div>`}
         <div class="plr-video-wrap"><div class="plr-stage">
-          <video id="plr-vid" src="${lessonSrc(0, 0)}" poster="${img(c)}" preload="metadata" playsinline></video>
+          <video id="plr-vid" src="${lessonSrc(0, 0)}" poster="${img(c)}" preload="metadata" playsinline x-webkit-airplay="allow"></video>
           <div class="plr-controls">
             <div class="plr-progress-bar" id="plr-pbar" role="slider" aria-label="播放進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="plr-progress-fill" id="plr-pfill"></div><div class="plr-progress-handle" id="plr-phandle"></div></div>
             <div class="plr-ctrl-row">
@@ -4310,7 +4356,7 @@ function playerPage() {
                 <div class="plr-speed-wrap">
                   <button id="plr-speed" class="plr-ctrl-btn">1x</button>
                   <div class="plr-speed-menu" id="plr-speed-menu" hidden>
-                    <button data-spd="0.5">0.5x</button><button data-spd="0.75">0.75x</button><button data-spd="1" class="on">1x</button><button data-spd="1.25">1.25x</button><button data-spd="1.5">1.5x</button><button data-spd="2">2x</button>
+                    <button data-spd="0.5">0.5x</button><button data-spd="0.75">0.75x</button><button data-spd="1" class="on">1x</button><button data-spd="1.25">1.25x</button><button data-spd="1.5">1.5x</button><button data-spd="1.75">1.75x</button><button data-spd="2">2x</button>
                   </div>
                 </div>
                 <label class="plr-autoplay"><input type="checkbox" id="plr-auto" ${ls('aic-autoplay', true) ? 'checked' : ''}><span>自動播放</span></label>
@@ -4341,7 +4387,9 @@ function playerPage() {
             <button class="plr-cm-tab on" data-cm="lesson" role="tab">本單元留言</button>
             <button class="plr-cm-tab" data-cm="all" role="tab">全部留言</button>
           </div>
+          <p class="plr-cm-adminbar" id="plr-cm-admin" hidden>🎓 講師模式：你的留言會標示「講師回覆」，也可以刪除留言</p>
           <form class="plr-cm-form" id="plr-cm-form" autocomplete="off">
+            <div class="plr-cm-replying" id="plr-cm-replying" hidden><span></span><button type="button" aria-label="取消回覆">✕ 取消</button></div>
             <div class="plr-cm-row"><input id="plr-cm-name" maxlength="20" placeholder="你的暱稱（可留空）" aria-label="暱稱"><input name="website" tabindex="-1" class="plr-cm-hp" aria-hidden="true" autocomplete="off"></div>
             <textarea id="plr-cm-text" maxlength="1000" rows="3" placeholder="對這個單元有問題或心得？留言給講師和同學（2～1000 字）" aria-label="留言內容"></textarea>
             <div class="plr-cm-foot"><span class="plr-cm-hint">留言會公開顯示，請勿留下電話、地址等個人資料</span><span class="plr-cm-count" id="plr-cm-count">0 / 1000</span><button class="btn btn-pri btn-sm" type="submit" id="plr-cm-send">送出留言</button></div>
@@ -4415,6 +4463,7 @@ function playerPage() {
         </div>
         <div class="plr-sb-panel" id="plr-panel-downloads" hidden>
           <div class="plr-dl-list">
+            ${isOwned ? `<div class="plr-dl-item"><span class="plr-dl-icon">🎬</span><div class="plr-dl-info"><b>下載這個單元的影片</b><span>存到手機或電腦，沒網路也能看（僅供個人學習）</span></div><a class="btn btn-ghost" id="plr-dl-video" href="#" download>下載</a></div>` : ''}
             <div class="plr-dl-item"><span class="plr-dl-icon">📄</span><div class="plr-dl-info"><b>課程講義大綱（暫定版）</b><span>各章學習目標、單元列表、筆記欄與練習</span></div><a class="btn btn-ghost" href="assets/handouts/${c.id}.pdf" target="_blank" rel="noopener" download>下載</a></div>
             <div class="plr-dl-item"><span class="plr-dl-icon">📁</span><div class="plr-dl-info"><b>範例專案檔與練習素材</b><span>正式課程影片上線時提供</span></div><span class="btn btn-ghost" aria-disabled="true" style="opacity:.55;cursor:default">製作中</span></div>
           </div>
@@ -4540,6 +4589,7 @@ function playerPage() {
     vid_el.pause();
     document.querySelectorAll('.plr-err').forEach(e => e.remove());
     ss('aic-last-' + c.id, [ci, li]);
+    { const dl = document.getElementById('plr-dl-video'); if (dl) { const src = lessonSrc(ci, li); dl.href = src; dl.setAttribute('download', `${c.title.split('：')[0]}_${ci + 1}-${li + 1}.mp4`); } }
     setTimeout(() => { try { cmRender(); } catch (e) {} }, 0);
     if (ci !== curCh) closedCur = -1;
     curCh = ci; curLs = li;
@@ -4585,58 +4635,87 @@ function playerPage() {
     $$('.plr-ls').forEach(b => b.onclick = () => goLesson(+b.dataset.ch, +b.dataset.ls));
   }
   bindSidebar();
-  /* ---------- 單元留言（存在主機 /api/comments.php，所有學員都看得到） ---------- */
+  /* ---------- 單元留言（存在主機 /api/comments.php，所有學員都看得到；講師可回覆、刪除） ---------- */
   const CM_API = 'api/comments.php';
-  let cmAll = [], cmMode = 'lesson', cmLoaded = false;
+  { const ak = new URLSearchParams(location.search).get('admin'); if (ak) { ss('aic-admin-key', ak); history.replaceState(null, '', location.pathname + '?id=' + c.id); } }
+  const adminKey = ls('aic-admin-key', '');
+  let cmAll = [], cmMode = 'lesson', cmLoaded = false, cmAdmin = false, cmReplyTo = null;
   const cmList = $('#plr-cm-list'), cmForm = $('#plr-cm-form'), cmText = $('#plr-cm-text'), cmName = $('#plr-cm-name');
   if (cmName && aicUser) cmName.value = aicUser.name || '';
   const cmAgo = t => { const m = Math.floor((Date.now() / 1000 - t) / 60); if (m < 1) return '剛剛'; if (m < 60) return m + ' 分鐘前'; const h = Math.floor(m / 60); if (h < 24) return h + ' 小時前'; const d = Math.floor(h / 24); return d < 30 ? d + ' 天前' : new Date(t * 1000).toLocaleDateString('zh-TW'); };
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  function cmItem(x, isReply) {
+    const box = el('div', 'plr-cm-item' + (isReply ? ' plr-cm-reply' : '') + (x.teacher ? ' plr-cm-teacher' : ''));
+    const av = el('div', 'plr-cm-av', (x.name || '學')[0]);
+    const body = el('div', 'plr-cm-body'); const head = el('div', 'plr-cm-head');
+    head.append(el('b', '', x.name || '學員'));
+    if (x.teacher) head.append(el('span', 'plr-cm-badge', '講師回覆'));
+    head.append(el('span', '', `${cmMode === 'all' && !isReply ? '單元 ' + x.lesson + '・' : ''}${cmAgo(x.t)}`));
+    body.append(head, el('p', '', x.text));
+    const acts = el('div', 'plr-cm-acts');
+    if (!isReply) { const rb = el('button', 'plr-cm-act', '回覆'); rb.type = 'button'; rb.onclick = () => { cmReplyTo = x; cmShowReply(); }; acts.append(rb); }
+    if (cmAdmin) { const db = el('button', 'plr-cm-act danger', '刪除'); db.type = 'button'; db.onclick = () => cmDelete(x); acts.append(db); }
+    if (acts.childNodes.length) body.append(acts);
+    box.append(av, body); return box;
+  }
+  function cmShowReply() {
+    const bar = $('#plr-cm-replying');
+    if (bar) { bar.hidden = !cmReplyTo; if (cmReplyTo) bar.querySelector('span').textContent = `回覆 ${cmReplyTo.name || '學員'}：${cmReplyTo.text.slice(0, 30)}${cmReplyTo.text.length > 30 ? '…' : ''}`; }
+    if (cmReplyTo) { cmForm.scrollIntoView({ behavior: 'smooth', block: 'center' }); cmText.focus(); }
+  }
   function cmRender() {
     if (!cmList) return;
     const key = `${curCh + 1}-${curLs + 1}`;
-    const items = cmMode === 'lesson' ? cmAll.filter(x => x.lesson === key) : cmAll;
+    const roots = cmAll.filter(x => !x.parent);
+    const items = cmMode === 'lesson' ? roots.filter(x => x.lesson === key) : roots;
     $$('.plr-cm-tab').forEach(b => b.classList.toggle('on', b.dataset.cm === cmMode));
     const tabL = $('.plr-cm-tab[data-cm="lesson"]'), tabA = $('.plr-cm-tab[data-cm="all"]');
-    if (tabL) tabL.textContent = `本單元留言（${cmAll.filter(x => x.lesson === key).length}）`;
-    if (tabA) tabA.textContent = `全部留言（${cmAll.length}）`;
+    if (tabL) tabL.textContent = `本單元留言（${roots.filter(x => x.lesson === key).length}）`;
+    if (tabA) tabA.textContent = `全部留言（${roots.length}）`;
+    const ab = $('#plr-cm-admin'); if (ab) ab.hidden = !cmAdmin;
     cmList.innerHTML = '';
     if (!cmLoaded) { cmList.innerHTML = '<p class="plr-cm-empty">載入留言中…</p>'; return; }
     if (!items.length) { cmList.innerHTML = `<p class="plr-cm-empty">${cmMode === 'lesson' ? '這個單元還沒有留言，來當第一個發問的人吧！' : '這門課還沒有留言。'}</p>`; return; }
     items.forEach(x => {
-      const el = document.createElement('div'); el.className = 'plr-cm-item';
-      const av = document.createElement('div'); av.className = 'plr-cm-av'; av.textContent = (x.name || '學')[0];
-      const body = document.createElement('div'); body.className = 'plr-cm-body';
-      const head = document.createElement('div'); head.className = 'plr-cm-head';
-      const nm = document.createElement('b'); nm.textContent = x.name || '學員';
-      const meta = document.createElement('span'); meta.textContent = `${cmMode === 'all' ? '單元 ' + x.lesson + '・' : ''}${cmAgo(x.t)}`;
-      head.append(nm, meta);
-      const tx = document.createElement('p'); tx.textContent = x.text;
-      body.append(head, tx); el.append(av, body); cmList.append(el);
+      cmList.append(cmItem(x, false));
+      cmAll.filter(r => r.parent === x.id).sort((a, b) => a.t - b.t).forEach(r => cmList.append(cmItem(r, true)));
     });
   }
   function cmLoad() {
-    fetch(CM_API + '?course=' + encodeURIComponent(c.id), { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(j => { cmAll = (j && j.items) || []; cmLoaded = true; cmRender(); })
+    fetch(CM_API + '?course=' + encodeURIComponent(c.id) + (adminKey ? '&key=' + encodeURIComponent(adminKey) : ''), { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(j => { cmAll = (j && j.items) || []; cmAdmin = !!(j && j.admin); cmLoaded = true; cmRender(); })
       .catch(() => { cmLoaded = true; cmAll = []; if (cmList) cmList.innerHTML = '<p class="plr-cm-empty">留言暫時載入不了，請稍後重新整理。</p>'; });
   }
+  function cmDelete(x) {
+    if (!confirm2(`確定刪除「${x.text.slice(0, 20)}」？回覆也會一起刪除。`)) return;
+    fetch(CM_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', course: c.id, id: x.id, key: adminKey }) })
+      .then(r => r.json()).then(j => { if (!j.ok) { toast(j.error || '刪除失敗', 'error'); return; } cmAll = cmAll.filter(y => y.id !== x.id && y.parent !== x.id); cmRender(); toast('已刪除', 'success'); })
+      .catch(() => toast('刪除失敗，請稍後再試', 'error'));
+  }
+  const confirm2 = msg => window.confirm(msg);
   $$('.plr-cm-tab').forEach(b => b.onclick = () => { cmMode = b.dataset.cm; cmRender(); });
+  const cmCancel = $('#plr-cm-replying button'); if (cmCancel) cmCancel.onclick = () => { cmReplyTo = null; cmShowReply(); };
   if (cmText) cmText.oninput = () => { const n = cmText.value.length; const ct = $('#plr-cm-count'); if (ct) ct.textContent = n + ' / 1000'; };
   if (cmForm) cmForm.onsubmit = e => {
     e.preventDefault();
     const text = cmText.value.trim();
     if (text.length < 2) { toast('留言至少 2 個字', 'error'); cmText.focus(); return; }
     const btn = $('#plr-cm-send'); btn.disabled = true; btn.textContent = '送出中…';
-    fetch(CM_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ course: c.id, lesson: `${curCh + 1}-${curLs + 1}`, name: cmName.value.trim(), text, website: cmForm.website.value }) })
+    const payload = { course: c.id, lesson: cmReplyTo ? cmReplyTo.lesson : `${curCh + 1}-${curLs + 1}`, name: cmName.value.trim(), text, website: cmForm.website.value };
+    if (cmReplyTo) payload.parent = cmReplyTo.id;
+    if (cmAdmin) payload.key = adminKey;
+    fetch(CM_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       .then(r => r.json().then(j => ({ ok: r.ok && j.ok, j })))
       .then(({ ok, j }) => {
         if (!ok) { toast((j && j.error) || '留言失敗，請稍後再試', 'error'); return; }
         if (j.item) cmAll.unshift(j.item);
-        cmText.value = ''; cmText.oninput(); cmMode = 'lesson'; cmRender(); toast('留言已送出', 'success');
+        cmText.value = ''; cmText.oninput(); if (!cmReplyTo) cmMode = 'lesson'; cmReplyTo = null; cmShowReply(); cmRender(); toast('留言已送出', 'success');
       })
       .catch(() => toast('留言失敗，請檢查網路後再試', 'error'))
       .finally(() => { btn.disabled = false; btn.textContent = '送出留言'; });
   };
   cmLoad();
+  { const dl = document.getElementById('plr-dl-video'); if (dl) { dl.href = lessonSrc(curCh, curLs); dl.setAttribute('download', `${c.title.split('：')[0]}_${curCh + 1}-${curLs + 1}.mp4`); } }
   /* 回到上次看到的單元（網址可用 ?ch=&ls= 指定） */
   setTimeout(() => {
     const q = new URLSearchParams(location.search);
@@ -6885,7 +6964,7 @@ function contactPage() {
   const quickFAQ = [
     { q: '如何購買課程？', a: '在課程頁面點擊「加入購物車」，前往購物車頁面完成結帳即可。送出報名後，我們會在 2 個工作天內用 Email 寄付款方式給你，付款確認後開通課程。' },
     { q: '課程可以退費嗎？', a: '開通後 7 天內、觀看進度低於 20%，可申請全額退費。請透過下方表單或客服信箱提出申請。' },
-    { q: '換手機或電腦怎麼繼續上課？', a: '目前學習紀錄存在原本裝置的瀏覽器。換裝置請來信 hi@okaiclass.com，附上報名 Email，我們會幫你在新裝置開通課程。' },
+    { q: '換手機或電腦怎麼繼續上課？', a: '在舊裝置打開「帳號設定 → 跨裝置同步」產生同步碼，到新裝置輸入同一組同步碼，看到哪裡、筆記、已開通的課程都會跟過來。' },
     { q: '課程有觀看期限嗎？', a: '所有課程皆為無限期觀看，開通後可隨時回來複習，課程更新也不另外收費。' },
     { q: '如何取得完課證書？', a: '看完課程所有單元後，就能在「我的證書」頁面下載完課證書。' },
     { q: '可以用手機觀看嗎？', a: '可以。OKAI課程網 支援所有裝置，包括桌面電腦、平板和手機，也可以把網站加到手機主畫面，像 App 一樣打開（看影片仍需要網路）。' }
@@ -7065,6 +7144,7 @@ function settingsPage() {
         <button class="set-nav-btn on" data-stab="profile">👤 個人資料</button>
         <button class="set-nav-btn" data-stab="display">🎨 顯示設定</button>
         <button class="set-nav-btn" data-stab="playback">▶ 播放設定</button>
+        <button class="set-nav-btn" data-stab="sync">🔄 跨裝置同步</button>
         <button class="set-nav-btn" data-stab="privacy">🔒 隱私與安全</button>
       </nav>
       <div class="set-main">
@@ -7101,6 +7181,24 @@ function settingsPage() {
             <div class="set-toggle-row"><span>預設開啟字幕</span><label class="set-toggle"><input type="checkbox" ${ls('aic-subtitle', true) ? 'checked' : ''} data-pref="subtitle"><span class="set-slider"></span></label></div>
             <div class="set-field"><label>預設播放速度</label><select id="set-speed" aria-label="播放速度">${[0.75, 1, 1.25, 1.5, 2].map(v => `<option value="${v}" ${+ls('aic-speed', 1) === v ? 'selected' : ''}>${v}x</option>`).join('')}</select></div>
             <button class="btn btn-pri set-save" data-sec="playback">儲存設定</button>
+          </div>
+        </section>
+
+        <section class="set-sec" id="set-sync" hidden>
+          <h2 class="rv-up">跨裝置同步</h2>
+          <div class="set-card rv-up">
+            <p class="set-sync-intro">在手機和電腦用同一組「同步碼」，看到哪裡、筆記、收藏都會跟著走。同步碼就像鑰匙，請不要給別人。</p>
+            <div id="set-sync-on" hidden>
+              <div class="set-sync-code"><span>你的同步碼</span><b id="set-sync-code"></b><button class="btn btn-ghost btn-sm" type="button" id="set-sync-copy">複製</button></div>
+              <p class="set-sync-hint">在另一台裝置打開「帳號設定 → 跨裝置同步」，輸入這組同步碼就能接著看。之後每分鐘會自動同步一次。</p>
+              <div class="set-sync-btns"><button class="btn btn-pri btn-sm" type="button" id="set-sync-now">立即同步</button><button class="btn btn-ghost btn-sm" type="button" id="set-sync-off">這台裝置停止同步</button></div>
+            </div>
+            <div id="set-sync-off-box">
+              <button class="btn btn-pri" type="button" id="set-sync-new">產生同步碼（把這台的紀錄存上去）</button>
+              <div class="set-sync-or">或</div>
+              <div class="set-field"><label>已經有同步碼？輸入後會用雲端的紀錄取代這台裝置</label><input id="set-sync-input" placeholder="例如 ABCD-EFGH-JKLM" maxlength="14" autocomplete="off" aria-label="同步碼"></div>
+              <button class="btn btn-ghost" type="button" id="set-sync-use">套用同步碼</button>
+            </div>
           </div>
         </section>
 
@@ -7153,6 +7251,23 @@ function settingsPage() {
     }
     toast('設定已儲存');
   });
+
+  /* 跨裝置同步 */
+  (() => {
+    const on = $('#set-sync-on', main), offBox = $('#set-sync-off-box', main); if (!on) return;
+    const show = () => { const code = ls('aic-sync-code', ''); on.hidden = !code; offBox.hidden = !!code; $('#set-sync-code', main).textContent = code; };
+    show();
+    $('#set-sync-new', main).onclick = e => { e.target.disabled = true; syncPush('').then(j => { if (!j.ok) toast(j.error || '產生失敗', 'error'); else { toast('已產生同步碼', 'success'); show(); } }).catch(() => toast('連不上主機，請稍後再試', 'error')).finally(() => e.target.disabled = false); };
+    $('#set-sync-use', main).onclick = () => {
+      const code = $('#set-sync-input', main).value.trim().toUpperCase().replace(/\s/g, '');
+      if (!/^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(code)) { toast('同步碼格式是 XXXX-XXXX-XXXX', 'error'); return; }
+      syncPull(code, true).then(j => { if (!j.ok) { toast(j.error || '套用失敗', 'error'); return; } toast('已載入雲端紀錄', 'success'); setTimeout(() => location.reload(), 700); }).catch(() => toast('連不上主機，請稍後再試', 'error'));
+    };
+    $('#set-sync-now', main).onclick = () => syncPush(ls('aic-sync-code', '')).then(j => toast(j.ok ? '已同步' : (j.error || '同步失敗'), j.ok ? 'success' : 'error')).catch(() => toast('連不上主機', 'error'));
+    $('#set-sync-copy', main).onclick = () => { navigator.clipboard && navigator.clipboard.writeText(ls('aic-sync-code', '')); toast('已複製同步碼', 'success'); };
+    $('#set-sync-off', main).onclick = () => { ['aic-sync-code', 'aic-sync-ts', 'aic-sync-hash'].forEach(k => localStorage.removeItem(k)); toast('這台裝置已停止同步（雲端紀錄還在）'); show(); };
+    if (location.hash === '#sync') { const b = $('.set-nav-btn[data-stab="sync"]', main); if (b) b.click(); }
+  })();
 
   const exportBtn = $('.set-export', main);
   if (exportBtn) exportBtn.onclick = () => {
