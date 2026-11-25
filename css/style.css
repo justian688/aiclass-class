@@ -5002,3 +5002,4 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,selec
 .test-bar{position:relative;z-index:9999;background:#1f2937;color:#fde68a;font-size:13px;text-align:center;padding:8px 12px}
 .test-bar a{color:#93c5fd;text-decoration:underline}
 footer p a{color:inherit;text-decoration:underline}
+[hidden]{display:none!important}
