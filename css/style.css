@@ -5083,3 +5083,6 @@ footer p a{color:inherit;text-decoration:underline}
 .srch-top .page-h1{margin-bottom:14px}
 h1.plr-course-name{margin:0;font-weight:600;line-height:1.4}
 @media (max-width:768px){.page-h1{font-size:22px}}
+/* 播放器：影片框固定 16:9，直式影片左右補黑邊、不撐高畫面 */
+.plr-video-wrap video{aspect-ratio:16/9;height:auto;max-height:calc(100vh - 140px);background:#000}
+.plr-video-wrap.plr-mini video{aspect-ratio:auto;height:100%;max-height:none}

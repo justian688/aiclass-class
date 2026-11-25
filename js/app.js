@@ -4456,6 +4456,7 @@ function playerPage() {
   }, { once: true });
 
   pbar.onclick = e => {
+    if (!isFinite(vid_el.duration)) return;
     const r = pbar.getBoundingClientRect();
     vid_el.currentTime = ((e.clientX - r.left) / r.width) * vid_el.duration;
   };
@@ -4520,9 +4521,11 @@ function playerPage() {
   }
 
   // Lesson navigation
-  function goLesson(ci, li) {
+  function goLesson(ci, li, autoplay = true) {
     if (!canPlay(ci, li)) { showLock(); return; }
     vid_el.pause();
+    document.querySelectorAll('.plr-err').forEach(e => e.remove());
+    ss('aic-last-' + c.id, [ci, li]);
     if (ci !== curCh) closedCur = -1;
     curCh = ci; curLs = li;
     posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
@@ -4531,8 +4534,8 @@ function playerPage() {
     if (vid_el.getAttribute('src') !== want) {
       vid_el.src = want;
       vid_el.addEventListener('loadedmetadata', () => { vid_el.currentTime = (saved > 5 && saved < vid_el.duration - 2) ? saved : 0; }, { once: true });
-    } else vid_el.currentTime = (saved > 5) ? saved : 0;
-    vid_el.play().catch(() => {});
+    } else if (isFinite(vid_el.duration)) vid_el.currentTime = (saved > 5 && saved < vid_el.duration - 2) ? saved : 0;
+    if (autoplay) vid_el.play().catch(() => {});
     const sb = $('#plr-sb-list');
     sb.innerHTML = renderSidebar();
     bindSidebar();
@@ -4567,6 +4570,14 @@ function playerPage() {
     $$('.plr-ls').forEach(b => b.onclick = () => goLesson(+b.dataset.ch, +b.dataset.ls));
   }
   bindSidebar();
+  /* 回到上次看到的單元（網址可用 ?ch=&ls= 指定） */
+  setTimeout(() => {
+    const q = new URLSearchParams(location.search);
+    let last = q.has('ch') ? [+q.get('ch') - 1, +(q.get('ls') || 1) - 1] : ls('aic-last-' + c.id, null);
+    if (Array.isArray(last) && chapters[last[0]] && chapters[last[0]].lessons[last[1]] !== undefined && canPlay(last[0], last[1]) && (last[0] || last[1])) {
+      openChs.add(last[0]); goLesson(last[0], last[1], false);
+    }
+  }, 0);
   function updateMinimap() {
     const mm = $('#plr-minimap');
     if (!mm) return;
@@ -4660,8 +4671,8 @@ function playerPage() {
   document.onkeydown = e => {
     if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
     if (e.code === 'Space') { e.preventDefault(); vid_el.paused ? vid_el.play() : vid_el.pause(); }
-    if (e.code === 'ArrowLeft') { vid_el.currentTime = Math.max(0, vid_el.currentTime - 10); }
-    if (e.code === 'ArrowRight') { vid_el.currentTime = Math.min(vid_el.duration, vid_el.currentTime + 10); }
+    if (e.code === 'ArrowLeft' && isFinite(vid_el.duration)) { vid_el.currentTime = Math.max(0, vid_el.currentTime - 10); }
+    if (e.code === 'ArrowRight' && isFinite(vid_el.duration)) { vid_el.currentTime = Math.min(vid_el.duration, vid_el.currentTime + 10); }
     if (e.code === 'ArrowUp') { e.preventDefault(); vid_el.volume = Math.min(1, vid_el.volume + 0.1); volSlider.value = vid_el.volume; muteBtn.textContent = vid_el.volume === 0 ? '🔇' : '🔊'; }
     if (e.code === 'ArrowDown') { e.preventDefault(); vid_el.volume = Math.max(0, vid_el.volume - 0.1); volSlider.value = vid_el.volume; muteBtn.textContent = vid_el.volume === 0 ? '🔇' : '🔊'; }
     if (e.code === 'KeyM') { vid_el.muted = !vid_el.muted; muteBtn.textContent = vid_el.muted ? '🔇' : '🔊'; }
