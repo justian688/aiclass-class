@@ -338,7 +338,7 @@ function shell() {
     <div class="mega-wrap">
       <button class="mega-btn" aria-expanded="false">☰ 所有分類</button>
       <div class="mega-drop" hidden>
-        <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; return `<div class="mega-col"><a class="mega-title" href="index.html#cat-${c.id}">${c.name}<span class="mega-count">${cnt}</span></a>${(c.subs||[]).map(s => `<a class="mega-sub" href="index.html#cat-${c.id}&sub=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>`; }).join('')}</div>
+        <div class="mega-grid">${window.CATS.slice(1).map(c => { const cnt = C.filter(x => x.cat === c.id).length; const subs = c.subs || []; const has = s => C.some(x => x.cat === c.id && x.sub === s); const shown = [...subs.filter(has), ...subs.filter(x => !has(x))].slice(0, 5); return `<div class="mega-col"><a class="mega-title" href="category.html?cat=${c.id}">${c.name}${cnt ? `<span class="mega-count">${cnt}</span>` : '<span class="mega-soon">籌備中</span>'}</a>${shown.map(x => `<a class="mega-sub${has(x) ? '' : ' is-soon'}" href="category.html?cat=${c.id}&sub=${encodeURIComponent(x)}">${x}</a>`).join('')}${subs.length > 5 ? `<a class="mega-more" href="category.html?cat=${c.id}">全部 ${subs.length} 個主題 →</a>` : ''}</div>`; }).join('')}<div class="mega-legend">灰色主題：課程籌備中，點進去可以登記開課通知</div></div>
       </div>
     </div>
     <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#paths">學習路徑</a><a href="bundle.html">組合包</a><a href="blog.html">學習專欄</a><a href="enterprise.html">企業方案</a></nav>
@@ -954,7 +954,7 @@ function home() {
   }
 
   // 分類
-  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="cat-all"><div class="chips">${window.CATS.map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-cat="${c.id}">${c.name}</button>`).join('')}</div></div>`);
+  main.insertAdjacentHTML('beforeend', `<div class="wrap" id="cat-all"><div class="chips">${window.CATS.filter(c => c.id === 'all' || C.some(x => x.cat === c.id)).map((c, i) => `<button class="chip ${i ? '' : 'on'}" data-cat="${c.id}">${c.name}</button>`).join('')}</div></div>`);
   // 排序按鈕
   main.insertAdjacentHTML('beforeend', `<div class="wrap"><div class="sort-bar"><button class="sort-btn on" data-sort="default">推薦</button><button class="sort-btn" data-sort="new">最新上架</button><button class="sort-btn" data-sort="price">價格低到高</button></div></div>`);
   // 個人化排序：優先顯示最近瀏覽過的分類課程
@@ -1186,8 +1186,8 @@ function home() {
       const cnt = C.filter(c => c.cat === cat.id).length;
       const sample = C.find(c => c.cat === cat.id);
       const bgUrl = sample ? img(sample) : '';
-      return `<a class="cat-card" href="index.html#cat-${cat.id}" style="--cimg:url(${bgUrl ? "/" + bgUrl : "none"})">
-        <span class="cat-count">${cnt} 堂課程</span><span class="cat-name">${cat.name}</span></a>`;
+      return `<a class="cat-card${cnt ? '' : ' is-soon'}" href="category.html?cat=${cat.id}" style="--cimg:url(${bgUrl ? "/" + bgUrl : "none"})">
+        <span class="cat-count">${cnt ? cnt + ' 堂課程' : '課程籌備中'}・${(cat.subs || []).length} 個主題</span><span class="cat-name">${cat.name}</span></a>`;
     }).join('')}</div></div></section>`);
 
   // 超值組合包（使用 data.js BUNDLES）
@@ -3376,7 +3376,12 @@ function categoryPage() {
 
   if (catId) {
     const cat = cats.find(c => c.id === catId) || cats[0];
-    const courses = C.filter(c => c.cat === catId);
+    const subParam = new URLSearchParams(location.search).get('sub') || '';
+    const catCourses = C.filter(c => c.cat === cat.id);
+    const courses = subParam ? catCourses.filter(c => c.sub === subParam) : catCourses;
+    const subCnt = x => catCourses.filter(c => c.sub === x).length;
+    const soonTopic = subParam || (courses.length ? '' : cat.name);
+    const recos = (catCourses.length ? catCourses : C).filter(c => !courses.includes(c)).slice(0, 8);
     document.title = cat.name + '｜OKAI課程網 課程分類';
     const bcScript = document.createElement('script'); bcScript.type = 'application/ld+json'; bcScript.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: 'https://okaiclass.com/' }, { '@type': 'ListItem', position: 2, name: '分類', item: 'https://okaiclass.com/category.html' }, { '@type': 'ListItem', position: 3, name: cat.name }] }); document.head.append(bcScript);
     const levelOf = c => c.hours < 10 ? '入門' : c.hours <= 20 ? '進階' : '專業';
@@ -3384,19 +3389,23 @@ function categoryPage() {
     <section class="catp-hero"><div class="wrap">
       <div class="crumb rv-up"><a href="index.html">首頁</a> / <a href="category.html">分類</a> / ${cat.name}</div>
       <h1 class="catp-title rv-up">${cat.name}</h1>
-      <p class="catp-count rv-up" id="catp-total">共 ${courses.length} 堂課程</p>
-      ${cat.subs ? `<div class="catp-subs rv-up">${cat.subs.map(s => `<span class="chip">${s}</span>`).join('')}</div>` : ''}
+      ${cat.desc ? `<p class="catp-desc rv-up">${cat.desc}</p>` : ''}
+      <p class="catp-count rv-up" id="catp-total">${courses.length ? `共 ${courses.length} 堂課程` : '課程籌備中'}</p>
+      ${cat.subs ? `<div class="catp-subs rv-up"><a class="chip${subParam ? '' : ' on'}" href="category.html?cat=${cat.id}">全部主題</a>${[...cat.subs.filter(subCnt), ...cat.subs.filter(x => !subCnt(x))].map(x => `<a class="chip${x === subParam ? ' on' : ''}${subCnt(x) ? '' : ' is-soon'}" href="category.html?cat=${cat.id}&sub=${encodeURIComponent(x)}">${x}${subCnt(x) ? `<span class="chip-count">${subCnt(x)}</span>` : '<small>籌備中</small>'}</a>`).join('')}</div>` : ''}
     </div></section>
     <section class="sec"><div class="wrap">
       <div class="catp-filters rv-up">
-        ${(()=>{const subs=[...new Set(courses.map(c=>c.sub).filter(Boolean))];return subs.length>1?`<div class="catp-frow"><span class="catp-flabel">子分類</span><div class="catp-fbtns" data-fg="sub"><button class="chip on" data-fv="all">全部</button>${subs.map(s=>`<button class="chip" data-fv="${s}">${s}</button>`).join('')}</div></div>`:''})()}
+        ${(()=>{const subs=[...new Set(courses.map(c=>c.sub).filter(Boolean))];return false&&subs.length>1?`<div class="catp-frow"><span class="catp-flabel">子分類</span><div class="catp-fbtns" data-fg="sub"><button class="chip on" data-fv="all">全部</button>${subs.map(s=>`<button class="chip" data-fv="${s}">${s}</button>`).join('')}</div></div>`:''})()}
         <div class="catp-frow"><span class="catp-flabel">價格</span><div class="catp-fbtns" data-fg="price"><button class="chip on" data-fv="all">全部</button><button class="chip" data-fv="0-2000">NT$0–2,000</button><button class="chip" data-fv="2000-5000">NT$2,000–5,000</button><button class="chip" data-fv="5000+">NT$5,000+</button></div></div>
         <div class="catp-frow"><span class="catp-flabel">難度</span><div class="catp-fbtns" data-fg="level"><button class="chip on" data-fv="all">全部</button><button class="chip" data-fv="入門">入門</button><button class="chip" data-fv="進階">進階</button><button class="chip" data-fv="專業">專業</button></div></div>
         <div class="catp-frow"><span class="catp-flabel">排序</span><div class="catp-fbtns" data-fg="sort"><button class="chip on" data-fv="default">推薦</button><button class="chip" data-fv="new">最新</button><button class="chip" data-fv="students">最多學員</button><button class="chip" data-fv="price-asc">價格低到高</button><button class="chip" data-fv="rating">評分最高</button></div></div>
       </div>
       <div class="catp-grid" id="catp-grid">${courses.map(c => card(c)).join('')}</div>
       <p class="catp-empty" id="catp-empty" style="display:none;text-align:center;color:var(--tx3);padding:60px 0">沒有符合條件的課程</p>
-    </div></section>`;
+    </div></section>
+    ${soonTopic ? `<section class="sec catp-soon"><div class="wrap"><div class="catp-soon-box rv-up"><div class="catp-soon-icon">🛠️</div><h2>「${soonTopic}」課程籌備中</h2><p>這個主題的課程正在規劃。想在開課時收到通知，或想建議我們先開哪些內容，歡迎來信。</p><a class="btn btn-pri" href="mailto:hi@okaiclass.com?subject=${encodeURIComponent('開課通知：' + soonTopic)}">開課時通知我</a></div>
+      ${recos.length ? `<h2 class="catp-reco-title rv-up">${catCourses.length && subParam ? cat.name + ' 的其他課程' : '先看看這些課'}</h2><div class="catp-grid">${recos.map(c => card(c)).join('')}</div>` : ''}</div></section>` : ''}`;
+    if (!courses.length) { const f = $('.catp-filters', main); if (f) f.closest('section').style.display = 'none'; }
     const getF = fg => $(`[data-fg="${fg}"] .chip.on`, main)?.dataset.fv || 'all';
     const updateFilterCounts = () => {
       const pf = getF('price'), lf = getF('level');
@@ -3464,8 +3473,8 @@ function categoryPage() {
       <div class="cat-grid">${cats.map(c => {
         const count = C.filter(x => x.cat === c.id).length;
         const sample = C.find(x => x.cat === c.id);
-        return `<a class="cat-card rv-up" href="category.html?cat=${c.id}" style="--cimg:url(/assets/img/v${sample ? sample.v : '785'}.jpg)">
-          <span class="cat-count">${count} 堂課程</span><span class="cat-name">${c.name}</span>
+        return `<a class="cat-card rv-up${count ? '' : ' is-soon'}" href="category.html?cat=${c.id}" style="--cimg:url(${sample ? '/' + img(sample) : 'none'})">
+          <span class="cat-count">${count ? count + ' 堂課程' : '課程籌備中'}・${(c.subs || []).length} 個主題</span><span class="cat-name">${c.name}</span>
         </a>`;
       }).join('')}</div>
     </div></section>`;
@@ -6760,7 +6769,7 @@ function upcomingPage() {
     <section class="upc-cta rv-up" style="margin-top:60px">
       <div class="upc-cta-box">
         <h2>想看更多課程？</h2>
-        <p>目前已有 ${C.length} 堂課程上架，涵蓋 ${CATS.length} 大領域</p>
+        <p>目前已有 ${C.length} 堂課程上架，涵蓋 ${new Set(C.map(c => c.cat)).size} 大領域</p>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
           <a href="category.html" class="btn btn-pri">瀏覽所有課程 →</a>
           <a href="bundle.html" class="btn btn-ghost">超值組合包</a>

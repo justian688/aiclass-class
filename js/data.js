@@ -2,16 +2,20 @@
 // 價格、講師、日期等目前是預設值，正式上線前請換成真實資料
 window.CATS = [
   { id: 'all', name: '全部課程' },
-  { id: 'ai', name: 'AI 開發', subs: ['AI 應用開發'] },
-  { id: 'drawing', name: 'AI 繪圖', subs: ['Midjourney', '角色設計'] },
-  { id: 'design', name: 'AI 設計', subs: ['品牌設計', '網頁設計'] },
-  { id: 'video', name: 'AI 影片', subs: ['影片生成'] },
-  { id: 'creative', name: 'AI 音樂與攝影', subs: ['AI 作曲', 'AI 修圖'] },
-  { id: 'career', name: 'AI 行銷與自媒體', subs: ['個人品牌'] },
-  { id: 'baking', name: 'AI 產業應用', subs: ['餐飲業'] },
-  { id: 'game', name: 'AI 遊戲開發', subs: ['AI 遊戲開發'] },
-  { id: 'finance', name: 'AI 理財與副業', subs: ['AI 財報分析'] },
-  { id: 'beauty', name: 'AI 生活應用', subs: ['運動・飲食・時間管理'] }
+  { id: 'start', name: 'AI 入門與職場效率', desc: '從 ChatGPT、Claude、Gemini 開始，把 AI 用在每天的文件、簡報、會議與 Excel。', subs: ['ChatGPT 入門', 'Claude 入門', 'Gemini 入門', '提示詞工程', 'AI 簡報製作', 'AI 文件與報告', 'AI 會議與筆記', 'Copilot 辦公應用'] },
+  { id: 'auto', name: 'AI 自動化與 Agent', desc: '用 n8n、Make 與 AI Agent，把重複的工作交給流程自動完成。', subs: ['n8n 自動化', 'Make／Zapier', 'AI Agent 打造', 'GPTs 與自訂助理', 'LINE 聊天機器人', '辦公流程自動化'] },
+  { id: 'ai', name: 'AI 開發', desc: '寫程式串接大型語言模型，做出能上線的 AI 應用。', subs: ['AI 應用開發', 'Vibe Coding', 'Python × AI', 'RAG 知識庫', 'LLM API 串接', 'MCP 與工具串接', '模型微調', '機器學習基礎'] },
+  { id: 'data', name: 'AI 資料分析', desc: '讓 AI 幫你整理資料、算數字、畫圖表，快速看懂數據。', subs: ['ChatGPT 資料分析', 'Excel × AI', 'Google 試算表 × AI', 'Power BI × AI', 'Python 資料分析', '數據視覺化'] },
+  { id: 'drawing', name: 'AI 繪圖', desc: '用 AI 畫出插畫、角色、商品圖與可商用的作品。', subs: ['Midjourney', '角色設計', 'Stable Diffusion', 'ComfyUI', 'Gemini 圖像生成', 'LoRA 模型訓練', 'AI 插畫', 'AI 商品圖'] },
+  { id: 'design', name: 'AI 設計', desc: '品牌、網頁、社群圖文到印刷品，用 AI 加快設計流程。', subs: ['品牌設計', '網頁設計', 'Figma AI', 'Canva AI', 'UI／UX 設計', '社群圖文設計', '包裝與印刷設計'] },
+  { id: 'video', name: 'AI 影片', desc: '文字生成影片、AI 剪輯、數位人與配音，一個人也能做影片。', subs: ['影片生成', 'AI 剪輯', '短影音製作', 'AI 數位人', 'AI 配音與字幕', 'AI 動畫', '廣告影片'] },
+  { id: 'creative', name: 'AI 音樂與攝影', desc: '用 AI 作曲、配樂、做聲音，也用 AI 修圖與後製。', subs: ['AI 作曲', 'AI 修圖', 'AI 配樂', 'AI 語音合成', '攝影後製', 'Podcast 製作'] },
+  { id: 'career', name: 'AI 行銷與自媒體', desc: '文案、SEO、社群、廣告與電商，用 AI 經營品牌與流量。', subs: ['個人品牌', 'AI 文案寫作', 'SEO 與 AI 搜尋優化', '社群經營', '廣告投放', '電商行銷', 'YouTube 經營', '電子報行銷'] },
+  { id: 'baking', name: 'AI 產業應用', desc: '各行各業的 AI 實戰：從店家、醫療到製造，找到你的應用場景。', subs: ['餐飲業', '零售與電商', '房地產', '醫療照護', '教育與教學', '法律與行政', '製造業', '美業', '旅宿觀光', '客服中心'] },
+  { id: 'biz', name: 'AI 企業導入與職涯', desc: '企業怎麼導入 AI、主管怎麼帶 AI 團隊，以及用 AI 找工作。', subs: ['企業 AI 導入', 'AI 資安與治理', 'AI 專案管理', 'AI 人資應用', '主管 AI 領導力', 'AI 求職與履歷'] },
+  { id: 'finance', name: 'AI 理財與副業', desc: '用 AI 讀財報、做研究，也用 AI 接案、開副業。', subs: ['AI 財報分析', 'AI 投資研究', 'AI 記帳理財', 'AI 接案', 'AI 副業變現', '電商開店'] },
+  { id: 'game', name: 'AI 遊戲開發', desc: '用 AI 寫程式、做美術、生成 3D 模型，做出自己的遊戲。', subs: ['AI 遊戲開發', '遊戲美術', 'Unity × AI', '遊戲劇情與 NPC', '3D 模型生成'] },
+  { id: 'beauty', name: 'AI 生活應用', desc: '運動、飲食、旅遊、學習、親子，AI 也能幫你過生活。', subs: ['運動・飲食・時間管理', 'AI 學習與讀書', 'AI 語言學習', 'AI 旅遊規劃', 'AI 親子教養', '長輩 AI 入門'] }
 ];
 
 const T = 'OKAI 講師團隊', R = 'OKAI課程網 專業講師';
