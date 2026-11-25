@@ -737,3 +737,35 @@ window.COURSE_FAQS = {
   c41: [['課程會推薦股票嗎？', '不會。本課程只教用 AI 整理與研究資訊的方法，不提供任何投資建議。'], ['AI 的答案可以直接相信嗎？', '不行，課程會教你如何查證 AI 的答案與資料來源。']],
   c31: [['AI 可以取代教練或營養師嗎？', '不行，AI 只能協助規劃與記錄，有健康問題請諮詢專業人士。'], ['需要什麼工具？', '手機與免費版 AI 工具即可。']]
 };
+
+/* 每個單元的影片與時長：目前為示意影片（assets/video/<課程>/<章>-<單元>.mp4），換成正式影片時直接覆蓋檔案並更新 durs */
+(function () {
+  for (const cid of Object.keys(window.CHAPTERS || {})) {
+    window.CHAPTERS[cid].forEach((ch, ci) => {
+      if (!ch.videos) ch.videos = ch.lessons.map((_, li) => `assets/video/${cid}/${ci + 1}-${li + 1}.mp4`);
+      if (!ch.durs) ch.durs = ch.lessons.map(() => '00:10');
+    });
+  }
+})();
+
+/* ===== 測試模式：模擬講師與測試課程 =====
+   網址加 ?okai-test=1 開啟、?okai-test=0 關閉。一般訪客、搜尋引擎看不到。 */
+(function () {
+  try {
+    const q = new URLSearchParams(location.search).get('okai-test');
+    if (q === '1') localStorage.setItem('aic-test-mode', '1');
+    if (q === '0') localStorage.removeItem('aic-test-mode');
+    if (localStorage.getItem('aic-test-mode') !== '1') return;
+  } catch (e) { return; }
+  window.OKAI_TEST_MODE = true;
+  window.COURSES.push({
+    id: 'c99', v: 'test99', cat: 'ai', sub: 'AI 應用開發', level: '入門', hours: 1,
+    title: '【測試課程】模擬講師上架流程', price: 990, origin: 990, rating: 0, students: 0,
+    teacher: '模擬講師（測試用）', role: '上架流程測試帳號', tags: ['測試'],
+    desc: '這是測試模式才看得到的課程，用來驗證講師上架、試看、報名、播放、完課發證書的完整流程。'
+  });
+  window.CHAPTERS.c99 = [
+    { title: '上架流程測試', lessons: ['講師自我介紹', '課程目標與成果', '第一個實作'] },
+    { title: '進階內容', lessons: ['進階技巧示範', '常見錯誤', '總結與下一步'] }
+  ].map((ch, ci) => ({ ...ch, videos: ch.lessons.map((_, li) => `assets/video/c99/${ci + 1}-${li + 1}.mp4`), durs: ch.lessons.map(() => '00:10') }));
+})();

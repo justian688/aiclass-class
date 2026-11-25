@@ -1,4 +1,4 @@
-const CACHE = 'aic-v162';
+const CACHE = 'aic-v163';
 const STATIC = ['/offline.html', '/404.html', '/css/style.css', '/js/data.js', '/js/app.js', '/manifest.json', '/assets/favicon.svg'];
 
 self.addEventListener('install', e => {
@@ -14,7 +14,9 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
 
-  if (url.pathname.startsWith('/assets/img/') || url.pathname.startsWith('/assets/video/')) {
+  /* 影片不快取：檔案大、會用分段讀取，換成正式影片時也要立刻生效 */
+  if (url.pathname.startsWith('/assets/video/')) return;
+  if (url.pathname.startsWith('/assets/img/')) {
     e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
       if (res.ok) { const clone = res.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
       return res;

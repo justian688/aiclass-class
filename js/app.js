@@ -21,7 +21,7 @@ const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmt = n => 'NT$' + n.toLocaleString('en-US');
 const escH = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const pct = c => Math.round((1 - c.price / c.origin) * 100);
-const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.jpg`;
+const vid = c => `assets/video/v${c.v}.mp4`, img = c => `assets/img/v${c.v}.webp`;
 document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.target.dataset.fallback) { e.target.dataset.fallback = '1'; e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' fill='%23e5e5ea'%3E%3Crect width='400' height='225' rx='12'/%3E%3Ctext x='200' y='120' text-anchor='middle' font-family='system-ui' font-size='14' fill='%23aeaeb2'%3E圖片載入失敗%3C/text%3E%3C/svg%3E"; e.target.alt = '圖片暫時無法顯示'; } }, true);
 const page = document.body.dataset.page;
 const ls = (key, fallback) => { try { const v = localStorage.getItem(key); if (v == null) return fallback; try { return JSON.parse(v); } catch { return v; } } catch { return fallback; } };
@@ -31,6 +31,9 @@ const wish = new Set(ls('aic-wish', []));
 const cart = new Set(ls('aic-cart', []));
 const aicUser = ls('aic-user', null);
 const owned = new Set(ls('aic-owned', []));
+/* 已擁有的課程不能重複加入購物車 */
+{ let _ch = false; for (const id of [...cart]) if (owned.has(id)) { cart.delete(id); _ch = true; } if (_ch) ss('aic-cart', [...cart]); }
+{ const _add = cart.add.bind(cart); cart.add = id => { if (owned.has(id)) { setTimeout(() => window.toast && toast('你已經擁有這門課，直接到「我的學習」上課即可'), 0); return cart; } return _add(id); }; }
 const streakData = (() => { const k = 'aic-streak', today = new Date().toISOString().slice(0,10), d = ls(k, {last:'',count:0}), yd = new Date(Date.now()-864e5).toISOString().slice(0,10); if (d.last !== today) { d.count = d.last === yd ? d.count + 1 : 1; d.last = today; ss(k, d); } return d; })();
 const follows = new Set(ls('aic-follows', []));
 function saveFollows() { ss('aic-follows', [...follows]); }
@@ -386,7 +389,7 @@ function shell() {
   </div>
   
   <div class="ft-bottom">
-    <p>© ${new Date().getFullYear()} OKAI課程網. All rights reserved. 影片素材來源：Mixkit（免費授權）</p>
+    <p>© ${new Date().getFullYear()} OKAI課程網・營運：網軍行銷有限公司・<a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a></p>
   </div></div>`;
   document.body.append(ft);
   if (innerWidth <= 760) $$('.ft-col-hd', ft).forEach(h => { h.onclick = () => h.parentNode.classList.toggle('ft-open'); });
@@ -727,6 +730,7 @@ function card(c, i, rank) {
       <button class="wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" aria-label="收藏">${wish.has(c.id) ? '♥' : '♡'}</button>
       <img src="${img(c)}" alt="${c.title}" width="640" height="400" loading="lazy" decoding="async">
       <span class="hours">${c.hours} 小時</span>
+      ${!isOwned ? '<span class="card-free">▶ 可試看</span>' : ''}
     </div></div>
     <div class="meta">
       <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-eta">約 ${lv.weeks} 週完成</span></div>
@@ -996,6 +1000,14 @@ function home() {
         <h3>${u.title}</h3>
         <p>${u.desc}</p>
       </div>`).join('')}
+    </div>
+  </div></section>`);
+  main.insertAdjacentHTML('beforeend', `<section class="sec how-sec" id="how"><div class="wrap">
+    <h2 class="rv-up" style="text-align:center">怎麼上課？三步驟開始</h2>
+    <div class="how-grid">
+      <div class="how-step rv-up"><b>1</b><h3>免費試看</h3><p>每門課第 1 章前 2 個單元免費看，先確認適合自己。</p><a href="category.html">挑一門課試看 →</a></div>
+      <div class="how-step rv-up"><b>2</b><h3>報名付款</h3><p>送出報名後 2 個工作天內寄付款資訊，單次購買、不會自動扣款。</p><a href="faq.html">付款與退費說明 →</a></div>
+      <div class="how-step rv-up"><b>3</b><h3>開通上課</h3><p>付款確認後開通，無期限觀看，看完全部單元自動取得結業證書。</p><a href="my.html">到我的學習 →</a></div>
     </div>
   </div></section>`);
 
@@ -1693,6 +1705,16 @@ function course() {
         <div class="c-side-row"><span>🌐</span><span>語言：繁體中文</span></div>
         <div class="c-side-row"><span>💬</span><span>課程問題：來信 hi@okaiclass.com</span></div>
       </div>
+      ${(() => { const chs = (window.CHAPTERS || {})[c.id] || []; const n = chs.reduce((s, x) => s + x.lessons.length, 0); return `<div class="c-buy-terms c-includes"><h4>這堂課包含</h4><ul>
+        <li><b>影片：</b>${chs.length} 章 ${n} 個單元，手機、平板、電腦瀏覽器都能看</li>
+        <li><b>試看：</b>第 1 章前 2 個單元免費</li>
+        <li><b>觀看期限：</b>開通後無期限觀看，含日後更新內容</li>
+        <li><b>練習：</b>每章附實作任務</li>
+        <li><b>講義與範例檔：</b>開通後寄到你的 Email</li>
+        <li><b>字幕：</b>繁體中文字幕製作中</li>
+        <li><b>證書：</b>看完全部單元自動核發結業證書</li>
+        <li><b>額外費用：</b>課程沒有其他收費；部分 AI 工具的進階功能需另付工具本身的訂閱費</li>
+      </ul></div>`; })()}
       <div class="c-buy-terms"><h4>購買前請先了解</h4><ul>
         <li><b>開通時間：</b>付款確認後 2 個工作天內開通，開通當天起算觀看</li>
         <li><b>退費：</b>開通後 7 天內、觀看進度低於 20%，可來信申請全額退費</li>
@@ -1854,11 +1876,11 @@ function course() {
     if (!related.length) return '';
     return `<section class="sec"><div class="wrap"><div class="sec-head rv-up"><div><h2>相關學習文章</h2><div class="sub">延伸閱讀，加深你的學習</div></div><a class="more" href="blog.html">查看全部 →</a></div>
       <div class="rel-articles">${related.map(p => `<a class="rel-article rv-up" href="article.html?id=${p.id}">
-        <div class="rel-art-img"><img src="assets/img/v${(C.find(x => x.cat === p.cat) || C[0]).v}.jpg" alt="${p.title}" loading="lazy" decoding="async"></div>
+        <div class="rel-art-img"><img src="assets/img/v${(C.find(x => x.cat === p.cat) || C[0]).v}.webp" alt="${p.title}" loading="lazy" decoding="async"></div>
         <div class="rel-art-body"><span class="rel-art-cat">${(window.CATS.find(x => x.id === p.cat) || {}).name || ''}</span><h3>${p.title}</h3><span class="rel-art-meta">${p.readTime || '5 分鐘'} 閱讀</span></div>
       </a>`).join('')}</div></div></section>`;
   })()}
-  ${(() => { const G = window.GALLERY || []; const works = G.filter(g => g.course === c.id); if (!works.length) return ''; return `<section class="c-sec c-gallery rv-up" id="student-works"><h2>🎨 學員作品展示</h2><div class="c-gallery-grid">${works.map(w => `<div class="c-gallery-item"><div class="c-gallery-thumb"><img src="assets/img/v${w.v}.jpg" alt="${w.title}" loading="lazy" decoding="async"></div><div class="c-gallery-info"><h4>${w.title}</h4><p>${w.desc}</p><div class="c-gallery-meta"><span>${w.author}</span><span>❤ ${w.likes}</span></div></div></div>`).join('')}</div><a href="index.html" class="btn btn-ghost" style="width:100%;margin-top:16px">查看更多學員作品 →</a></section>`; })()}
+  ${(() => { const G = window.GALLERY || []; const works = G.filter(g => g.course === c.id); if (!works.length) return ''; return `<section class="c-sec c-gallery rv-up" id="student-works"><h2>🎨 學員作品展示</h2><div class="c-gallery-grid">${works.map(w => `<div class="c-gallery-item"><div class="c-gallery-thumb"><img src="assets/img/v${w.v}.webp" alt="${w.title}" loading="lazy" decoding="async"></div><div class="c-gallery-info"><h4>${w.title}</h4><p>${w.desc}</p><div class="c-gallery-meta"><span>${w.author}</span><span>❤ ${w.likes}</span></div></div></div>`).join('')}</div><a href="index.html" class="btn btn-ghost" style="width:100%;margin-top:16px">查看更多學員作品 →</a></section>`; })()}
   ${(()=>{const next=C.filter(x=>x.id!==c.id&&x.cat===c.cat&&x.hours>c.hours).sort((a,b)=>a.hours-b.hours).slice(0,3);if(!next.length)return '';return `<div class="c-next-step rv-up"><h3>📈 學完這門，接下來學</h3><div class="c-next-grid">${next.map(n=>`<a class="c-next-card" href="course.html?id=${n.id}"><img src="${img(n)}" alt="${n.title}" loading="lazy" decoding="async"><div class="c-next-info"><b>${n.title}</b><span>${n.hours}h ・ ${fmt(n.price)}</span></div><span class="c-next-arrow">→</span></a>`).join('')}</div></div>`;})()}
   ${smartRecommend(c)}
   ${(()=>{const rv=ls('aic-recent-view',[]).filter(x=>x!==c.id).slice(0,4).map(x=>byId[x]).filter(Boolean);if(!rv.length)return '';return `<section class="c-sec rv-up"><h2>🕐 最近瀏覽</h2><div class="recent-viewed">${rv.map(r=>`<a class="rv-item" href="course.html?id=${r.id}"><img src="${img(r)}" alt="${r.title}" loading="lazy" decoding="async"><div><div class="rv-title">${r.title}</div><div class="rv-teacher">${r.teacher}</div></div></a>`).join('')}</div></section>`;})()}
@@ -2410,7 +2432,8 @@ function loginPage() {
     const name = email.split('@')[0].replace(/[^a-zA-Z一-鿿]/g, '') || '學員';
     ss('aic-user', { name, email });
     toast(`歡迎回來，${name}！`);
-    setTimeout(() => location.href = 'index.html', 800);
+    const nx = new URLSearchParams(location.search).get('next') || '';
+    setTimeout(() => location.href = /^[a-z0-9-]+\.html(\?[\w=&%-]*)?$/i.test(nx) ? nx : 'index.html', 800);
   };
 
   const toggleLink = $('#login-toggle', main);
@@ -2922,7 +2945,7 @@ function blogPage() {
 
   <section class="sec"><div class="wrap">
     <a class="blog-feat rv-up" id="blog-feat" href="article.html?id=${featured.id}" data-cat="${featured.cat}" data-kw="${(featured.title + featured.excerpt + (featured.tags||[]).join('')).toLowerCase()}">
-      <div class="blog-feat-img"><img src="assets/img/v${featured.v}.jpg" alt="${featured.title}" loading="lazy" decoding="async"></div>
+      <div class="blog-feat-img"><img src="assets/img/v${featured.v}.webp" alt="${featured.title}" loading="lazy" decoding="async"></div>
       <div class="blog-feat-body">
         <span class="blog-tag">${catMap[featured.cat] || featured.cat}</span>
         <h2>${featured.title}</h2>
@@ -2935,7 +2958,7 @@ function blogPage() {
   <section class="sec"><div class="wrap">
     <div class="blog-grid" id="blog-grid">
       ${posts.slice(1).map((p, i) => `<a class="blog-card rv-up${i >= 6 ? ' blog-hidden' : ''}" href="article.html?id=${p.id}" data-cat="${p.cat}" data-kw="${(p.title + p.excerpt + (p.tags||[]).join('')).toLowerCase()}">
-        <div class="blog-card-img"><img src="assets/img/v${p.v}.jpg" alt="${p.title}" loading="lazy" decoding="async"></div>
+        <div class="blog-card-img"><img src="assets/img/v${p.v}.webp" alt="${p.title}" loading="lazy" decoding="async"></div>
         <div class="blog-card-body">
           <span class="blog-tag">${catMap[p.cat] || p.cat}</span>
           <h3>${p.title}</h3>
@@ -3070,7 +3093,7 @@ function articlePage() {
         <button class="art-act-btn" id="art-like"><span>👍</span> 有幫助</button>
         <button class="art-act-btn" id="art-bm"><span>🔖</span> 收藏</button>
       </div>
-      <div class="art-cover rv-up"><img src="assets/img/v${post.v}.jpg" alt="${post.title}" loading="lazy" decoding="async"></div>
+      <div class="art-cover rv-up"><img src="assets/img/v${post.v}.webp" alt="${post.title}" loading="lazy" decoding="async"></div>
       <div class="art-body rv-up" id="art-body">${body}</div>
 
       ${(() => {
@@ -3081,7 +3104,7 @@ function articlePage() {
       })()}
 
       <div class="art-author-bio rv-up">
-        <div class="art-author-avatar"><img src="assets/img/v${post.v}.jpg" alt="${post.author}" loading="lazy" decoding="async"></div>
+        <div class="art-author-avatar"><img src="assets/icon-192.png" alt="${post.author}" loading="lazy" decoding="async"></div>
         <div class="art-author-info">
           <h4>${post.author}</h4>
           <p>OKAI課程網 特約作者，專注於 ${catMap[post.cat] || post.cat} 領域，持續分享業界洞見與實戰經驗。</p>
@@ -3111,7 +3134,7 @@ function articlePage() {
       <div class="art-side-card rv-up">
         <h3>相關文章</h3>
         ${related.length ? related.map(r => `<a class="art-side-item" href="article.html?id=${r.id}">
-          <img src="assets/img/v${r.v}.jpg" alt="${r.title}" loading="lazy" decoding="async">
+          <img src="assets/img/v${r.v}.webp" alt="${r.title}" loading="lazy" decoding="async">
           <div><h4>${r.title}</h4><span>${r.date}</span></div>
         </a>`).join('') : '<p style="color:var(--tx3)">暫無相關文章</p>'}
       </div>
@@ -3228,7 +3251,7 @@ function instructorPage() {
     <section class="insd-hero"><div class="wrap">
       <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="instructor.html">講師</a> › ${t.name}</div>
       <div class="insd-profile rv-up">
-        <div class="insd-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}" loading="lazy" decoding="async"></div>
+        <div class="insd-avatar"><img src="assets/img/v${t.v}.webp" alt="${t.name}" loading="lazy" decoding="async"></div>
         <div class="insd-info">
           <h1>${t.name}</h1>
           <span class="insd-role">${t.role}</span>
@@ -3250,7 +3273,7 @@ function instructorPage() {
     <section class="sec"><div class="wrap">
       <h2 class="insd-sec-title rv-up">開設課程（${t.courses.length}）</h2>
       <div class="insd-courses">${t.courses.map(c => `<a class="insd-course rv-up" href="course.html?id=${c.id}">
-        <div class="insd-course-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async">${c.tag ? `<span class="tag">${c.tag}</span>` : ''}</div>
+        <div class="insd-course-img"><img src="assets/img/v${c.v}.webp" alt="${c.title}" loading="lazy" decoding="async">${c.tag ? `<span class="tag">${c.tag}</span>` : ''}</div>
         <div class="insd-course-body">
           <h3>${c.title}</h3>
           <div class="insd-course-meta">${c.hours} 小時${window.CHAPTERS && window.CHAPTERS[c.id] ? '・' + window.CHAPTERS[c.id].length + ' 個章節' : ''}</div>
@@ -3307,7 +3330,7 @@ function instructorPage() {
   <section class="sec"><div class="wrap">
     <div class="ins-grid" id="ins-grid">
       ${teachers.map(t => `<a class="ins-card rv-up" href="instructor.html?name=${encodeURIComponent(t.name)}" data-name="${t.name}" data-role="${t.role}" style="text-decoration:none;color:inherit">
-        <div class="ins-avatar"><img src="assets/img/v${t.v}.jpg" alt="${t.name}" loading="lazy" decoding="async"></div>
+        <div class="ins-avatar"><img src="assets/img/v${t.v}.webp" alt="${t.name}" loading="lazy" decoding="async"></div>
         <h3 class="ins-name">${t.name}</h3>
         <p class="ins-role">${t.role}</p>
         <div class="ins-stats">
@@ -3492,7 +3515,7 @@ function wishlistPage() {
     </div></section>
     <section class="sec"><div class="wrap">
       <div class="wish-grid">${items.map(c => `<div class="wish-item rv-up">
-        <a href="course.html?id=${c.id}" class="wish-thumb"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"></a>
+        <a href="course.html?id=${c.id}" class="wish-thumb"><img src="assets/img/v${c.v}.webp" alt="${c.title}" loading="lazy" decoding="async"></a>
         <div class="wish-info">
           <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
           <p class="teacher">${c.teacher}・${c.role}</p>
@@ -3612,7 +3635,7 @@ function myPage() {
   <div class="wrap my-resume rv-up">
     <div class="my-resume-head"><h2>繼續學習</h2><a href="#courses" class="my-resume-all" data-goto-courses>查看全部 →</a></div>
     <div class="my-resume-list">${inProgress.slice(0, 3).map(c => `<a class="my-resume-card" href="player.html?id=${c.id}">
-      <div class="my-rc-thumb"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"><div class="my-rc-play">▶</div></div>
+      <div class="my-rc-thumb"><img src="assets/img/v${c.v}.webp" alt="${c.title}" loading="lazy" decoding="async"><div class="my-rc-play">▶</div></div>
       <div class="my-rc-body">
         <h3>${c.title}</h3>
         <p class="my-rc-teacher">${c.teacher}・${c.lastWatch}</p>
@@ -3669,7 +3692,7 @@ function myPage() {
         </div>
         <div class="myp-grid" id="myp-list">
           ${enrolled.map(c => `<div class="myp-card rv-up" data-status="${c.progress === 100 ? 'done' : 'ing'}">
-            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"></a>
+            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.webp" alt="${c.title}" loading="lazy" decoding="async"></a>
             <div class="myp-card-body">
               <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
               <p class="teacher">${c.teacher}</p>
@@ -3819,7 +3842,7 @@ function myPage() {
         <h2 class="myp-sec-title rv-up">心願清單</h2>
         <div class="myp-grid">
           ${wishlist.map(c => `<div class="myp-card rv-up">
-            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"></a>
+            <a href="course.html?id=${c.id}" class="myp-card-img"><img src="assets/img/v${c.v}.webp" alt="${c.title}" loading="lazy" decoding="async"></a>
             <div class="myp-card-body">
               <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
               <p class="teacher">${c.teacher}</p>
@@ -3842,7 +3865,7 @@ function myPage() {
               <span class="myp-order-date">${o.date}</span>
               <span class="myp-order-status">${o.status}</span>
             </div>
-            <div class="myp-order-items">${o.items.map(c => `<div class="myp-order-item"><img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async"><span>${c.title}</span></div>`).join('')}</div>
+            <div class="myp-order-items">${o.items.map(c => `<div class="myp-order-item"><img src="assets/img/v${c.v}.webp" alt="${c.title}" loading="lazy" decoding="async"><span>${c.title}</span></div>`).join('')}</div>
             <div class="myp-order-total">合計 <b>NT$${o.total.toLocaleString()}</b></div>
           </div>`).join('')}
         </div>
@@ -3867,7 +3890,7 @@ function myPage() {
           const tV = tData[0]?.v || '785';
           const tRole = tData[0]?.role || '';
           return `<a class="my-follow-card" href="instructor.html?name=${encodeURIComponent(name)}">
-            <div class="my-follow-avatar"><img src="assets/img/v${tV}.jpg" alt="${name}" loading="lazy" decoding="async"></div>
+            <div class="my-follow-avatar"><img src="assets/img/v${tV}.webp" alt="${name}" loading="lazy" decoding="async"></div>
             <div class="my-follow-info"><h3>${name}</h3><p>${tRole}</p><span>${tData.length} 門課程</span></div>
             <button class="follow-btn following my-unfollow" data-follow="${name}">✓ 已追蹤</button>
           </a>`;
@@ -4321,10 +4344,12 @@ function playerPage() {
   function lessonId(ci, li) { return ci + '-' + li; }
   function pctDone() { return Math.round(doneSet.size / totalLessons * 100); }
 
+  /* 記住使用者手動展開／收合的章節，目錄重畫時不重設 */
+  const openChs = new Set(); let closedCur = -1;
   function renderSidebar() {
     return chapters.map((ch, ci) => {
       const doneInCh = ch.lessons.filter((_, li) => doneSet.has(lessonId(ci, li))).length;
-      return `<div class="plr-ch ${ci === curCh ? 'open' : ''}">
+      return `<div class="plr-ch ${(ci === curCh && closedCur !== ci) || openChs.has(ci) ? 'open' : ''}">
         <button class="plr-ch-btn" data-ch="${ci}">
           <span class="plr-ch-name">第 ${ci + 1} 章　${ch.name}</span>
           <span class="plr-ch-prog">${doneInCh}/${ch.lessons.length}</span>
@@ -4336,7 +4361,7 @@ function playerPage() {
           return `<button class="plr-ls ${active ? 'active' : ''} ${done ? 'done' : ''} ${lock ? 'locked' : ''}" data-ch="${ci}" data-ls="${li}">
             <span class="plr-ls-icon">${lock ? '🔒' : done ? '✓' : active ? '▶' : '○'}</span>
             <span class="plr-ls-title">${ci + 1}-${li + 1}　${ls.t}</span>
-            <span class="plr-ls-dur">${ls.dur}</span>
+            ${!isOwned && !lock ? '<span class="plr-ls-free">試看</span>' : ''}<span class="plr-ls-dur">${ls.dur}</span>
           </button>`;
         }).join('')}</div>
       </div>`;
@@ -4382,7 +4407,7 @@ function playerPage() {
                     <button data-spd="0.5">0.5x</button><button data-spd="0.75">0.75x</button><button data-spd="1" class="on">1x</button><button data-spd="1.25">1.25x</button><button data-spd="1.5">1.5x</button><button data-spd="2">2x</button>
                   </div>
                 </div>
-                <label class="plr-autoplay"><input type="checkbox" id="plr-auto" checked><span>自動播放</span></label>
+                <label class="plr-autoplay"><input type="checkbox" id="plr-auto" ${ls('aic-autoplay', true) ? 'checked' : ''}><span>自動播放</span></label>
                 <button id="plr-sub" class="plr-ctrl-btn plr-sub-on" aria-label="字幕" title="字幕開關">CC</button>
                 <button id="plr-bm-add" class="plr-ctrl-btn" aria-label="加入書籤" title="B: 加入書籤">🔖</button>
                 <button id="plr-pip" class="plr-ctrl-btn" aria-label="子母畫面">⧉</button>
@@ -4398,6 +4423,7 @@ function playerPage() {
             <span class="plr-lb-title">1-1　${chapters[0].lessons[0].t}</span>
           </div>
           <div class="plr-nav-row">
+            <button class="plr-nav-btn" id="plr-restart" aria-label="從頭播放">↺ 從頭播放</button>
             <button class="plr-nav-btn" id="plr-report" aria-label="回報問題">⚠ 回報影片或內容問題</button>
             <button class="plr-nav-btn" id="plr-nav-prev" aria-label="上一課">← 上一課</button>
             <button class="plr-nav-btn plr-nav-next" id="plr-nav-next" aria-label="下一課">下一課 →</button>
@@ -4498,8 +4524,20 @@ function playerPage() {
     phandle.style.left = pctVal + '%';
     pbar.setAttribute('aria-valuenow', Math.round(pctVal));
     timeEl.textContent = fmtTime(vid_el.currentTime) + ' / ' + fmtTime(vid_el.duration);
-    if (Math.floor(vid_el.currentTime) % 5 === 0) ss(posKey, vid_el.currentTime.toFixed(1));
+    /* 播放位置與完成狀態分開存：位置每 5 秒存一次（開頭 3 秒內不存，避免蓋掉舊位置） */
+    if (vid_el.currentTime > 3 && Math.floor(vid_el.currentTime) % 5 === 0) ss(posKey, vid_el.currentTime.toFixed(1));
+    /* 完成＝實際看到 90% 以上（或播完），切換單元不算完成 */
+    const key = lessonId(curCh, curLs);
+    if (!vid_el.seeking && vid_el.currentTime / vid_el.duration >= 0.9 && !doneSet.has(key)) { doneSet.add(key); refreshDoneUI(); }
   };
+  vid_el.addEventListener('error', () => {
+    if (document.querySelector('.plr-err')) return;
+    const box = document.createElement('div'); box.className = 'plr-err'; box.setAttribute('role', 'alert');
+    box.innerHTML = '<b>影片載入失敗</b><span>可能是網路不穩，請重試；仍無法播放請回報，我們會盡快處理。</span><div><button class="btn btn-pri btn-sm" data-retry>重新載入</button><button class="btn btn-ghost btn-sm" data-rep>回報問題</button></div>';
+    vid_el.parentNode.append(box);
+    box.querySelector('[data-retry]').onclick = () => { box.remove(); const t = +(ls(posKey, 0)); vid_el.load(); vid_el.addEventListener('loadedmetadata', () => { if (t > 3) vid_el.currentTime = t; vid_el.play().catch(() => {}); }, { once: true }); };
+    box.querySelector('[data-rep]').onclick = () => document.getElementById('plr-report')?.click();
+  });
   vid_el.addEventListener('loadedmetadata', () => {
     const saved = +(ls(posKey, 0));
     if (saved > 5 && saved < vid_el.duration - 5) {
@@ -4575,7 +4613,8 @@ function playerPage() {
   // Lesson navigation
   function goLesson(ci, li) {
     if (!canPlay(ci, li)) { showLock(); return; }
-    doneSet.add(lessonId(curCh, curLs));
+    vid_el.pause();
+    if (ci !== curCh) closedCur = -1;
     curCh = ci; curLs = li;
     posKey = `aic-pos-${c.id}-${curCh}-${curLs}`;
     const saved = +(ls(posKey, 0));
@@ -4597,12 +4636,25 @@ function playerPage() {
     const countEl = $('#plr-sb-count');
     if (countEl) countEl.textContent = `${doneSet.size}/${totalLessons} 課完成`;
   }
+  /* 完成狀態更新後重畫目錄與進度（不切換影片） */
+  function refreshDoneUI() {
+    const sb = $('#plr-sb-list'); if (sb) { sb.innerHTML = renderSidebar(); bindSidebar(); }
+    updateMinimap();
+    const p = pctDone();
+    $('.plr-prog-txt').textContent = p + '% 完成';
+    $('.plr-sb-fill').style.width = p + '%';
+    $('.plr-sb-progress span').textContent = p + '%';
+    const countEl = $('#plr-sb-count');
+    if (countEl) countEl.textContent = `${doneSet.size}/${totalLessons} 課完成`;
+  }
 
   const _te = () => { const b = document.querySelector('[data-trial-enroll]'); if (b) b.onclick = () => { cart.add(c.id); saveCart(); location.href = 'checkout.html'; }; };
   setTimeout(_te, 0);
+  setTimeout(() => { const au = document.getElementById('plr-auto'); if (au) au.addEventListener('change', () => ss('aic-autoplay', au.checked)); }, 0);
+  setTimeout(() => { const rs = document.getElementById('plr-restart'); if (rs) rs.onclick = () => { vid_el.currentTime = 0; ss(posKey, '0'); vid_el.play().catch(() => {}); }; }, 0);
   setTimeout(() => { const rb = document.getElementById('plr-report'); if (rb) rb.onclick = () => { const ls_ = chapters[curCh].lessons[curLs]; location.href = 'mailto:hi@okaiclass.com?subject=' + encodeURIComponent('【問題回報】' + c.title) + '&body=' + encodeURIComponent(`單元：${curCh + 1}-${curLs + 1} ${ls_.t}\n問題類型（影片無法播放／字幕／內容錯誤／檔案無法下載／其他）：\n說明：\n使用裝置與瀏覽器：${navigator.userAgent}`); }; }, 0);
   function bindSidebar() {
-    $$('.plr-ch-btn').forEach(b => b.onclick = () => b.parentNode.classList.toggle('open'));
+    $$('.plr-ch-btn').forEach(b => b.onclick = () => { const ci = +b.dataset.ch, on = b.parentNode.classList.toggle('open'); on ? openChs.add(ci) : openChs.delete(ci); if (!on && ci === curCh) closedCur = ci; else if (on && ci === curCh) closedCur = -1; });
     $$('.plr-ls').forEach(b => b.onclick = () => goLesson(+b.dataset.ch, +b.dataset.ls));
   }
   bindSidebar();
@@ -5014,6 +5066,7 @@ function checkoutPage() {
       <div class="ck-step-item"><span class="ck-step-num">4</span><span>完成</span></div>
     </div>
     <h1 class="ck-title">報名課程</h1>
+    ${(() => { const u = ls('aic-user'); return u && u.email ? `<p class="ck-who">目前登入：<b>${String(u.email).replace(/[<>&"]/g, '')}</b>（報名資料會寄到你下方填寫的 Email）</p>` : `<p class="ck-who">不用註冊也能報名；已有帳號可先<a href="login.html?next=checkout.html">登入</a>。</p>`; })()}
     <div class="ck-layout">
       <div class="ck-left">
         <section class="ck-section">
@@ -5153,6 +5206,7 @@ function checkoutPage() {
     const phone = ($('#ckPhone', main)?.value || '').trim();
     if (!name) { toast('請填寫姓名', 'error'); $('#ckName', main)?.focus(); return; }
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { toast('請填寫正確的 Email', 'error'); $('#ckEmail', main)?.focus(); return; }
+    if (phone && !/^(09\d{8}|0\d{1,2}-?\d{6,8}|\+?\d{8,15})$/.test(phone.replace(/[\s-]/g, ''))) { toast('手機號碼格式不正確（例如 0912345678）', 'error'); $('#ckPhone', main)?.focus(); return; }
     const inv = ($('[name="inv"]:checked', main) || {}).value || '';
     let invTxt = { donate: '捐贈發票', personal: '個人電子發票', company: '公司戶發票' }[inv] || inv;
     if (inv === 'company') {
@@ -5162,6 +5216,9 @@ function checkoutPage() {
       invTxt += `（統編 ${tid}，${tt}）`;
     }
     if (!$('#ckAgree', main)?.checked) { toast('請先勾選同意付款與退費說明', 'error'); $('#ckAgree', main)?.focus(); return; }
+    /* 防止連按：所有檢查都通過、真的送出時才鎖 4 秒，避免建立重複訂單 */
+    if (submitBtn.dataset.busy) return;
+    submitBtn.dataset.busy = '1'; setTimeout(() => { delete submitBtn.dataset.busy; }, 4000);
     const d = new Date(), pad = n => String(n).padStart(2, '0');
     const orderId = `OK-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${d.getTime().toString(36).slice(-4).toUpperCase()}`;
     const orders = ls('aic-orders', []);
@@ -6942,7 +6999,7 @@ function galleryPage() {
       const cc = byId[g.course];
       const liked = likes[g.id];
       return `<div class="gal-card rv-up ${g.featured ? 'gal-featured' : ''}" data-gcat="${g.cat}" data-gid="${g.id}" data-likes="${g.likes}" data-comments="${g.comments}">
-        <div class="gal-card-img"><img src="assets/img/v${g.v}.jpg" alt="${g.title}" loading="lazy" decoding="async">${g.featured ? '<span class="gal-feat-badge">⭐ 精選</span>' : ''}</div>
+        <div class="gal-card-img"><img src="assets/img/v${g.v}.webp" alt="${g.title}" loading="lazy" decoding="async">${g.featured ? '<span class="gal-feat-badge">⭐ 精選</span>' : ''}</div>
         <div class="gal-card-body">
           <div class="gal-card-meta"><span class="gal-cat-tag">${g.cat}</span></div>
           <h3>${g.title}</h3>
@@ -7347,7 +7404,7 @@ function reportPage() {
     <div class="rpt-card rpt-courses rv-up">
       <h3 class="rpt-card-title">課程進度明細</h3>
       <div class="rpt-course-list">${enrolled.map(c => `<div class="rpt-course-row">
-        <img src="assets/img/v${c.v}.jpg" alt="${c.title}" loading="lazy" decoding="async">
+        <img src="assets/img/v${c.v}.webp" alt="${c.title}" loading="lazy" decoding="async">
         <div class="rpt-course-info"><b>${c.title}</b><span>${c.teacher}・${c.hours} 小時</span></div>
         <div class="rpt-course-prog"><div class="rpt-course-bar"><div class="rpt-course-fill" style="width:${c.progress}%"></div></div><span>${c.progress}%</span></div>
       </div>`).join('')}</div>
@@ -7959,14 +8016,21 @@ function openRecommendQuiz() {
   cwPanel.addEventListener('keydown', e => { if (e.key === 'Escape') { cwPanel.hidden = true; cw.classList.remove('open'); cw.querySelector('.cw-fab').focus(); } });
   const cwReplies = {
     course: `我們有 ${C.length} 堂 AI 課程，涵蓋 AI 開發、AI 繪圖、AI 影片、AI 行銷等主題。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！`,
-    refund: '購買後 7 天內，觀看進度低於 20%，可申請全額退費。到<a href="contact.html">聯繫我們</a>提交申請，3 個工作天內處理。',
-    tech: '常見問題：<br>• 影片無法播放 → 清除快取重試<br>• 進度未儲存 → 確認已登入<br>• 下載問題 → 用 Chrome 瀏覽器<br>如仍有問題，到<a href="contact.html">聯繫我們</a>。',
+    refund: '課程開通後 7 天內、觀看進度低於 20%，可申請全額退費。到<a href="order-history.html">訂單紀錄</a>按「申請退款」，或寄信到 hi@okaiclass.com。',
+    tech: '影片無法播放時，先按播放器上的「重新載入」；還是不行，請按播放器下方的「回報影片或內容問題」，會自動帶入課程與單元資訊給我們。',
     other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 hi@okaiclass.com'
   };
   function cwAddMsg(text, bot) { const d = document.createElement('div'); d.className = 'cw-msg ' + (bot ? 'cw-bot' : 'cw-user'); d.innerHTML = bot ? `<div class="cw-av">🤖</div><div class="cw-bub">${text}</div>` : `<div class="cw-bub">${escH(text)}</div>`; const q = cwBody.querySelector('.cw-quick'); if (q) q.remove(); cwBody.append(d); cwBody.scrollTop = cwBody.scrollHeight; }
   function cwBot(text) { const t = document.createElement('div'); t.className = 'cw-msg cw-bot cw-typing'; t.innerHTML = '<div class="cw-av">🤖</div><div class="cw-bub"><span class="cw-dots"><i></i><i></i><i></i></span></div>'; cwBody.append(t); cwBody.scrollTop = cwBody.scrollHeight; setTimeout(() => { t.remove(); cwAddMsg(text, true); }, 800 + Math.random() * 500); }
   cw.querySelectorAll('[data-cq]').forEach(b => b.onclick = () => { cwAddMsg(b.textContent, false); cwBot(cwReplies[b.dataset.cq]); });
-  function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; let r = '感謝你的訊息！目前線上客服是自動回覆，真人客服請寄信到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>，或看<a href="faq.html">常見問題</a> 😊'; if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|優惠|折扣/.test(txt)) r = '全站最低 5 折優惠中！到<a href="sale.html">限時特賣</a>查看，或用<a href="category.html">優惠券</a>享額外折扣。'; else if (/證書/.test(txt)) r = '完課後即可獲得結業證書！到<a href="certificate.html">我的證書</a>頁面查看。'; else if (/講師/.test(txt)) r = '查看<a href="instructor.html">講師陣容</a>。想當講師？到<a href="teach.html">申請頁面</a>了解。'; cwBot(r); }
+  function cwFaq(txt) {
+    const all = (window.FAQ_FULL || []).flatMap(g => g.items);
+    const words = txt.replace(/[？?！!。，,\s]/g, ' ').split(' ').filter(Boolean);
+    let best = null, score = 0;
+    for (const [q, a] of all) { let sc = 0; for (const w of words) for (let i = 0; i + 1 < w.length + 1; i++) { const seg = w.slice(i, i + 2); if (seg.length === 2 && q.includes(seg)) sc++; } if (sc > score) { score = sc; best = [q, a]; } }
+    return score >= 2 ? best : null;
+  }
+  function cwSend() { const txt = cwInput.value.trim(); if (!txt) return; cwAddMsg(txt, false); cwInput.value = ''; const hit = cwFaq(txt); let r; if (hit) r = `<b>${hit[0]}</b><br>${hit[1]}<br><a href="faq.html">看更多常見問題</a>`; else if (/退費|退款/.test(txt)) r = cwReplies.refund; else if (/課程|推薦|分類/.test(txt)) r = cwReplies.course; else if (/播放|下載|影片|技術/.test(txt)) r = cwReplies.tech; else if (/價格|多少錢|費用/.test(txt)) r = '每門課的價格都寫在課程頁，單次購買、不會自動扣款。也可以到<a href="bundle.html">組合包</a>看看。'; else if (/證書/.test(txt)) r = '看完全部單元會自動核發結業證書，到<a href="certificate.html">我的證書</a>查看。'; else if (/講師/.test(txt)) r = '想當講師？到<a href="teach.html">開課頁面</a>了解流程。'; else r = '我還不太確定怎麼回答 🙏 真人客服請寄信到 <a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a>（2 個工作天內回覆），或看<a href="faq.html">常見問題</a>。'; cwBot(r); }
   cw.querySelector('.cw-send').onclick = cwSend;
   cwInput.addEventListener('keydown', e => { if (e.key === 'Enter') cwSend(); });
 }
@@ -8369,3 +8433,6 @@ if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
 
 /* 每頁至少一個 H1（SEO／無障礙），沒有的頁面補上隱藏標題 */
 window.addEventListener('load', () => { setTimeout(() => { if (!document.querySelector('h1')) { const h = document.createElement('h1'); h.className = 'sr-only'; h.textContent = document.title.split('｜')[0]; (document.querySelector('main') || document.body).prepend(h); } }, 800); });
+
+/* 測試模式提示列 */
+if (window.OKAI_TEST_MODE) window.addEventListener('load', () => { const b = document.createElement('div'); b.className = 'test-bar'; b.innerHTML = '🧪 測試模式：可看到模擬講師與測試課程（<a href="course.html?id=c99">開啟測試課</a>）・<a href="?okai-test=0">關閉測試模式</a>'; document.body.prepend(b); });
