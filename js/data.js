@@ -116,7 +116,7 @@ window.POSTS = [
 ];
 
 window.INSTRUCTORS = [
-  { id: 'i1', name: T, role: R, courses: 13, students: 0, followers: 0, avatar: '🤖', bio: 'OKAI課程網 的講師團隊，專注把 AI 工具教到你能在工作與生活中實際用上。', achievements: [] }
+  { id: 'i1', name: T, role: R, courses: 13, students: 0, followers: 0, avatar: '<img src="assets/team/okai-team-sm.webp" alt="OKAI 講師團隊" width="96" height="96">', bio: 'OKAI課程網 的講師團隊，專注把 AI 工具教到你能在工作與生活中實際用上。', achievements: [] }
 ];
 
 window.PLATFORM_STATS = null;
@@ -676,7 +676,7 @@ window.NOTIFICATIONS = [
 ];
 
 window.INSTRUCTOR_BIOS = {
-  [T]: { detail: 'OKAI課程網 講師團隊專注 AI 實務教學，課程以實際操作為主，目標是讓學員學完就能用在工作與生活上。', works: [], social: {} }
+  [T]: { detail: 'OKAI課程網 講師團隊專注 AI 實務教學，課程以實際操作為主，目標是讓學員學完就能用在工作與生活上。每位講師的個人介紹與作品，會在正式課程影片上線時一併公布。', works: ['教學範圍：AI 應用開發、AI 繪圖、AI 影片、AI 行銷、AI 自動化', '教學方式：每個單元都實際操作一次，附講義與練習', '課程維護：工具改版時補充說明或更新單元'], social: {} }
 };
 
 window.TESTIMONIALS = [];

@@ -704,7 +704,7 @@ function cardHighlights(c) {
   const total = getTotalLessons(c);
   const chCnt = window.CHAPTERS && window.CHAPTERS[c.id] ? window.CHAPTERS[c.id].length : (c.hours >= 20 ? 6 : 5);
   hl.push(`${chCnt} 章・${total} 堂・${c.hours} 小時`);
-  hl.push('附講師原始專案檔');
+  hl.push('附講義大綱 PDF');
   return hl;
 }
 
@@ -1081,7 +1081,7 @@ function home() {
   // 捲動敘事
   const storyV = ['c06', 'c05', 'c03'].map(id => byId[id]);
   const steps = [['01 / 實作導向', '學真正用得到的\nAI 技能', '每堂課都從實際案例出發，一步步跟著做，學完就能用在工作與生活上。'],
-                 ['02 / 專案實作', '每堂課都是\n一個完整作品', '附上講師原始專案檔與素材，從零開始跟著做，上完課就有能放進作品集的成果。'],
+                 ['02 / 專案實作', '每堂課都是\n一個完整作品', '每章附講義與練習，從零開始跟著做，上完課就有能放進作品集的成果。'],
                  ['03 / 無限期觀看', '一次購買\n隨時隨地重溫', '電腦、手機、平板都能看，支援倍速與字幕，課程更新內容免費開放。']];
   if (false) main.insertAdjacentHTML('beforeend', `<section class="story"><div class="pin">
     <div class="steps">${steps.map((s, i) => `<div class="step ${i ? '' : 'on'}"><div class="k">${s[0]}</div><h2>${s[1].replace('\n', '<br>')}</h2><p>${s[2]}</p></div>`).join('')}<div class="pager">${steps.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div></div>
@@ -1650,8 +1650,8 @@ function course() {
     ...cFaqs,
     ...(catFaqMap[c.cat] || []),
     ['購買後可以觀看多久？', '一次購買即可無限期觀看，日後課程更新的內容也會免費開放，不需要再付任何費用。'],
-    ['這堂課有字幕嗎？', '有的，課程提供繁體中文字幕，你也可以在播放器中自由開啟或關閉。'],
-    ['課程素材可以下載嗎？', '每堂課皆附講師使用的專案檔與練習素材，可於課程頁面直接下載。部分課程另附 PDF 講義。'],
+    ['這堂課有字幕嗎？', '播放器有字幕開關。正式課程影片會附繁體中文字幕，目前示意影片為暫定字幕。'],
+    ['課程素材可以下載嗎？', '講義大綱 PDF 在課程頁就能下載；範例專案檔與練習素材會隨正式課程影片提供，已購學員在播放器「下載」分頁取得。'],
     ['不滿意可以退費嗎？', '購買後 7 天內，且觀看進度低於 20%，可透過客服申請全額退費，無需說明理由。'],
     ['課程適合初學者嗎？', `${c.hours <= 10 ? '這是一堂入門課程，完全沒有基礎也能跟上。' : c.hours <= 20 ? '課程涵蓋入門到進階內容，建議有基本概念會更容易吸收。' : '這堂課內容較為深入，建議有一定基礎再開始學習，但課程仍會從核心觀念講起。'}`]
   ];
@@ -1691,7 +1691,7 @@ function course() {
         <a class="btn btn-ghost c-preview-btn" href="player.html?id=${c.id}">▶ 免費試看 2 個單元</a>
       `}
       <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
-      <div class="c-buy-feat"><span>🎬 無限期觀看</span><span>📁 附專案檔</span><span>📱 多裝置</span><span>🔄 免費更新</span></div>
+      <div class="c-buy-feat"><span>🎬 無限期觀看</span><span>📄 附講義</span><span>📱 多裝置</span><span>🔄 免費更新</span></div>
       ${(()=>{const lv=courseLevel(c);const lvMap={'入門':1,'中階':2,'進階':3};const n=lvMap[lv.label]||2;const cls=n===1?'filled':n===2?'filled warn':'filled hard';return `<div class="c-difficulty"><span class="c-diff-label">課程難度</span><div class="c-diff-bars">${[1,2,3].map(i=>`<div class="c-diff-bar${i<=n?' '+cls:''}"></div>`).join('')}</div><span class="c-diff-text">${lv.label}</span></div>`;})()}
       <div class="c-buy-trust">
         <div><span>🛡️</span> 7 天退費保證</div>
@@ -1709,7 +1709,7 @@ function course() {
         <li><b>試看：</b>第 1 章前 2 個單元免費</li>
         <li><b>觀看期限：</b>開通後無期限觀看，含日後更新內容</li>
         <li><b>練習：</b>每章附實作任務</li>
-        <li><b>講義與範例檔：</b>開通後寄到你的 Email</li>
+        <li><b>講義：</b>講義大綱 PDF 可直接下載，範例檔隨正式影片提供</li>
         <li><b>字幕：</b>繁體中文字幕製作中</li>
         <li><b>證書：</b>看完全部單元自動核發結業證書</li>
         <li><b>額外費用：</b>課程沒有其他收費；部分 AI 工具的進階功能需另付工具本身的訂閱費</li>
@@ -1745,16 +1745,17 @@ function course() {
       <div class="c-inc-grid">
         <div class="c-inc-item"><span class="c-inc-icon">📹</span><span>${c.hours} 小時影片內容</span></div>
         <div class="c-inc-item"><span class="c-inc-icon">📝</span><span>${chapters.length} 個章節・${totalLessonCount} 堂課</span></div>
-        <div class="c-inc-item"><span class="c-inc-icon">📁</span><span>專案檔案下載</span></div>
+        <div class="c-inc-item"><span class="c-inc-icon">📄</span><span>講義大綱 PDF</span></div>
         <div class="c-inc-item"><span class="c-inc-icon">📱</span><span>手機、平板、電腦觀看</span></div>
         <div class="c-inc-item"><span class="c-inc-icon">🔄</span><span>免費課程更新</span></div>
         <div class="c-inc-item"><span class="c-inc-icon">🏆</span><span>結業證書</span></div>
       </div>
     </section>
-    <section class="c-sec c-downloads rv-up" id="downloads"><h2>📦 課程附件下載</h2>
-      <p class="c-dl-desc">購買後即可下載以下所有資源，搭配課程使用效果更佳</p>
+    <section class="c-sec c-downloads rv-up" id="downloads"><h2>📦 課程講義與附件</h2>
+      <p class="c-dl-desc">講義大綱可以先下載看看，確認內容適不適合你再報名。</p>
       <div class="c-dl-list">
-        ${[{icon:'📁',name:`${c.title.split('：')[0]}｜完整專案檔`,size:`${(c.hours * 12 + 80).toFixed(0)} MB`,type:'ZIP'},{icon:'📄',name:'課程講義 PDF',size:`${(chapters.length * 3 + 5).toFixed(0)} MB`,type:'PDF'},{icon:'🎨',name:'練習素材包',size:`${(c.hours * 8 + 20).toFixed(0)} MB`,type:'ZIP'},{icon:'📝',name:'課堂筆記模板',size:'2 MB',type:'PDF'},{icon:'🔗',name:'延伸學習資源清單',size:'500 KB',type:'PDF'}].map(f=>`<div class="c-dl-item"><span class="c-dl-icon">${f.icon}</span><div class="c-dl-info"><b>${f.name}</b><span>${f.size}・${f.type}</span></div><button class="c-dl-btn" onclick="toast('${isOwned?'下載檔案將寄至你的 Email':'請先購買課程再下載'}')"><span>${isOwned?'⬇ 下載':'🔒 購買後可下載'}</span></button></div>`).join('')}
+        <a class="c-dl-item" href="assets/handouts/${c.id}.pdf" target="_blank" rel="noopener" download="${c.title.split('：')[0]}_講義大綱.pdf"><span class="c-dl-icon">📄</span><div class="c-dl-info"><b>課程講義大綱（暫定版）</b><span>PDF・各章學習目標、單元列表、筆記欄與練習</span></div><span class="c-dl-lock">下載 ↓</span></a>
+        <div class="c-dl-item"><span class="c-dl-icon">📁</span><div class="c-dl-info"><b>範例專案檔與練習素材</b><span>正式課程影片上線時提供，已購學員可在播放器「下載」分頁取得</span></div><span class="c-dl-lock">製作中</span></div>
       </div>
     </section>
     <div class="c-update-pledge rv-up">
@@ -1816,9 +1817,7 @@ function course() {
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}<div class="faq-more rv-up"><p>找不到你要的答案？</p><a href="faq.html" class="btn btn-ghost">前往幫助中心</a> <button class="btn btn-ghost" onclick="document.querySelector('.cw-fab')&&document.querySelector('.cw-fab').click()">💬 聯繫客服</button></div></section>
     <section class="c-sec c-changelog rv-up" id="changelog"><h2>📋 課程更新日誌</h2>
       <div class="cl-timeline">
-        <div class="cl-item"><div class="cl-dot new"></div><div class="cl-body"><span class="cl-date">2026/10/20</span><h4>v3.2 新增第五章「實戰專案」</h4><p>新增 5 堂實戰課程，包含完整專案從零到部署的流程教學。</p></div></div>
-        <div class="cl-item"><div class="cl-dot"></div><div class="cl-body"><span class="cl-date">2026/09/15</span><h4>v3.1 更新素材包</h4><p>全部素材更新至最新版本，修正第三章範例檔的相容性問題。</p></div></div>
-        <div class="cl-item"><div class="cl-dot"></div><div class="cl-body"><span class="cl-date">2026/08/01</span><h4>v3.0 全課程重新錄製</h4><p>使用最新工具版本重新錄製，畫質提升至 1080p，新增字幕。</p></div></div>
+        <div class="cl-item"><div class="cl-dot new"></div><div class="cl-body"><span class="cl-date">2026/11</span><h4>課程頁上線</h4><p>公開課程大綱、講義大綱 PDF 與示意影片，正式課程影片錄製中，完成後會在這裡公告。</p></div></div>
       </div>
       <p class="cl-note">已購買的學員自動享有所有更新內容</p>
     </section>
@@ -1888,7 +1887,7 @@ function course() {
     title: `${c.title}｜OKAI課程網`,
     desc: c.desc || c.ai || '',
     url: `https://okaiclass.com/course.html?id=${c.id}`,
-    img: `https://okaiclass.com/${img(c)}`,
+    img: `https://okaiclass.com/assets/og/${c.id}.jpg`,
     ogType: 'course',
     jsonLd: [
       { '@context': 'https://schema.org', '@type': 'Course', name: c.title, description: c.desc || '', provider: { '@type': 'Organization', name: 'OKAI課程網', url: 'https://okaiclass.com/', sameAs: 'https://okaiclass.com/' }, instructor: { '@type': 'Person', name: c.teacher, jobTitle: c.role }, offers: { '@type': 'Offer', price: c.price, priceCurrency: 'TWD', availability: 'https://schema.org/InStock', url: `https://okaiclass.com/course.html?id=${c.id}`, validFrom: '2026-01-01' }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'online', duration: `PT${c.hours}H`, inLanguage: 'zh-TW' }, educationalLevel: c.hours <= 10 ? 'Beginner' : c.hours <= 20 ? 'Intermediate' : 'Advanced', numberOfLessons: totalLessonCount, timeRequired: `PT${c.hours}H`, image: `https://okaiclass.com/${img(c)}`, inLanguage: 'zh-TW' },
@@ -2367,7 +2366,7 @@ function cartPage() {
           <div class="cart-summary-row cart-total"><span>合計</span><span>${fmt(total)}</span></div>
           <a class="btn btn-pri" href="checkout.html" style="display:flex;align-items:center;justify-content:center;width:100%;height:52px;font-size:16px;margin-top:16px;text-decoration:none">前往結帳</a>
           <div class="cart-coupon-input"><input placeholder="輸入優惠碼" aria-label="優惠碼"><button onclick="toast('優惠碼功能即將開放，需要協助請來信 hi@okaiclass.com','info')">套用</button></div>
-          <ul class="cart-perks"><li>✓ 7 天無條件退費</li><li>✓ 無限期觀看</li><li>✓ 附講師專案檔</li></ul>
+          <ul class="cart-perks"><li>✓ 7 天內、觀看低於 20% 可退費</li><li>✓ 無限期觀看</li><li>✓ 附講義大綱</li></ul>
         </aside>
       </div>
     </div>
@@ -2971,17 +2970,7 @@ function blogPage() {
     </div>
   </div></section>
 
-  <section class="sec blog-newsletter rv-up"><div class="wrap">
-    <div class="blog-nl-card">
-      <h2>📬 訂閱學習電子報</h2>
-      <p>每週精選好文直送信箱，掌握最新學習趨勢</p>
-      <div class="blog-nl-form">
-        <input type="email" id="blog-nl-email" placeholder="your@email.com" aria-label="訂閱 Email">
-        <button class="btn btn-pri" id="blog-nl-btn">免費訂閱</button>
-      </div>
-      <span class="blog-nl-hint">我們尊重你的隱私，隨時可以取消訂閱</span>
-    </div>
-  </div></section>`;
+`;
 
   const blogQ = $('#blog-q', main);
   const filterCards = () => {
@@ -3249,12 +3238,12 @@ function instructorPage() {
     <section class="insd-hero"><div class="wrap">
       <div class="crumb rv-up"><a href="index.html">首頁</a> › <a href="instructor.html">講師</a> › ${t.name}</div>
       <div class="insd-profile rv-up">
-        <div class="insd-avatar"><img src="assets/img/v${t.v}.webp" alt="${t.name}" loading="lazy" decoding="async"></div>
+        <div class="insd-avatar"><img src="assets/team/okai-team.webp" alt="${t.name}" loading="lazy" decoding="async"></div>
         <div class="insd-info">
           <h1>${t.name}</h1>
           <span class="insd-role">${t.role}</span>
           <p class="insd-bio">${bio}</p>
-          ${bioData && bioData.works ? `<div class="insd-works"><h4>經歷與成就</h4><ul>${bioData.works.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}
+          ${bioData && bioData.works ? `<div class="insd-works"><h4>教學範圍與方式</h4><ul>${bioData.works.map(w => `<li>${w}</li>`).join('')}</ul></div>` : ''}
           ${(() => { const insData = (window.INSTRUCTORS || []).find(x => x.name === t.name); return insData && insData.achievements ? `<div class="ins-achievements"><h4>榮譽與成就</h4><ul>${insData.achievements.map(a => `<li><span class="ins-ach-icon">🏆</span>${a}</li>`).join('')}</ul></div>` : ''; })()}
           <div class="insd-stats">
             <div class="insd-stat"><b>${t.courses.length}</b><span>門課程</span></div>
@@ -3328,7 +3317,7 @@ function instructorPage() {
   <section class="sec"><div class="wrap">
     <div class="ins-grid" id="ins-grid">
       ${teachers.map(t => `<a class="ins-card rv-up" href="instructor.html?name=${encodeURIComponent(t.name)}" data-name="${t.name}" data-role="${t.role}" style="text-decoration:none;color:inherit">
-        <div class="ins-avatar"><img src="assets/img/v${t.v}.webp" alt="${t.name}" loading="lazy" decoding="async"></div>
+        <div class="ins-avatar"><img src="assets/team/okai-team-sm.webp" alt="${t.name}" loading="lazy" decoding="async"></div>
         <h3 class="ins-name">${t.name}</h3>
         <p class="ins-role">${t.role}</p>
         <div class="ins-stats">
@@ -4393,9 +4382,8 @@ function playerPage() {
         </div>
         <div class="plr-sb-panel" id="plr-panel-downloads" hidden>
           <div class="plr-dl-list">
-            <div class="plr-dl-item"><span class="plr-dl-icon">📁</span><div class="plr-dl-info"><b>課程專案原始檔</b><span>包含完整專案檔案與素材</span></div><button class="btn btn-ghost" onclick="toast('講義與素材會在課程開通後寄到你的 Email','info')">下載</button></div>
-            <div class="plr-dl-item"><span class="plr-dl-icon">📄</span><div class="plr-dl-info"><b>課程講義 PDF</b><span>講師整理的重點筆記</span></div><button class="btn btn-ghost" onclick="toast('講義與素材會在課程開通後寄到你的 Email','info')">下載</button></div>
-            <div class="plr-dl-item"><span class="plr-dl-icon">🖼️</span><div class="plr-dl-info"><b>參考素材包</b><span>練習用圖片與素材</span></div><button class="btn btn-ghost" onclick="toast('講義與素材會在課程開通後寄到你的 Email','info')">下載</button></div>
+            <div class="plr-dl-item"><span class="plr-dl-icon">📄</span><div class="plr-dl-info"><b>課程講義大綱（暫定版）</b><span>各章學習目標、單元列表、筆記欄與練習</span></div><a class="btn btn-ghost" href="assets/handouts/${c.id}.pdf" target="_blank" rel="noopener" download>下載</a></div>
+            <div class="plr-dl-item"><span class="plr-dl-icon">📁</span><div class="plr-dl-info"><b>範例專案檔與練習素材</b><span>正式課程影片上線時提供</span></div><span class="btn btn-ghost" aria-disabled="true" style="opacity:.55;cursor:default">製作中</span></div>
           </div>
         </div>
       </aside>
@@ -4681,21 +4669,25 @@ function playerPage() {
   const subtitleEl = $('#plr-subtitle');
   const subBtn = $('#plr-sub');
   let subtitleOn = true;
-  const subtitleKeys = chapters.flatMap((ch, ci) => ch.lessons.map((ls, li) => ({
-    ci, li, text: `${ch.name}：${ls.t}`
-  })));
+  // 字幕：讀取每個單元的 .vtt（與影片同名）
+  const vttCache = {};
+  const parseVtt = txt => txt.replace(/\r/g, '').split('\n\n').map(b => { const m = b.match(/(\d+):(\d+):([\d.]+) --> (\d+):(\d+):([\d.]+)\n([\s\S]+)/); return m ? { a: +m[1] * 3600 + +m[2] * 60 + +m[3], b: +m[4] * 3600 + +m[5] * 60 + +m[6], t: m[7].trim() } : null; }).filter(Boolean);
+  function loadVtt() {
+    const src = (vid_el.currentSrc || vid_el.getAttribute('src') || '').replace(/\.mp4(\?.*)?$/, '.vtt');
+    if (!src.endsWith('.vtt') || vttCache[src]) return;
+    vttCache[src] = [];
+    fetch(src).then(r => r.ok ? r.text() : '').then(t => { vttCache[src] = t ? parseVtt(t) : []; updateSubtitle(); }).catch(() => {});
+  }
   function updateSubtitle() {
     if (!subtitleOn || !subtitleEl) return;
-    const key = subtitleKeys.find(k => k.ci === curCh && k.li === curLs);
-    if (key) {
-      const t = vid_el.currentTime || 0, d = vid_el.duration || 1;
-      const pct = t / d;
-      const tips = [key.text, `學習重點：掌握${key.text}的核心觀念`, `實作練習：跟著講師一步步完成`];
-      const idx = Math.min(Math.floor(pct * tips.length), tips.length - 1);
-      subtitleEl.textContent = tips[idx];
-      subtitleEl.style.display = '';
-    }
+    const src = (vid_el.currentSrc || vid_el.getAttribute('src') || '').replace(/\.mp4(\?.*)?$/, '.vtt');
+    const cues = vttCache[src]; if (!cues) { loadVtt(); return; }
+    const t = vid_el.currentTime || 0;
+    const cue = cues.find(q => t >= q.a && t < q.b);
+    subtitleEl.textContent = cue ? cue.t : '';
+    subtitleEl.style.display = cue ? '' : 'none';
   }
+  vid_el.addEventListener('loadedmetadata', () => { loadVtt(); updateSubtitle(); });
   vid_el.addEventListener('timeupdate', updateSubtitle);
   if (subBtn) subBtn.onclick = () => {
     subtitleOn = !subtitleOn;
@@ -8206,7 +8198,7 @@ function openRecommendQuiz() {
 // ── 電子報訂閱 modal（瀏覽 3 頁後觸發，每 session 一次）──
 (typeof requestIdleCallback==='function'?requestIdleCallback:cb=>setTimeout(cb,2000))(() => {
   const nlKey = 'aic-nl-shown', pvKey = 'aic-pv-count';
-  if (!sessionStorage.getItem(nlKey)) {
+  if (false) { // 電子報彈窗：沒有真的寄送名單、折價券也不存在，停用
     const pv = +(sessionStorage.getItem(pvKey) || 0) + 1;
     sessionStorage.setItem(pvKey, pv);
     if (pv >= 3) {
