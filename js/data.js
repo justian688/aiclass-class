@@ -52,9 +52,9 @@ window.FAQ = [
   ['完全沒有 AI 基礎可以學嗎？', '可以。大部分課程從工具註冊與基本操作開始教，適合零基礎；需要程式基礎的課程會在課程頁特別標示。'],
   ['可以用手機或平板上課嗎？', '可以，支援電腦、手機、平板，並可調整播放速度與開啟字幕。'],
   ['AI 工具需要另外付費嗎？', '課程會優先使用免費方案示範；部分進階功能需要工具的付費方案，課程中會清楚說明。'],
-  ['付款方式有哪些？', '支援信用卡、ATM 轉帳與超商代碼繳費，並可開立電子發票。'],
+  ['付款方式有哪些？', '送出報名後，我們會在 2 個工作天內用 Email 寄付款方式給你；付款確認後開通課程，並開立電子發票。'],
   ['不滿意可以退費嗎？', '購買後 7 天內且觀看進度低於 20%，可聯絡客服申請退費。'],
-  ['可以跟講師提問嗎？', '每堂課都有留言討論區，講師與助教會盡快回覆你的學習問題。'],
+  ['可以跟講師提問嗎？', '可以。播放器每個單元下方都有留言區，也可以來信 hi@okaiclass.com，2 個工作天內回覆。'],
   ['有企業內訓方案嗎？', '有，我們提供企業 AI 內訓與包班課程，歡迎來信洽詢 hi@okaiclass.com。']
 ];
 
@@ -68,10 +68,12 @@ window.NAV_BANNER = [
 window.PARTNERS = [];
 
 window.PATHS = [
-  { id: 'p1', name: 'AI 開發者', desc: '從 AI 應用開發到 AI 寫程式，學會用 AI 做出產品', courses: ['c03', 'c02', 'c38'], duration: '3-4 個月', level: '入門到進階', salary: '依職務而定' },
-  { id: 'p2', name: 'AI 創作者', desc: 'AI 繪圖、角色設計、影片生成與音樂，一個人就是一個創作團隊', courses: ['c47', 'c05', 'c06', 'c04'], duration: '2-4 個月', level: '零基礎', salary: '依接案量而定' },
-  { id: 'p3', name: 'AI 行銷人', desc: '用 AI 做品牌、做內容、做修圖，行銷工作快好幾倍', courses: ['c11', 'c01', 'c08'], duration: '2-3 個月', level: '零基礎', salary: '依職務而定' },
-  { id: 'p4', name: 'AI 老闆／生活家', desc: '把 AI 用在店家經營、理財研究與日常生活', courses: ['c09', 'c41', 'c31'], duration: '1-2 個月', level: '零基礎', salary: '—' }
+  { id: 'p1', name: 'AI 開發者', desc: '從 AI 應用開發到 AI 寫程式，學會用 AI 做出產品', courses: ['c102', 'c109', 'c03', 'c110', 'c106'], duration: '3-4 個月', level: '入門到進階', salary: '依職務而定' },
+  { id: 'p2', name: 'AI 創作者', desc: 'AI 繪圖、角色設計、影片生成與音樂，一個人就是一個創作團隊', courses: ['c47', 'c05', 'c114', 'c06', 'c118', 'c04'], duration: '2-4 個月', level: '零基礎', salary: '依接案量而定' },
+  { id: 'p3', name: 'AI 行銷人', desc: '用 AI 寫文案、做圖文與短影音，再用 SEO 和廣告把內容推出去', courses: ['c122', 'c117', 'c11', 'c120', 'c123', 'c124'], duration: '2-3 個月', level: '零基礎', salary: '依職務而定' },
+  { id: 'p5', name: 'AI 上班族', desc: '從 ChatGPT 入門到簡報、Excel 與自動化，每天把重複工作交給 AI', courses: ['c101', 'c103', 'c104', 'c112', 'c108', 'c105'], duration: '2-3 個月', level: '零基礎', salary: '依職務而定' },
+  { id: 'p6', name: 'AI 資料分析', desc: '上傳資料就能分析，再做出老闆看得懂的儀表板', courses: ['c111', 'c112', 'c113'], duration: '1-2 個月', level: '零基礎', salary: '依職務而定' },
+  { id: 'p4', name: 'AI 老闆／生活家', desc: '把 AI 用在店家經營、理財研究與日常生活', courses: ['c09', 'c107', 'c115', 'c41', 'c31', 'c129'], duration: '1-2 個月', level: '零基礎', salary: '—' }
 ];
 
 window.BOOTCAMPS = [];
@@ -89,30 +91,30 @@ window.MISSION_STATS = null;
 window.VIDEO_CONTENT = [];
 
 window.POSTS = [
-  { id:'p35', title:'ChatGPT 提示詞入門：上班族馬上能用的 8 個寫法', excerpt:'同一個問題換個問法，AI 的回答品質差很多。整理 8 個實用的提示詞寫法，寫信、整理會議、做企劃都用得到。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b35', tags:["提示詞", "ChatGPT", "工作效率"] },
+  { id:'p35', title:'ChatGPT 提示詞入門：上班族馬上能用的 8 個寫法', excerpt:'同一個問題換個問法，AI 的回答品質差很多。整理 8 個實用的提示詞寫法，寫信、整理會議、做企劃都用得到。', cat:'start', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b35', tags:["提示詞", "ChatGPT", "工作效率"] },
   { id:'p36', title:'AI 繪圖入門：Midjourney 和 Stable Diffusion 差在哪？', excerpt:'兩大 AI 繪圖工具各有強項。從上手難度、控制能力到費用，幫你判斷該先學哪一個。', cat:'drawing', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b36', tags:["AI繪圖", "Midjourney", "Stable Diffusion"] },
   { id:'p37', title:'用 AI 做 LINE 貼圖：從角色設計到上架的完整流程', excerpt:'想做自己的 LINE 貼圖？從角色發想、維持角色一致、做表情組到上架審核，一步步拆解。', cat:'drawing', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b37', tags:["LINE貼圖", "AI角色設計", "副業"] },
-  { id:'p38', title:'沒有程式基礎，可以用 AI 寫程式嗎？', excerpt:'AI 讓「用說的寫程式」變得可能，但不是完全不用學。說明新手能做到什麼、會卡在哪裡，以及怎麼開始。', cat:'design', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b38', tags:["AI寫程式", "Vibe Coding", "新手"] },
+  { id:'p38', title:'沒有程式基礎，可以用 AI 寫程式嗎？', excerpt:'AI 讓「用說的寫程式」變得可能，但不是完全不用學。說明新手能做到什麼、會卡在哪裡，以及怎麼開始。', cat:'start', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b38', tags:["AI寫程式", "Vibe Coding", "新手"] },
   { id:'p39', title:'RAG 是什麼？用白話解釋企業 AI 知識庫', excerpt:'為什麼 AI 會亂回答公司內部的問題？RAG 怎麼讓 AI 先查資料再回答？用生活化的比喻一次講懂。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b39', tags:["RAG", "AI知識庫", "企業AI"] },
-  { id:'p40', title:'AI Agent 是什麼？跟一般聊天機器人差在哪？', excerpt:'AI Agent 不只會回答問題，還能自己規劃步驟、使用工具完成任務。看懂它能做什麼、目前的限制在哪。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b40', tags:["AI Agent", "AI代理", "自動化"] },
+  { id:'p40', title:'AI Agent 是什麼？跟一般聊天機器人差在哪？', excerpt:'AI Agent 不只會回答問題，還能自己規劃步驟、使用工具完成任務。看懂它能做什麼、目前的限制在哪。', cat:'auto', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b40', tags:["AI Agent", "AI代理", "自動化"] },
   { id:'p41', title:'AI 音樂生成入門：用 Suno 做歌要注意什麼？', excerpt:'輸入一段描述就能生成完整歌曲。介紹 AI 作曲的基本做法、提升品質的技巧，以及商用前要確認的事。', cat:'creative', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b41', tags:["AI音樂", "Suno", "AI作曲"] },
-  { id:'p42', title:'電商賣家必學：用 AI 修圖做出好看的商品照', excerpt:'去背、換背景、補光、統一色調，AI 修圖能省下大量時間。整理電商常用的 AI 修圖流程與注意事項。', cat:'beauty', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b42', tags:["AI修圖", "電商", "商品攝影"] },
+  { id:'p42', title:'電商賣家必學：用 AI 修圖做出好看的商品照', excerpt:'去背、換背景、補光、統一色調，AI 修圖能省下大量時間。整理電商常用的 AI 修圖流程與注意事項。', cat:'creative', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b42', tags:["AI修圖", "電商", "商品攝影"] },
   { id:'p43', title:'經營自媒體怎麼用 AI？從選題、腳本到剪輯字幕', excerpt:'一個人經營自媒體很累，AI 可以分擔哪些工作？依照內容製作流程，整理每個階段能用 AI 做的事。', cat:'career', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b43', tags:["自媒體", "AI剪輯", "短影音"] },
   { id:'p44', title:'餐飲業怎麼用 AI？菜單、行銷到客服的 6 個應用', excerpt:'小店也能用 AI 提升效率。從菜單文案、社群貼文、評論回覆到備料估算，整理餐飲業最實用的 AI 用法。', cat:'baking', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b44', tags:["餐飲業", "AI行銷", "小店經營"] },
   { id:'p45', title:'用 AI 做遊戲：新手可以從哪裡開始？', excerpt:'AI 可以幫忙寫程式、畫美術、做音效，讓個人開發遊戲的門檻大幅降低。整理新手做第一款小遊戲的路線。', cat:'game', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b45', tags:["AI遊戲開發", "獨立遊戲", "新手"] },
   { id:'p46', title:'用 AI 研究投資理財：能做的事與不能做的事', excerpt:'AI 很適合整理財報、摘要新聞、比較資料，但不能替你做投資決定。說清楚 AI 在理財研究中的正確用法。', cat:'finance', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b46', tags:["AI理財", "投資研究", "財報"] },
   { id:'p47', title:'AI 生成的圖片可以商用嗎？著作權與使用前的檢查清單', excerpt:'用 AI 做的圖、文字、音樂能不能拿來賺錢？整理使用前一定要確認的事，避免踩到侵權與授權問題。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b47', tags:["AI著作權", "商用授權", "AI倫理"] },
-  { id:'p48', title:'孩子用 AI 寫作業，該禁止還是引導？給家長的 5 個建議', excerpt:'AI 已經是孩子身邊的工具。與其全面禁止，不如教會孩子正確使用。給家長的實用溝通建議。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b48', tags:["AI教育", "家長", "學習"] },
-  { id:'p49', title:'企業導入 AI 教育訓練：從哪裡開始最有效？', excerpt:'員工會用 AI，不等於公司會用 AI。從盤點需求、挑選情境到建立內部規範，整理企業 AI 培訓的步驟。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b49', tags:["企業培訓", "AI導入", "數位轉型"] },
+  { id:'p48', title:'孩子用 AI 寫作業，該禁止還是引導？給家長的 5 個建議', excerpt:'AI 已經是孩子身邊的工具。與其全面禁止，不如教會孩子正確使用。給家長的實用溝通建議。', cat:'start', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b48', tags:["AI教育", "家長", "學習"] },
+  { id:'p49', title:'企業導入 AI 教育訓練：從哪裡開始最有效？', excerpt:'員工會用 AI，不等於公司會用 AI。從盤點需求、挑選情境到建立內部規範，整理企業 AI 培訓的步驟。', cat:'biz', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b49', tags:["企業培訓", "AI導入", "數位轉型"] },
   { id:'p30', title:'2026 AI 課程怎麼選？美國、中國、日本熱門平台大比較', excerpt:'同樣是學 AI，美國重證書、中國拼低價實戰、日本流行月費看到飽。整理三地熱門 AI 課程平台的差異，幫你找到最適合自己的學法。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:9, v:'b30', tags:["AI課程", "線上課程", "比較"] },
   { id:'p31', title:'美國 AI 課程推薦：免費與付費怎麼挑？Coursera、DeepLearning.AI、CS50AI 一次看', excerpt:'美國的 AI 課程很多是免費的，付費的則主打證書與名校。依「想用 AI」或「想做 AI」兩種目標，整理該從哪裡開始。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:8, v:'b31', tags:["AI課程推薦", "Coursera", "免費AI課程"] },
   { id:'p32', title:'中國 AI 大模型課程怎麼學？從免費資源到實戰課的整理', excerpt:'中國的 AI 學習資源走兩條路：大量免費開源教材，以及價格親民、主打專題實作的付費課。看懂差異，少走冤枉路。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b32', tags:["AI大模型", "LLM", "AI課程"] },
   { id:'p33', title:'日本生成 AI 補習班為什麼流行「月費看到飽」？', excerpt:'日本熱門的生成 AI 學校，多數採用月費訂閱、課程看到飽，再加上導師與社群。這種模式適合誰？又要注意什麼？', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:7, v:'b33', tags:["生成AI", "AI補習班", "訂閱制"] },
   { id:'p34', title:'報名 AI 課程前必看：7 個檢查點，避免花錢又學不會', excerpt:'AI 課程越來越多，品質落差也很大。從試看、實作、更新日期到退費規則，教你用 7 個問題快速判斷一堂課值不值得買。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-25', readTime:6, v:'b34', tags:["AI課程", "選課指南", "退費"] },
   { id:'p1', title:'2026 年最值得學的 5 項 AI 技能', excerpt:'從提示詞、AI Agent 到 AI 影片生成，整理出最值得投資時間學習的五項 AI 技能，以及該從哪一項開始。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-24', readTime:8, v:'41654', tags:['AI','職涯','趨勢'] },
-  { id:'p3', title:'AI 要從哪裡開始學？給完全新手的學習路線', excerpt:'不會寫程式、不懂技術也沒關係。依照你的目標，挑一條最適合的 AI 學習路線。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-24', readTime:7, v:'785', tags:['AI入門','學習路線'] },
+  { id:'p3', title:'AI 要從哪裡開始學？給完全新手的學習路線', excerpt:'不會寫程式、不懂技術也沒關係。依照你的目標，挑一條最適合的 AI 學習路線。', cat:'start', author:'OKAI 編輯部', date:'2026-11-24', readTime:7, v:'785', tags:['AI入門','學習路線'] },
   { id:'p4', title:'AI 影片生成工具比較：Sora、Kling、Runway 怎麼選？', excerpt:'三款熱門 AI 影片工具的差異、適合用途與上手難度，一次整理。', cat:'video', author:'OKAI 編輯部', date:'2026-11-24', readTime:7, v:'29997', tags:['AI影片','Sora','Kling'] },
-  { id:'p5', title:'不會寫程式也能做網站？Vibe Coding 入門', excerpt:'用說的就能讓 AI 寫程式。介紹 Vibe Coding 的做法、適合的工具與要注意的地方。', cat:'design', author:'OKAI 編輯部', date:'2026-11-24', readTime:6, v:'13228', tags:['Vibe Coding','AI寫程式'] },
+  { id:'p5', title:'不會寫程式也能做網站？Vibe Coding 入門', excerpt:'用說的就能讓 AI 寫程式。介紹 Vibe Coding 的做法、適合的工具與要注意的地方。', cat:'ai', author:'OKAI 編輯部', date:'2026-11-24', readTime:6, v:'13228', tags:['Vibe Coding','AI寫程式'] },
   { id:'p16', title:'AI 繪圖 vs 手繪：設計師該如何定位自己？', excerpt:'AI 繪圖工具越來越強，設計師的價值在哪裡？從工作流程談設計師的轉型方向。', cat:'drawing', author:'OKAI 編輯部', date:'2026-11-24', readTime:8, v:'46353', tags:['AI繪圖','設計','職涯'] },
   { id:'p20', title:'Midjourney 新手必學的 10 個 Prompt 技巧', excerpt:'風格描述、構圖用語、參數設定與負面提示，讓 AI 出圖品質明顯提升。', cat:'drawing', author:'OKAI 編輯部', date:'2026-11-24', readTime:8, v:'40534', tags:['Midjourney','Prompt'] },
   { id:'p9', title:'小店也能用 AI：餐飲業 5 個最實用的 AI 應用', excerpt:'菜單文案、餐點照片、社群貼文、評論回覆與 LINE 自動回覆，老闆自己就能做。', cat:'baking', author:'OKAI 編輯部', date:'2026-11-24', readTime:6, v:'49231', tags:['餐飲業','AI應用','中小企業'] },
@@ -134,7 +136,7 @@ window.FAQ_FULL = [
     ['付款失敗怎麼辦？','回覆付款信或來信 hi@okaiclass.com，我們會重新提供付款方式。'],
     ['不滿意可以退費嗎？','開通後 7 天內且觀看進度低於 20%，可在「訂單紀錄」按「申請退款」或來信申請，全額以原付款方式退回，約 7～14 個工作天。'],
     ['影片無法播放或字幕有問題？','在播放器下方按「回報影片或內容問題」，會自動帶入課程與單元資訊寄給我們。'],
-    ['購買後如何取得發票？','付款完成後系統會開立電子發票寄到你的 Email，如需統編可於結帳時填寫。']
+    ['購買後如何取得發票？','付款確認後，我們會開立電子發票寄到你的 Email；需要統編請在結帳時選「公司戶發票」。']
   ]},
   { cat:'課程相關', items:[
     ['完全沒有 AI 基礎可以學嗎？','可以。大部分課程從工具註冊與基本操作開始教；需要程式基礎的課程會在課程頁標示。'],
@@ -145,7 +147,7 @@ window.FAQ_FULL = [
   ]},
   { cat:'帳號相關', items:[
     ['如何註冊帳號？','點右上角「免費註冊」，用 Email 即可註冊。'],
-    ['忘記密碼怎麼辦？','在登入頁點「忘記密碼」，輸入註冊信箱即可收到重設連結。'],
+    ['換裝置後看不到課程怎麼辦？','學習紀錄存在原本裝置的瀏覽器。換裝置請來信 hi@okaiclass.com，附上報名 Email，我們會幫你重新開通。'],
     ['如何刪除帳號？','請來信 hi@okaiclass.com 申請，我們會盡快處理。刪除後已購買的課程將無法恢復。']
   ]},
   { cat:'企業方案', items:[
@@ -720,7 +722,7 @@ window.WHY_AICLASS = [
   { icon: '🛠️', title: '學完就能用', desc: '每堂課都有實作，學的是能馬上用在工作與生活上的方法。' },
   { icon: '🌱', title: '零基礎友善', desc: '大部分課程從註冊與基本操作開始，不需要技術背景。' },
   { icon: '🔄', title: '課程持續更新', desc: 'AI 工具變化很快，課程會依工具更新調整內容。' },
-  { icon: '💬', title: '有問題可以問', desc: '每堂課都有討論區，講師與助教會回覆你的學習問題。' },
+  { icon: '💬', title: '有問題可以問', desc: '每個單元下方都有留言區，看不懂的地方直接留言發問。' },
   { icon: '🛡️', title: '7 天退費保證', desc: '購買 7 天內、觀看進度低於 20% 可申請退費。' }
 ];
 
