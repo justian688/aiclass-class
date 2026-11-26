@@ -27,6 +27,19 @@ const page = document.body.dataset.page;
 const ls = (key, fallback) => { try { const v = localStorage.getItem(key); if (v == null) return fallback; try { return JSON.parse(v); } catch { return v; } } catch { return fallback; } };
 const ss = (key, val) => { try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {} };
 
+
+/* ---------- 線條圖示：把指定區塊裡的表情符號換成一致的線條圖示 ---------- */
+const ICON_PATHS = {"🎬": "<path d=\"M4 6h16v12H4z\"/><path d=\"M10 9l5 3-5 3z\"/>", "📄": "<path d=\"M7 3h7l4 4v14H7z\"/><path d=\"M14 3v4h4\"/>", "📱": "<rect x=\"7\" y=\"3\" width=\"10\" height=\"18\" rx=\"2\"/><path d=\"M11 18h2\"/>", "🔄": "<path d=\"M4 12a8 8 0 0 1 14-5l2 2\"/><path d=\"M20 4v5h-5\"/><path d=\"M20 12a8 8 0 0 1-14 5l-2-2\"/><path d=\"M4 20v-5h5\"/>", "🛡️": "<path d=\"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z\"/>", "📧": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M3 7l9 6 9-6\"/>", "📦": "<path d=\"M3 7l9-4 9 4v10l-9 4-9-4z\"/><path d=\"M3 7l9 4 9-4M12 11v10\"/>", "📅": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"15\" rx=\"2\"/><path d=\"M4 10h16M9 3v4M15 3v4\"/>", "🧰": "<rect x=\"3\" y=\"8\" width=\"18\" height=\"12\" rx=\"2\"/><path d=\"M9 8V5h6v3M3 13h18\"/>", "🌐": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18\"/>", "💬": "<path d=\"M4 5h16v11H9l-5 4z\"/>", "📋": "<rect x=\"6\" y=\"4\" width=\"12\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9z\"/>", "📘": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M13 8h2M13 8v10M11 12h4\"/>", "📤": "<path d=\"M12 15V4M8 8l4-4 4 4\"/><path d=\"M5 14v6h14v-6\"/>", "⏱": "<circle cx=\"12\" cy=\"13\" r=\"8\"/><path d=\"M12 9v4l2 2M9 2h6\"/>", "💡": "<path d=\"M9 18h6M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z\"/>", "🛒": "<circle cx=\"9\" cy=\"20\" r=\"1.3\"/><circle cx=\"18\" cy=\"20\" r=\"1.3\"/><path d=\"M3 4h2l2.4 11h11l2-8H6.2\"/>"};
+function iconize(root) {
+  if (!root) return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); const ns = []; while (w.nextNode()) ns.push(w.currentNode);
+  ns.forEach(n => {
+    const hit = Object.keys(ICON_PATHS).find(e => n.nodeValue.includes(e)); if (!hit) return;
+    const frag = document.createDocumentFragment();
+    n.nodeValue.split(hit).forEach((t, i, arr) => { if (t) frag.append(t.replace(/^\uFE0F/, '')); if (i < arr.length - 1) { const sp = document.createElement('span'); sp.className = 'ic'; sp.setAttribute('aria-hidden', 'true'); sp.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[hit]}</svg>`; frag.append(sp); } });
+    n.replaceWith(frag);
+  });
+}
 /* ---------- 共用：呼叫主機 API ---------- */
 const apiGet = u => fetch(u, { cache: 'no-store' }).then(r => r.json());
 const apiPost = (u, data) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json());
@@ -813,13 +826,12 @@ function card(c, i, rank) {
       ${isOwned ? '<span class="badge owned-badge">已購買</span>' : c.tag ? `<span class="badge ${c.tag}">${c.tag}</span>` : ''}
       <button class="wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" aria-label="收藏">${wish.has(c.id) ? '♥' : '♡'}</button>
       <img src="${img(c)}" alt="${c.title}" width="640" height="400" loading="lazy" decoding="async">
-      <span class="hours">${c.hours} 小時</span>
       ${!isOwned ? '<span class="card-free">▶ 可試看</span>' : ''}
     </div></div>
     <div class="meta">
-      <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-eta">約 ${lv.weeks} 週完成</span><span class="card-rate" data-rate="${c.id}"></span></div>
-      <div class="teacher">${c.teacher}</div>
       <h3>${c.title}</h3>
+      <div class="teacher card-by">by ${c.teacher}</div>
+      <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-hrs">⏱ ${c.hours} 小時</span><span class="card-rate" data-rate="${c.id}"></span></div>
       ${isOwned ? `<div class="card-prog-row"><div class="card-prog-bar"><div class="card-prog-fill" style="width:${pctDone}%"></div></div><span class="card-prog-txt">${pctDone}% 完成</span></div>` : `<div class="price">${c.origin > c.price ? `<span class="off">${pct(c)}%</span>` : ''}<span class="now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del>` : ''}</div>`}
       
     </div>
@@ -962,7 +974,7 @@ function home() {
   main.insertAdjacentHTML('beforeend', `<section class="hero" aria-label="精選課程" aria-roledescription="carousel">
     ${slides.map((c, i) => { const [e, h, p] = window.HERO_COPY[c.id]; return `<div class="slide ${i ? '' : 'on'}">
       <img class="poster" src="${img(c)}" alt="${c.title}" width="1920" height="1080"${i ? ' loading="lazy"' : ' fetchpriority="high"'}>
-      <video ${i ? 'preload="none"' : 'autoplay preload="auto"'} muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
+      <video preload="none" muted loop playsinline poster="${img(c)}" data-src="${vid(c)}" aria-hidden="true"></video>
       <div class="txt"><div class="wrap"><span class="eyebrow">${e}</span>${i ? `<h2 class="h1">${h}</h2>` : `<h1>${h}</h1>`}<p>${p}</p>
       <div class="cta"><a class="btn btn-pri" href="course.html?id=${c.id}">${owned.has(c.id) ? '繼續學習 →' : cart.has(c.id) ? '前往結帳 →' : '立即了解 →'}</a> <a class="btn btn-ghost" href="${owned.has(c.id) ? `player.html?id=${c.id}` : `course.html?id=${c.id}#preview`}" style="margin-left:8px">${owned.has(c.id) ? '🎬 進入播放器' : '▶ 試看'}</a></div></div></div></div>`; }).join('')}
     <div class="hero-ctrl"><div class="wrap">${slides.map((c, i) => `<button class="dot ${i ? '' : 'on'}"><div class="bar"><i></i></div><span>${c.title}</span></button>`).join('')}
@@ -1566,10 +1578,11 @@ function home() {
 }
 
 function heroSlider() {
+  document.body.classList.add('hero-poster');
   const hero = $('.hero'), slides = $$('.slide', hero), dots = $$('.dot', hero);
   let cur = 0, timer, paused = false; const DUR = 6500;
   hero.style.setProperty('--dur', DUR + 'ms');
-  const load = v => { if (!v.src) v.src = v.dataset.src; };
+  const load = v => { if (v && !v.src && !document.body.classList.contains('hero-poster')) v.src = v.dataset.src; };
   load($('video', slides[0]));
   function go(n) {
     slides[cur].classList.remove('on'); dots[cur].classList.remove('on');
@@ -1960,6 +1973,7 @@ function course() {
   ${(()=>{const rv=ls('aic-recent-view',[]).filter(x=>x!==c.id).slice(0,4).map(x=>byId[x]).filter(Boolean);if(!rv.length)return '';return `<section class="c-sec rv-up"><h2>🕐 最近瀏覽</h2><div class="recent-viewed">${rv.map(r=>`<a class="rv-item" href="course.html?id=${r.id}"><img src="${img(r)}" alt="${r.title}" loading="lazy" decoding="async"><div><div class="rv-title">${r.title}</div><div class="rv-teacher">${r.teacher}</div></div></a>`).join('')}</div></section>`;})()}
   ${railSec('more', '其他熱門課程', '', C.filter(x => x.cat !== c.cat).sort((a, b) => b.students - a.students).slice(0, 8))}`;
 
+  ['.c-buyinfo', '.c-share', '.c-bdl-hd', '.c-meta-row', '.buy .c-cart-ic'].forEach(sel => $$(sel, main).forEach(iconize));
   /* ---------- 真實課程評價（/api/reviews.php） ---------- */
   (() => {
     const list = $('#crv-list'), form = $('#crv-form'); if (!list || !form) return;

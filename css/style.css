@@ -5237,3 +5237,24 @@ h1.plr-course-name{margin:0;font-weight:600;line-height:1.4}
 .c-buy-row .btn{margin-top:10px}
 .c-buy-row .c-buy-pulse{flex:1}
 .buy .c-buy-row .c-cart-ic{width:52px;flex:0 0 52px;padding:0;font-size:20px}
+/* ===== 首頁大圖：圓角海報輪播（方案 A） ===== */
+.hero-poster .hero{max-width:1180px;margin:24px auto 0;height:clamp(260px,32vw,420px);min-height:0;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.hero-poster .slide video{display:none}
+.hero-poster .slide::after{background:linear-gradient(0deg,rgba(0,0,0,.6) 0%,transparent 50%)}
+.hero-poster .slide .txt{bottom:64px}
+.hero-poster .slide h1,.hero-poster .slide .h1{font-size:clamp(22px,2.6vw,36px);margin-bottom:12px}
+.hero-poster .slide p,.hero-poster .slide .eyebrow{display:none}
+.hero-poster .hero-ctrl{bottom:18px}
+.hero-poster .dot{max-width:26px}.hero-poster .dot span{display:none}
+.hero-poster .hero-arrows [data-hpause]{display:none}
+@media (max-width:1240px){.hero-poster .hero{margin:16px 16px 0}}
+@media (max-width:768px){.hero-poster .hero{height:56vw;min-height:220px;border-radius:14px}.hero-poster .slide .txt{bottom:48px}.hero-poster .slide .cta .btn-ghost{display:none}}
+/* ===== 課程卡（方案 B）：課名→by 講師→程度・時數・評分 ===== */
+.card .card-by{font-size:13px;color:var(--tx3);margin:4px 0 6px}
+.card .card-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-hrs{font-size:12px;color:var(--tx2)}
+/* ===== 線條圖示 ===== */
+.ic{display:inline-flex;width:16px;height:16px;vertical-align:-3px;color:var(--pri)}
+.ic svg{width:100%;height:100%}
+.c-share .ic,.c-cart-ic .ic{color:currentColor}
+.buy .c-cart-ic .ic{width:22px;height:22px}
