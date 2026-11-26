@@ -104,8 +104,8 @@ function trapFocus(el) {
 }
 function saveCart() { ss('aic-cart', [...cart]); }
 document.addEventListener('click', e => {
-  const b = e.target.closest && e.target.closest('.fbt-buy[data-fbt]'); if (!b) return;
-  let n = 0; b.dataset.fbt.split(',').forEach(id => { if (byId[id] && !owned.has(id) && !cart.has(id)) { cart.add(id); n++; } });
+  const b = e.target.closest && e.target.closest('.fbt-buy[data-fbt], .c-bdl-add[data-bdl-add]'); if (!b) return;
+  let n = 0; (b.dataset.fbt || b.dataset.bdlAdd).split(',').forEach(id => { if (byId[id] && !owned.has(id) && !cart.has(id)) { cart.add(id); n++; } });
   saveCart(); updateCartBadge(); toast(n ? `已將 ${n} 堂課程加入購物車` : '這些課程已在購物車中', 'success');
 });
 /* 組合包折扣：購物車裡湊齊某個組合包的全部課程，就自動套用組合價 */
@@ -421,7 +421,7 @@ function shell() {
     </div>
     <nav class="nav"><a href="index.html#hot">熱門課程</a><a href="index.html#paths">學習路徑</a><a href="bundle.html">組合包</a><a href="blog.html">學習專欄</a><a href="enterprise.html">企業方案</a></nav>
     <div class="sp"></div>
-    <button class="search-btn" data-search>⌕ 想學什麼？搜尋課程<kbd>⌘K</kbd></button>
+    <button class="search-btn" data-search>⌕ 搜尋課程、文章、講師…<kbd>⌘K</kbd></button>
     <div class="notif-wrap">
       <button class="notif-btn" aria-label="通知">🔔${(()=>{const c=(window.NOTIFICATIONS||[]).filter(n=>!n.read).length;return c?`<span class="notif-badge-count">${c}</span>`:''})()}</button>
       <div class="notif-panel" role="dialog" aria-modal="false" aria-label="通知面板">
@@ -635,7 +635,8 @@ function shell() {
 
   // 最近瀏覽浮動提示
   const rv = ls('aic-recent-view', []);
-  if (rv.length && page !== 'course' && page !== 'player') {
+  if (rv.length && (page === 'index' || page === 'category') && !sessionStorage.getItem('aic-rt-shown')) {
+    try { sessionStorage.setItem('aic-rt-shown', '1'); } catch {}
     const last = byId[rv[0]];
     if (last) {
       const tip = document.createElement('div'); tip.className = 'recent-tip';
@@ -821,7 +822,6 @@ function card(c, i, rank) {
       <h3>${c.title}</h3>
       ${isOwned ? `<div class="card-prog-row"><div class="card-prog-bar"><div class="card-prog-fill" style="width:${pctDone}%"></div></div><span class="card-prog-txt">${pctDone}% 完成</span></div>` : `<div class="price">${c.origin > c.price ? `<span class="off">${pct(c)}%</span>` : ''}<span class="now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del>` : ''}</div>`}
       
-      ${c.ai ? '<div class="ai-summary"><span class="ai-tag">✦ AI 摘要</span>' + c.ai + '</div>' : ''}
     </div>
     <div class="card-hover"><h4>${c.title}</h4><ul>${hl.map(h => `<li>${h}</li>`).join('')}</ul><div class="card-hover-btns">${isOwned ? `<button class="ch-cart" style="background:var(--pri)">繼續學習 →</button>` : `<button class="ch-cart" data-addcart="${c.id}">加入購物車</button><button class="ch-wish" data-addwish="${c.id}">♡ 收藏</button>`}<button class="ch-cmp" data-addcmp="${c.id}">⚖ 比較</button><button class="ch-qp" data-qp="${c.id}">👁 預覽</button></div></div>
   </a>`;
@@ -1773,6 +1773,7 @@ function course() {
         <button class="btn btn-pri c-buy-pulse" data-buy>立即購買</button>
         <button class="btn btn-ghost" data-cart>加入購物車</button>
         <a class="btn btn-ghost c-preview-btn" href="player.html?id=${c.id}">▶ 免費試看 2 個單元</a>
+        ${(() => { const bs = (window.BUNDLES || []).filter(b => b.courses.includes(c.id)); if (!bs.length) return ''; return bs.map(b => { const items = b.courses.map(id => byId[id]).filter(Boolean); const sum = items.reduce((t, x) => t + x.price, 0); return `<div class="c-bdl-card"><div class="c-bdl-hd">💡 搭組合包更省</div><b>${b.name}</b><div class="c-bdl-list">${items.map(x => `<a href="course.html?id=${x.id}" class="${x.id === c.id ? 'cur' : ''}"><img src="${img(x)}" alt="" loading="lazy"><span>${x.title.split('：')[0]}${x.id === c.id ? '（本課）' : ''}</span></a>`).join('')}</div><div class="c-bdl-price"><span>組合價</span><b>${fmt(b.price)}</b>${sum > b.price ? `<del>${fmt(sum)}</del><em>省 ${fmt(sum - b.price)}</em>` : ''}</div><button class="btn btn-ghost c-bdl-add" type="button" data-bdl-add="${b.courses.join(',')}">整組加入購物車</button></div>`; }).join(''); })()}
       `}
       <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
       <div class="c-buy-feat"><span>🎬 無限期觀看</span><span>📄 附講義</span><span>📱 多裝置</span><span>🔄 免費更新</span></div>
@@ -1808,7 +1809,7 @@ function course() {
   <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">怎麼學</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a><a href="#plan">學習計畫</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
-      <div class="c-highlights rv-up">${(() => { const hl = (window.COURSE_HIGHLIGHTS || {})[c.id]; if (hl && hl.length) return hl.map(t => `<span class="c-hl c-hl-obj">✓ ${t}</span>`).join(''); const fallback = chapters.slice(0, 4).map(ch => ch.name); fallback.push(`${c.hours} 小時完整教學`, '附講義大綱'); return fallback.map(t => `<span class="c-hl">${t}</span>`).join(''); })()}</div>
+      <div class="c-highlights rv-up">${(() => { const hl = (window.COURSE_HIGHLIGHTS || {})[c.id]; if (hl && hl.length) return hl.map(t => `<span class="c-hl c-hl-obj">${t}</span>`).join(''); const fallback = chapters.slice(0, 4).map(ch => ch.name); fallback.push(`${c.hours} 小時完整教學`, '附講義大綱'); return fallback.map(t => `<span class="c-hl">${t}</span>`).join(''); })()}</div>
       <div class="points">
       ${[['01', '打好基礎', '從工具到觀念，建立紮實的底子，不再東學西湊。'], ['02', '職人流程', '學會業界真正的工作方法，效率與品質一次到位。'], ['03', '完成作品', '跟著做出完整專案，直接放進你的作品集。'], ['04', '持續精進', '加碼業界趨勢與 AI 工具應用，讓你保持競爭力。']].map((p, i) => `<div class="point rv-up" style="transition-delay:${i * 90}ms"><b class="grad-tx">${p[0]}</b><h3>${p[1]}</h3><p>${p[2]}</p></div>`).join('')}</div>
       ${(()=>{const lv=courseLevel(c);const targets=lv.label==='入門'?['完全沒有相關經驗的初學者','想轉職但不知從何開始的人','對這個領域有興趣，想建立系統性知識的人','希望有人帶著做，不想自己摸索的人']:lv.label==='進階'?['已有基礎，想提升到專業水準的人','想學業界實戰流程與技巧的人','需要完成作品集或升級技能的在職者','想接案或建立個人品牌的創作者']:['有一定基礎，想更深入學習的人','希望系統化整理知識的自學者','想學更多實務技巧的在職人士','準備升級技能、拓展職涯的人'];return `<div class="c-target rv-up"><h3>🎯 適合對象</h3><ul>${targets.map(t=>`<li>${t}</li>`).join('')}</ul></div>`;})()}

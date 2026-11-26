@@ -5200,3 +5200,21 @@ h1.plr-course-name{margin:0;font-weight:600;line-height:1.4}
 .adm-del:hover{color:#e5484d!important;border-color:#e5484d!important}
 @media (max-width:768px){.qa-answer{margin-left:16px}.wish-h1{font-size:24px}}
 .wish-item .wish-title{font-size:16px;line-height:1.4}.wish-item .wish-title b{font-size:16px;font-weight:700}
+/* ===== UI 對照好學校的修正 ===== */
+/* 課程頁：右側購買欄太長時，在欄內自己捲動，左邊不再留一大片空白 */
+@media (min-width:1101px){.buy{max-height:calc(100vh - var(--hdr) - 40px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}}
+/* 搜尋框加寬、更醒目 */
+@media (min-width:1280px){.search-btn{min-width:300px}}
+/* 首屏主視覺不要那麼暗 */
+.slide::after{background:linear-gradient(90deg,rgba(5,5,10,.72) 0%,rgba(5,5,10,.3) 45%,rgba(5,5,10,0) 100%),linear-gradient(0deg,var(--bg) 0%,transparent 30%)}
+/* 課程頁：組合包推薦卡 */
+.c-bdl-card{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card,var(--bg))}
+.c-bdl-hd{font-size:13px;color:#e8590c;font-weight:700;margin-bottom:4px}
+.c-bdl-card>b{display:block;font-size:15px;margin-bottom:8px}
+.c-bdl-list{display:flex;flex-direction:column;gap:6px;background:var(--bg2);border-radius:10px;padding:8px}
+.c-bdl-list a{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--tx);text-decoration:none}
+.c-bdl-list a.cur{font-weight:700}
+.c-bdl-list img{width:48px;height:30px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.c-bdl-price{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-top:10px;font-size:13px}
+.c-bdl-price b{font-size:20px}.c-bdl-price del{color:var(--tx3)}.c-bdl-price em{font-style:normal;color:#e8590c;font-weight:700}
+.buy .c-bdl-add{height:40px;font-size:14px;margin-top:8px}
