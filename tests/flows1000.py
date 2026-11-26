@@ -22,7 +22,7 @@ async def course_flow(b, c):
     ctx, pg, errs = await fresh(b); u = f'course.html?id={c["id"]}'
     try:
         await pg.goto(B + u); await pg.wait_for_timeout(900)
-        btn = pg.locator('button:has-text("加入購物車"):visible').first
+        btn = pg.locator('.buy [data-cart]:visible, button:has-text("加入購物車"):visible').first
         if not await btn.count(): bug('找不到加入購物車按鈕', '高', u, c['id']); return
         await btn.click(); await pg.wait_for_timeout(400)
         cart = await pg.evaluate("JSON.parse(localStorage.getItem('aic-cart')||'[]')")
@@ -102,7 +102,7 @@ async def misc(b):
         if r.status >= 400: bug('選單連結打不開', '高', 'index.html', h)
     # 結帳驗證
     await pg.goto(B + f'course.html?id={D["courses"][0]["id"]}'); await pg.wait_for_timeout(700)
-    await pg.locator('button:has-text("加入購物車"):visible').first.click()
+    await pg.locator('.buy [data-cart]:visible, button:has-text("加入購物車"):visible').first.click()
     await pg.goto(B + 'checkout.html'); await pg.wait_for_timeout(700)
     await pg.click('#ckSubmit'); await pg.wait_for_timeout(500)
     if await pg.evaluate("JSON.parse(localStorage.getItem('aic-orders')||'[]').length"): bug('空白表單也能送出', '高', 'checkout.html', '')

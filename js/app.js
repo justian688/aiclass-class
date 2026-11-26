@@ -1746,10 +1746,12 @@ function course() {
   main.innerHTML = `<div class="c-hero"><div class="wrap"><div class="c-grid">
     <div>
       <div class="crumb"><a href="index.html">首頁</a> › <a href="category.html?cat=${c.cat}">${cat.name}</a> › <span>${c.title}</span></div>
+      <div class="c-head">
+        ${c.tag ? `<span class="badge ${c.tag}" style="position:static;display:inline-block">${c.tag}</span>` : ''}
+        <h1 class="c-title">${c.title}</h1>
+        <div class="c-meta-row"><span class="c-meta-teacher">${c.teacher}</span><span class="card-rate c-meta-rate" data-rate="${c.id}"></span><span>⏱ ${c.hours} 小時</span><span>${(() => { const chs = (window.CHAPTERS || {})[c.id] || []; return chs.length + ' 章 ' + chs.reduce((t, x) => t + x.lessons.length, 0) + ' 單元'; })()}</span><span class="card-lvl ${courseLevel(c).cls}">${courseLevel(c).label}</span></div>
+      </div>
       <div class="c-video" id="preview"><video src="${vid(c)}" poster="${img(c)}" muted loop playsinline preload="metadata"></video><button class="play" aria-label="播放試看"><span>▶</span></button></div>
-      ${c.tag ? `<span class="badge ${c.tag}" style="position:static;display:inline-block;margin-top:24px">${c.tag}</span>` : ''}
-      <h1 class="c-title">${c.title}</h1>
-      <p class="c-sub">${c.teacher}・${c.role}　<span class="stars">${c.hours} 小時</span></p>
       ${c.desc ? `<p class="c-desc">${c.desc}</p>` : ''}
       ${(() => { const pids = (window.PREREQS || {})[c.id]; if (!pids || !pids.length) return ''; const pcs = pids.map(id => byId[id]).filter(Boolean); if (!pcs.length) return ''; return `<div class="c-prereq rv-up"><span class="c-prereq-label">📚 建議先修</span>${pcs.map(pc => `<a class="c-prereq-link" href="course.html?id=${pc.id}"><img src="${img(pc)}" alt="${pc.title}" loading="lazy" decoding="async"><span>${pc.title}</span></a>`).join('')}</div>`; })()}
       <div class="c-share rv-up">
@@ -1760,22 +1762,7 @@ function course() {
         <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — OKAI課程網')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="X 分享">𝕏 分享</a>
         ${navigator.share ? `<button class="c-share-btn" data-native-share title="更多分享方式">📤 分享</button>` : ''}
       </div>
-    </div>
-    <aside class="buy">
-      ${isOwned ? `
-        <div class="c-owned-badge">✓ 已購買</div>
-        ${(() => { const prog = progress[c.id]; const doneCnt = prog ? prog.done.length : 0; const pctDone = totalLessonCount > 0 ? Math.round(doneCnt / totalLessonCount * 100) : 0; const remain = totalLessonCount - doneCnt; const remMin = Math.round(remain * c.hours * 60 / totalLessonCount); return `<div class="c-owned-progress" id="side-prog"><div class="c-owned-bar"><div class="c-owned-fill" id="side-prog-fill" style="width:${pctDone}%"></div></div><span id="side-prog-txt">${pctDone}% 完成（${doneCnt}/${totalLessonCount}）</span>${remain > 0 ? `<div class="c-remain-time" id="side-remain">⏱ 預估剩餘 ${remMin >= 60 ? Math.floor(remMin/60) + ' 小時 ' + (remMin%60) + ' 分鐘' : remMin + ' 分鐘'}</div>` : `<div class="c-remain-time c-done-badge">🎉 已完成全部課程！</div>`}</div>`; })()}
-        <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">${progress[c.id] ? '繼續學習 →' : '開始上課 →'}</a>
-      ` : `
-        ${c.pro ? '<div class="c-pro-tag">👑 Pro 會員免費觀看</div>' : ''}
-        <div class="big">${fmt(c.price)}</div>
-        <div class="c-ptype">單次購買・非訂閱，不會自動扣款</div>
-        <button class="btn btn-pri c-buy-pulse" data-buy>立即購買</button>
-        <button class="btn btn-ghost" data-cart>加入購物車</button>
-        <a class="btn btn-ghost c-preview-btn" href="player.html?id=${c.id}">▶ 免費試看 2 個單元</a>
-        ${(() => { const bs = (window.BUNDLES || []).filter(b => b.courses.includes(c.id)); if (!bs.length) return ''; return bs.map(b => { const items = b.courses.map(id => byId[id]).filter(Boolean); const sum = items.reduce((t, x) => t + x.price, 0); return `<div class="c-bdl-card"><div class="c-bdl-hd">💡 搭組合包更省</div><b>${b.name}</b><div class="c-bdl-list">${items.map(x => `<a href="course.html?id=${x.id}" class="${x.id === c.id ? 'cur' : ''}"><img src="${img(x)}" alt="" loading="lazy"><span>${x.title.split('：')[0]}${x.id === c.id ? '（本課）' : ''}</span></a>`).join('')}</div><div class="c-bdl-price"><span>組合價</span><b>${fmt(b.price)}</b>${sum > b.price ? `<del>${fmt(sum)}</del><em>省 ${fmt(sum - b.price)}</em>` : ''}</div><button class="btn btn-ghost c-bdl-add" type="button" data-bdl-add="${b.courses.join(',')}">整組加入購物車</button></div>`; }).join(''); })()}
-      `}
-      <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
+      <div class="c-buyinfo rv-up">
       <div class="c-buy-feat"><span>🎬 無限期觀看</span><span>📄 附講義</span><span>📱 多裝置</span><span>🔄 免費更新</span></div>
       ${(()=>{const lv=courseLevel(c);const lvMap={'入門':1,'中階':2,'進階':3};const n=lvMap[lv.label]||2;const cls=n===1?'filled':n===2?'filled warn':'filled hard';return `<div class="c-difficulty"><span class="c-diff-label">課程難度</span><div class="c-diff-bars">${[1,2,3].map(i=>`<div class="c-diff-bar${i<=n?' '+cls:''}"></div>`).join('')}</div><span class="c-diff-text">${lv.label}</span></div>`;})()}
       <div class="c-buy-trust">
@@ -1804,9 +1791,25 @@ function course() {
         <li><b>退費：</b>開通後 7 天內、觀看進度低於 20%，可來信申請全額退費</li>
         <li><b>發票：</b>電子發票寄到你填寫的 Email，可開公司統編</li>
       </ul><a class="refund-link" href="terms.html#refund">完整退費規則 →</a></div>
+      </div>
+    </div>
+    <aside class="buy">
+      ${isOwned ? `
+        <div class="c-owned-badge">✓ 已購買</div>
+        ${(() => { const prog = progress[c.id]; const doneCnt = prog ? prog.done.length : 0; const pctDone = totalLessonCount > 0 ? Math.round(doneCnt / totalLessonCount * 100) : 0; const remain = totalLessonCount - doneCnt; const remMin = Math.round(remain * c.hours * 60 / totalLessonCount); return `<div class="c-owned-progress" id="side-prog"><div class="c-owned-bar"><div class="c-owned-fill" id="side-prog-fill" style="width:${pctDone}%"></div></div><span id="side-prog-txt">${pctDone}% 完成（${doneCnt}/${totalLessonCount}）</span>${remain > 0 ? `<div class="c-remain-time" id="side-remain">⏱ 預估剩餘 ${remMin >= 60 ? Math.floor(remMin/60) + ' 小時 ' + (remMin%60) + ' 分鐘' : remMin + ' 分鐘'}</div>` : `<div class="c-remain-time c-done-badge">🎉 已完成全部課程！</div>`}</div>`; })()}
+        <a class="btn btn-pri" href="player.html?id=${c.id}" style="width:100%;height:52px;font-size:16px">${progress[c.id] ? '繼續學習 →' : '開始上課 →'}</a>
+      ` : `
+        ${c.pro ? '<div class="c-pro-tag">👑 Pro 會員免費觀看</div>' : ''}
+        <div class="big">${fmt(c.price)}</div>
+        <div class="c-ptype">單次購買・非訂閱，不會自動扣款</div>
+        <div class="c-buy-row"><button class="btn btn-pri c-buy-pulse" data-buy>立即購買</button><button class="btn btn-ghost c-cart-ic" data-cart aria-label="加入購物車" title="加入購物車">🛒</button></div>
+        <a class="btn btn-ghost c-preview-btn" href="player.html?id=${c.id}">▶ 免費試看 2 個單元</a>
+        ${(() => { const bs = (window.BUNDLES || []).filter(b => b.courses.includes(c.id)); if (!bs.length) return ''; return bs.map(b => { const items = b.courses.map(id => byId[id]).filter(Boolean); const sum = items.reduce((t, x) => t + x.price, 0); return `<div class="c-bdl-card"><div class="c-bdl-hd">💡 搭組合包更省</div><b>${b.name}</b><div class="c-bdl-list">${items.map(x => `<a href="course.html?id=${x.id}" class="${x.id === c.id ? 'cur' : ''}"><img src="${img(x)}" alt="" loading="lazy"><span>${x.title.split('：')[0]}${x.id === c.id ? '（本課）' : ''}</span></a>`).join('')}</div><div class="c-bdl-price"><span>組合價</span><b>${fmt(b.price)}</b>${sum > b.price ? `<del>${fmt(sum)}</del><em>省 ${fmt(sum - b.price)}</em>` : ''}</div><button class="btn btn-ghost c-bdl-add" type="button" data-bdl-add="${b.courses.join(',')}">整組加入購物車</button></div>`; }).join(''); })()}
+      `}
+      <button class="btn btn-ghost wish ${wish.has(c.id) ? 'on' : ''}" data-wish="${c.id}" style="opacity:1;transform:none;position:static;width:100%;height:46px;border-radius:12px">${wish.has(c.id) ? '♥' : '♡'}</button>
     </aside>
   </div></div></div>
-  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#works">怎麼學</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#notes">筆記</a><a href="#qa">問答</a><a href="#faq">常見問題</a><a href="#changelog">更新日誌</a><a href="#plan">學習計畫</a></div></nav>
+  <nav class="tabs"><div class="wrap"><a href="#intro" class="on">課程介紹</a><a href="#curri">課程大綱</a><a href="#teacher">講師</a><a href="#reviews">評價</a><a href="#qa">問答</a><a href="#faq">常見問題</a></div></nav>
   <div class="wrap" style="max-width:1000px;margin-left:max(32px,calc((100vw - 1360px)/2 + 32px))">
     <section class="c-sec" id="intro"><h2 class="rv-up">這堂課你會學到</h2>
       <div class="c-highlights rv-up">${(() => { const hl = (window.COURSE_HIGHLIGHTS || {})[c.id]; if (hl && hl.length) return hl.map(t => `<span class="c-hl c-hl-obj">${t}</span>`).join(''); const fallback = chapters.slice(0, 4).map(ch => ch.name); fallback.push(`${c.hours} 小時完整教學`, '附講義大綱'); return fallback.map(t => `<span class="c-hl">${t}</span>`).join(''); })()}</div>

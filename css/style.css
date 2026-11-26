@@ -5218,3 +5218,22 @@ h1.plr-course-name{margin:0;font-weight:600;line-height:1.4}
 .c-bdl-price{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-top:10px;font-size:13px}
 .c-bdl-price b{font-size:20px}.c-bdl-price del{color:var(--tx3)}.c-bdl-price em{font-style:normal;color:#e8590c;font-weight:700}
 .buy .c-bdl-add{height:40px;font-size:14px;margin-top:8px}
+/* ===== 課程頁首屏：課名與重點資訊在影片上方（參考好學校的資訊順序） ===== */
+.c-head{margin:6px 0 16px}
+.c-head .c-title{font-size:clamp(24px,2.4vw,34px);font-weight:800;margin:8px 0 10px}
+.c-meta-row{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;color:var(--tx2);font-size:14px}
+.c-meta-teacher{font-weight:700;color:var(--tx)}
+.c-meta-rate{margin-left:0!important;font-size:14px}
+.c-meta-rate:empty{display:none}
+/* 購買欄只留價格與按鈕；其他資訊改放左欄 */
+.c-buyinfo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;align-items:start}
+.c-buyinfo>.c-buy-feat,.c-buyinfo>.c-difficulty,.c-buyinfo>.c-buy-trust,.c-buyinfo>.c-side-info{margin:0;grid-column:span 1}
+.c-buyinfo>.c-buy-feat{grid-column:1/-1}
+.c-buyinfo>.c-side-info{border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.c-buyinfo>.c-buy-trust{border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.c-buyinfo>.c-buy-terms{margin:0}
+@media (max-width:768px){.c-buyinfo{grid-template-columns:1fr}}
+.c-buy-row{display:flex;gap:8px;align-items:stretch}
+.c-buy-row .btn{margin-top:10px}
+.c-buy-row .c-buy-pulse{flex:1}
+.buy .c-buy-row .c-cart-ic{width:52px;flex:0 0 52px;padding:0;font-size:20px}
