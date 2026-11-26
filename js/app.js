@@ -151,6 +151,8 @@ function bundleDeal(ids) {
   return { off, hits };
 }
 function updateCartBadge() { const b = $('.cart-badge'); if (b) { b.textContent = cart.size || ''; b.style.display = cart.size ? 'flex' : 'none'; b.classList.remove('bounce'); void b.offsetWidth; b.classList.add('bounce'); } }
+/* 網頁上寫在標籤裡的按鈕（onclick）會用到，要放到全域 */
+Object.assign(window, { cart, saveCart, updateCartBadge });
 
 /* ---------- XP 經驗值系統 ---------- */
 const xpData = (() => { const d = ls('aic-xp', {total:0,log:[]}); return d; })();
@@ -615,7 +617,8 @@ function shell() {
     const closeMenu = () => { megaDrop.hidden = true; megaBtn.setAttribute('aria-expanded', 'false'); };
     megaWrap.addEventListener('mouseenter', () => { clearTimeout(hoverTimer); if (innerWidth > 760) openMenu(); });
     megaWrap.addEventListener('mouseleave', () => { hoverTimer = setTimeout(closeMenu, 200); });
-    megaBtn.onclick = () => { if (innerWidth <= 760) megaDrop.hidden ? openMenu() : closeMenu(); };
+    megaBtn.onclick = () => { if (innerWidth <= 760 || matchMedia('(hover:none)').matches) megaDrop.hidden ? openMenu() : closeMenu(); };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !megaDrop.hidden) closeMenu(); });
     document.addEventListener('click', e => { if (!megaDrop.hidden && !e.target.closest('.mega-wrap')) closeMenu(); });
     megaDrop.addEventListener('click', e => { if (e.target.closest('a')) closeMenu(); });
     megaBtn.addEventListener('keydown', e => {
@@ -4632,8 +4635,10 @@ function playerPage() {
   // Fullscreen
   $('#plr-fs').onclick = () => {
     const w = $('.plr-video-wrap');
-    if (document.fullscreenElement) document.exitFullscreen();
-    else w.requestFullscreen();
+    if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else if (w.requestFullscreen) w.requestFullscreen().catch(() => vid_el.webkitEnterFullscreen && vid_el.webkitEnterFullscreen());
+    else if (w.webkitRequestFullscreen) w.webkitRequestFullscreen();
+    else if (vid_el.webkitEnterFullscreen) vid_el.webkitEnterFullscreen(); /* iPhone 只能讓影片本身全螢幕 */
   };
 
   // PiP
@@ -4645,9 +4650,14 @@ function playerPage() {
   // Sidebar toggle + overlay
   const sidebar = $('#plr-sidebar');
   const sbOverlay = $('#plr-sb-overlay');
-  const toggleSb = () => { sidebar.classList.toggle('open'); sbOverlay.classList.toggle('on'); };
+  // 手機/平板的單元清單：打開時後面頁面不跟著滑；選了單元、點外面或按 Esc 都會關
+  const setSb = open => { sidebar.classList.toggle('open', open); sbOverlay.classList.toggle('on', open); document.documentElement.classList.toggle('plr-sb-lock', open && innerWidth <= 1100); };
+  const toggleSb = () => setSb(!sidebar.classList.contains('open'));
   $('.plr-sidebar-toggle').onclick = toggleSb;
-  sbOverlay.onclick = toggleSb;
+  sbOverlay.onclick = () => setSb(false);
+  sidebar.addEventListener('click', e => { if (innerWidth <= 1100 && e.target.closest('.plr-ls') && !e.target.closest('.plr-ls.locked')) setTimeout(() => setSb(false), 150); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && sidebar.classList.contains('open')) setSb(false); });
+  addEventListener('resize', () => { if (innerWidth > 1100) document.documentElement.classList.remove('plr-sb-lock'); });
 
   // Lesson nav below video
   $('#plr-nav-prev').onclick = () => {
@@ -4943,7 +4953,7 @@ function playerPage() {
     if (e.code === 'ArrowUp') { e.preventDefault(); vid_el.volume = Math.min(1, vid_el.volume + 0.1); volSlider.value = vid_el.volume; muteBtn.textContent = vid_el.volume === 0 ? '🔇' : '🔊'; }
     if (e.code === 'ArrowDown') { e.preventDefault(); vid_el.volume = Math.max(0, vid_el.volume - 0.1); volSlider.value = vid_el.volume; muteBtn.textContent = vid_el.volume === 0 ? '🔇' : '🔊'; }
     if (e.code === 'KeyM') { vid_el.muted = !vid_el.muted; muteBtn.textContent = vid_el.muted ? '🔇' : '🔊'; }
-    if (e.code === 'KeyF') { const w = $('.plr-video-wrap'); document.fullscreenElement ? document.exitFullscreen() : w.requestFullscreen(); }
+    if (e.code === 'KeyF') $('#plr-fs').click();
     if (e.code === 'KeyP') { if (vid_el.requestPictureInPicture) { document.pictureInPictureElement ? document.exitPictureInPicture() : vid_el.requestPictureInPicture(); } }
     if (e.code === 'KeyB') addBookmark();
     if (e.key === '?' || (e.shiftKey && e.code === 'Slash')) toggleSc();
@@ -4953,16 +4963,24 @@ function playerPage() {
   // Mini player on scroll
   const videoWrap = $('.plr-video-wrap');
   if (videoWrap) {
-    const miniObs = new IntersectionObserver(([entry]) => {
-      const mini = !entry.isIntersecting && !vid_el.paused;
+    // 觀察外層佔位框（不觀察影片本身），避免縮小後又判定「看得到」而一直閃、內容跳動
+    const vHold = document.createElement('div'); vHold.className = 'plr-vhold';
+    videoWrap.parentNode.insertBefore(vHold, videoWrap); vHold.append(videoWrap);
+    let vSeen = true;
+    const setMini = () => {
+      const mini = !vSeen && !vid_el.paused && !videoWrap.dataset.miniOff;
+      if (mini && !videoWrap.classList.contains('plr-mini')) vHold.style.height = vHold.offsetHeight + 'px';
+      if (!mini) vHold.style.height = '';
       videoWrap.classList.toggle('plr-mini', mini);
-    }, { threshold: 0.3 });
-    miniObs.observe(videoWrap);
+    };
+    const miniObs = new IntersectionObserver(([entry]) => { vSeen = entry.isIntersecting; setMini(); }, { threshold: 0.3 });
+    miniObs.observe(vHold);
+    vid_el.addEventListener('play', () => { delete videoWrap.dataset.miniOff; setMini(); });
     const miniClose = document.createElement('button');
     miniClose.className = 'plr-mini-close';
     miniClose.setAttribute('aria-label', '關閉迷你播放器');
     miniClose.textContent = '✕';
-    miniClose.onclick = () => { vid_el.pause(); videoWrap.classList.remove('plr-mini'); };
+    miniClose.onclick = () => { videoWrap.dataset.miniOff = '1'; vid_el.pause(); videoWrap.classList.remove('plr-mini'); vHold.style.height = ''; };
     videoWrap.append(miniClose);
   }
 
@@ -6207,7 +6225,12 @@ function searchPage() {
   };
 
   const sidebar = $('#srchSidebar');
-  $('#srchFilterToggle').onclick = () => sidebar.classList.toggle('open');
+  // 手機篩選面板：蓋滿整個畫面，要有「看結果」按鈕和 Esc 才關得掉；打開時後面不跟著滑
+  const setFilter = open => { sidebar.classList.toggle('open', open); document.documentElement.classList.toggle('plr-sb-lock', open && innerWidth <= 760); };
+  { const cb = document.createElement('button'); cb.type = 'button'; cb.className = 'btn btn-pri srch-close'; cb.textContent = '看篩選結果'; cb.onclick = () => { setFilter(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }; sidebar.append(cb); }
+  $('#srchFilterToggle').onclick = () => setFilter(!sidebar.classList.contains('open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && sidebar.classList.contains('open')) setFilter(false); });
+  addEventListener('resize', () => { if (innerWidth > 760) setFilter(false); });
 
   $$('.srch-trend', main).forEach(b => b.onclick = () => { inp.value = b.textContent; state.q = b.textContent; clearBtn.style.display = 'flex'; filter(); inp.focus(); });
 
@@ -7710,7 +7733,7 @@ function salePage() {
           <p class="sale-card-teacher">${c.teacher}</p>
           <div class="sale-card-meta"><span>⏱ ${c.hours}h</span></div>
           <div class="sale-card-price"><span class="sale-new">${fmt(salePrice)}</span><del>${fmt(c.origin)}</del><span class="sale-save">省 ${fmt(c.origin - salePrice)}</span></div>
-          <button class="btn btn-pri btn-sm" style="width:100%;margin-top:8px" onclick="event.preventDefault();toast('已加入購物車')">加入購物車</button>
+          <button class="btn btn-pri btn-sm" style="width:100%;margin-top:8px" onclick="event.preventDefault();event.stopPropagation();cart.add('${c.id}');saveCart();updateCartBadge();toast('已加入購物車 🛒')">加入購物車</button>
         </div>
       </a>`;
     }).join('')}</div>
@@ -7961,6 +7984,12 @@ function adminPage() {
   load();
 }
 
+/* 帶 #錨點 打開頁面時：前面內容（圖片、延後顯示的區塊）長出來後會把目標往下推，
+   所以在載入過程中再對準幾次；使用者一開始自己滑就不再干預 */
+{ let userMoved = false; ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(t => addEventListener(t, () => { userMoved = true; }, { passive: true }));
+  const settle = () => { if (userMoved || !location.hash || location.hash.length < 2) return; let t; try { t = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch {} if (t) t.scrollIntoView({ block: 'start', behavior: 'instant' }); };
+  const plan = () => [60, 400, 900, 1600, 2600].forEach(ms => setTimeout(settle, ms)); plan(); addEventListener('load', () => setTimeout(settle, 50));
+  addEventListener('hashchange', () => { userMoved = false; plan(); }); }
 if (page === 'home') home();
 else if (page === 'course') course();
 else if (page === 'event') noPromo();

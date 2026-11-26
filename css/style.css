@@ -5317,3 +5317,21 @@ section.sec{padding-top:72px}
 .sec-more:hover{text-decoration:underline}
 .cw-line{display:block;margin:0 12px 8px;padding:9px 12px;border-radius:10px;background:#06c755;color:#fff!important;font-weight:700;font-size:13px;text-align:center;text-decoration:none}
 .cw-line:hover{background:#05b34c}
+
+/* 平板/手機播放頁：整頁一起捲，不要外面一層、裡面一層兩段捲動 */
+@media(max-width:1100px){
+  [data-page="player"] .plr-wrap{height:auto;min-height:100vh;min-height:100dvh;overflow:visible}
+  [data-page="player"] .plr-body,[data-page="player"] .plr-main{overflow:visible}
+  [data-page="player"] .plr-hdr{position:sticky;top:0}
+}
+.plr-vhold{flex-shrink:0}
+html.plr-sb-lock,html.plr-sb-lock body{overflow:hidden}
+.plr-sb-panel{overscroll-behavior:contain}
+/* 結帳頁手機版：長金額按鈕不要把整頁撐寬（撐寬會讓整頁縮小、可以左右滑） */
+.ck-layout>*{min-width:0}
+@media(max-width:1100px){.ck-layout{grid-template-columns:minmax(0,1fr)}}
+.ck-submit{white-space:normal}
+.srch-close{display:none}
+@media(max-width:760px){.srch-sidebar.open{padding-bottom:84px;overscroll-behavior:contain}.srch-sidebar.open .srch-close{display:block;position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:91;width:auto}}
+/* 手機結帳：訂單明細不要做成裡面自己捲的小框（手指放上去會滑不動整頁） */
+@media(max-width:1100px){.ck-order-items{max-height:none;overflow:visible}}

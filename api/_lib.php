@@ -22,6 +22,7 @@ function admin_key() {
 }
 function is_admin($k) { $real = admin_key(); return is_string($k) && strlen($k) >= 16 && hash_equals($real, $k); }
 function rate_limit($name, $sec) {
+  if (getenv('OKAI_TEST') === '1' && PHP_SAPI === 'cli-server') return hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . 'okai'); /* 只在本機測試伺服器關掉 */
   global $ROOT; $ip = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . 'okai');
   $f = "$ROOT/.rate-$name.json"; $r = load($f); $now = time();
   if (isset($r[$ip]) && $now - $r[$ip] < $sec) out(429, ['ok' => false, 'error' => "太快了，請 $sec 秒後再試"]);
