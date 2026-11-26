@@ -493,7 +493,7 @@ function shell() {
     <div class="ft-brand"><svg style="height:30px;width:auto;margin-bottom:14px" viewBox="0 0 184 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OKAI課程網"><defs><linearGradient id="flg" x1="52" y1="4" x2="100" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset=".55" stop-color="#C45CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><text x="0" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-1.5" fill="var(--tx)">OK</text><g transform="translate(47 0) skewX(-10)"><text x="6" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-0.5" fill="url(#flg)">AI</text></g><path d="M93 2.5 L95 8.2 L100.7 10.2 L95 12.2 L93 17.9 L91 12.2 L85.3 10.2 L91 8.2 Z" fill="url(#flg)"/><circle cx="101.5" cy="3.5" r="1.6" fill="#FF5C8A"/><text x="106" y="30" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" font-size="15" font-weight="700" letter-spacing="1" fill="var(--tx2, #6e6e73)">課程網</text></svg><p>學 AI，學完就能用。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
       </div>
     <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
-    <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="wish.html">課程許願池</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
+    <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="https://line.me/R/ti/p/@410cjqjy" target="_blank" rel="noopener">LINE 客服 @410cjqjy</a></li><li><a href="wish.html">課程許願池</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
     </div>
   </div>
   
@@ -7104,6 +7104,12 @@ function contactPage() {
         <p><a href="mailto:hi@okaiclass.com">hi@okaiclass.com</a></p>
         <span>2 個工作天內回覆</span>
       </div>
+      <div class="ctc-ch">
+        <div class="ctc-ch-icon">💬</div>
+        <h3>LINE 客服</h3>
+        <p><a href="https://line.me/R/ti/p/@410cjqjy" target="_blank" rel="noopener">@410cjqjy</a></p>
+        <span>加好友後直接傳訊息</span>
+      </div>
       </div>
     </div>
     <section class="ctc-faq rv-up">
@@ -8342,6 +8348,7 @@ function openRecommendQuiz() {
         <div class="cw-msg cw-bot"><div class="cw-av">🤖</div><div class="cw-bub">你好！我是 OKAI課程網 智能客服 🎓<br>有什麼可以幫你的嗎？</div></div>
         <div class="cw-quick"><button data-cq="course">課程諮詢</button><button data-cq="refund">退費問題</button><button data-cq="tech">技術問題</button><button data-cq="other">其他問題</button></div>
       </div>
+      <a class="cw-line" href="https://line.me/R/ti/p/@410cjqjy" target="_blank" rel="noopener">在 LINE 找真人客服（@410cjqjy）</a>
       <div class="cw-foot"><input class="cw-input" placeholder="輸入訊息…" aria-label="聊天訊息"><button class="cw-send">送出</button></div>
     </div>`;
   document.body.append(cw);
@@ -8353,7 +8360,7 @@ function openRecommendQuiz() {
     course: `我們有 ${C.length} 堂 AI 課程，涵蓋 AI 開發、AI 繪圖、AI 影片、AI 行銷等主題。到<a href="category.html">分類頁</a>瀏覽，或告訴我你感興趣的方向！`,
     refund: '課程開通後 7 天內、觀看進度低於 20%，可申請全額退費。到<a href="order-history.html">訂單紀錄</a>按「申請退款」，或寄信到 hi@okaiclass.com。',
     tech: '影片無法播放時，先按播放器上的「重新載入」；還是不行，請按播放器下方的「回報影片或內容問題」，會自動帶入課程與單元資訊給我們。',
-    other: '你也可以：<br>• <a href="faq.html">常見問題</a><br>• <a href="contact.html">聯繫客服</a><br>• 寄信到 hi@okaiclass.com'
+    other: '你也可以：<br>• <a href="https://line.me/R/ti/p/@410cjqjy" target="_blank" rel="noopener">加 LINE 找真人客服</a><br>• <a href="faq.html">常見問題</a><br>• 寄信到 hi@okaiclass.com'
   };
   function cwAddMsg(text, bot) { const d = document.createElement('div'); d.className = 'cw-msg ' + (bot ? 'cw-bot' : 'cw-user'); d.innerHTML = bot ? `<div class="cw-av">🤖</div><div class="cw-bub">${text}</div>` : `<div class="cw-bub">${escH(text)}</div>`; const q = cwBody.querySelector('.cw-quick'); if (q) q.remove(); cwBody.append(d); cwBody.scrollTop = cwBody.scrollHeight; }
   function cwBot(text) { const t = document.createElement('div'); t.className = 'cw-msg cw-bot cw-typing'; t.innerHTML = '<div class="cw-av">🤖</div><div class="cw-bub"><span class="cw-dots"><i></i><i></i><i></i></span></div>'; cwBody.append(t); cwBody.scrollTop = cwBody.scrollHeight; setTimeout(() => { t.remove(); cwAddMsg(text, true); }, 800 + Math.random() * 500); }
