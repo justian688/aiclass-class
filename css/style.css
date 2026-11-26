@@ -5303,3 +5303,15 @@ img{background-color:var(--bg2)}
 .logo img,.ic img,img[src$=".svg"]{background-color:transparent}
 /* 11. 區塊間距加大一點，比較好讀 */
 section.sec{padding-top:72px}
+/* 載入中：灰色骨架畫面 */
+.skel{display:flex;flex-direction:column;gap:16px;padding:8px 0}
+.skel-row{display:flex;gap:12px;align-items:flex-start}.skel-row>div{flex:1;display:flex;flex-direction:column;gap:8px}
+.skel-av,.skel-l{display:block;background:linear-gradient(90deg,var(--bg2) 25%,var(--line) 50%,var(--bg2) 75%);background-size:200% 100%;animation:skelMove 1.2s ease infinite;border-radius:8px}
+.skel-av{width:36px;height:36px;border-radius:50%;flex-shrink:0}
+.skel-l{height:12px}.skel-l.w30{width:30%}.skel-l.w40{width:40%}.skel-l.w50{width:50%}.skel-l.w70{width:70%}.skel-l.w80{width:80%}.skel-l.w90{width:90%}
+@keyframes skelMove{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel-av,.skel-l{animation:none}}
+/* 區塊右上角「看更多」 */
+.sec-head .more{display:flex;align-items:center;gap:8px}
+.sec-more{font-size:14px;font-weight:700;color:var(--pri);margin-right:6px;white-space:nowrap}
+.sec-more:hover{text-decoration:underline}

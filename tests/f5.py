@@ -47,7 +47,7 @@ async def m():
     done=await pg.evaluate("localStorage.getItem('aic-progress')"); ok('看到 90% 以上才記錄完成',done and '2-1' in done,done)
     # ---------- 課程頁 / 結帳 / 訂單 ----------
     await pg.evaluate("localStorage.clear()")
-    await go('course.html?id=c47'); t=await pg.inner_text('body')
+    await go('course.html?id=c47'); t=await pg.evaluate('document.body.textContent')
     for k in ['單次購買・非訂閱','購買前請先了解','怎麼學','課程維護方式']: ok('課程頁：'+k,k in t)
     ok('課程頁：可能不適合', await pg.locator('.c-notfor').count()==1)
     for k in ['人正在瀏覽','超高評價','周**','v3.2','學員完成率']: ok('課程頁無假資料：'+k,k not in t)

@@ -1,5 +1,5 @@
-const CACHE = 'aic-v180';
-const STATIC = ['/offline.html', '/404.html', '/css/style.css', '/js/data.js', '/js/app.js', '/manifest.json', '/assets/favicon.svg'];
+const CACHE = 'aic-v181';
+const STATIC = ['/offline.html', '/404.html', '/css/style.min.css', '/js/data.min.js', '/js/app.min.js', '/manifest.json', '/assets/favicon.svg'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));

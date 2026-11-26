@@ -952,7 +952,7 @@ function bindRail(sec) {
 function railSec(id, title, sub, list, rank) {
   return `<section class="sec" id="${id}"><div class="wrap">
     <div class="sec-head rv-up"><div><h2>${title}</h2>${sub ? `<div class="sub">${sub}</div>` : ''}</div>
-    <div class="more"><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
+    <div class="more"><a class="sec-more" href="category.html">看更多 ›</a><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
     <div class="rail ${rank ? 'rank' : ''}">${list.map((c, i) => card(c, i, rank)).join('')}</div></div></section>`;
 }
 
@@ -1167,7 +1167,7 @@ function home() {
   if (false) main.insertAdjacentHTML('beforeend', `<section class="sec" id="top10"><div class="wrap">
     <div class="sec-head rv-up"><div><h2>TOP 10 排行</h2><div class="sub">學員最多人選的課程</div></div>
     <div class="time-tabs"><button class="time-tab on" data-period="realtime">即時排行</button><button class="time-tab" data-period="weekly">本週排行</button><button class="time-tab" data-period="monthly">本月排行</button></div>
-    <div class="more"><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
+    <div class="more"><a class="sec-more" href="category.html">看更多 ›</a><button class="circle" aria-label="上一頁">←</button><button class="circle" aria-label="下一頁">→</button></div></div>
     <div class="rail rank">${sortBy('students').slice(0, 10).map((c, i) => card(c, i, true)).join('')}</div></div></section>`);
 
   const mqWords = window.CATS.slice(1).map(c => c.name.split('/')[0]).concat(['ChatGPT','AI Agent','學習','作品集']);
@@ -1894,7 +1894,7 @@ function course() {
     </section>
     <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span class="crv-avg" id="crv-avg"></span></h2>
       <p class="crv-note">評價由學員自己填寫，我們不會修改內容。</p>
-      <div class="crv-list" id="crv-list" aria-live="polite"><p class="crv-empty">載入評價中…</p></div>
+      <div class="crv-list" id="crv-list" aria-live="polite"><div class="skel" aria-label="載入中"><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w40"></i><i class="skel-l w90"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w30"></i><i class="skel-l w70"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w50"></i><i class="skel-l w80"></i></div></div></div></div>
       ${owned.has(c.id) ? '' : '<p class="crv-locked">開通課程後就能寫評價，確保每則評價都來自真正上過課的學員。</p>'}
       <form class="crv-form" id="crv-form" autocomplete="off" ${owned.has(c.id) ? '' : 'hidden'}>
         <h3>寫下你的評價</h3>
@@ -1913,7 +1913,7 @@ function course() {
         <textarea class="qa-input" maxlength="1000" placeholder="還沒買也可以問：適不適合我？要準備什麼？講師會公開回覆" rows="3" aria-label="發問"></textarea>
         <div class="qa-post-foot"><span class="qa-hint">問題和回覆都會公開，其他人也看得到</span><button class="btn btn-pri btn-sm qa-submit">送出問題</button></div>
       </div>
-      <div class="qa-list"><p class="qa-empty">載入提問中…</p></div>
+      <div class="qa-list"><div class="skel" aria-label="載入中"><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w40"></i><i class="skel-l w90"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w30"></i><i class="skel-l w70"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w50"></i><i class="skel-l w80"></i></div></div></div></div>
       ${(() => { const cp = (window.COMMUNITY_POSTS || []).filter(p => p.course === c.id); if (!cp.length) return ''; return `<div class="qa-community rv-up"><h3>🌐 社群討論</h3><p class="qa-community-sub">來自學習社群的相關討論</p>${cp.map(p => `<a class="qa-cp-card" href="blog.html"><div class="qa-cp-head"><span class="qa-cp-avatar">${p.avatar}</span><b>${p.author}</b><span class="qa-cp-time">${p.time}</span></div><h4>${p.title}</h4><p>${p.content.length > 80 ? p.content.slice(0,80) + '…' : p.content}</p><div class="qa-cp-meta"><span>❤ ${p.likes}</span><span>💬 ${p.replies} 回覆</span>${(p.tags||[]).map(t => `<span class="qa-cp-tag">${t}</span>`).join('')}</div></a>`).join('')}<a href="blog.html" class="btn btn-ghost" style="width:100%;margin-top:12px">前往社群看更多 →</a></div>`; })()}
     </section>
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}<div class="faq-more rv-up"><p>找不到你要的答案？</p><a href="faq.html" class="btn btn-ghost">前往幫助中心</a> <button class="btn btn-ghost" onclick="document.querySelector('.cw-fab')&&document.querySelector('.cw-fab').click()">💬 聯繫客服</button></div></section>
@@ -4481,7 +4481,7 @@ function playerPage() {
             <textarea id="plr-cm-text" maxlength="1000" rows="3" placeholder="對這個單元有問題或心得？留言給講師和同學（2～1000 字）" aria-label="留言內容"></textarea>
             <div class="plr-cm-foot"><span class="plr-cm-hint">留言會公開顯示，請勿留下電話、地址等個人資料</span><span class="plr-cm-count" id="plr-cm-count">0 / 1000</span><button class="btn btn-pri btn-sm" type="submit" id="plr-cm-send">送出留言</button></div>
           </form>
-          <div class="plr-cm-list" id="plr-cm-list" aria-live="polite"><p class="plr-cm-empty">載入留言中…</p></div>
+          <div class="plr-cm-list" id="plr-cm-list" aria-live="polite"><div class="skel" aria-label="載入中"><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w40"></i><i class="skel-l w90"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w30"></i><i class="skel-l w70"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w50"></i><i class="skel-l w80"></i></div></div></div></div>
         </section>
       <div class="plr-shortcuts-overlay" id="plr-shortcuts" hidden role="dialog" aria-modal="true" aria-label="鍵盤快捷鍵">
         <div class="plr-shortcuts-panel">
@@ -4761,7 +4761,7 @@ function playerPage() {
     if (tabA) tabA.textContent = `全部留言（${roots.length}）`;
     const ab = $('#plr-cm-admin'); if (ab) ab.hidden = !cmAdmin;
     cmList.innerHTML = '';
-    if (!cmLoaded) { cmList.innerHTML = '<p class="plr-cm-empty">載入留言中…</p>'; return; }
+    if (!cmLoaded) { cmList.innerHTML = '<div class="skel" aria-label="載入中"><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w40"></i><i class="skel-l w90"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w30"></i><i class="skel-l w70"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w50"></i><i class="skel-l w80"></i></div></div></div>'; return; }
     if (!items.length) { cmList.innerHTML = `<p class="plr-cm-empty">${cmMode === 'lesson' ? '這個單元還沒有留言，來當第一個發問的人吧！' : '這門課還沒有留言。'}</p>`; return; }
     items.forEach(x => {
       cmList.append(cmItem(x, false));
@@ -7852,7 +7852,7 @@ function wishPage() {
       <input name="website" tabindex="-1" class="plr-cm-hp" aria-hidden="true" autocomplete="off">
       <button class="btn btn-pri" type="submit" id="wish-send">許願</button>
     </form>
-    <div class="wish-list" id="wish-list"><p class="crv-empty">載入中…</p></div>
+    <div class="wish-list" id="wish-list"><div class="skel" aria-label="載入中"><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w40"></i><i class="skel-l w90"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w30"></i><i class="skel-l w70"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w50"></i><i class="skel-l w80"></i></div></div></div></div>
   </div></section>`;
   const list = $('#wish-list');
   const render = items => {
@@ -7887,7 +7887,7 @@ function adminPage() {
     <div id="adm-login" ${key ? 'hidden' : ''}><p>請貼上講師金鑰（在 cPanel 的 okaiclass_data/admin_key.txt）。金鑰只存在這台裝置。</p><input id="adm-key" placeholder="講師金鑰" autocomplete="off"><button class="btn btn-pri btn-sm" id="adm-go" type="button">進入</button></div>
     <div id="adm-main" ${key ? '' : 'hidden'}>
       <div class="plr-cm-tabs adm-tabs">${[['cm', '留言／問答'], ['rv', '評價'], ['hw', '作業'], ['ws', '許願池']].map(([k, n], i) => `<button class="plr-cm-tab ${i ? '' : 'on'}" data-adm="${k}" type="button">${n} <span id="adm-n-${k}"></span></button>`).join('')}<button class="plr-cm-tab" id="adm-out" type="button" style="margin-left:auto">登出</button></div>
-      <div id="adm-list" class="adm-list"><p class="crv-empty">載入中…</p></div>
+      <div id="adm-list" class="adm-list"><div class="skel" aria-label="載入中"><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w40"></i><i class="skel-l w90"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w30"></i><i class="skel-l w70"></i></div></div><div class="skel-row"><i class="skel-av"></i><div><i class="skel-l w50"></i><i class="skel-l w80"></i></div></div></div></div>
     </div>
   </div></section>`;
   $('#adm-go').onclick = () => { const k = $('#adm-key').value.trim(); if (k.length < 16) { toast('金鑰格式不對', 'error'); return; } ss('aic-admin-key', k); location.reload(); };

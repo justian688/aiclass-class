@@ -49,7 +49,7 @@ async def setup_ctx(b, mobile=False, owned=(), extra=True):
     if extra:
         async def data_route(route):
             r = await route.fetch(); body = await r.text(); await route.fulfill(response=r, body=body + EXTRA)
-        await ctx.route('**/js/data.js*', data_route)
+        await ctx.route('**/js/data*.js*', data_route)
 
     return ctx
 

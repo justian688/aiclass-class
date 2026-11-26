@@ -18,7 +18,7 @@ async def m():
     ctx=await b.new_context(viewport={'width':1366,'height':900})
     async def data_route(route):
       r=await route.fetch(); body=await r.text(); await route.fulfill(response=r, body=body+EXTRA)
-    await ctx.route('**/js/data.js*', data_route)
+    await ctx.route('**/js/data*.js*', data_route)
     vids={'1-1':'/tmp/upl/lesson1.mp4','1-2':'/tmp/upl/lesson2.mp4','2-1':'/tmp/upl/lesson3.mp4'}
     async def vid_route(route):
       k=route.request.url.split('/c99/')[1].replace('.mp4','')
