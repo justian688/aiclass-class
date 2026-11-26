@@ -3,8 +3,11 @@
 window.dataLayer = window.dataLayer || [];
 function gtag() { dataLayer.push(arguments); }
 gtag('js', new Date());
-const GA_ID = 'G-XXXXXXXXXX'; // 換成真的 GA4 評估 ID 才會啟用
-if (!/X{6}/.test(GA_ID)) gtag('config', GA_ID, { send_page_view: false });
+const GA_ID = 'G-QK2TKQM91G'; // OKAI課程網 的 GA4 評估 ID（Google Analytics → 網軍行銷 wgs.tw 帳戶 → OKAI課程網 okaiclass.com 資源）
+if (!/X{6}/.test(GA_ID) && /(^|\.)okaiclass\.com$/.test(location.hostname)) {
+  gtag('config', GA_ID, { send_page_view: false });
+  const gs = document.createElement('script'); gs.async = true; gs.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID; document.head.appendChild(gs);
+}
 window.trackEvent = (name, params) => { if (typeof gtag === 'function') gtag('event', name, params); };
 
 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
