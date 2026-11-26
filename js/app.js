@@ -1788,7 +1788,7 @@ function course() {
         <button class="c-share-btn" data-copy-link title="複製連結">📋 複製連結</button>
         <a class="c-share-line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="LINE 分享">💬 LINE</a>
         <a class="c-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="Facebook 分享">📘 Facebook</a>
-        <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — OKAI課程網')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="X 分享">𝕏 分享</a>
+        <a class="c-share-x" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(c.title + ' — OKAI課程網')}&url=${encodeURIComponent(location.href)}" target="_blank" rel="noopener noreferrer" title="X 分享"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l16 16M20 4L4 20"/></svg></span>X</a>
         ${navigator.share ? `<button class="c-share-btn" data-native-share title="更多分享方式">📤 分享</button>` : ''}
       </div>
       <div class="c-buyinfo rv-up">
