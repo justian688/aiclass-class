@@ -12,5 +12,7 @@ Disallow: /settings.html
 Disallow: /notebook.html
 Disallow: /certificate.html
 Disallow: /report.html
+Disallow: /admin.html
+Disallow: /api/
 
 Sitemap: https://okaiclass.com/sitemap.xml

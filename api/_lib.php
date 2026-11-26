@@ -39,3 +39,14 @@ function locked_update($file, $fn) {
   flock($fp, LOCK_UN); fclose($fp);
   return $res;
 }
+
+/* 新訊息寄信給講師。收件信箱寫在 okaiclass_data/notify_email.txt（沒有就用 service@wgs.tw） */
+function notify($subject, $body) {
+  global $ROOT; $f = "$ROOT/notify_email.txt";
+  if (!is_file($f)) @file_put_contents($f, 'service@wgs.tw');
+  $to = trim((string)@file_get_contents($f)); if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return;
+  $headers = "From: OKAI課程網 <noreply@okaiclass.com>\r\nContent-Type: text/plain; charset=UTF-8\r\n";
+  @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body . "\n\n— 到講師後台處理：https://okaiclass.com/admin.html", $headers);
+}
+function need_admin($k) { if (!is_admin($k)) out(403, ['ok' => false, 'error' => '需要講師金鑰']); }
+function course_files($dir) { $r = []; foreach (glob("$dir/c*.json") ?: [] as $f) $r[basename($f, '.json')] = $f; return $r; }

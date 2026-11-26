@@ -9,6 +9,13 @@ require __DIR__ . '/_lib.php';
 $DATA = "$ROOT/comments"; if (!is_dir($DATA)) @mkdir($DATA, 0700, true);
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
+if ($method === 'GET' && isset($_GET['recent'])) {   // 講師後台：所有課程最新留言
+  need_admin($_GET['key'] ?? '');
+  $all = [];
+  foreach (course_files($DATA) as $cid => $f) foreach (load($f) as $x) { $x['course'] = $cid; $all[] = $x; }
+  usort($all, fn($a, $b) => ($b['t'] ?? 0) <=> ($a['t'] ?? 0));
+  out(200, ['ok' => true, 'items' => array_slice($all, 0, 400)]);
+}
 if ($method === 'GET') {
   $course = $_GET['course'] ?? '';
   if (!preg_match('/^c\d{1,4}$/', $course)) out(400, ['ok' => false, 'error' => '課程代號不正確']);
@@ -47,4 +54,5 @@ $item = ['id' => bin2hex(random_bytes(6)), 'lesson' => $lesson, 'name' => $name,
 if ($parent) $item['parent'] = $parent;
 if ($admin) $item['teacher'] = true;
 locked_update("$DATA/$course.json", function (&$list) use ($item) { $list[] = $item; if (count($list) > 3000) $list = array_slice($list, -3000); });
+if (!$admin) notify("【OKAI 新留言】$course 單元 $lesson", "$name 說：\n$text");
 out(200, ['ok' => true, 'item' => $item]);

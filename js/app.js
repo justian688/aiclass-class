@@ -26,6 +26,23 @@ document.addEventListener('error', e => { if (e.target.tagName === 'IMG' && !e.t
 const page = document.body.dataset.page;
 const ls = (key, fallback) => { try { const v = localStorage.getItem(key); if (v == null) return fallback; try { return JSON.parse(v); } catch { return v; } } catch { return fallback; } };
 const ss = (key, val) => { try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {} };
+
+/* ---------- 共用：呼叫主機 API ---------- */
+const apiGet = u => fetch(u, { cache: 'no-store' }).then(r => r.json());
+const apiPost = (u, data) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json());
+const agoTxt = t => { const m = Math.floor((Date.now() / 1000 - t) / 60); if (m < 1) return '剛剛'; if (m < 60) return m + ' 分鐘前'; const h = Math.floor(m / 60); if (h < 24) return h + ' 小時前'; const d = Math.floor(h / 24); return d < 30 ? d + ' 天前' : new Date(t * 1000).toLocaleDateString('zh-TW'); };
+const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+/* 課程卡顯示真實評價星等 */
+(() => {
+  let rates = null;
+  const paint = () => { if (!rates) return; document.querySelectorAll('[data-rate]:not([data-rated])').forEach(el => { el.dataset.rated = '1'; const r = rates[el.dataset.rate]; if (r) el.textContent = `★ ${r.avg.toFixed(1)}（${r.count}）`; }); };
+  const load = () => {
+    try { const c = JSON.parse(sessionStorage.getItem('aic-rates') || 'null'); if (c && Date.now() - c.t < 600000) { rates = c.d; paint(); return; } } catch {}
+    apiGet('api/reviews.php?summary=1').then(j => { if (j.ok) { rates = j.courses || {}; try { sessionStorage.setItem('aic-rates', JSON.stringify({ t: Date.now(), d: rates })); } catch {} paint(); } }).catch(() => {});
+  };
+  if (location.protocol !== 'file:') { document.addEventListener('DOMContentLoaded', load); let tm; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(paint, 200); }).observe(document.documentElement, { childList: true, subtree: true }); }
+})();
 /* ---------- 跨裝置同步（同步碼，存在主機 /api/sync.php） ---------- */
 const SYNC_SKIP = /^aic-(sync-|admin-key|cart-ts)/;
 function syncSnapshot() { const d = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('aic-') && !SYNC_SKIP.test(k)) d[k] = localStorage.getItem(k); } } catch {} return d; }
@@ -444,7 +461,7 @@ function shell() {
     <div class="ft-brand"><svg style="height:30px;width:auto;margin-bottom:14px" viewBox="0 0 184 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OKAI課程網"><defs><linearGradient id="flg" x1="52" y1="4" x2="100" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7C5CFF"/><stop offset=".55" stop-color="#C45CFF"/><stop offset="1" stop-color="#FF5C8A"/></linearGradient></defs><text x="0" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-1.5" fill="var(--tx)">OK</text><g transform="translate(47 0) skewX(-10)"><text x="6" y="32" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="32" font-weight="900" letter-spacing="-0.5" fill="url(#flg)">AI</text></g><path d="M93 2.5 L95 8.2 L100.7 10.2 L95 12.2 L93 17.9 L91 12.2 L85.3 10.2 L91 8.2 Z" fill="url(#flg)"/><circle cx="101.5" cy="3.5" r="1.6" fill="#FF5C8A"/><text x="106" y="30" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" font-size="15" font-weight="700" letter-spacing="1" fill="var(--tx2, #6e6e73)">課程網</text></svg><p>學 AI，學完就能用。<br>線上課程無限期觀看，隨時隨地開始學習。</p>
       </div>
     <div class="ft-col"><h4 class="ft-col-hd">學習資源<i class="ft-arrow">›</i></h4><ul><li><a href="index.html">探索課程</a></li><li><a href="blog.html">學習專欄</a></li><li><a href="skillmap.html">技能地圖</a></li></ul></div>
-    <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
+    <div class="ft-col"><h4 class="ft-col-hd">幫助中心<i class="ft-arrow">›</i></h4><ul><li><a href="faq.html">常見問題</a></li><li><a href="wish.html">課程許願池</a></li><li><a href="terms.html">服務條款</a></li><li><a href="privacy.html">隱私權政策</a></li><li><a href="about.html">關於我們</a></li><li><a href="teach.html">成為講師</a></li><li><a href="enterprise.html">企業方案</a></li></ul></div>
     </div>
   </div>
   
@@ -799,7 +816,7 @@ function card(c, i, rank) {
       ${!isOwned ? '<span class="card-free">▶ 可試看</span>' : ''}
     </div></div>
     <div class="meta">
-      <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-eta">約 ${lv.weeks} 週完成</span></div>
+      <div class="card-tags"><span class="card-lvl ${lv.cls}">${lv.label}</span><span class="card-eta">約 ${lv.weeks} 週完成</span><span class="card-rate" data-rate="${c.id}"></span></div>
       <div class="teacher">${c.teacher}</div>
       <h3>${c.title}</h3>
       ${isOwned ? `<div class="card-prog-row"><div class="card-prog-bar"><div class="card-prog-fill" style="width:${pctDone}%"></div></div><span class="card-prog-txt">${pctDone}% 完成</span></div>` : `<div class="price">${c.origin > c.price ? `<span class="off">${pct(c)}%</span>` : ''}<span class="now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del>` : ''}</div>`}
@@ -1845,7 +1862,8 @@ function course() {
     <section class="c-sec" id="reviews"><h2 class="rv-up">學員評價 <span class="crv-avg" id="crv-avg"></span></h2>
       <p class="crv-note">評價由學員自己填寫，我們不會修改內容。</p>
       <div class="crv-list" id="crv-list" aria-live="polite"><p class="crv-empty">載入評價中…</p></div>
-      <form class="crv-form" id="crv-form" autocomplete="off">
+      ${owned.has(c.id) ? '' : '<p class="crv-locked">開通課程後就能寫評價，確保每則評價都來自真正上過課的學員。</p>'}
+      <form class="crv-form" id="crv-form" autocomplete="off" ${owned.has(c.id) ? '' : 'hidden'}>
         <h3>寫下你的評價</h3>
         <div class="crv-stars" role="radiogroup" aria-label="評分">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="crv-star" data-star="${n}" role="radio" aria-checked="false" aria-label="${n} 顆星">☆</button>`).join('')}</div>
         <input id="crv-name" maxlength="20" placeholder="你的暱稱（可留空）" aria-label="暱稱" value="${aicUser ? aicUser.name || '' : ''}">
@@ -1858,10 +1876,11 @@ function course() {
     ${notesWidget(c.id)}
     <section class="c-sec" id="qa"><h2 class="rv-up">💬 課程提問</h2>
       <div class="qa-post rv-up">
-        <textarea class="qa-input" placeholder="輸入你的問題，送出後會開啟 Email 寄給講師團隊…" rows="3" aria-label="發問"></textarea>
-        <div class="qa-post-foot"><span class="qa-hint">提問前請先搜尋是否已有相似問題</span><button class="btn btn-pri btn-sm qa-submit">送出問題</button></div>
+        <input class="qa-name" maxlength="20" placeholder="你的暱稱（可留空）" aria-label="暱稱" value="${aicUser ? escH(aicUser.name || '') : ''}">
+        <textarea class="qa-input" maxlength="1000" placeholder="還沒買也可以問：適不適合我？要準備什麼？講師會公開回覆" rows="3" aria-label="發問"></textarea>
+        <div class="qa-post-foot"><span class="qa-hint">問題和回覆都會公開，其他人也看得到</span><button class="btn btn-pri btn-sm qa-submit">送出問題</button></div>
       </div>
-      <div class="qa-list"><p class="qa-empty rv-up">目前還沒有公開提問。送出的問題會寄到 hi@okaiclass.com，由講師團隊回覆到你的 Email。</p></div>
+      <div class="qa-list"><p class="qa-empty">載入提問中…</p></div>
       ${(() => { const cp = (window.COMMUNITY_POSTS || []).filter(p => p.course === c.id); if (!cp.length) return ''; return `<div class="qa-community rv-up"><h3>🌐 社群討論</h3><p class="qa-community-sub">來自學習社群的相關討論</p>${cp.map(p => `<a class="qa-cp-card" href="blog.html"><div class="qa-cp-head"><span class="qa-cp-avatar">${p.avatar}</span><b>${p.author}</b><span class="qa-cp-time">${p.time}</span></div><h4>${p.title}</h4><p>${p.content.length > 80 ? p.content.slice(0,80) + '…' : p.content}</p><div class="qa-cp-meta"><span>❤ ${p.likes}</span><span>💬 ${p.replies} 回覆</span>${(p.tags||[]).map(t => `<span class="qa-cp-tag">${t}</span>`).join('')}</div></a>`).join('')}<a href="blog.html" class="btn btn-ghost" style="width:100%;margin-top:12px">前往社群看更多 →</a></div>`; })()}
     </section>
     <section class="c-sec" id="faq"><h2 class="rv-up">常見問題</h2>${courseFaq.map(q => `<div class="qa rv-up"><button>${q[0]}<i>+</i></button><div class="a"><div><p>${q[1]}</p></div></div></div>`).join('')}<div class="faq-more rv-up"><p>找不到你要的答案？</p><a href="faq.html" class="btn btn-ghost">前往幫助中心</a> <button class="btn btn-ghost" onclick="document.querySelector('.cw-fab')&&document.querySelector('.cw-fab').click()">💬 聯繫客服</button></div></section>
@@ -1953,7 +1972,9 @@ function course() {
         const b = document.createElement('b'); b.textContent = x.name || '學員';
         const st = document.createElement('span'); st.className = 'crv-st'; st.textContent = '★'.repeat(x.stars) + '☆'.repeat(5 - x.stars);
         const d = document.createElement('span'); d.className = 'crv-date'; d.textContent = new Date(x.t * 1000).toLocaleDateString('zh-TW');
-        h.append(b, st, d); const p = document.createElement('p'); p.textContent = x.text; it.append(h, p); list.append(it);
+        h.append(b, st, d); const p = document.createElement('p'); p.textContent = x.text; it.append(h, p);
+        if (x.reply) { const rp = mk('div', 'crv-reply'); const rh = mk('div', 'crv-reply-head'); rh.append(mk('span', 'plr-cm-badge', '講師回覆'), mk('span', 'crv-date', x.rt ? new Date(x.rt * 1000).toLocaleDateString('zh-TW') : '')); rp.append(rh, mk('p', '', x.reply)); it.append(rp); }
+        list.append(it);
       });
     };
     const load = () => fetch('api/reviews.php?course=' + c.id, { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject()).then(render).catch(() => { list.innerHTML = '<p class="crv-empty">評價暫時載入不了，請稍後重新整理。</p>'; });
@@ -2218,18 +2239,37 @@ function course() {
   bindUserReview(c.id, main);
 
   // Q&A bindings
-  const qaSubmit = $('.qa-submit', main);
-  if (qaSubmit) qaSubmit.onclick = () => {
-    const ta = $('.qa-input', main), txt = ta.value.trim();
-    if (!txt) { toast('請輸入問題內容'); return; }
-    location.href = 'mailto:hi@okaiclass.com?subject=' + encodeURIComponent('【課程提問】' + c.title) + '&body=' + encodeURIComponent(txt);
-    ta.value = ''; toast('已開啟 Email，按「傳送」即可送出提問'); return;
-    const list = $('.qa-list', main);
-    const item = document.createElement('div'); item.className = 'qa-item rv-up in';
-    item.innerHTML = `<div class="qa-item-head"><div class="qa-avatar">學</div><div class="qa-meta"><b>學員</b><span>剛剛</span></div></div><p class="qa-question">${escH(txt)}</p><div class="qa-answer"><div class="qa-answer-head"><span class="qa-teacher-badge">講師</span><b>${c.teacher}</b></div><p>謝謝你的提問！我會在 2 個工作天內回覆，請稍候。</p></div><div class="qa-actions"><button class="qa-like"><span class="qa-like-icon">👍</span> <span class="qa-like-num">0</span></button><span class="qa-reply-count">0 則回覆</span></div>`;
-    list.prepend(item); ta.value = ''; toast('問題已送出，講師將盡快回覆');
-    reveal(list);
-  };
+  /* 購課前問答：存在主機（單元代號 0-0），講師用講師金鑰回覆 */
+  (() => {
+    const list = $('.qa-list', main), qaSubmit = $('.qa-submit', main); if (!list || !qaSubmit) return;
+    let all = [];
+    const render = () => {
+      const roots = all.filter(x => x.lesson === '0-0' && !x.parent);
+      list.innerHTML = '';
+      if (!roots.length) { list.append(mk('p', 'qa-empty', '還沒有人提問。對課程有疑問就問吧，講師會公開回覆。')); return; }
+      roots.forEach(x => {
+        const it = mk('div', 'qa-item');
+        const hd = mk('div', 'qa-item-head'); hd.append(mk('div', 'qa-avatar', (x.name || '學')[0]));
+        const meta = mk('div', 'qa-meta'); meta.append(mk('b', '', x.name || '訪客'), mk('span', '', agoTxt(x.t))); hd.append(meta);
+        it.append(hd, mk('p', 'qa-question', x.text));
+        all.filter(r => r.parent === x.id).sort((a, b) => a.t - b.t).forEach(r => {
+          const ans = mk('div', 'qa-answer' + (r.teacher ? ' qa-teacher' : ''));
+          const h = mk('div', 'qa-ans-head'); h.append(mk('b', '', r.name || '講師')); if (r.teacher) h.append(mk('span', 'plr-cm-badge', '講師回覆')); h.append(mk('span', 'qa-ans-time', agoTxt(r.t)));
+          ans.append(h, mk('p', '', r.text)); it.append(ans);
+        });
+        list.append(it);
+      });
+    };
+    apiGet('api/comments.php?course=' + c.id).then(j => { all = (j && j.items) || []; render(); }).catch(() => { list.innerHTML = '<p class="qa-empty">提問暫時載入不了，請稍後重新整理。</p>'; });
+    qaSubmit.onclick = () => {
+      const ta = $('.qa-input', main), txt = ta.value.trim();
+      if (txt.length < 2) { toast('請輸入問題內容', 'error'); return; }
+      qaSubmit.disabled = true;
+      apiPost('api/comments.php', { course: c.id, lesson: '0-0', name: ($('.qa-name', main).value || '').trim(), text: txt, website: '' })
+        .then(j => { if (!j.ok) { toast(j.error || '送出失敗', 'error'); return; } all.unshift(j.item); ta.value = ''; render(); toast('問題已送出，講師會在這裡回覆', 'success'); })
+        .catch(() => toast('送出失敗，請檢查網路', 'error')).finally(() => qaSubmit.disabled = false);
+    };
+  })();
   main.addEventListener('click', e => {
     const like = e.target.closest('.qa-like');
     if (!like) return;
@@ -2432,7 +2472,7 @@ function cartPage() {
             <div class="cart-item-info">
               <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
               <div class="teacher">${c.teacher}・${c.role}</div>
-              <div class="stars">${c.rating ? `<b>★ ${c.rating.toFixed(1)}</b>・` : ''}${c.hours} 小時・${courseLevel(c).label}</div>
+              <div class="stars">${c.rating ? `<b>★ ${c.rating.toFixed(1)}</b>・` : ''}${c.hours} 小時・${courseLevel(c).label} <span class="card-rate" data-rate="${c.id}"></span></div>
             </div>
             <div class="cart-item-price">
               <div class="now">${fmt(c.price)}</div>
@@ -3587,7 +3627,7 @@ function wishlistPage() {
         <div class="wish-info">
           <a href="course.html?id=${c.id}"><h3>${c.title}</h3></a>
           <p class="teacher">${c.teacher}・${c.role}</p>
-          <div class="stars">${c.rating ? `<b>★</b> ${c.rating}（${c.students.toLocaleString()} 人）` : `${c.hours} 小時・${courseLevel(c).label}`}</div>
+          <div class="stars">${c.rating ? `<b>★</b> ${c.rating}（${c.students.toLocaleString()} 人）` : `${c.hours} 小時・${courseLevel(c).label}`} <span class="card-rate" data-rate="${c.id}"></span></div>
           <div class="price"><span class="now">${fmt(c.price)}</span>${c.origin > c.price ? `<del>${fmt(c.origin)}</del><span class="off">-${pct(c)}%</span>` : ''}</div>
         </div>
         <div class="wish-actions">
@@ -4383,6 +4423,19 @@ function playerPage() {
           </div>
         </div>
         <section class="plr-below" id="plr-below">
+          ${isOwned ? `<details class="plr-hw" id="plr-hw">
+            <summary>📝 課程作業：照著課程做出成果，講師幫你看 <span class="plr-hw-badge" id="plr-hw-badge"></span></summary>
+            <div class="plr-hw-body">
+              <p class="plr-hw-tip">把你做出來的東西交上來：可以是作品連結（Google 雲端、Notion、網站、影片…），或寫下你做了什麼、卡在哪裡。講師看完會在這裡回饋。</p>
+              <form id="plr-hw-form" autocomplete="off">
+                <input id="plr-hw-link" maxlength="300" placeholder="作品連結（https:// 開頭，可留空）" aria-label="作品連結">
+                <textarea id="plr-hw-text" maxlength="2000" rows="3" placeholder="說明你做了什麼、想問講師什麼" aria-label="作業說明"></textarea>
+                <input name="website" tabindex="-1" class="plr-cm-hp" aria-hidden="true" autocomplete="off">
+                <div class="plr-cm-foot"><span class="plr-cm-hint">作業只有你和講師看得到</span><button class="btn btn-pri btn-sm" type="submit" id="plr-hw-send">繳交作業</button></div>
+              </form>
+              <div id="plr-hw-list" class="plr-hw-list"></div>
+            </div>
+          </details>` : ''}
           <div class="plr-cm-tabs" role="tablist">
             <button class="plr-cm-tab on" data-cm="lesson" role="tab">本單元留言</button>
             <button class="plr-cm-tab" data-cm="all" role="tab">全部留言</button>
@@ -4666,7 +4719,7 @@ function playerPage() {
   function cmRender() {
     if (!cmList) return;
     const key = `${curCh + 1}-${curLs + 1}`;
-    const roots = cmAll.filter(x => !x.parent);
+    const roots = cmAll.filter(x => !x.parent && x.lesson !== '0-0');
     const items = cmMode === 'lesson' ? roots.filter(x => x.lesson === key) : roots;
     $$('.plr-cm-tab').forEach(b => b.classList.toggle('on', b.dataset.cm === cmMode));
     const tabL = $('.plr-cm-tab[data-cm="lesson"]'), tabA = $('.plr-cm-tab[data-cm="all"]');
@@ -4715,6 +4768,37 @@ function playerPage() {
       .finally(() => { btn.disabled = false; btn.textContent = '送出留言'; });
   };
   cmLoad();
+  /* ---------- 作業 ---------- */
+  (() => {
+    const form = $('#plr-hw-form'); if (!form) return;
+    const key = 'aic-hw-' + c.id, listEl = $('#plr-hw-list'), badge = $('#plr-hw-badge');
+    const show = items => {
+      listEl.innerHTML = '';
+      const graded = items.filter(x => x.feedback != null && x.gt).length;
+      badge.textContent = items.length ? `已交 ${items.length} 份${graded ? `・${graded} 份已回饋` : ''}` : '';
+      items.sort((a, b) => b.t - a.t).forEach(x => {
+        const it = mk('div', 'plr-hw-item');
+        const h = mk('div', 'plr-hw-head'); h.append(mk('b', '', '我的作業'), mk('span', '', agoTxt(x.t)));
+        h.append(mk('span', 'plr-hw-st ' + (x.gt ? (x.pass ? 'ok' : 'redo') : 'wait'), x.gt ? (x.pass ? '✅ 通過' : '🔁 再試一次') : '⏳ 等講師看'));
+        it.append(h);
+        if (x.link) { const a = mk('a', 'plr-hw-link', x.link); a.href = x.link; a.target = '_blank'; a.rel = 'noopener nofollow'; it.append(a); }
+        if (x.text) it.append(mk('p', '', x.text));
+        if (x.gt && x.feedback) { const fb = mk('div', 'crv-reply'); fb.append(mk('span', 'plr-cm-badge', '講師回饋'), mk('p', '', x.feedback)); it.append(fb); }
+        listEl.append(it);
+      });
+    };
+    const load = () => { const ids = ls(key, []); if (!ids.length) { show([]); return; } apiGet(`api/homework.php?course=${c.id}&ids=${ids.join(',')}`).then(j => show((j && j.items) || [])).catch(() => {}); };
+    load();
+    form.onsubmit = e => {
+      e.preventDefault();
+      const link = $('#plr-hw-link').value.trim(), text = $('#plr-hw-text').value.trim();
+      if (!link && text.length < 10) { toast('請貼上作品連結，或至少寫 10 個字', 'error'); return; }
+      const btn = $('#plr-hw-send'); btn.disabled = true;
+      apiPost('api/homework.php', { course: c.id, name: (aicUser && aicUser.name) || '', link, text, website: form.website.value })
+        .then(j => { if (!j.ok) { toast(j.error || '繳交失敗', 'error'); return; } ss(key, [...ls(key, []), j.item.id]); $('#plr-hw-link').value = ''; $('#plr-hw-text').value = ''; toast('作業已繳交，講師看完會在這裡回饋', 'success'); load(); })
+        .catch(() => toast('繳交失敗，請檢查網路', 'error')).finally(() => btn.disabled = false);
+    };
+  })();
   { const dl = document.getElementById('plr-dl-video'); if (dl) { dl.href = lessonSrc(curCh, curLs); dl.setAttribute('download', `${c.title.split('：')[0]}_${curCh + 1}-${curLs + 1}.mp4`); } }
   /* 回到上次看到的單元（網址可用 ?ch=&ls= 指定） */
   setTimeout(() => {
@@ -7720,6 +7804,120 @@ document.addEventListener('keydown', e => {
 
 /* ---------- 啟動 ---------- */
 if (page !== 'training' && page !== 'player') shell();
+/* ---------- 課程許願池 ---------- */
+function wishPage() {
+  const main = $('main');
+  document.title = '課程許願池｜OKAI課程網';
+  main.innerHTML = `<section class="sec"><div class="wrap wish-wrap">
+    <div class="crumb"><a href="index.html">首頁</a> › 課程許願池</div>
+    <h1 class="wish-h1">課程許願池</h1>
+    <p class="wish-lead">想學的 AI 課還沒開？許個願，或幫別人的願望投一票。票數高的，我們優先找講師開課。</p>
+    <form class="wish-form" id="wish-form" autocomplete="off">
+      <input id="wish-title" maxlength="40" placeholder="想學什麼？例如：用 AI 做 Podcast" aria-label="想學的課程">
+      <textarea id="wish-desc" maxlength="300" rows="2" placeholder="說說你想用它做什麼（選填）" aria-label="說明"></textarea>
+      <input name="website" tabindex="-1" class="plr-cm-hp" aria-hidden="true" autocomplete="off">
+      <button class="btn btn-pri" type="submit" id="wish-send">許願</button>
+    </form>
+    <div class="wish-list" id="wish-list"><p class="crv-empty">載入中…</p></div>
+  </div></section>`;
+  const list = $('#wish-list');
+  const render = items => {
+    list.innerHTML = '';
+    if (!items.length) { list.append(mk('p', 'crv-empty', '還沒有人許願，來當第一個吧！')); return; }
+    items.forEach(x => {
+      const it = mk('div', 'wish-item');
+      const vb = mk('button', 'wish-vote'); vb.type = 'button'; vb.innerHTML = '▲'; vb.append(mk('b', '', String(x.votes))); vb.setAttribute('aria-label', '投一票');
+      vb.onclick = () => apiPost('api/wishes.php', { action: 'vote', id: x.id }).then(j => { if (!j.ok) { toast(j.error || '投票失敗'); return; } vb.querySelector('b').textContent = j.votes; vb.classList.add('on'); toast('已投票', 'success'); });
+      const body = mk('div', 'wish-body'); const h = mk('div', 'wish-title'); h.append(mk('b', '', x.title)); if (x.status) h.append(mk('span', 'wish-status', x.status));
+      body.append(h); if (x.desc) body.append(mk('p', '', x.desc)); body.append(mk('span', 'crv-date', agoTxt(x.t)));
+      it.append(vb, body); list.append(it);
+    });
+  };
+  const load = () => apiGet('api/wishes.php').then(j => render(j.items || [])).catch(() => { list.innerHTML = '<p class="crv-empty">暫時載入不了，請稍後再試。</p>'; });
+  load();
+  $('#wish-form').onsubmit = e => {
+    e.preventDefault(); const f = e.target;
+    const title = $('#wish-title').value.trim(); if (title.length < 4) { toast('課程名稱至少 4 個字', 'error'); return; }
+    apiPost('api/wishes.php', { title, desc: $('#wish-desc').value.trim(), website: f.website.value }).then(j => { if (!j.ok) { toast(j.error || '送出失敗', 'error'); return; } f.reset(); toast('願望已送出！', 'success'); load(); }).catch(() => toast('送出失敗', 'error'));
+  };
+}
+
+/* ---------- 講師後台：留言、課前問答、評價、作業、許願 ---------- */
+function adminPage() {
+  const main = $('main');
+  { const ak = new URLSearchParams(location.search).get('key'); if (ak) { ss('aic-admin-key', ak); history.replaceState(null, '', location.pathname); } }
+  const key = ls('aic-admin-key', '');
+  const title = id => (byId[id] ? byId[id].title.split('：')[0] : id);
+  main.innerHTML = `<section class="sec"><div class="wrap adm-wrap">
+    <h1 class="wish-h1">講師後台</h1>
+    <div id="adm-login" ${key ? 'hidden' : ''}><p>請貼上講師金鑰（在 cPanel 的 okaiclass_data/admin_key.txt）。金鑰只存在這台裝置。</p><input id="adm-key" placeholder="講師金鑰" autocomplete="off"><button class="btn btn-pri btn-sm" id="adm-go" type="button">進入</button></div>
+    <div id="adm-main" ${key ? '' : 'hidden'}>
+      <div class="plr-cm-tabs adm-tabs">${[['cm', '留言／問答'], ['rv', '評價'], ['hw', '作業'], ['ws', '許願池']].map(([k, n], i) => `<button class="plr-cm-tab ${i ? '' : 'on'}" data-adm="${k}" type="button">${n} <span id="adm-n-${k}"></span></button>`).join('')}<button class="plr-cm-tab" id="adm-out" type="button" style="margin-left:auto">登出</button></div>
+      <div id="adm-list" class="adm-list"><p class="crv-empty">載入中…</p></div>
+    </div>
+  </div></section>`;
+  $('#adm-go').onclick = () => { const k = $('#adm-key').value.trim(); if (k.length < 16) { toast('金鑰格式不對', 'error'); return; } ss('aic-admin-key', k); location.reload(); };
+  if (!key) return;
+  $('#adm-out').onclick = () => { localStorage.removeItem('aic-admin-key'); location.reload(); };
+  const list = $('#adm-list'); let tab = 'cm'; const data = {};
+  const box = (head, text, extra) => { const it = mk('div', 'adm-item'); const h = mk('div', 'adm-head'); head.forEach(x => h.append(typeof x === 'string' ? mk('span', '', x) : x)); it.append(h); if (text) it.append(mk('p', '', text)); if (extra) it.append(extra); return it; };
+  const actions = (...btns) => { const d = mk('div', 'adm-acts'); btns.forEach(([t, fn, cls]) => { const b = mk('button', 'btn btn-sm ' + (cls || 'btn-ghost'), t); b.type = 'button'; b.onclick = fn; d.append(b); }); return d; };
+  const replyBox = (ph, send) => { const d = mk('div', 'adm-reply'); const ta = mk('textarea'); ta.rows = 2; ta.placeholder = ph; ta.maxLength = 1500; d.append(ta, actions(['送出', () => { const v = ta.value.trim(); if (v.length < 2) { toast('請輸入內容', 'error'); return; } send(v); }, 'btn-pri'])); return d; };
+  const done = (j, msg) => { if (!j || !j.ok) { toast((j && j.error) || '失敗', 'error'); return false; } toast(msg, 'success'); load(true); return true; };
+  function render() {
+    $$('.adm-tabs [data-adm]').forEach(b => b.classList.toggle('on', b.dataset.adm === tab));
+    list.innerHTML = ''; const items = data[tab] || [];
+    if (!items.length) { list.append(mk('p', 'crv-empty', '目前沒有資料')); return; }
+    items.forEach(x => {
+      if (tab === 'cm') {
+        if (x.parent) return;
+        const replies = data.cm.filter(r => r.parent === x.id);
+        const where = x.lesson === '0-0' ? '課前問答' : '單元 ' + x.lesson;
+        const ex = mk('div');
+        replies.forEach(r => ex.append(mk('div', 'adm-sub', `${r.teacher ? '🎓 ' : ''}${r.name}：${r.text}`)));
+        if (!replies.some(r => r.teacher)) ex.append(replyBox('回覆這則（會標示「講師回覆」）', v => apiPost('api/comments.php', { course: x.course, lesson: x.lesson, parent: x.id, name: '講師', text: v, key }).then(j => done(j, '已回覆'))));
+        ex.append(actions(['到課程看', () => window.open((x.lesson === '0-0' ? 'course.html?id=' : 'player.html?id=') + x.course, '_blank')], ['刪除', () => { if (confirm('確定刪除？')) apiPost('api/comments.php', { action: 'delete', course: x.course, id: x.id, key }).then(j => done(j, '已刪除')); }, 'btn-ghost adm-del']));
+        const tag = mk('span', 'adm-tag' + (replies.some(r => r.teacher) ? ' ok' : ''), replies.some(r => r.teacher) ? '已回覆' : '待回覆');
+        list.append(box([tag, mk('b', '', title(x.course)), where, x.name, agoTxt(x.t)], x.text, ex));
+      } else if (tab === 'rv') {
+        const ex = mk('div'); if (x.reply) ex.append(mk('div', 'adm-sub', '🎓 ' + x.reply));
+        ex.append(replyBox(x.reply ? '修改講師回覆' : '回覆這則評價', v => apiPost('api/reviews.php', { action: 'reply', course: x.course, id: x.id, reply: v, key }).then(j => done(j, '已回覆'))));
+        ex.append(actions(['刪除', () => { if (confirm('確定刪除這則評價？')) apiPost('api/reviews.php', { action: 'delete', course: x.course, id: x.id, key }).then(j => done(j, '已刪除')); }, 'btn-ghost adm-del']));
+        list.append(box([mk('span', 'adm-tag' + (x.reply ? ' ok' : ''), x.reply ? '已回覆' : '待回覆'), mk('b', '', title(x.course)), '★'.repeat(x.stars), x.name, agoTxt(x.t)], x.text, ex));
+      } else if (tab === 'hw') {
+        const ex = mk('div');
+        if (x.link) { const a = mk('a', 'plr-hw-link', x.link); a.href = x.link; a.target = '_blank'; a.rel = 'noopener nofollow'; ex.append(a); }
+        if (x.gt) ex.append(mk('div', 'adm-sub', `${x.pass ? '✅ 通過' : '🔁 再試一次'}：${x.feedback || ''}`));
+        const d = mk('div', 'adm-reply'); const ta = mk('textarea'); ta.rows = 2; ta.placeholder = '寫給學員的回饋'; ta.value = x.feedback || '';
+        const g = pass => { if (ta.value.trim().length < 2) { toast('請寫回饋', 'error'); return; } apiPost('api/homework.php', { action: 'grade', course: x.course, id: x.id, feedback: ta.value.trim(), pass, key }).then(j => done(j, '已批改')); };
+        d.append(ta, actions(['✅ 通過', () => g(true), 'btn-pri'], ['🔁 再試一次', () => g(false)], ['刪除', () => { if (confirm('確定刪除？')) apiPost('api/homework.php', { action: 'delete', course: x.course, id: x.id, key }).then(j => done(j, '已刪除')); }, 'btn-ghost adm-del'])); ex.append(d);
+        list.append(box([mk('span', 'adm-tag' + (x.gt ? ' ok' : ''), x.gt ? '已批改' : '待批改'), mk('b', '', title(x.course)), x.name, agoTxt(x.t)], x.text, ex));
+      } else {
+        const sel = mk('select'); ['', '找講師中', '製作中', '已開課'].forEach(v => { const o = mk('option', '', v || '（無狀態）'); o.value = v; if (v === x.status) o.selected = true; sel.append(o); });
+        sel.onchange = () => apiPost('api/wishes.php', { action: 'status', id: x.id, status: sel.value, key }).then(j => done(j, '已更新'));
+        const ex = mk('div', 'adm-acts'); ex.append(sel); ex.append(actions(['刪除', () => { if (confirm('確定刪除這個願望？')) apiPost('api/wishes.php', { action: 'delete', id: x.id, key }).then(j => done(j, '已刪除')); }, 'btn-ghost adm-del']));
+        list.append(box([mk('b', '', `▲ ${x.votes}`), mk('b', '', x.title), agoTxt(x.t)], x.desc, ex));
+      }
+    });
+  }
+  function load(again) {
+    Promise.all([
+      apiGet('api/comments.php?recent=1&key=' + encodeURIComponent(key)),
+      apiGet('api/reviews.php?recent=1&key=' + encodeURIComponent(key)),
+      apiGet('api/homework.php?recent=1&key=' + encodeURIComponent(key)),
+      apiGet('api/wishes.php')
+    ]).then(([a, b, h, w]) => {
+      if (!a.ok) { list.innerHTML = '<p class="crv-empty">講師金鑰不對，請按「登出」後重新輸入。</p>'; return; }
+      data.cm = a.items; data.rv = b.items || []; data.hw = h.items || []; data.ws = w.items || [];
+      const pend = { cm: data.cm.filter(x => !x.parent && !data.cm.some(r => r.parent === x.id && r.teacher)).length, rv: data.rv.filter(x => !x.reply).length, hw: data.hw.filter(x => !x.gt).length, ws: data.ws.length };
+      Object.entries(pend).forEach(([k, n]) => { const e = $('#adm-n-' + k); if (e) e.textContent = n ? `(${n})` : ''; });
+      render();
+    }).catch(() => { list.innerHTML = '<p class="crv-empty">連不上主機，請稍後再試。</p>'; });
+  }
+  $$('.adm-tabs [data-adm]').forEach(b => b.onclick = () => { tab = b.dataset.adm; render(); });
+  load();
+}
+
 if (page === 'home') home();
 else if (page === 'course') course();
 else if (page === 'event') noPromo();
@@ -7735,6 +7933,8 @@ else if (page === 'wishlist') wishlistPage();
 else if (page === 'my') myPage();
 else if (page === 'about') aboutPage();
 else if (page === 'faq') faqPage();
+else if (page === 'wish') wishPage();
+else if (page === 'admin') adminPage();
 else if (page === 'teach') teachPage();
 else if (page === 'terms') termsPage();
 else if (page === 'privacy') privacyPage();

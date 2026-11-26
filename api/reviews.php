@@ -7,8 +7,20 @@
 require __DIR__ . '/_lib.php';
 $DATA = "$ROOT/reviews"; if (!is_dir($DATA)) @mkdir($DATA, 0700, true);
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$pub = fn($x) => ['id' => $x['id'], 'stars' => $x['stars'], 'name' => $x['name'], 'text' => $x['text'], 't' => $x['t']];
+$pub = fn($x) => ['id' => $x['id'], 'stars' => $x['stars'], 'name' => $x['name'], 'text' => $x['text'], 't' => $x['t'], 'reply' => $x['reply'] ?? '', 'rt' => $x['rt'] ?? 0];
 
+if ($method === 'GET' && isset($_GET['summary'])) {   // 每門課的平均星等，給課程卡用
+  $sum = [];
+  foreach (course_files($DATA) as $cid => $f) { $l = load($f); $n = count($l); if ($n) $sum[$cid] = ['avg' => round(array_sum(array_column($l, 'stars')) / $n, 1), 'count' => $n]; }
+  out(200, ['ok' => true, 'courses' => $sum]);
+}
+if ($method === 'GET' && isset($_GET['recent'])) {
+  need_admin($_GET['key'] ?? '');
+  $all = [];
+  foreach (course_files($DATA) as $cid => $f) foreach (load($f) as $x) { $y = $pub($x); $y['course'] = $cid; $all[] = $y; }
+  usort($all, fn($a, $b) => $b['t'] <=> $a['t']);
+  out(200, ['ok' => true, 'items' => array_slice($all, 0, 300)]);
+}
 if ($method === 'GET') {
   $course = $_GET['course'] ?? '';
   if (!preg_match('/^c\d{1,4}$/', $course)) out(400, ['ok' => false, 'error' => '課程代號不正確']);
@@ -27,6 +39,12 @@ if (($in['action'] ?? '') === 'delete') {
   locked_update("$DATA/$course.json", function (&$list) use ($id) { $list = array_values(array_filter($list, fn($x) => ($x['id'] ?? '') !== $id)); });
   out(200, ['ok' => true]);
 }
+if (($in['action'] ?? '') === 'reply') {
+  need_admin($in['key'] ?? '');
+  $id = (string)($in['id'] ?? ''); $reply = clean($in['reply'] ?? '', 800);
+  $hit = locked_update("$DATA/$course.json", function (&$list) use ($id, $reply) { foreach ($list as &$x) if (($x['id'] ?? '') === $id) { $x['reply'] = $reply; $x['rt'] = time(); return true; } return false; });
+  out($hit ? 200 : 404, ['ok' => (bool)$hit]);
+}
 if (!empty($in['website'])) out(200, ['ok' => true]);
 $stars = (int)($in['stars'] ?? 0);
 $name = clean($in['name'] ?? '', 20); if ($name === '') $name = '學員';
@@ -40,4 +58,5 @@ locked_update("$DATA/$course.json", function (&$list) use ($item) {
   $list = array_values(array_filter($list, fn($x) => ($x['ip'] ?? '') !== $item['ip']));  // 同一人只留最新一則
   $list[] = $item;
 });
+notify("【OKAI 新評價】$course {$stars} 顆星", "{$name}：\n$text");
 out(200, ['ok' => true, 'item' => $pub($item)]);
